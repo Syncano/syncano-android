@@ -1,0 +1,16 @@
+com.syncano.android.lib
+com.syncano.android.lib.modules
+com.syncano.android.lib.modules.administrators
+com.syncano.android.lib.modules.apikeys
+com.syncano.android.lib.modules.collections
+com.syncano.android.lib.modules.data
+com.syncano.android.lib.modules.folders
+com.syncano.android.lib.modules.identities
+com.syncano.android.lib.modules.notification
+com.syncano.android.lib.modules.projects
+com.syncano.android.lib.modules.roles
+com.syncano.android.lib.modules.subscriptions
+com.syncano.android.lib.modules.users
+com.syncano.android.lib.objects
+com.syncano.android.lib.syncserver
+com.syncano.android.lib.utils
