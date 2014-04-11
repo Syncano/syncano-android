@@ -1,0 +1,2 @@
+Syncano Android library
+=======================
