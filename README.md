@@ -1,5 +1,4 @@
-Syncano Android library
-=======================
+# Syncano Android library
 
 ## Installation:
 ---
@@ -18,7 +17,7 @@ Get source code from [Syncano Android Library on GitHub](https://github.com/Sync
 ##### Get syncano object instance
 	Syncano syncano = new Syncano(getContext(), Constants.INSTANCE_NAME, Constants.API_KEY);
 
-##### Create new object with text content
+##### Create a new object with text content
 	ParamsDataNew newObject = new ParamsDataNew(Constants.PROJECT_ID, Constants.COLLECTION_ID, null, "Moderated");
 	String text = "Test content";
 	newObject.setText(text);
@@ -41,7 +40,7 @@ Get source code from [Syncano Android Library on GitHub](https://github.com/Sync
 		// downloaded item has the same text content as sent before
 	}
 
-##### Remove object
+##### Remove an object
 	ParamsDataDelete delete = new ParamsDataDelete(Constants.PROJECT_ID, Constants.COLLECTION_ID, null);
 	delete.setDataIds(new String[] {
 		createdObjectId
