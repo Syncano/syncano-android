@@ -3,20 +3,16 @@
 ## Overview
 ---
 
-syncano-android is a library written in Java that provides communication with Syncano via HTTP RESTful interface and TCP sokects.
-
-Its full source code can be found on [GitHub](https://github.com/Syncano/syncano-android). 
+Syncano's Android library is written in Java and provides communication with Syncano via HTTP RESTful interface and TCP sokects.
 
 ## Installation:
 ---
 
-Get source code from [Syncano Android Library on GitHub](https://github.com/Syncano/syncano-android) or [download the archive from GitHub](https://github.com/Syncano/syncano-android/archive/master.zip).
+Get [the full source code](https://github.com/Syncano/syncano-android) or [download the archive](https://github.com/Syncano/syncano-android/archive/master.zip)  from GitHub.
 
-Then, add the library to your project under Eclipse IDE using `File -> Import` and choose `Android -> Existing Android Code Into Workspace`.
+Then, add the library to an Eclipse IDE project using `File -> Import`. Make sure to choose `Android -> Existing Android Code Into Workspace`.
 
-Right click you project under IDE and choose `Properties`. Under `Android` group, you can add our library using `Add` button in `Library` section.
-
-That's it, now you can use it in your own project!
+Under IDE, right click your project and choose `Properties`. Add Syncano's Android library by clicking `Add` buton in the `Library` section under the `Android` group.
 
 ## Required permissions
 ---
@@ -30,9 +26,9 @@ To use the library, you have to add following permissions to your `AndroidManife
 ## Usage examples
 ---
 
-Here are few examples of how to use android-syncano library.
+Here are few examples of how to use Syncano's Android library.
 
-#### Get syncano object instance
+#### Create Syncano object instance
 
 (This will be used to send requests to your instance of Syncano via HTTP interface. Pass your own Syncano domain here, along with your generated API Key):
 
@@ -40,7 +36,7 @@ Here are few examples of how to use android-syncano library.
 Syncano syncano = new Syncano(getContext(), Constants.INSTANCE_NAME, Constants.API_KEY);
 ```
 
-#### Create a new object with text content
+#### Create a new object with text
 
 (Use a project ID and collection ID from your admin GUI, i.e. YourDomain.syncano.com, for the below. You can use the “default” values or create your own.):
 
@@ -54,7 +50,7 @@ if(responseNew.getResultCode() == Response.CODE_SUCCESS) {
 }
 ```
 
-#### Download created object
+#### Download a created object
 
 ```
 String createdObjectId = responseNew.getData().getId();
@@ -84,9 +80,9 @@ if(responseDelete.getResultCode() == Response.CODE_SUCCESS) {
 }
 ```
 
-#### Sync Server usage example
+#### Use the Sync Server
 
-(This will be used to send and receive notifications from Syncano Sync Server. You can also use it to send requests to your instance of Syncano via TCP interface. Pass your own Syncano domain here, along with your generated API Key):
+(This will be used to send and receive notifications from Syncano's Sync Server. You can also use it to send requests to your instance of Syncano via TCP interface. Pass your own Syncano domain here, along with your generated API Key):
 
 ```
 SyncServerConnection conn = new SyncServerConnection(getContext(), Constants.INSTANCE_NAME, Constants.API_KEY,
