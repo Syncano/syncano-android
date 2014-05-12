@@ -5,7 +5,7 @@
 
 Syncano's Android library is written in Java and provides communication with Syncano via HTTP RESTful interface and TCP sokects.
 
-## Installation:
+## Installation
 ---
 
 Get [the full source code](https://github.com/Syncano/syncano-android) or [download the archive](https://github.com/Syncano/syncano-android/archive/master.zip)  from GitHub.
@@ -28,7 +28,7 @@ To use the library, you have to add following permissions to your `AndroidManife
 
 Here are few examples of how to use Syncano's Android library.
 
-#### Create Syncano object instance
+### Create Syncano object instance
 
 (This will be used to send requests to your instance of Syncano via HTTP interface. Pass your own Syncano domain here, along with your generated API Key):
 
@@ -36,7 +36,7 @@ Here are few examples of how to use Syncano's Android library.
 Syncano syncano = new Syncano(getContext(), Constants.INSTANCE_NAME, Constants.API_KEY);
 ```
 
-#### Create a new object with text
+### Create a new object with text
 
 (Use a project ID and collection ID from your admin GUI, i.e. YourDomain.syncano.com, for the below. You can use the “default” values or create your own.):
 
@@ -50,7 +50,7 @@ if(responseNew.getResultCode() == Response.CODE_SUCCESS) {
 }
 ```
 
-#### Download a created object
+### Download a created object
 
 ```
 String createdObjectId = responseNew.getData().getId();
@@ -67,7 +67,7 @@ if(text.equals(responseGet.getData()[0].getText())) {
 }
 ```
 
-#### Remove an object
+### Remove an object
 
 ```
 ParamsDataDelete delete = new ParamsDataDelete(Constants.PROJECT_ID, Constants.COLLECTION_ID, null);
@@ -80,7 +80,7 @@ if(responseDelete.getResultCode() == Response.CODE_SUCCESS) {
 }
 ```
 
-#### Use the Sync Server
+### Use the Sync Server
 
 (This will be used to send and receive notifications from Syncano's Sync Server. You can also use it to send requests to your instance of Syncano via TCP interface. Pass your own Syncano domain here, along with your generated API Key):
 
