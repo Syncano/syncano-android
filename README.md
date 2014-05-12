@@ -19,7 +19,7 @@ Under IDE, right click your project and choose `Properties`. Add Syncano's Andro
 
 To use the library, you have to add following permissions to your `AndroidManifest.xml` file.
 
-```	
+```xml
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 ```
@@ -40,7 +40,7 @@ Syncano syncano = new Syncano(getContext(), Constants.INSTANCE_NAME, Constants.A
 
 (Use a project ID and collection ID from your admin GUI, i.e. YourDomain.syncano.com, for the below. You can use the “default” values or create your own.):
 
-```
+```java
 ParamsDataNew newObject = new ParamsDataNew(Constants.PROJECT_ID, Constants.COLLECTION_ID, null, "Moderated");
 String text = "Test content";
 newObject.setText(text);
@@ -52,7 +52,7 @@ if(responseNew.getResultCode() == Response.CODE_SUCCESS) {
 
 ### Download a created object
 
-```
+```java
 String createdObjectId = responseNew.getData().getId();
 ParamsDataGet getObject = new ParamsDataGet(Constants.PROJECT_ID, Constants.COLLECTION_ID, null);
 getObject.setDataIds(new String[] {
@@ -69,7 +69,7 @@ if(text.equals(responseGet.getData()[0].getText())) {
 
 ### Remove an object
 
-```
+```java
 ParamsDataDelete delete = new ParamsDataDelete(Constants.PROJECT_ID, Constants.COLLECTION_ID, null);
 delete.setDataIds(new String[] {
 	createdObjectId
@@ -84,7 +84,7 @@ if(responseDelete.getResultCode() == Response.CODE_SUCCESS) {
 
 (This will be used to send and receive notifications from Syncano's Sync Server. You can also use it to send requests to your instance of Syncano via TCP interface. Pass your own Syncano domain here, along with your generated API Key):
 
-```
+```java
 SyncServerConnection conn = new SyncServerConnection(getContext(), Constants.INSTANCE_NAME, Constants.API_KEY,
 	new SyncServerListener() {
 		@Override
