@@ -32,7 +32,7 @@ Here are few examples of how to use Syncano's Android library.
 
 (This will be used to send requests to your instance of Syncano via HTTP interface. Pass your own Syncano domain here, along with your generated API Key):
 
-```
+```java
 Syncano syncano = new Syncano(getContext(), Constants.INSTANCE_NAME, Constants.API_KEY);
 ```
 
