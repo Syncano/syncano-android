@@ -5,6 +5,8 @@
 
 Syncano's Android library is written in Java and provides communication with Syncano via HTTP RESTful interface and TCP sokects.
 
+Click here to learn more about [Syncano](http://www.syncano.com) or [create an account!](https://login.syncano.com/sign_up)
+
 ## Installation
 ---
 
