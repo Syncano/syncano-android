@@ -43,7 +43,7 @@ public class SocketConnection {
 	/** read timeout variable */
 	private final static int READ_TIMEOUT = 60 * 1000;
 	/** read retry period variable */
-	private final static int READ_RETRY_PERIOD = 1000;
+	private final static int READ_RETRY_PERIOD = 5;
 
 	/** scheluded executor service */
 	private ScheduledExecutorService readExecutor;

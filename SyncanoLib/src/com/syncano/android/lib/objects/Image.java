@@ -2,25 +2,40 @@ package com.syncano.android.lib.objects;
 
 import java.io.Serializable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Represents Image object from Syncano Api
  */
 public class Image implements Serializable {
 	private static final long serialVersionUID = 2468714676125234433L;
 	/** image url */
+	@Expose
 	private String image;
 	/** image width */
-	private Integer image_width;
+	@Expose
+	@SerializedName(value = "image_width")
+	private Integer imageWidth;
 	/** image height */
-	private Integer image_height;
+	@Expose
+	@SerializedName(value = "image_height")
+	private Integer imageHeight;
 	/** thumbnail url */
+	@Expose
 	private String thumbnail;
 	/** thumbnail width */
-	private Integer thumbnail_width;
+	@Expose
+	@SerializedName(value = "thumbnail_width")
+	private Integer thumbnailWidth;
 	/** thumbnail height */
-	private Integer thumbnail_height;
+	@Expose
+	@SerializedName(value = "thumbnail_height")
+	private Integer thumbnailHeight;
 	/** source url */
-	private String source_url;
+	@Expose
+	@SerializedName(value = "source_url")
+	private String sourceUrl;
 
 	/**
 	 * @return image url
@@ -42,7 +57,7 @@ public class Image implements Serializable {
 	 * @return image width
 	 */
 	public Integer getImageWidth() {
-		return image_width;
+		return imageWidth;
 	}
 
 	/**
@@ -50,15 +65,15 @@ public class Image implements Serializable {
 	 * 
 	 * @param imageWidth
 	 */
-	public void setImage_width(Integer imageWidth) {
-		this.image_width = imageWidth;
+	public void setImageWidth(Integer imageWidth) {
+		this.imageWidth = imageWidth;
 	}
 
 	/**
 	 * @return image height
 	 */
 	public Integer getImageHeight() {
-		return image_height;
+		return imageHeight;
 	}
 
 	/**
@@ -66,8 +81,8 @@ public class Image implements Serializable {
 	 * 
 	 * @param imageHeight
 	 */
-	public void setImage_height(Integer imageHeight) {
-		this.image_height = imageHeight;
+	public void setImageHeight(Integer imageHeight) {
+		this.imageHeight = imageHeight;
 	}
 
 	/**
@@ -90,7 +105,7 @@ public class Image implements Serializable {
 	 * @return thumbnail width
 	 */
 	public Integer getThumbnailWidth() {
-		return thumbnail_width;
+		return thumbnailWidth;
 	}
 
 	/**
@@ -99,14 +114,14 @@ public class Image implements Serializable {
 	 * @param thumbnailWidth
 	 */
 	public void setThumbnailWidth(Integer thumbnailWidth) {
-		this.thumbnail_width = thumbnailWidth;
+		this.thumbnailWidth = thumbnailWidth;
 	}
 
 	/**
 	 * @return thumbnail height
 	 */
 	public Integer getThumbnailHeight() {
-		return thumbnail_height;
+		return thumbnailHeight;
 	}
 
 	/**
@@ -115,14 +130,14 @@ public class Image implements Serializable {
 	 * @param thumbnailHeight
 	 */
 	public void setThumbnailHeight(Integer thumbnailHeight) {
-		this.thumbnail_height = thumbnailHeight;
+		this.thumbnailHeight = thumbnailHeight;
 	}
 
 	/**
 	 * @return source url
 	 */
 	public String getSourceUrl() {
-		return source_url;
+		return sourceUrl;
 	}
 
 	/**
@@ -130,7 +145,7 @@ public class Image implements Serializable {
 	 * 
 	 * @param sourceUrl
 	 */
-	public void setSource_url(String sourceUrl) {
-		this.source_url = sourceUrl;
+	public void setSourceUrl(String sourceUrl) {
+		this.sourceUrl = sourceUrl;
 	}
 }

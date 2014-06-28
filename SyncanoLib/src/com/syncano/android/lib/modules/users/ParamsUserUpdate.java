@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.users;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 
@@ -8,13 +10,27 @@ import com.syncano.android.lib.modules.Response;
  */
 public class ParamsUserUpdate extends Params {
 	/** Id of user */
-	private String user_id;
+	@Expose
+	@SerializedName(value = "user_id")
+	private String userId;
 	/** Name of user */
-	private String user_name;
+	@Expose
+	@SerializedName(value = "user_name")
+	private String userName;
 	/** Nickname of user */
+	@Expose
 	private String nick;
 	/** Avatar url for user */
+	@Expose
 	private String avatar;
+	/** New user password. */
+	@Expose
+	@SerializedName(value = "new_password")
+	private String newPassword;
+	/** Current user password. */
+	@Expose
+	@SerializedName(value = "current_password")
+	private String currentPassword;
 
 	/**
 	 * Default constructor, needs at least one parameter, userId or userName. If both id and name are specified, will
@@ -26,8 +42,8 @@ public class ParamsUserUpdate extends Params {
 	 *            User name defining user. Can be <code>null</code>.
 	 */
 	public ParamsUserUpdate(String userId, String userName) {
-		this.user_id = userId;
-		this.user_name = userName;
+		this.userId = userId;
+		this.userName = userName;
 	}
 
 	@Override
@@ -42,8 +58,8 @@ public class ParamsUserUpdate extends Params {
 	/**
 	 * @return user id
 	 */
-	public String getUser_id() {
-		return user_id;
+	public String getUserId() {
+		return userId;
 	}
 
 	/**
@@ -52,15 +68,15 @@ public class ParamsUserUpdate extends Params {
 	 * @param user_id
 	 *            if for user
 	 */
-	public void setUser_id(String user_id) {
-		this.user_id = user_id;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	/**
 	 * @return user name
 	 */
-	public String getUser_name() {
-		return user_name;
+	public String getUserName() {
+		return userName;
 	}
 
 	/**
@@ -69,8 +85,8 @@ public class ParamsUserUpdate extends Params {
 	 * @param user_name
 	 *            user name
 	 */
-	public void setUser_name(String user_name) {
-		this.user_name = user_name;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 	/**
@@ -107,4 +123,33 @@ public class ParamsUserUpdate extends Params {
 		this.avatar = avatar;
 	}
 
+	/**
+	 * @return new password
+	 */
+	public String getNewPassword() {
+		return newPassword;
+	}
+
+	/**
+	 * @param Sets
+	 *            new user password
+	 */
+	public void setNewPassword(String newPassword) {
+		this.newPassword = newPassword;
+	}
+
+	/**
+	 * @return current password
+	 */
+	public String getCurrentPassword() {
+		return currentPassword;
+	}
+
+	/**
+	 * @param Sets
+	 *            current user password
+	 */
+	public void setCurrentPassword(String currentPassword) {
+		this.currentPassword = currentPassword;
+	}
 }

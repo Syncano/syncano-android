@@ -2,16 +2,23 @@ package com.syncano.android.lib.objects;
 
 import java.io.Serializable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Represents Folder object from Syncano Api
  */
 public class Folder implements Serializable {
 	private static final long serialVersionUID = 9209121215937599337L;
 	/** id of folder */
+	@Expose
 	private String id;
 	/** informs that folder is custom */
-	private Boolean is_custom;
+	@Expose
+	@SerializedName(value = "is_custom")
+	private Boolean isCustom;
 	/** folder name */
+	@Expose
 	private String name;
 
 	/**
@@ -37,7 +44,7 @@ public class Folder implements Serializable {
 	 * @return folder is custom
 	 */
 	public Boolean getIsCustom() {
-		return is_custom;
+		return isCustom;
 	}
 
 	/**
@@ -46,7 +53,7 @@ public class Folder implements Serializable {
 	 * @param isCustom
 	 */
 	public void setIsCustom(Boolean isCustom) {
-		this.is_custom = isCustom;
+		this.isCustom = isCustom;
 	}
 
 	/**

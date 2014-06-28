@@ -7,7 +7,7 @@ import com.syncano.android.lib.modules.Response;
  * Logs in API client and returns session_id for session id or cookie-based authentication. See Authorization. Session
  * is valid for 2 hours and is automatically renewed whenever it is used.
  */
-public class ParamsApikeyStartSession extends Params {
+public class ParamsApiKeyStartSession extends Params {
 	// timezone is already declared in Params
 
 	@Override
@@ -17,7 +17,7 @@ public class ParamsApikeyStartSession extends Params {
 
 	@Override
 	public Response instantiateResponse() {
-		return new ResponseApikeyStartSession();
+		return new ResponseApiKeyStartSession();
 	}
 
 }

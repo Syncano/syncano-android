@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.collections;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 
 /**
@@ -8,25 +10,38 @@ import com.syncano.android.lib.modules.Params;
 
 public class ParamsCollectionAddTag extends Params {
 	/** project id */
-	private String project_id;
+	@Expose
+	@SerializedName(value = "project_id")
+	private String projectId;
 	/** collection id */
-	private String collection_id;
+	@Expose
+	@SerializedName(value = "collection_id")
+	private String collectionId;
 	/** collection key */
-	private String collection_key;
+	@Expose
+	@SerializedName(value = "collection_key")
+	private String collectionKey;
 	/** tags array */
+	@Expose
 	private String[] tags;
 	/** weight */
+	@Expose
 	private Float weight;
 	/** remove other option */
-	private Boolean remove_other;
+	@Expose
+	@SerializedName(value = "remove_other")
+	private Boolean removeOther;
 
 	/**
 	 * 
 	 * @param projectId
 	 *            project to add tag
 	 */
-	public ParamsCollectionAddTag(String projectId) {
+	public ParamsCollectionAddTag(String projectId, String collectionId, String collectionKey, String[] tags) {
 		setProjectId(projectId);
+        setCollectionId(collectionId);
+        setCollectionKey(collectionKey);
+        setTags(tags);
 	}
 
 	@Override
@@ -69,8 +84,8 @@ public class ParamsCollectionAddTag extends Params {
 	/**
 	 * @return remove other
 	 */
-	public Boolean getRemove_other() {
-		return remove_other;
+	public Boolean getRemoveOther() {
+		return removeOther;
 	}
 
 	/**
@@ -78,15 +93,15 @@ public class ParamsCollectionAddTag extends Params {
 	 * 
 	 * @param remove_other
 	 */
-	public void setRemove_other(Boolean remove_other) {
-		this.remove_other = remove_other;
+	public void setRemoveOther(Boolean removeOther) {
+		this.removeOther = removeOther;
 	}
 
 	/**
 	 * @return project id
 	 */
 	public String getProjectId() {
-		return project_id;
+		return projectId;
 	}
 
 	/**
@@ -95,14 +110,14 @@ public class ParamsCollectionAddTag extends Params {
 	 * @param projectId
 	 */
 	public void setProjectId(String projectId) {
-		this.project_id = projectId;
+		this.projectId = projectId;
 	}
 
 	/**
 	 * @return collection id
 	 */
 	public String getCollectionId() {
-		return collection_id;
+		return collectionId;
 	}
 
 	/**
@@ -111,14 +126,14 @@ public class ParamsCollectionAddTag extends Params {
 	 * @param collectionId
 	 */
 	public void setCollectionId(String collectionId) {
-		this.collection_id = collectionId;
+		this.collectionId = collectionId;
 	}
 
 	/**
 	 * @return collection key
 	 */
 	public String getCollectionKey() {
-		return collection_key;
+		return collectionKey;
 	}
 
 	/**
@@ -127,6 +142,6 @@ public class ParamsCollectionAddTag extends Params {
 	 * @param collectionKey
 	 */
 	public void setCollectionKey(String collectionKey) {
-		this.collection_key = collectionKey;
+		this.collectionKey = collectionKey;
 	}
 }

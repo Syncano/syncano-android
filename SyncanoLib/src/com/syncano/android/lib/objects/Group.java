@@ -2,16 +2,23 @@ package com.syncano.android.lib.objects;
 
 import java.io.Serializable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Represents Group object from Syncano Api
  */
 public class Group implements Serializable {
 	private static final long serialVersionUID = -8008454880647420245L;
 	/** Group id */
+	@Expose
 	private Integer id;
 	/** Group id in string format */
-	private String id_str;
+	@Expose
+	@SerializedName(value = "id_str")
+	private String idStr;
 	/** Group name */
+	@Expose
 	private String name;
 
 	/**
@@ -33,8 +40,8 @@ public class Group implements Serializable {
 	/**
 	 * @return group id in string
 	 */
-	public String getId_str() {
-		return id_str;
+	public String getIdStr() {
+		return idStr;
 	}
 
 	/**
@@ -42,8 +49,8 @@ public class Group implements Serializable {
 	 * 
 	 * @param id_str
 	 */
-	public void setId_str(String id_str) {
-		this.id_str = id_str;
+	public void setIdStr(String idStr) {
+		this.idStr = idStr;
 	}
 
 	/**

@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules;
 
+import com.google.gson.annotations.Expose;
+
 public class Response {
 	/** status code when response is ok */
 	public final static int CODE_SUCCESS = 0;
@@ -16,11 +18,18 @@ public class Response {
 	/** status code when bad request was sent */
 	public final static int CODE_ERROR_BAD_REQUEST = -6;
 
+	/** Response OK */
+	private static final String OK = "OK";
+	/** Response Not OK */
+	private static final String NOK = "NOK";
+
 	/** result code for last request */
 	private Integer resultCode = CODE_ERROR_UNKNOWN;
 	/** result for last request */
+	@Expose
 	private String result;
 	/** error when something went wrong */
+	@Expose
 	private String error;
 
 	/**
@@ -69,5 +78,19 @@ public class Response {
 	 */
 	public void setError(String error) {
 		this.error = error;
+	}
+
+	/**
+	 * Sets result code to specified response depending on result
+	 * 
+	 * @param response
+	 *            response on which will be set result code
+	 */
+	public void refreshResultCode() {
+		if (NOK.equals(getResult())) {
+			setResultCode(Response.CODE_ERROR_RECEIVED_FROM_SERVER);
+		} else if (OK.equals(getResult())) {
+			setResultCode(Response.CODE_SUCCESS);
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package com.syncano.android.lib.modules.identities;
 
+import com.google.gson.annotations.Expose;
 import com.syncano.android.lib.modules.Response;
 import com.syncano.android.lib.objects.Identity;
 
@@ -8,6 +9,7 @@ import com.syncano.android.lib.objects.Identity;
  */
 public class ResponseIdentityUpdate extends Response {
 	/** Updated identity */
+	@Expose
 	private Identity identity;
 
 	/**

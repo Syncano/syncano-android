@@ -1,28 +1,32 @@
 package com.syncano.android.lib.modules.apikeys;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Response;
-import com.syncano.android.lib.objects.Client;
+import com.syncano.android.lib.objects.ApiKey;
 
-public class ResponseApikeyGet extends Response {
-	/** clients array from response */
-	private Client[] client;
+public class ResponseApiKeyGet extends Response {
+	/** ApiKeys array from response */
+	@Expose
+    @SerializedName(value = "apikey")
+	private ApiKey[] apiKey;
 
 	/**
-	 * Gets clients array from response
+	 * Gets ApiKeys array from response
 	 * 
-	 * @return client
+	 * @return apiKeys
 	 */
-	public Client[] getClient() {
-		return client;
+	public ApiKey[] getApiKey() {
+		return apiKey;
 	}
 
 	/**
-	 * Sets client array
+	 * Sets ApiKeys array
 	 * 
-	 * @param client
-	 *            clients array to set
+	 * @param apiKey
+	 *            ApiKeys array to set
 	 */
-	public void setClient(Client[] client) {
-		this.client = client;
+	public void setApiKey(ApiKey[] apiKey) {
+		this.apiKey = apiKey;
 	}
 }

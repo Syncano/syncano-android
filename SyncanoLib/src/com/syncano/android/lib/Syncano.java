@@ -10,20 +10,24 @@ import com.syncano.android.lib.modules.administrators.ResponseAdminGet;
 import com.syncano.android.lib.modules.administrators.ResponseAdminGetOne;
 import com.syncano.android.lib.modules.administrators.ResponseAdminNew;
 import com.syncano.android.lib.modules.administrators.ResponseAdminUpdate;
-import com.syncano.android.lib.modules.apikeys.ParamsApikeyDelete;
-import com.syncano.android.lib.modules.apikeys.ParamsApikeyGet;
-import com.syncano.android.lib.modules.apikeys.ParamsApikeyGetOne;
-import com.syncano.android.lib.modules.apikeys.ParamsApikeyNew;
-import com.syncano.android.lib.modules.apikeys.ParamsApikeyStartSession;
-import com.syncano.android.lib.modules.apikeys.ParamsApikeyUpdateDescription;
-import com.syncano.android.lib.modules.apikeys.ResponseApikeyGet;
-import com.syncano.android.lib.modules.apikeys.ResponseApikeyGetOne;
-import com.syncano.android.lib.modules.apikeys.ResponseApikeyNew;
-import com.syncano.android.lib.modules.apikeys.ResponseApikeyStartSession;
-import com.syncano.android.lib.modules.apikeys.ResponseApikeyUpdateDescription;
+import com.syncano.android.lib.modules.apikeys.ParamsApiKeyAuthorize;
+import com.syncano.android.lib.modules.apikeys.ParamsApiKeyDeauthorize;
+import com.syncano.android.lib.modules.apikeys.ParamsApiKeyDelete;
+import com.syncano.android.lib.modules.apikeys.ParamsApiKeyGet;
+import com.syncano.android.lib.modules.apikeys.ParamsApiKeyGetOne;
+import com.syncano.android.lib.modules.apikeys.ParamsApiKeyNew;
+import com.syncano.android.lib.modules.apikeys.ParamsApiKeyStartSession;
+import com.syncano.android.lib.modules.apikeys.ParamsApiKeyUpdateDescription;
+import com.syncano.android.lib.modules.apikeys.ResponseApiKeyGet;
+import com.syncano.android.lib.modules.apikeys.ResponseApiKeyGetOne;
+import com.syncano.android.lib.modules.apikeys.ResponseApiKeyNew;
+import com.syncano.android.lib.modules.apikeys.ResponseApiKeyStartSession;
+import com.syncano.android.lib.modules.apikeys.ResponseApiKeyUpdateDescription;
 import com.syncano.android.lib.modules.collections.ParamsCollectionActivate;
 import com.syncano.android.lib.modules.collections.ParamsCollectionAddTag;
+import com.syncano.android.lib.modules.collections.ParamsCollectionAuthorize;
 import com.syncano.android.lib.modules.collections.ParamsCollectionDeactivate;
+import com.syncano.android.lib.modules.collections.ParamsCollectionDeauthorize;
 import com.syncano.android.lib.modules.collections.ParamsCollectionDelete;
 import com.syncano.android.lib.modules.collections.ParamsCollectionDeleteTag;
 import com.syncano.android.lib.modules.collections.ParamsCollectionGet;
@@ -34,6 +38,7 @@ import com.syncano.android.lib.modules.collections.ResponseCollectionGet;
 import com.syncano.android.lib.modules.collections.ResponseCollectionGetOne;
 import com.syncano.android.lib.modules.collections.ResponseCollectionNew;
 import com.syncano.android.lib.modules.collections.ResponseCollectionUpdate;
+import com.syncano.android.lib.modules.data.ParamsDataAddChild;
 import com.syncano.android.lib.modules.data.ParamsDataAddParent;
 import com.syncano.android.lib.modules.data.ParamsDataCopy;
 import com.syncano.android.lib.modules.data.ParamsDataCount;
@@ -42,6 +47,7 @@ import com.syncano.android.lib.modules.data.ParamsDataGet;
 import com.syncano.android.lib.modules.data.ParamsDataGetOne;
 import com.syncano.android.lib.modules.data.ParamsDataMove;
 import com.syncano.android.lib.modules.data.ParamsDataNew;
+import com.syncano.android.lib.modules.data.ParamsDataRemoveChild;
 import com.syncano.android.lib.modules.data.ParamsDataRemoveParent;
 import com.syncano.android.lib.modules.data.ParamsDataUpdate;
 import com.syncano.android.lib.modules.data.ResponseDataCopy;
@@ -50,6 +56,8 @@ import com.syncano.android.lib.modules.data.ResponseDataGet;
 import com.syncano.android.lib.modules.data.ResponseDataGetOne;
 import com.syncano.android.lib.modules.data.ResponseDataNew;
 import com.syncano.android.lib.modules.data.ResponseDataUpdate;
+import com.syncano.android.lib.modules.folders.ParamsFolderAuthorize;
+import com.syncano.android.lib.modules.folders.ParamsFolderDeauthorize;
 import com.syncano.android.lib.modules.folders.ParamsFolderDelete;
 import com.syncano.android.lib.modules.folders.ParamsFolderGet;
 import com.syncano.android.lib.modules.folders.ParamsFolderGetOne;
@@ -64,6 +72,8 @@ import com.syncano.android.lib.modules.identities.ResponseIdentityGet;
 import com.syncano.android.lib.modules.identities.ResponseIdentityUpdate;
 import com.syncano.android.lib.modules.notification.ParamsNotificationGetHistory;
 import com.syncano.android.lib.modules.notification.ParamsNotificationSend;
+import com.syncano.android.lib.modules.projects.ParamsProjectAuthorize;
+import com.syncano.android.lib.modules.projects.ParamsProjectDeauthorize;
 import com.syncano.android.lib.modules.projects.ParamsProjectDelete;
 import com.syncano.android.lib.modules.projects.ParamsProjectGet;
 import com.syncano.android.lib.modules.projects.ParamsProjectGetOne;
@@ -86,17 +96,18 @@ import com.syncano.android.lib.modules.users.ParamsUserDelete;
 import com.syncano.android.lib.modules.users.ParamsUserGet;
 import com.syncano.android.lib.modules.users.ParamsUserGetAll;
 import com.syncano.android.lib.modules.users.ParamsUserGetOne;
+import com.syncano.android.lib.modules.users.ParamsUserLogin;
 import com.syncano.android.lib.modules.users.ParamsUserNew;
 import com.syncano.android.lib.modules.users.ParamsUserUpdate;
 import com.syncano.android.lib.modules.users.ResponseUserCount;
 import com.syncano.android.lib.modules.users.ResponseUserGet;
 import com.syncano.android.lib.modules.users.ResponseUserGetAll;
 import com.syncano.android.lib.modules.users.ResponseUserGetOne;
+import com.syncano.android.lib.modules.users.ResponseUserLogin;
 import com.syncano.android.lib.modules.users.ResponseUserNew;
 import com.syncano.android.lib.modules.users.ResponseUserUpdate;
 
 import android.content.Context;
-
 
 public class Syncano extends SyncanoBase {
 	/**
@@ -177,8 +188,8 @@ public class Syncano extends SyncanoBase {
 	 *            parameters for request
 	 * @return response for this request
 	 */
-	public ResponseApikeyStartSession apikeyStartSession(ParamsApikeyStartSession params) {
-		return (ResponseApikeyStartSession) sendRequest(params);
+	public ResponseApiKeyStartSession apikeyStartSession(ParamsApiKeyStartSession params) {
+		return (ResponseApiKeyStartSession) sendRequest(params);
 	}
 
 	/**
@@ -188,8 +199,8 @@ public class Syncano extends SyncanoBase {
 	 *            parameters for request
 	 * @return response for this request
 	 */
-	public ResponseApikeyNew apikeyNew(ParamsApikeyNew params) {
-		return (ResponseApikeyNew) sendRequest(params);
+	public ResponseApiKeyNew apikeyNew(ParamsApiKeyNew params) {
+		return (ResponseApiKeyNew) sendRequest(params);
 	}
 
 	/**
@@ -199,8 +210,8 @@ public class Syncano extends SyncanoBase {
 	 *            parameters for request
 	 * @return response for this request
 	 */
-	public ResponseApikeyGet apikeyGet(ParamsApikeyGet params) {
-		return (ResponseApikeyGet) sendRequest(params);
+	public ResponseApiKeyGet apikeyGet(ParamsApiKeyGet params) {
+		return (ResponseApiKeyGet) sendRequest(params);
 	}
 
 	/**
@@ -210,8 +221,8 @@ public class Syncano extends SyncanoBase {
 	 *            parameters for request
 	 * @return response for this request
 	 */
-	public ResponseApikeyGetOne apikeyGetOne(ParamsApikeyGetOne params) {
-		return (ResponseApikeyGetOne) sendRequest(params);
+	public ResponseApiKeyGetOne apikeyGetOne(ParamsApiKeyGetOne params) {
+		return (ResponseApiKeyGetOne) sendRequest(params);
 	}
 
 	/**
@@ -221,8 +232,30 @@ public class Syncano extends SyncanoBase {
 	 *            parameters for request
 	 * @return response for this request
 	 */
-	public ResponseApikeyUpdateDescription apikeyUpdateDescription(ParamsApikeyUpdateDescription params) {
-		return (ResponseApikeyUpdateDescription) sendRequest(params);
+	public ResponseApiKeyUpdateDescription apikeyUpdateDescription(ParamsApiKeyUpdateDescription params) {
+		return (ResponseApiKeyUpdateDescription) sendRequest(params);
+	}
+
+	/**
+	 * Adds permission to specified User API client. Requires Backend API key with Admin permission role.
+	 * 
+	 * @param params
+	 *            parameters for request
+	 * @return response for this request
+	 */
+	public Response apikeyAuthorize(ParamsApiKeyAuthorize params) {
+		return sendRequest(params);
+	}
+
+	/**
+	 * Removes permission from specified User API client. Requires Backend API key with Admin permission role.
+	 * 
+	 * @param params
+	 *            parameters for request
+	 * @return response for this request
+	 */
+	public Response apikeyDeauthorize(ParamsApiKeyDeauthorize params) {
+		return sendRequest(params);
 	}
 
 	/**
@@ -232,7 +265,7 @@ public class Syncano extends SyncanoBase {
 	 *            parameters for request
 	 * @return response for this request
 	 */
-	public Response apikeyDelete(ParamsApikeyDelete params) {
+	public Response apikeyDelete(ParamsApiKeyDelete params) {
 		return sendRequest(params);
 	}
 
@@ -289,6 +322,30 @@ public class Syncano extends SyncanoBase {
 	 */
 	public ResponseProjectUpdate projectUpdate(ParamsProjectUpdate params) {
 		return (ResponseProjectUpdate) sendRequest(params);
+	}
+
+	/**
+	 * Adds container-level permission to specified User API client. Requires Backend API key with Admin permission
+	 * role.
+	 * 
+	 * @param params
+	 *            parameters for request
+	 * @return response for this request
+	 */
+	public Response projectAuthorize(ParamsProjectAuthorize params) {
+		return sendRequest(params);
+	}
+
+	/**
+	 * Removes container-level permission from specified User API client. Requires Backend API key with Admin permission
+	 * role.
+	 * 
+	 * @param params
+	 *            parameters for request
+	 * @return response for this request
+	 */
+	public Response projectDeuthorize(ParamsProjectDeauthorize params) {
+		return sendRequest(params);
 	}
 
 	/**
@@ -369,6 +426,30 @@ public class Syncano extends SyncanoBase {
 	}
 
 	/**
+	 * Adds container-level permission to specified User API client. Requires Backend API key with Admin permission
+	 * role.
+	 * 
+	 * @param params
+	 *            parameters for request
+	 * @return response for this request
+	 */
+	public Response collectionAuthorize(ParamsCollectionAuthorize params) {
+		return sendRequest(params);
+	}
+
+	/**
+	 * Removes container-level permission from specified User API client. Requires Backend API key with Admin permission
+	 * role.
+	 * 
+	 * @param params
+	 *            parameters for request
+	 * @return response for this request
+	 */
+	public Response collectionDeauthorize(ParamsCollectionDeauthorize params) {
+		return sendRequest(params);
+	}
+
+	/**
 	 * Delete specified collection.
 	 * 
 	 * @param params
@@ -442,6 +523,30 @@ public class Syncano extends SyncanoBase {
 	 * @return response for this request
 	 */
 	public Response folderUpdate(ParamsFolderUpdate params) {
+		return sendRequest(params);
+	}
+
+	/**
+	 * Adds container-level permission to specified User API client. Requires Backend API key with Admin permission
+	 * role.
+	 * 
+	 * @param params
+	 *            parameters for request
+	 * @return response for this request
+	 */
+	public Response folderAuthorize(ParamsFolderAuthorize params) {
+		return sendRequest(params);
+	}
+
+	/**
+	 * Removes container-level permission from specified User API client. Requires Backend API key with Admin permission
+	 * role.
+	 * 
+	 * @param params
+	 *            parameters for request
+	 * @return response for this request
+	 */
+	public Response folderDeauthorize(ParamsFolderDeauthorize params) {
 		return sendRequest(params);
 	}
 
@@ -551,6 +656,29 @@ public class Syncano extends SyncanoBase {
 	}
 
 	/**
+	 * Adds additional child to data with specified data_id. If remove_other is True, all other children of specified
+	 * Data Object will be removed.
+	 * 
+	 * @param params
+	 *            parameters for request
+	 * @return response for this request
+	 */
+	public Response dataAddChild(ParamsDataAddChild params) {
+		return sendRequest(params);
+	}
+
+	/**
+	 * Removes a child (or children) from data with specified data_id.
+	 * 
+	 * @param params
+	 *            parameters for request
+	 * @return response for this request
+	 */
+	public Response dataRemoveChild(ParamsDataRemoveChild params) {
+		return sendRequest(params);
+	}
+
+	/**
 	 * Deletes Data Object. If no filters are specified, will process all Data Objects in defined collection(s) (up to
 	 * defined limit).
 	 * 
@@ -571,6 +699,17 @@ public class Syncano extends SyncanoBase {
 	 */
 	public ResponseDataCount dataCount(ParamsDataCount params) {
 		return (ResponseDataCount) sendRequest(params);
+	}
+
+	/**
+	 * Logs in a user.
+	 * 
+	 * @param params
+	 *            parameters for request
+	 * @return response for this request
+	 */
+	public ResponseUserLogin userLogin(ParamsUserLogin params) {
+		return (ResponseUserLogin) sendRequest(params);
 	}
 
 	/**

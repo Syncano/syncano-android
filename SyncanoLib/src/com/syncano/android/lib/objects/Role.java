@@ -2,6 +2,8 @@ package com.syncano.android.lib.objects;
 
 import java.io.Serializable;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Represents Role object from Syncano Api
  */
@@ -9,8 +11,10 @@ public class Role implements Serializable {
 
 	private static final long serialVersionUID = 3602260716616995635L;
 	/** Role id */
+	@Expose
 	private String id;
 	/** Role name */
+	@Expose
 	private String name;
 
 	/**

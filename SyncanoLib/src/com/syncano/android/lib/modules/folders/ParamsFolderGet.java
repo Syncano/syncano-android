@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.folders;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 
@@ -9,11 +11,17 @@ import com.syncano.android.lib.modules.Response;
  */
 public class ParamsFolderGet extends Params {
 	/** project id */
-	private String project_id;
+	@Expose
+	@SerializedName(value = "project_id")
+	private String projectId;
 	/** Collection id defining collection for which folders will be returned. */
-	private String collection_id;
+	@Expose
+	@SerializedName(value = "collection_id")
+	private String collectionId;
 	/** Collection key defining collection for which folders will be returned. */
-	private String collection_key;
+	@Expose
+	@SerializedName(value = "collection_key")
+	private String collectionKey;
 
 	/**
 	 * @param projectId
@@ -42,7 +50,7 @@ public class ParamsFolderGet extends Params {
 	 * @return project id
 	 */
 	public String getProject_id() {
-		return project_id;
+		return projectId;
 	}
 
 	/**
@@ -51,14 +59,14 @@ public class ParamsFolderGet extends Params {
 	 * @param projectId
 	 */
 	public void setProjectId(String projectId) {
-		this.project_id = projectId;
+		this.projectId = projectId;
 	}
 
 	/**
 	 * @return collection id
 	 */
 	public String getCollectionId() {
-		return collection_id;
+		return collectionId;
 	}
 
 	/**
@@ -67,14 +75,14 @@ public class ParamsFolderGet extends Params {
 	 * @param collectionId
 	 */
 	public void setCollectionId(String collectionId) {
-		this.collection_id = collectionId;
+		this.collectionId = collectionId;
 	}
 
 	/**
 	 * @return collection key
 	 */
 	public String getCollectionKey() {
-		return collection_key;
+		return collectionKey;
 	}
 
 	/**
@@ -83,7 +91,7 @@ public class ParamsFolderGet extends Params {
 	 * @param collectionKey
 	 */
 	public void setCollectionKey(String collectionKey) {
-		this.collection_key = collectionKey;
+		this.collectionKey = collectionKey;
 	}
 
 }

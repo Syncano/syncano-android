@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.data;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 
 /**
@@ -9,27 +11,45 @@ import com.syncano.android.lib.modules.Params;
  */
 public class ParamsDataMove extends Params {
 	/** Project id */
-	private String project_id;
+	@Expose
+	@SerializedName(value = "project_id")
+	private String projectId;
 	/** Collection id */
-	private String collection_id;
+	@Expose
+	@SerializedName(value = "collection_id")
+	private String collectionId;
 	/** Collection key */
-	private String collection_key;
+	@Expose
+	@SerializedName(value = "collection_key")
+	private String collectionKey;
 	/** Data id array */
-	private String[] data_ids;
+	@Expose
+	@SerializedName(value = "data_ids")
+	private String[] dataIds;
 	/** Folders array */
+	@Expose
 	private String[] folders;
 	/** State */
+	@Expose
 	private String state;
 	/** Filter */
+	@Expose
 	private String filter;
 	/** By user initialized */
-	private String by_user;
+	@Expose
+	@SerializedName(value = "by_user")
+	private String byUser;
 	/** Limit */
+	@Expose
 	private Integer limit;
 	/** New folder to create */
-	private String new_folder;
+	@Expose
+	@SerializedName(value = "new_folder")
+	private String newFolder;
 	/** New data state */
-	private String new_state;
+	@Expose
+	@SerializedName(value = "new_state")
+	private String newState;
 
 	/**
 	 * Default constructor
@@ -56,7 +76,7 @@ public class ParamsDataMove extends Params {
 	 * @return project id
 	 */
 	public String getProjectId() {
-		return project_id;
+		return projectId;
 	}
 
 	/**
@@ -65,14 +85,14 @@ public class ParamsDataMove extends Params {
 	 * @param projectId
 	 */
 	public void setProjectId(String projectId) {
-		this.project_id = projectId;
+		this.projectId = projectId;
 	}
 
 	/**
 	 * @return collection id
 	 */
 	public String getCollectionId() {
-		return collection_id;
+		return collectionId;
 	}
 
 	/**
@@ -81,14 +101,14 @@ public class ParamsDataMove extends Params {
 	 * @param collectionId
 	 */
 	public void setCollectionId(String collectionId) {
-		this.collection_id = collectionId;
+		this.collectionId = collectionId;
 	}
 
 	/**
 	 * @return collection key
 	 */
 	public String getCollectionKey() {
-		return collection_key;
+		return collectionKey;
 	}
 
 	/**
@@ -97,14 +117,14 @@ public class ParamsDataMove extends Params {
 	 * @param collectionKey
 	 */
 	public void setCollectionKey(String collectionKey) {
-		this.collection_key = collectionKey;
+		this.collectionKey = collectionKey;
 	}
 
 	/**
 	 * @return data ids array
 	 */
 	public String[] getDataIds() {
-		return data_ids;
+		return dataIds;
 	}
 
 	/**
@@ -113,7 +133,7 @@ public class ParamsDataMove extends Params {
 	 * @param dataIds
 	 */
 	public void setDataIds(String[] dataIds) {
-		this.data_ids = dataIds;
+		this.dataIds = dataIds;
 	}
 
 	/**
@@ -168,8 +188,8 @@ public class ParamsDataMove extends Params {
 	 * 
 	 * @return by user
 	 */
-	public String getBy_user() {
-		return by_user;
+	public String getByUser() {
+		return byUser;
 	}
 
 	/**
@@ -178,7 +198,7 @@ public class ParamsDataMove extends Params {
 	 * @param byUser
 	 */
 	public void setByUser(String byUser) {
-		this.by_user = byUser;
+		this.byUser = byUser;
 	}
 
 	/**
@@ -200,8 +220,8 @@ public class ParamsDataMove extends Params {
 	/**
 	 * @return new folder
 	 */
-	public String getNew_folder() {
-		return new_folder;
+	public String getNewFolder() {
+		return newFolder;
 	}
 
 	/**
@@ -210,14 +230,14 @@ public class ParamsDataMove extends Params {
 	 * @param newFolder
 	 */
 	public void setNewFolder(String newFolder) {
-		this.new_folder = newFolder;
+		this.newFolder = newFolder;
 	}
 
 	/**
 	 * @return new state
 	 */
 	public String getNewState() {
-		return new_state;
+		return newState;
 	}
 
 	/**
@@ -226,7 +246,7 @@ public class ParamsDataMove extends Params {
 	 * @param newState
 	 */
 	public void setNewState(String newState) {
-		this.new_state = newState;
+		this.newState = newState;
 	}
 
 }

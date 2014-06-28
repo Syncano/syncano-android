@@ -2,22 +2,32 @@ package com.syncano.android.lib.objects;
 
 import java.io.Serializable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Represents Identity object from Syncano Api
  */
 public class Identity implements Serializable {
 	private static final long serialVersionUID = 4213280469759255245L;
 	/** identity id */
+	@Expose
 	private String id;
 	/** client id */
-	private String client_id;
+	@Expose
+	@SerializedName(value = "client_id")
+	private String clientId;
 	/** uuid */
+	@Expose
 	private String uuid;
 	/** name */
+	@Expose
 	private String name;
 	/** state */
+	@Expose
 	private String state;
 	/** source */
+	@Expose
 	private String source;
 
 	/**
@@ -39,8 +49,8 @@ public class Identity implements Serializable {
 	/**
 	 * @return client id
 	 */
-	public String getClient_id() {
-		return client_id;
+	public String getClientId() {
+		return clientId;
 	}
 
 	/**
@@ -48,8 +58,8 @@ public class Identity implements Serializable {
 	 * 
 	 * @param client_id
 	 */
-	public void setClient_id(String client_id) {
-		this.client_id = client_id;
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
 	}
 
 	/**

@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.subscriptions;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 
@@ -7,17 +9,19 @@ import com.syncano.android.lib.modules.Response;
  * Params gets all subscriptions for specified user.
  */
 public class ParamsSubscriptionGet extends Params {
-	/** Clients id */
-	private String client_id;
+	/** API Clients id */
+	@Expose
+	@SerializedName(value = "api_client_id")
+	private String apiClientId;
 
 	/**
 	 * Default constructor, needs at least one parameter, login or id.
 	 * 
-	 * @param clientId
-	 *            Id of client. Can be <code>null</code>.
+	 * @param apiClientId
+	 *            Id of API Client. Can be <code>null</code>.
 	 */
-	public ParamsSubscriptionGet(String clientId) {
-		client_id = clientId;
+	public ParamsSubscriptionGet(String apiClientId) {
+		this.apiClientId = apiClientId;
 	}
 
 	@Override
@@ -30,19 +34,19 @@ public class ParamsSubscriptionGet extends Params {
 	}
 
 	/**
-	 * @return Clients id
+	 * @return API Clients id
 	 */
-	public String getClient_id() {
-		return client_id;
+	public String getApiClientId() {
+		return apiClientId;
 	}
 
 	/**
-	 * Sets clients id
+	 * Sets API Clients id
 	 * 
-	 * @param client_id
+	 * @param apiClientId
 	 */
-	public void setClient_id(String client_id) {
-		this.client_id = client_id;
+	public void setApiClientId(String apiClientId) {
+		this.apiClientId = apiClientId;
 	}
 
 }

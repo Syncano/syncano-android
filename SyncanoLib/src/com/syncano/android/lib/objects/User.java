@@ -2,18 +2,24 @@ package com.syncano.android.lib.objects;
 
 import java.io.Serializable;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Class representing user from Syncano API
  */
 public class User implements Serializable {
 	private static final long serialVersionUID = 76320719703288514L;
 	/** users id */
+	@Expose
 	private String id;
 	/** name */
+	@Expose
 	private String name;
 	/** nickname */
+	@Expose
 	private String nick;
 	/** avatar url */
+	@Expose
 	private Avatar avatar;
 
 	/**

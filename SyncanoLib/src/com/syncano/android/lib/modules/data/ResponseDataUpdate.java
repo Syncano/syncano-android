@@ -1,5 +1,6 @@
 package com.syncano.android.lib.modules.data;
 
+import com.google.gson.annotations.Expose;
 import com.syncano.android.lib.modules.Response;
 import com.syncano.android.lib.objects.Data;
 
@@ -8,6 +9,7 @@ import com.syncano.android.lib.objects.Data;
  */
 public class ResponseDataUpdate extends Response {
 	/** updated data */
+	@Expose
 	private Data data;
 
 	/**

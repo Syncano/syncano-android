@@ -1,5 +1,6 @@
 package com.syncano.android.lib.modules.subscriptions;
 
+import com.google.gson.annotations.Expose;
 import com.syncano.android.lib.modules.Response;
 import com.syncano.android.lib.objects.Subscription;
 
@@ -10,6 +11,7 @@ public class ResponseSubscriptionGet extends Response {
 	/**
 	 * List of subscriptions
 	 */
+	@Expose
 	private Subscription[] subscription;
 
 	/**

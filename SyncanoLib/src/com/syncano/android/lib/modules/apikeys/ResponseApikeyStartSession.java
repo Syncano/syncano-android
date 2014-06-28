@@ -1,18 +1,23 @@
 package com.syncano.android.lib.modules.apikeys;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Response;
 
-public class ResponseApikeyStartSession extends Response {
+public class ResponseApiKeyStartSession extends Response {
 	/** Session id */
-	private String session_id;
+	@Expose
+	@SerializedName(value = "session_id")
+	private String sessionId;
 	/** UUID */
+	@Expose
 	private String uuid;
 
 	/**
 	 * @return session id for current session
 	 */
 	public String getSessionId() {
-		return session_id;
+		return sessionId;
 	}
 
 	/**
@@ -22,7 +27,7 @@ public class ResponseApikeyStartSession extends Response {
 	 *            new session id
 	 */
 	public void setSessionId(String sessionId) {
-		this.session_id = sessionId;
+		this.sessionId = sessionId;
 	}
 
 	/**

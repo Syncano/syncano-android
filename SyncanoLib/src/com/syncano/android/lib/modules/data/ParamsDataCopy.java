@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.data;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 
@@ -9,13 +11,21 @@ import com.syncano.android.lib.modules.Response;
  */
 public class ParamsDataCopy extends Params {
 	/** Project id */
-	private String project_id;
+	@Expose
+	@SerializedName(value = "project_id")
+	private String projectId;
 	/** Collection id */
-	private String collection_id;
+	@Expose
+	@SerializedName(value = "collection_id")
+	private String collectionId;
 	/** Collection key */
-	private String collection_key;
+	@Expose
+	@SerializedName(value = "collection_key")
+	private String collectionKey;
 	/** Data ids array */
-	private String[] data_ids;
+	@Expose
+	@SerializedName(value = "data_ids")
+	private String[] dataIds;
 
 	/**
 	 * @param projectId
@@ -45,7 +55,7 @@ public class ParamsDataCopy extends Params {
 	 * @return project id
 	 */
 	public String getProjectId() {
-		return project_id;
+		return projectId;
 	}
 
 	/**
@@ -54,14 +64,14 @@ public class ParamsDataCopy extends Params {
 	 * @param projectId
 	 */
 	public void setProjectId(String projectId) {
-		this.project_id = projectId;
+		this.projectId = projectId;
 	}
 
 	/**
 	 * @return collection id
 	 */
 	public String getCollectionId() {
-		return collection_id;
+		return collectionId;
 	}
 
 	/**
@@ -70,14 +80,14 @@ public class ParamsDataCopy extends Params {
 	 * @param collectionId
 	 */
 	public void setCollectionId(String collectionId) {
-		this.collection_id = collectionId;
+		this.collectionId = collectionId;
 	}
 
 	/**
 	 * @return collection key
 	 */
 	public String getCollectionKey() {
-		return collection_key;
+		return collectionKey;
 	}
 
 	/**
@@ -86,14 +96,14 @@ public class ParamsDataCopy extends Params {
 	 * @param collectionKey
 	 */
 	public void setCollectionKey(String collectionKey) {
-		this.collection_key = collectionKey;
+		this.collectionKey = collectionKey;
 	}
 
 	/**
 	 * @return data ids array
 	 */
 	public String[] getDataIds() {
-		return data_ids;
+		return dataIds;
 	}
 
 	/**
@@ -102,6 +112,6 @@ public class ParamsDataCopy extends Params {
 	 * @param dataIds
 	 */
 	public void setDataIds(String[] dataIds) {
-		this.data_ids = dataIds;
+		this.dataIds = dataIds;
 	}
 }

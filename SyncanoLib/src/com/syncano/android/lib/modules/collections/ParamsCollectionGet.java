@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.collections;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 
@@ -8,18 +10,23 @@ import com.syncano.android.lib.modules.Response;
  */
 public class ParamsCollectionGet extends Params {
 	/** id of specified project */
-	private String project_id;
+	@Expose
+	@SerializedName(value = "project_id")
+	private String projectId;
 	/** project id */
+	@Expose
 	private String status;
 	/** array of tags */
-	private String[] with_tags;
+	@Expose
+	@SerializedName(value = "with_tags")
+	private String[] withTags;
 
 	/**
 	 * @param projectId
 	 *            Id of project in which exists collection. Cannot be <code>null</code>.
 	 */
 	public ParamsCollectionGet(String projectId) {
-		this.project_id = projectId;
+		this.projectId = projectId;
 	}
 
 	@Override
@@ -34,8 +41,8 @@ public class ParamsCollectionGet extends Params {
 	/**
 	 * @return project id
 	 */
-	public String getProject_id() {
-		return project_id;
+	public String getProjectId() {
+		return projectId;
 	}
 
 	/**
@@ -43,8 +50,8 @@ public class ParamsCollectionGet extends Params {
 	 * 
 	 * @param project_id
 	 */
-	public void setProject_id(String project_id) {
-		this.project_id = project_id;
+	public void setProjectId(String projectId) {
+		this.projectId = projectId;
 	}
 
 	/**
@@ -66,8 +73,8 @@ public class ParamsCollectionGet extends Params {
 	/**
 	 * @return array of tags
 	 */
-	public String[] getWith_tags() {
-		return with_tags;
+	public String[] getWithTags() {
+		return withTags;
 	}
 
 	/**
@@ -75,8 +82,8 @@ public class ParamsCollectionGet extends Params {
 	 * 
 	 * @param with_tags
 	 */
-	public void setWith_tags(String[] with_tags) {
-		this.with_tags = with_tags;
+	public void setWithTags(String[] withTags) {
+		this.withTags = withTags;
 	}
 
 }

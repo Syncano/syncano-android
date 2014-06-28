@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>HydraLib-tests</name>
+	<name>SyncanoLib-tests</name>
 	<comment></comment>
 	<projects>
-		<project>Photolotto-HydraLib</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

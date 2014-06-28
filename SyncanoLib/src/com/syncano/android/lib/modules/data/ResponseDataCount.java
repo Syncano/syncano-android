@@ -1,5 +1,6 @@
 package com.syncano.android.lib.modules.data;
 
+import com.google.gson.annotations.Expose;
 import com.syncano.android.lib.modules.Response;
 
 /**
@@ -7,6 +8,7 @@ import com.syncano.android.lib.modules.Response;
  */
 public class ResponseDataCount extends Response {
 	/** Data count */
+	@Expose
 	private Integer count;
 
 	/**

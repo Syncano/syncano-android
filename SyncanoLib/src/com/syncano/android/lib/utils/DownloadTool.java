@@ -1,6 +1,8 @@
 package com.syncano.android.lib.utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.util.Log;
 
@@ -9,6 +11,8 @@ import com.syncano.android.lib.BuildConfig;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * Used to easy download files.
@@ -79,7 +83,6 @@ public class DownloadTool {
 			data = readToByteArray(in, stopper);
 		} catch (Exception e) {
 			Log.e(LOG_TAG, "Exception when sending http request. " + e.getClass().getSimpleName());
-			Log.e(LOG_TAG, e.getMessage());
 			data = null;
 		} finally {
 			http.close();
@@ -131,5 +134,40 @@ public class DownloadTool {
 
 	public interface Stopper {
 		public boolean isStopped();
+	}
+
+	/**
+	 * Method handling image downloading.
+	 * Should not be called on UI Thread.
+	 * @param context Context
+	 * @param url Image to Download URL
+	 * @return Bitmap from given URL
+	 */
+	public static Bitmap downloadImage(Context context, URL url) {
+		if (BuildConfig.DEBUG) Log.d(LOG_TAG, "Beginning img download: " + url);
+		
+		Bitmap result = null;
+		InputStream is = null;
+		HttpURLConnection connection = null;
+		try {
+			connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            is = connection.getInputStream();
+            result = BitmapFactory.decodeStream(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+        	connection.disconnect();
+        	if (is != null) {
+        		try {
+					is.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        	}
+        }
+		
+		return result;
 	}
 }

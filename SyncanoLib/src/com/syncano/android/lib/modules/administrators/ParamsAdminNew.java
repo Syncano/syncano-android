@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.administrators;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 
@@ -9,9 +11,13 @@ import com.syncano.android.lib.modules.Response;
  */
 public class ParamsAdminNew extends Params {
 	/** Email of admin to add */
-	private String admin_email;
+	@Expose
+	@SerializedName(value = "admin_email")
+	private String adminEmail;
 	/** Initial role for current instance (see role.get()) */
-	private String role_id;
+	@Expose
+	@SerializedName(value = "role_id")
+	private String roleId;
 
 	/**
 	 * 
@@ -39,7 +45,7 @@ public class ParamsAdminNew extends Params {
 	 * @return email of desired administrator
 	 */
 	public String getAdminEmail() {
-		return admin_email;
+		return adminEmail;
 	}
 
 	/**
@@ -49,14 +55,14 @@ public class ParamsAdminNew extends Params {
 	 *            email of administrator
 	 */
 	public void setAdminEmail(String adminEmail) {
-		this.admin_email = adminEmail;
+		this.adminEmail = adminEmail;
 	}
 
 	/**
 	 * @return role id of desired administrator
 	 */
 	public String getRoleId() {
-		return role_id;
+		return roleId;
 	}
 
 	/**
@@ -66,7 +72,7 @@ public class ParamsAdminNew extends Params {
 	 *            role id of administrator
 	 */
 	public void setRoleId(String roleId) {
-		this.role_id = roleId;
+		this.roleId = roleId;
 	}
 
 }

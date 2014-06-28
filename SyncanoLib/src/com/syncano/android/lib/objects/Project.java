@@ -2,16 +2,21 @@ package com.syncano.android.lib.objects;
 
 import java.io.Serializable;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Represents Project object from Syncano Api
  */
 public class Project implements Serializable {
 	private static final long serialVersionUID = -4170860989045305407L;
 	/** Project id */
+	@Expose
 	private String id;
 	/** Project name */
+	@Expose
 	private String name;
 	/** Project description */
+	@Expose
 	private String description;
 
 	/**

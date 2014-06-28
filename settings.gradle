@@ -1,0 +1,2 @@
+include ':SyncanoLib'
+include ':SyncanoLib-tests'

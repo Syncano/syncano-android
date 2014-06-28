@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.collections;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 
 /**
@@ -7,12 +9,19 @@ import com.syncano.android.lib.modules.Params;
  */
 public class ParamsCollectionDeleteTag extends Params {
 	/** id of specified project */
-	private String project_id;
+	@Expose
+	@SerializedName(value = "project_id")
+	private String projectId;
 	/** id of specified collection */
-	private String collection_id;
+	@Expose
+	@SerializedName(value = "collection_id")
+	private String collectionId;
 	/** key of specified collection */
-	private String collection_key;
+	@Expose
+	@SerializedName(value = "collection_key")
+	private String collectionKey;
 	/** array of tags */
+	@Expose
 	private String[] tags;
 
 	/**
@@ -23,9 +32,10 @@ public class ParamsCollectionDeleteTag extends Params {
 	 * @param tags
 	 *            Array of tag items that should be deleted
 	 */
-	public ParamsCollectionDeleteTag(String projectId, String collectionId, String[] tags) {
-		this.collection_id = collectionId;
-		this.project_id = projectId;
+	public ParamsCollectionDeleteTag(String projectId, String collectionId, String collectionKey, String[] tags) {
+		this.collectionId = collectionId;
+        this.collectionKey = collectionKey;
+		this.projectId = projectId;
 		this.tags = tags;
 	}
 
@@ -37,9 +47,10 @@ public class ParamsCollectionDeleteTag extends Params {
 	 * @param tag
 	 *            Tag item that should be deleted
 	 */
-	public ParamsCollectionDeleteTag(String projectId, String collectionId, String tag) {
-		this.collection_id = collectionId;
-		this.project_id = projectId;
+	public ParamsCollectionDeleteTag(String projectId, String collectionId, String collectionKey, String tag) {
+		this.collectionId = collectionId;
+        this.collectionKey = collectionKey;
+		this.projectId = projectId;
 		String[] tags = { tag };
 		this.tags = tags;
 	}
@@ -53,7 +64,7 @@ public class ParamsCollectionDeleteTag extends Params {
 	 * @return project id
 	 */
 	public String getProjectId() {
-		return project_id;
+		return projectId;
 	}
 
 	/**
@@ -62,14 +73,14 @@ public class ParamsCollectionDeleteTag extends Params {
 	 * @param projectId
 	 */
 	public void setProjectId(String projectId) {
-		this.project_id = projectId;
+		this.projectId = projectId;
 	}
 
 	/**
 	 * @return collection id
 	 */
 	public String getCollectionId() {
-		return collection_id;
+		return collectionId;
 	}
 
 	/**
@@ -77,15 +88,15 @@ public class ParamsCollectionDeleteTag extends Params {
 	 * 
 	 * @param collectionId
 	 */
-	public void setCollection_id(String collectionId) {
-		this.collection_id = collectionId;
+	public void setCollectionId(String collectionId) {
+		this.collectionId = collectionId;
 	}
 
 	/**
 	 * @return collection key
 	 */
-	public String getCollection_key() {
-		return collection_key;
+	public String getCollectionKey() {
+		return collectionKey;
 	}
 
 	/**
@@ -93,8 +104,8 @@ public class ParamsCollectionDeleteTag extends Params {
 	 * 
 	 * @param collection_key
 	 */
-	public void setCollection_key(String collection_key) {
-		this.collection_key = collection_key;
+	public void setCollectionKey(String collectionKey) {
+		this.collectionKey = collectionKey;
 	}
 
 	/**

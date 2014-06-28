@@ -3,22 +3,34 @@ package com.syncano.android.lib.objects;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Represents Administrator object from Syncano Api
  */
 public class Admin implements Serializable {
 	private static final long serialVersionUID = -6806030969092528126L;
 	/** administrator id */
+	@Expose
 	private String id;
 	/** administrator email */
+	@Expose
 	private String email;
 	/** administrator first name */
-	private String first_name;
+	@Expose
+	@SerializedName(value = "first_name")
+	private String firstName;
 	/** administrator last name */
-	private String last_name;
+	@Expose
+	@SerializedName(value = "last_name")
+	private String lastName;
 	/** administrator last login date */
-	private Date last_login;
+	@Expose
+	@SerializedName(value = "last_login")
+	private Date lastLogin;
 	/** administrator specific role */
+	@Expose
 	private Role role;
 
 	/**
@@ -57,7 +69,7 @@ public class Admin implements Serializable {
 	 * @return First name of administrator
 	 */
 	public String getFirstName() {
-		return first_name;
+		return firstName;
 	}
 
 	/**
@@ -66,14 +78,14 @@ public class Admin implements Serializable {
 	 * @param firstName
 	 */
 	public void setFirstName(String firstName) {
-		this.first_name = firstName;
+		this.firstName = firstName;
 	}
 
 	/**
 	 * @return Last name of administrator
 	 */
 	public String getLastName() {
-		return last_name;
+		return lastName;
 	}
 
 	/**
@@ -82,14 +94,14 @@ public class Admin implements Serializable {
 	 * @param lastName
 	 */
 	public void setLastName(String lastName) {
-		this.last_name = lastName;
+		this.lastName = lastName;
 	}
 
 	/**
 	 * @return last login
 	 */
 	public Date getLastLogin() {
-		return last_login;
+		return lastLogin;
 	}
 
 	/**
@@ -98,7 +110,7 @@ public class Admin implements Serializable {
 	 * @param lastLogin
 	 */
 	public void setLastLogin(Date lastLogin) {
-		this.last_login = lastLogin;
+		this.lastLogin = lastLogin;
 	}
 
 	/**

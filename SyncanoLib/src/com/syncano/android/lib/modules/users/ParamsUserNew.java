@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.users;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 
@@ -8,18 +10,26 @@ import com.syncano.android.lib.modules.Response;
  */
 public class ParamsUserNew extends Params {
 	/** Name of user */
-	private String user_name;
+	@Expose
+	@SerializedName(value = "user_name")
+	private String userName;
 	/** Nickname of user */
+	@Expose
 	private String nick;
 	/** Avatar base64 for user */
+	@Expose
 	private String avatar;
-
+	/** User's password. */
+	@Expose
+	@SerializedName(value = "password")
+	private String password;
+	
 	/**
 	 * @param userName
 	 *            User name defining user. Can be <code>null</code>.
 	 */
 	public ParamsUserNew(String userName) {
-		setUser_name(userName);
+		setUserName(userName);
 	}
 
 	@Override
@@ -34,8 +44,8 @@ public class ParamsUserNew extends Params {
 	/**
 	 * @return user name
 	 */
-	public String getUser_name() {
-		return user_name;
+	public String getUserName() {
+		return userName;
 	}
 
 	/**
@@ -44,8 +54,8 @@ public class ParamsUserNew extends Params {
 	 * @param user_name
 	 *            user name
 	 */
-	public void setUser_name(String user_name) {
-		this.user_name = user_name;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 	/**
@@ -80,6 +90,21 @@ public class ParamsUserNew extends Params {
 	 */
 	public void setAvatar(String avatar) {
 		this.avatar = avatar;
+	}
+
+	/**
+	 * @return password
+	 */
+	public String getPassword() {
+		return password;
+	}
+
+	/**
+	 * @param Sets
+	 *            user password
+	 */
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 }

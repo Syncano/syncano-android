@@ -6,11 +6,11 @@ import com.syncano.android.lib.modules.Response;
 /**
  * Get API clients. Only Admin permission role can view other API clients.
  */
-public class ParamsApikeyGet extends Params {
+public class ParamsApiKeyGet extends Params {
 	/**
 	 * Default constructor
 	 */
-	public ParamsApikeyGet() {
+	public ParamsApiKeyGet() {
 	}
 
 	@Override
@@ -20,6 +20,6 @@ public class ParamsApikeyGet extends Params {
 
 	@Override
 	public Response instantiateResponse() {
-		return new ResponseApikeyGet();
+		return new ResponseApiKeyGet();
 	}
 }

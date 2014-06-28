@@ -1,19 +1,23 @@
 package com.syncano.android.lib.modules.apikeys;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 
 /**
  * Gets info of one specified API client. Only Admin permission role can view other API clients.
  */
-public class ParamsApikeyGetOne extends Params {
-	/** Client id */
-	private String client_id;
+public class ParamsApiKeyGetOne extends Params {
+	/** API client id */
+	@Expose
+	@SerializedName(value = "api_client_id")
+	private String apiClientId;
 
 	/**
 	 * Default constructor
 	 */
-	public ParamsApikeyGetOne() {
+	public ParamsApiKeyGetOne() {
 	}
 
 	@Override
@@ -23,21 +27,21 @@ public class ParamsApikeyGetOne extends Params {
 
 	@Override
 	public Response instantiateResponse() {
-		return new ResponseApikeyGetOne();
+		return new ResponseApiKeyGetOne();
 	}
 
 	/**
-	 * @return current client id
+	 * @return current API client id
 	 */
-	public String getClientId() {
-		return client_id;
+	public String getApiClientId() {
+		return apiClientId;
 	}
 
 	/**
-	 * @param clientId
+	 * @param apiClientId
 	 *            API client id. If not specified, will use current client.
 	 */
-	public void setClientId(String clientId) {
-		this.client_id = clientId;
+	public void setApiClientId(String apiClientId) {
+		this.apiClientId = apiClientId;
 	}
 }

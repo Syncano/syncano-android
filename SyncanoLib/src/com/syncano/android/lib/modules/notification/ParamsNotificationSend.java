@@ -1,14 +1,19 @@
 package com.syncano.android.lib.modules.notification;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 
 /**
  * Params that sends custom notification to client through Sync Server.
  */
 public class ParamsNotificationSend extends Params {
-	/** Clients id */
-	private String client_id;
+	/** API Clients id */
+	@Expose
+	@SerializedName(value = "api_client_id")
+	private String apiClientId;
 	/** uuid */
+	@Expose
 	private String uuid;
 
 	/**
@@ -16,11 +21,11 @@ public class ParamsNotificationSend extends Params {
 	 * 
 	 * @param clientLogin
 	 *            Login of client. Can be <code>null</code>.
-	 * @param clientId
-	 *            Id of client. Can be <code>null</code>.
+	 * @param apiClientId
+	 *            Id of API Client. Can be <code>null</code>.
 	 */
-	public ParamsNotificationSend(String clientId) {
-		client_id = clientId;
+	public ParamsNotificationSend(String apiClientId) {
+		this.apiClientId = apiClientId;
 	}
 
 	@Override
@@ -29,19 +34,19 @@ public class ParamsNotificationSend extends Params {
 	}
 
 	/**
-	 * @return client id
+	 * @return API Client id
 	 */
-	public String getClient_id() {
-		return client_id;
+	public String getApiClientId() {
+		return apiClientId;
 	}
 
 	/**
-	 * Sets client id
+	 * Sets API Client id
 	 * 
-	 * @param client_id
+	 * @param apiClientId
 	 */
-	public void setClient_id(String client_id) {
-		this.client_id = client_id;
+	public void setClientId(String apiClientId) {
+		this.apiClientId = apiClientId;
 	}
 
 	/**

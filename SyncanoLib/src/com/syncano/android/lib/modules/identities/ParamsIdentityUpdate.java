@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.identities;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 
@@ -8,11 +10,15 @@ import com.syncano.android.lib.modules.Response;
  */
 public class ParamsIdentityUpdate extends Params {
 	/** uuid */
+	@Expose
 	private String uuid;
 	/** state of identity */
+	@Expose
 	private String state;
-	/** client id */
-	private String client_id;
+	/** API Client id */
+	@Expose
+	@SerializedName(value = "api_client_id")
+	private String apiClientId;
 
 	/**
 	 * @param uuid
@@ -35,19 +41,19 @@ public class ParamsIdentityUpdate extends Params {
 	}
 
 	/**
-	 * @return client id
+	 * @return API Client id
 	 */
-	public String getClientId() {
-		return client_id;
+	public String getApiClientId() {
+		return apiClientId;
 	}
 
 	/**
-	 * Sets client id
+	 * Sets API Client id
 	 * 
-	 * @param clientId
+	 * @param apiClientId
 	 */
-	public void setClient_id(String clientId) {
-		this.client_id = clientId;
+	public void setApiClientId(String apiClientId) {
+		this.apiClientId = apiClientId;
 	}
 
 	/**

@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.collections;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 
 /**
@@ -8,11 +10,17 @@ import com.syncano.android.lib.modules.Params;
 
 public class ParamsCollectionDeactivate extends Params {
 	/** id of specified project */
-	private String project_id;
+	@Expose
+	@SerializedName(value = "project_id")
+	private String projectId;
 	/** id of specified collection */
-	private String collection_id;
+	@Expose
+	@SerializedName(value = "collection_id")
+	private String collectionId;
 	/** key of specified collection */
-	private String collection_key;
+	@Expose
+	@SerializedName(value = "collection_key")
+	private String collectionKey;
 
 	/**
 	 * 
@@ -22,8 +30,8 @@ public class ParamsCollectionDeactivate extends Params {
 	 *            Id of collection. Cannot be <code>null</code>.
 	 */
 	public ParamsCollectionDeactivate(String projectId, String collectionId) {
-		this.project_id = projectId;
-		this.collection_id = collectionId;
+		this.projectId = projectId;
+		this.collectionId = collectionId;
 	}
 
 	@Override
@@ -35,7 +43,7 @@ public class ParamsCollectionDeactivate extends Params {
 	 * @return project id
 	 */
 	public String getProjectId() {
-		return project_id;
+		return projectId;
 	}
 
 	/**
@@ -44,14 +52,14 @@ public class ParamsCollectionDeactivate extends Params {
 	 * @param projectId
 	 */
 	public void setProjectId(String projectId) {
-		this.project_id = projectId;
+		this.projectId = projectId;
 	}
 
 	/**
 	 * @return collection id
 	 */
 	public String getCollectionId() {
-		return collection_id;
+		return collectionId;
 	}
 
 	/**
@@ -59,15 +67,15 @@ public class ParamsCollectionDeactivate extends Params {
 	 * 
 	 * @param collectionId
 	 */
-	public void setCollection_id(String collectionId) {
-		this.collection_id = collectionId;
+	public void setCollectionId(String collectionId) {
+		this.collectionId = collectionId;
 	}
 
 	/**
 	 * @return collection key
 	 */
-	public String getCollection_key() {
-		return collection_key;
+	public String getCollectionKey() {
+		return collectionKey;
 	}
 
 	/**
@@ -75,8 +83,8 @@ public class ParamsCollectionDeactivate extends Params {
 	 * 
 	 * @param collectionKey
 	 */
-	public void setCollection_key(String collectionKey) {
-		this.collection_key = collectionKey;
+	public void setCollectionKey(String collectionKey) {
+		this.collectionKey = collectionKey;
 	}
 
 }

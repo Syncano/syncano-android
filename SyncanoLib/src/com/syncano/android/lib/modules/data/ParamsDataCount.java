@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.data;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 
@@ -9,19 +11,30 @@ import com.syncano.android.lib.modules.Response;
  */
 public class ParamsDataCount extends Params {
 	/** Project id */
-	private String project_id;
+	@Expose
+	@SerializedName(value = "project_id")
+	private String projectId;
 	/** Collection id */
-	private String collection_id;
+	@Expose
+	@SerializedName(value = "collection_id")
+	private String collectionId;
 	/** Collection key */
-	private String collection_key;
+	@Expose
+	@SerializedName(value = "collection_key")
+	private String collectionKey;
 	/** State */
+	@Expose
 	private String state;
 	/** Folders array */
+	@Expose
 	private String[] folders;
 	/** Filter */
+	@Expose
 	private String filter;
 	/** by user */
-	private String by_user;
+	@Expose
+	@SerializedName(value = "by_user")
+	private String byUser;
 
 	/**
 	 * @param projectId
@@ -49,7 +62,7 @@ public class ParamsDataCount extends Params {
 	 * @return project id
 	 */
 	public String getProjectId() {
-		return project_id;
+		return projectId;
 	}
 
 	/**
@@ -58,14 +71,14 @@ public class ParamsDataCount extends Params {
 	 * @param projectId
 	 */
 	public void setProjectId(String projectId) {
-		this.project_id = projectId;
+		this.projectId = projectId;
 	}
 
 	/**
 	 * @return collection id
 	 */
 	public String getCollectionId() {
-		return collection_id;
+		return collectionId;
 	}
 
 	/**
@@ -74,14 +87,14 @@ public class ParamsDataCount extends Params {
 	 * @param collectionId
 	 */
 	public void setCollectionId(String collectionId) {
-		this.collection_id = collectionId;
+		this.collectionId = collectionId;
 	}
 
 	/**
 	 * @return collection key
 	 */
 	public String getCollectionKey() {
-		return collection_key;
+		return collectionKey;
 	}
 
 	/**
@@ -90,7 +103,7 @@ public class ParamsDataCount extends Params {
 	 * @param collectionKey
 	 */
 	public void setCollectionKey(String collectionKey) {
-		this.collection_key = collectionKey;
+		this.collectionKey = collectionKey;
 	}
 
 	/**
@@ -146,7 +159,7 @@ public class ParamsDataCount extends Params {
 	 * @return by_user
 	 */
 	public String getByUser() {
-		return by_user;
+		return byUser;
 	}
 
 	/**
@@ -155,7 +168,7 @@ public class ParamsDataCount extends Params {
 	 * @param byUser
 	 */
 	public void setByUser(String byUser) {
-		this.by_user = byUser;
+		this.byUser = byUser;
 	}
 
 }

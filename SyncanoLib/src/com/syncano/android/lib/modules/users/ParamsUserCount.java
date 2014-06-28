@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.users;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 
@@ -8,16 +10,25 @@ import com.syncano.android.lib.modules.Response;
  */
 public class ParamsUserCount extends Params {
 	/** id for project */
-	private String project_id;
+	@Expose
+	@SerializedName(value = "project_id")
+	private String projectId;
 	/** id of collection */
-	private String collection_id;
+	@Expose
+	@SerializedName(value = "collection_id")
+	private String collectionId;
 	/** collection key */
-	private String collection_key;
+	@Expose
+	@SerializedName(value = "collection_key")
+	private String collectionKey;
 	/** state of user */
+	@Expose
 	private String state;
 	/** folders */
+	@Expose
 	private String[] folders;
 	/** custom filter */
+	@Expose
 	private String filter;
 
 	@Override
@@ -32,8 +43,8 @@ public class ParamsUserCount extends Params {
 	/**
 	 * @return project id
 	 */
-	public String getProject_id() {
-		return project_id;
+	public String getProjectId() {
+		return projectId;
 	}
 
 	/**
@@ -41,15 +52,15 @@ public class ParamsUserCount extends Params {
 	 * 
 	 * @param project_id
 	 */
-	public void setProject_id(String project_id) {
-		this.project_id = project_id;
+	public void setProjectId(String projectId) {
+		this.projectId = projectId;
 	}
 
 	/**
 	 * @return collection id from which users will be counted
 	 */
-	public String getCollection_id() {
-		return collection_id;
+	public String getCollectionId() {
+		return collectionId;
 	}
 
 	/**
@@ -57,15 +68,15 @@ public class ParamsUserCount extends Params {
 	 * 
 	 * @param collection_id
 	 */
-	public void setCollection_id(String collection_id) {
-		this.collection_id = collection_id;
+	public void setCollectionId(String collectionId) {
+		this.collectionId = collectionId;
 	}
 
 	/**
 	 * @return collection key from which users will be counted
 	 */
-	public String getCollection_key() {
-		return collection_key;
+	public String getCollectionKey() {
+		return collectionKey;
 	}
 
 	/**
@@ -73,8 +84,8 @@ public class ParamsUserCount extends Params {
 	 * 
 	 * @param collection_key
 	 */
-	public void setCollection_key(String collection_key) {
-		this.collection_key = collection_key;
+	public void setCollectionKey(String collectionKey) {
+		this.collectionKey = collectionKey;
 	}
 
 	/**

@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.administrators;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 
 /**
@@ -8,9 +10,13 @@ import com.syncano.android.lib.modules.Params;
  */
 public class ParamsAdminDelete extends Params {
 	/** admin id or email defining admin to delete */
-	private String admin_email;
+	@Expose
+	@SerializedName(value = "admin_email")
+	private String adminEmail;
 	/** admin id or email defining admin to delete */
-	private String admin_id;
+	@Expose
+	@SerializedName(value = "admin_id")
+	private String adminId;
 
 	/**
 	 * 
@@ -33,7 +39,7 @@ public class ParamsAdminDelete extends Params {
 	 * @return email of desired administrator
 	 */
 	public String getAdminEmail() {
-		return admin_email;
+		return adminEmail;
 	}
 
 	/**
@@ -43,14 +49,14 @@ public class ParamsAdminDelete extends Params {
 	 *            email of administrator
 	 */
 	public void setAdminEmail(String adminEmail) {
-		this.admin_email = adminEmail;
+		this.adminEmail = adminEmail;
 	}
 
 	/**
 	 * @return id of desired administrator
 	 */
 	public String getAdminId() {
-		return admin_id;
+		return adminId;
 	}
 
 	/**
@@ -60,7 +66,7 @@ public class ParamsAdminDelete extends Params {
 	 *            id of administrator
 	 */
 	public void setAdminId(String adminId) {
-		this.admin_id = adminId;
+		this.adminId = adminId;
 	}
 
 }

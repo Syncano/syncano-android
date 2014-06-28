@@ -1,5 +1,6 @@
 package com.syncano.android.lib.modules.administrators;
 
+import com.google.gson.annotations.Expose;
 import com.syncano.android.lib.modules.Response;
 import com.syncano.android.lib.objects.Admin;
 
@@ -8,6 +9,7 @@ import com.syncano.android.lib.objects.Admin;
  */
 public class ResponseAdminNew extends Response {
 	/** new admin */
+	@Expose
 	private Admin admin;
 
 	/**

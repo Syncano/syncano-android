@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.projects;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 
@@ -8,10 +10,14 @@ import com.syncano.android.lib.modules.Response;
  */
 public class ParamsProjectUpdate extends Params {
 	/** id of project */
-	private String project_id;
+	@Expose
+	@SerializedName(value = "project_id")
+	private String projectId;
 	/** name */
+	@Expose
 	private String name;
 	/** description */
+	@Expose
 	private String description;
 
 	/**
@@ -19,7 +25,7 @@ public class ParamsProjectUpdate extends Params {
 	 *            Id of project in which exists collection. Cannot be <code>null</code>.
 	 */
 	public ParamsProjectUpdate(String projectId) {
-		this.project_id = projectId;
+		this.projectId = projectId;
 	}
 
 	@Override
@@ -34,8 +40,8 @@ public class ParamsProjectUpdate extends Params {
 	/**
 	 * @return project id
 	 */
-	public String getProject_id() {
-		return project_id;
+	public String getProjectId() {
+		return projectId;
 	}
 
 	/**
@@ -43,8 +49,8 @@ public class ParamsProjectUpdate extends Params {
 	 * 
 	 * @param project_id
 	 */
-	public void setProject_id(String project_id) {
-		this.project_id = project_id;
+	public void setProjectId(String projectId) {
+		this.projectId = projectId;
 	}
 
 	/**

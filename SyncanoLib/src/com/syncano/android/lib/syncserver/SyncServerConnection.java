@@ -4,13 +4,13 @@ import android.content.Context;
 import android.util.Log;
 import android.util.SparseArray;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.syncano.android.lib.BuildConfig;
-import com.syncano.android.lib.RequestCreator;
-import com.syncano.android.lib.ResponseReader;
+import com.syncano.android.lib.GsonHelper;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 import com.syncano.android.lib.objects.Data;
@@ -18,6 +18,9 @@ import com.syncano.android.lib.syncserver.SocketConnection.DataListener;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map.Entry;
+import java.util.Queue;
 
 public class SyncServerConnection implements DataListener {
 
@@ -47,6 +50,8 @@ public class SyncServerConnection implements DataListener {
 	private static final String OBJECT_TYPE_DATA = "data";
 	private static final String ARRAY_ID = "id";
 
+	private static final int MAX_REQUESTS = 10;
+
 	/** Sync server listener */
 	private SyncServerListener mListener;
 	/** Subscription listener */
@@ -65,8 +70,12 @@ public class SyncServerConnection implements DataListener {
 	private int mCurrentCallID;
 	/** Current state */
 	private int mState = STATE_NOT_CONNECTED;
-	/** Array of waiting calls */
-	private SparseArray<CallItem> waitingCalls = new SparseArray<CallItem>(5);
+	/** Array of sent calls */
+	private SparseArray<Call> sentCalls = new SparseArray<Call>(10);
+
+	private Queue<Call> waitingCalls = new LinkedList<Call>();
+
+	private Gson mGson;
 
 	/**
 	 * Default constructor
@@ -87,6 +96,7 @@ public class SyncServerConnection implements DataListener {
 		mApiKey = apiKey;
 		mInstanceSubdomain = instanceSubdomain;
 		mContext = context;
+		mGson = GsonHelper.createGson();
 	}
 
 	/**
@@ -170,17 +180,16 @@ public class SyncServerConnection implements DataListener {
 			mListener.disconnected();
 			return;
 		}
-		try {
-			JSONObject json = new JSONObject(data);
-			if (AUTH.equals(json.optString(OPT_TYPE)) && OK.equals(json.optString(OPT_RESULT))) {
-				mUuid = json.optString(OPT_UUID);
-				mState = STATE_CONNECTED;
-				mListener.connected();
-				return;
-			}
-		} catch (JSONException e) {
-			Log.e(LOG_TAG, "Error while creating json: " + e.toString());
+
+		JsonObject json = (new JsonParser()).parse(data).getAsJsonObject();
+		if (AUTH.equals(json.get(OPT_TYPE).getAsString()) && OK.equals(json.get(OPT_RESULT).getAsString())) {
+			mUuid = json.get(OPT_UUID).getAsString();
+			mState = STATE_CONNECTED;
+			mListener.connected();
+			sendCalls();
+			return;
 		}
+
 		mState = STATE_NOT_CONNECTED;
 		mListener.error("For login request server returned: " + data);
 		mListener.disconnected();
@@ -208,41 +217,35 @@ public class SyncServerConnection implements DataListener {
 			return;
 		}
 
-		try {
-			JSONObject json = new JSONObject(data);
-			String type = json.optString(OPT_TYPE);
-			String objectType = json.optString(OPT_OBJECT);
-			if (type == null || objectType == null) {
-				mListener.error("Message type or object null. " + data);
-				return;
-			}
-			if (type.equals(TYPE_CALLRESPONSE)) {
-				messageCallResponse(json);
-				return;
-			}
-
-			if (type.equals(TYPE_MESSAGE)) {
-				messageMessage(json);
-				return;
-			}
-
-			if (mSubscriptionListener == null) {
-				Log.d(LOG_TAG, "Message received but no listener interested");
-				return;
-			}
-
-			if (type.equals(TYPE_NEW) && objectType.equals(OBJECT_TYPE_DATA)) {
-				messageNewData(json);
-			} else if (type.equals(TYPE_CHANGE) && objectType.equals(OBJECT_TYPE_DATA)) {
-				messageChangedData(json);
-			} else if (type.equals(TYPE_DELETE) && objectType.equals(OBJECT_TYPE_DATA)) {
-				messageDeletedData(json);
-			}
+		JsonObject json = (new JsonParser()).parse(data).getAsJsonObject();
+		String type = json.get(OPT_TYPE).getAsString();
+		String objectType = json.get(OPT_OBJECT).getAsString();
+		if (type == null || objectType == null) {
+			mListener.error("Message type or object null. " + data);
 			return;
-		} catch (JSONException e) {
-			Log.e(LOG_TAG, "Error while creating json: " + e.toString());
 		}
-		mListener.error("Json exception for data: " + data);
+		if (type.equals(TYPE_CALLRESPONSE)) {
+			messageCallResponse(json);
+			return;
+		}
+
+		if (type.equals(TYPE_MESSAGE)) {
+			messageMessage(json);
+			return;
+		}
+
+		if (mSubscriptionListener == null) {
+			Log.d(LOG_TAG, "Message received but no listener interested");
+			return;
+		}
+
+		if (type.equals(TYPE_NEW) && objectType.equals(OBJECT_TYPE_DATA)) {
+			messageNewData(json);
+		} else if (type.equals(TYPE_CHANGE) && objectType.equals(OBJECT_TYPE_DATA)) {
+			messageChangedData(json);
+		} else if (type.equals(TYPE_DELETE) && objectType.equals(OBJECT_TYPE_DATA)) {
+			messageDeletedData(json);
+		}
 	}
 
 	/**
@@ -251,14 +254,9 @@ public class SyncServerConnection implements DataListener {
 	 * @param json
 	 *            json with response
 	 */
-	private void messageNewData(JSONObject json) {
-		try {
-			Data data = new Data();
-			ResponseReader.parseFields(data, json.optJSONObject(OBJECT_TYPE_DATA));
-			mSubscriptionListener.added(data);
-		} catch (Exception e) {
-			mListener.error("Error parsing message about new data object");
-		}
+	private void messageNewData(JsonObject json) {
+		Data data = mGson.fromJson(json.get(OBJECT_TYPE_DATA), Data.class);
+		mSubscriptionListener.added(data);
 	}
 
 	/**
@@ -267,18 +265,13 @@ public class SyncServerConnection implements DataListener {
 	 * @param json
 	 *            json with response
 	 */
-	private void messageDeletedData(JSONObject json) {
-		try {
-			JSONArray jsonIds = json.getJSONArray(ARRAY_ID);
-			int[] ids = new int[jsonIds.length()];
-			for (int i = 0; i < ids.length; i++) {
-				ids[i] = jsonIds.getInt(i);
-			}
-			mSubscriptionListener.deleted(ids);
-		} catch (JSONException e) {
-			Log.e(LOG_TAG, "Received message about data removed but can't parse list of ids: " + json.toString());
-			mListener.error("Error parsing message about deleted data objects");
+	private void messageDeletedData(JsonObject json) {
+		JsonArray jsonIds = json.get(ARRAY_ID).getAsJsonArray();
+		int[] ids = new int[jsonIds.size()];
+		for (int i = 0; i < ids.length; i++) {
+			ids[i] = jsonIds.get(i).getAsInt();
 		}
+		mSubscriptionListener.deleted(ids);
 	}
 
 	/**
@@ -287,80 +280,76 @@ public class SyncServerConnection implements DataListener {
 	 * @param json
 	 *            json with response
 	 */
-	@SuppressWarnings("unchecked")
-	private void messageChangedData(JSONObject json) {
-		final DataChanges data = new DataChanges();
+	private void messageChangedData(JsonObject json) {
+		final DataChanges data = new DataChanges(mGson);
 
-		JSONObject j;
-		Iterator<String> keys;
+		JsonElement j;
+		Iterator<Entry<String, JsonElement>> keys;
 		ArrayList<String> ids = new ArrayList<String>();
 
 		// get ids of changed objects
-		try {
-			JSONObject target = json.getJSONObject("target");
-			JSONArray idsArray = target.getJSONArray(ARRAY_ID);
-			for (int i = 0; i < idsArray.length(); i++) {
-				String id = idsArray.getString(i);
-				ids.add(id);
-			}
-
-		} catch (JSONException e) {
-			Log.e(LOG_TAG, "Information about changed data objects ids corrupted");
+		JsonObject target = json.get("target").getAsJsonObject();
+		JsonArray idsArray = target.get(ARRAY_ID).getAsJsonArray();
+		for (int i = 0; i < idsArray.size(); i++) {
+			String id = idsArray.get(i).getAsString();
+			ids.add(id);
 		}
+
 		if (ids.size() == 0) return;
 
 		// start reading info about changes
-		j = json.optJSONObject(TYPE_REPLACE);
+		j = json.get(TYPE_REPLACE);
 		if (j != null) {
-			keys = j.keys();
+			keys = j.getAsJsonObject().entrySet().iterator();
 			while (keys.hasNext()) {
-				String key = keys.next();
-				data.setReplacedValue(key, j);
+				Entry<String, JsonElement> entry = keys.next();
+				data.setReplacedValue(entry.getKey(), entry.getValue());
 			}
 		}
 
-		j = json.optJSONObject(TYPE_DELETE);
+		j = json.get(TYPE_DELETE);
 		if (j != null) {
-			keys = j.keys();
+			keys = j.getAsJsonObject().entrySet().iterator();
 			while (keys.hasNext()) {
-				String key = keys.next();
-				data.setDeletedValue(key);
+				Entry<String, JsonElement> entry = keys.next();
+				data.setDeletedValue(entry.getKey());
 			}
 		}
 
-		j = json.optJSONObject(TYPE_ADD);
+		j = json.get(TYPE_ADD);
 		if (j != null) {
-			keys = j.keys();
+			keys = j.getAsJsonObject().entrySet().iterator();
 			while (keys.hasNext()) {
-				String key = keys.next();
-				data.setAddedValue(key, j);
+				Entry<String, JsonElement> entry = keys.next();
+				data.setAddedValue(entry.getKey(), entry.getValue());
 			}
 		}
 
-		JSONObject jAdditionals = json.optJSONObject("additional");
+		JsonElement jAdditionals = json.get("additional");
 		if (jAdditionals != null) {
-			j = jAdditionals.optJSONObject(TYPE_ADD);
+			j = jAdditionals.getAsJsonObject().get(TYPE_ADD);
 			if (j != null) {
-				keys = j.keys();
+				keys = j.getAsJsonObject().entrySet().iterator();
 				while (keys.hasNext()) {
-					String key = keys.next();
-					data.setAddedAdditionalValue(key, j.optString(key));
+					Entry<String, JsonElement> entry = keys.next();
+					data.setAddedAdditionalValue(entry.getKey(), entry.getValue().getAsString());
 				}
 			}
 
-			j = jAdditionals.optJSONObject(TYPE_REPLACE);
+			j = jAdditionals.getAsJsonObject().get(TYPE_REPLACE);
 			if (j != null) {
-				keys = j.keys();
+				keys = j.getAsJsonObject().entrySet().iterator();
 				while (keys.hasNext()) {
-					String key = keys.next();
-					data.setReplacedAdditionalValue(key, j.optString(key));
+					Entry<String, JsonElement> entry = keys.next();
+					data.setReplacedAdditionalValue(entry.getKey(), entry.getValue().getAsString());
 				}
 			}
 
-			JSONArray jarr = jAdditionals.optJSONArray(TYPE_DELETE);
-			if (jarr != null) {
-				for (int i = 0; i < jarr.length(); i++) {
-					data.setDeletedAdditionalValue(jarr.optString(i));
+			JsonElement jelarr = jAdditionals.getAsJsonObject().get(TYPE_DELETE);
+			if (jelarr != null) {
+				JsonArray jarr = jelarr.getAsJsonArray();
+				for (int i = 0; i < jarr.size(); i++) {
+					data.setDeletedAdditionalValue(jarr.get(i).getAsString());
 				}
 			}
 		}
@@ -384,18 +373,20 @@ public class SyncServerConnection implements DataListener {
 	 * @param json
 	 *            json with response
 	 */
-	private void messageCallResponse(JSONObject json) {
-		int id = json.optInt(MESSAGE_ID, -1);
-		CallItem call = waitingCalls.get(id);
+	private void messageCallResponse(JsonObject json) {
+		int id = json.get(MESSAGE_ID).getAsInt();
+		Call call = sentCalls.get(id);
 		if (call == null) {
 			mListener.error("Received message for call that wasn't send: " + json.toString());
 			return;
 		}
-		ResponseReader.parseResponse(call.response, json.optJSONObject(OBJECT_TYPE_DATA));
-		call.response.setResult(json.optString(OPT_RESULT));
-		ResponseReader.setResultCode(call.response);
+		call.response = mGson.fromJson(json.get(OBJECT_TYPE_DATA), call.response.getClass());
+		call.response.setResult(json.get(OPT_RESULT).getAsString());
+		call.response.refreshResultCode();
+
 		call.callback.result(call.response);
-		waitingCalls.remove(id);
+		sentCalls.remove(id);
+		sendCalls();
 	}
 
 	/**
@@ -404,8 +395,8 @@ public class SyncServerConnection implements DataListener {
 	 * @param json
 	 *            json with new message
 	 */
-	private void messageMessage(JSONObject json) {
-		mListener.message(json.optString(OPT_OBJECT), json.optString(OBJECT_TYPE_DATA));
+	private void messageMessage(JsonObject json) {
+		mListener.message(json.get(OPT_OBJECT).getAsString(), json.get(OBJECT_TYPE_DATA).getAsString());
 	}
 
 	/**
@@ -420,16 +411,10 @@ public class SyncServerConnection implements DataListener {
 	 * Method that is called after connecting to socket
 	 */
 	public void connected() {
-		try {
-			JSONObject json = new JSONObject();
-			json.put("api_key", mApiKey);
-			json.put("instance", mInstanceSubdomain);
-			mConnection.send(json.toString());
-		} catch (JSONException e) {
-			mListener.error("Wrong login json");
-			mListener.disconnected();
-			mState = STATE_NOT_CONNECTED;
-		}
+		JsonObject json = new JsonObject();
+		json.addProperty("api_key", mApiKey);
+		json.addProperty("instance", mInstanceSubdomain);
+		mConnection.send(json.toString());
 	}
 
 	/**
@@ -441,23 +426,32 @@ public class SyncServerConnection implements DataListener {
 	 *            callback that is called after server response
 	 */
 	public void call(Params params, SyncServerCallback callback) {
-		JSONObject json = new JSONObject();
-		try {
-			json.put(OPT_TYPE, "call");
-			json.put(METHOD, params.getMethodName());
-			mCurrentCallID++;
-			json.put(MESSAGE_ID, mCurrentCallID);
-			RequestCreator creator = new RequestCreator(params);
-			json.put(PARAMS, creator.getParamsJson());
+		JsonObject json = new JsonObject();
+		json.addProperty(OPT_TYPE, "call");
+		json.addProperty(METHOD, params.getMethodName());
+		mCurrentCallID++;
+		json.addProperty(MESSAGE_ID, mCurrentCallID);
+		json.add(PARAMS, mGson.toJsonTree(params));
 
-			CallItem call = new CallItem();
-			call.callback = callback;
-			call.response = params.instantiateResponse();
-			waitingCalls.append(mCurrentCallID, call);
+		Call call = new Call();
+		call.callback = callback;
+		call.data = json.toString();
 
-			mConnection.send(json.toString());
-		} catch (JSONException e) {
-			mListener.error("Error sending call");
+		call.response = params.instantiateResponse();
+		waitingCalls.add(call);
+
+		sendCalls();
+	}
+
+	private void sendCalls() {
+		if (waitingCalls.size() == 0 || mState != STATE_CONNECTED) {
+			return;
+		}
+		while (sentCalls.size() < MAX_REQUESTS && !waitingCalls.isEmpty()) {
+			Call call = waitingCalls.poll();
+			sentCalls.append(mCurrentCallID, call);
+			mConnection.send(call.data);
+			call.data = null;
 		}
 	}
 
@@ -497,9 +491,9 @@ public class SyncServerConnection implements DataListener {
 	/**
 	 * Class that holds response and callback
 	 */
-	private class CallItem {
+	private class Call {
+		String data;
 		Response response;
 		SyncServerCallback callback;
 	}
-
 }

@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.users;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 
@@ -8,8 +10,11 @@ import com.syncano.android.lib.modules.Response;
  */
 public class ParamsUserGetAll extends Params {
 	/** Since user id */
-	private String since_id;
+	@Expose
+	@SerializedName(value = "since_id")
+	private String sinceId;
 	/** Limit of users to get */
+	@Expose
 	private Integer limit;
 
 	@Override
@@ -24,8 +29,8 @@ public class ParamsUserGetAll extends Params {
 	/**
 	 * @return since user id
 	 */
-	public String getSince_id() {
-		return since_id;
+	public String getSinceId() {
+		return sinceId;
 	}
 
 	/**
@@ -33,8 +38,8 @@ public class ParamsUserGetAll extends Params {
 	 * 
 	 * @param since_id
 	 */
-	public void setSince_id(String since_id) {
-		this.since_id = since_id;
+	public void setSinceId(String sinceId) {
+		this.sinceId = sinceId;
 	}
 
 	/**

@@ -1,43 +1,47 @@
 package com.syncano.android.lib.modules.apikeys;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 
 /**
  * Deletes specified API client. Only Admin permission role can delete API clients.
  */
-public class ParamsApikeyDelete extends Params {
-	/** id of client */
-	private String client_id;
+public class ParamsApiKeyDelete extends Params {
+	/** API id of client */
+	@Expose
+	@SerializedName(value = "api_client_id")
+	private String apiClientId;
 
 	/**
-	 * @param clientId
+	 * @param apiClientId
 	 *            API client id defining API client to delete.
 	 */
-	public ParamsApikeyDelete(String clientId) {
-		setClientId(clientId);
+	public ParamsApiKeyDelete(String clientId) {
+		setApiClientId(clientId);
 	}
 
 	@Override
 	public String getMethodName() {
-		return "apikey.new";
+		return "apikey.delete";
 	}
 
 	/**
-	 * Returns client id
+	 * Returns API client id
 	 * 
 	 * @return id of client
 	 */
-	public String getClientId() {
-		return client_id;
+	public String getApiClientId() {
+		return apiClientId;
 	}
 
 	/**
-	 * Sets id for desired client
+	 * Sets id for desired API client
 	 * 
-	 * @param clientId
+	 * @param apiClientId
 	 */
-	public void setClientId(String clientId) {
-		this.client_id = clientId;
+	public void setApiClientId(String apiClientId) {
+		this.apiClientId = apiClientId;
 	}
 
 }

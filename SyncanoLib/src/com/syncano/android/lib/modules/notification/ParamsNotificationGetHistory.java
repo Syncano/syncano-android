@@ -1,8 +1,9 @@
 package com.syncano.android.lib.modules.notification;
 
-
 import java.util.Date;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 
 /**
@@ -10,15 +11,23 @@ import com.syncano.android.lib.modules.Params;
  * stored for 24 hours.
  */
 public class ParamsNotificationGetHistory extends Params {
-	/** Clients id */
-	private String client_id;
+	/** API Clients id */
+	@Expose
+	@SerializedName(value = "api_client_id")
+	private String apiClientId;
 	/** Since id */
-	private Integer since_id;
+	@Expose
+	@SerializedName(value = "since_id")
+	private Integer sinceId;
 	/** Since time date */
-	private Date since_time;
+	@Expose
+	@SerializedName(value = "since_time")
+	private Date sinceTime;
 	/** limit for notifications history */
+	@Expose
 	private Integer limit;
 	/** order for notifications history */
+	@Expose
 	private String order;
 
 	@Override
@@ -27,26 +36,26 @@ public class ParamsNotificationGetHistory extends Params {
 	}
 
 	/**
-	 * @return client id
+	 * @return API Client id
 	 */
-	public String getClient_id() {
-		return client_id;
+	public String getApiClientId() {
+		return apiClientId;
 	}
 
 	/**
-	 * Sets client id
+	 * Sets API Client id
 	 * 
 	 * @param client_id
 	 */
-	public void setClient_id(String client_id) {
-		this.client_id = client_id;
+	public void setApiClientId(String clientId) {
+		this.apiClientId = clientId;
 	}
 
 	/**
 	 * @return since id
 	 */
-	public Integer getSince_id() {
-		return since_id;
+	public Integer getSinceId() {
+		return sinceId;
 	}
 
 	/**
@@ -54,15 +63,15 @@ public class ParamsNotificationGetHistory extends Params {
 	 * 
 	 * @param since_id
 	 */
-	public void setSince_id(Integer since_id) {
-		this.since_id = since_id;
+	public void setSinceId(Integer sinceId) {
+		this.sinceId = sinceId;
 	}
 
 	/**
 	 * @return since time date
 	 */
-	public Date getSince_time() {
-		return since_time;
+	public Date getSinceTime() {
+		return sinceTime;
 	}
 
 	/**
@@ -70,8 +79,8 @@ public class ParamsNotificationGetHistory extends Params {
 	 * 
 	 * @param since_time
 	 */
-	public void setSince_time(Date since_time) {
-		this.since_time = since_time;
+	public void setSinceTime(Date sinceTime) {
+		this.sinceTime = sinceTime;
 	}
 
 	/**

@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.identities;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 
@@ -9,12 +11,18 @@ import com.syncano.android.lib.modules.Response;
 public class ParamsIdentityGet extends Params {
 
 	/** client id of identity */
-	private String client_id;
+	@Expose
+	@SerializedName(value = "client_id")
+	private String clientId;
 	/** name */
+	@Expose
 	private String name;
 	/** since id */
-	private String since_id;
+	@Expose
+	@SerializedName(value = "since_id")
+	private String sinceId;
 	/** limit of identities */
+	@Expose
 	private String limit;
 
 	@Override
@@ -30,7 +38,7 @@ public class ParamsIdentityGet extends Params {
 	 * @return client id
 	 */
 	public String getClientId() {
-		return client_id;
+		return clientId;
 	}
 
 	/**
@@ -38,8 +46,8 @@ public class ParamsIdentityGet extends Params {
 	 * 
 	 * @param clientId
 	 */
-	public void setClient_id(String clientId) {
-		this.client_id = clientId;
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
 	}
 
 	/**
@@ -62,7 +70,7 @@ public class ParamsIdentityGet extends Params {
 	 * @return since id
 	 */
 	public String getSinceId() {
-		return since_id;
+		return sinceId;
 	}
 
 	/**
@@ -71,7 +79,7 @@ public class ParamsIdentityGet extends Params {
 	 * @param sinceId
 	 */
 	public void setSinceId(String sinceId) {
-		this.since_id = sinceId;
+		this.sinceId = sinceId;
 	}
 
 	/**

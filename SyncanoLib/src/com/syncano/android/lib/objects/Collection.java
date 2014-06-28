@@ -4,26 +4,39 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Represents Collections object from Syncano Api
  */
 public class Collection implements Serializable {
 	private static final long serialVersionUID = -7038599495663010560L;
 	/** collection id */
+	@Expose
 	private String id;
 	/** collection status */
+	@Expose
 	private String status;
 	/** name */
+	@Expose
 	private String name;
 	/** description */
+	@Expose
 	private String description;
 	/** collection key */
+	@Expose
 	private String key;
 	/** start date */
-	private Date start_date;
+	@Expose
+	@SerializedName(value = "start_date")
+	private Date startDate;
 	/** end date */
-	private Date end_date;
+	@Expose
+	@SerializedName(value = "end_date")
+	private Date endDate;
 	/** additional tags map */
+	@Expose
 	private HashMap<String, String> tags;
 
 	/**
@@ -93,8 +106,8 @@ public class Collection implements Serializable {
 	/**
 	 * @return start date
 	 */
-	public Date getStart_date() {
-		return start_date;
+	public Date getStartDate() {
+		return startDate;
 	}
 
 	/**
@@ -102,15 +115,15 @@ public class Collection implements Serializable {
 	 * 
 	 * @param start_date
 	 */
-	public void setStart_date(Date start_date) {
-		this.start_date = start_date;
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
 	}
 
 	/**
 	 * @return end date
 	 */
-	public Date getEnd_date() {
-		return end_date;
+	public Date getEndDate() {
+		return endDate;
 	}
 
 	/**
@@ -118,8 +131,8 @@ public class Collection implements Serializable {
 	 * 
 	 * @param end_date
 	 */
-	public void setEnd_date(Date end_date) {
-		this.end_date = end_date;
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 
 	/**

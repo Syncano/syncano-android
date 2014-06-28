@@ -2,23 +2,36 @@ package com.syncano.android.lib.objects;
 
 import java.io.Serializable;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Represents Avatar object from Syncano Api
  */
 public class Avatar implements Serializable {
 	private static final long serialVersionUID = -9163152553338874438L;
 	/** image url */
+	@Expose
 	private String image;
 	/** image width */
-	private Integer image_width;
+	@Expose
+	@SerializedName(value = "image_width")
+	private Integer imageWidth;
 	/** image height */
-	private Integer image_height;
+	@Expose
+	@SerializedName(value = "image_height")
+	private Integer imageHeight;
 	/** thumbnail url */
+	@Expose
 	private String thumbnail;
 	/** thumbnail width */
-	private String thumbnail_width;
+	@Expose
+	@SerializedName(value = "thumbnail_width")
+	private String thumbnailWidth;
 	/** thumbnail height */
-	private String thumbnail_height;
+	@Expose
+	@SerializedName(value = "thumbnail_height")
+	private String thumbnailHeight;
 
 	/**
 	 * 
@@ -41,7 +54,7 @@ public class Avatar implements Serializable {
 	 * @return image width
 	 */
 	public Integer getImageWidth() {
-		return image_width;
+		return imageWidth;
 	}
 
 	/**
@@ -50,14 +63,14 @@ public class Avatar implements Serializable {
 	 * @param imageWidth
 	 */
 	public void setImageWidth(Integer imageWidth) {
-		this.image_width = imageWidth;
+		this.imageWidth = imageWidth;
 	}
 
 	/**
 	 * @return image height
 	 */
 	public Integer getImageHeight() {
-		return image_height;
+		return imageHeight;
 	}
 
 	/**
@@ -66,7 +79,7 @@ public class Avatar implements Serializable {
 	 * @param imageHeight
 	 */
 	public void setImageHeight(Integer imageHeight) {
-		this.image_height = imageHeight;
+		this.imageHeight = imageHeight;
 	}
 
 	/**
@@ -88,8 +101,8 @@ public class Avatar implements Serializable {
 	/**
 	 * @return Thumbnail width
 	 */
-	public String getThumbnail_width() {
-		return thumbnail_width;
+	public String getThumbnailWidth() {
+		return thumbnailWidth;
 	}
 
 	/**
@@ -98,14 +111,14 @@ public class Avatar implements Serializable {
 	 * @param thumbnailWidth
 	 */
 	public void setThumbnailWidth(String thumbnailWidth) {
-		this.thumbnail_width = thumbnailWidth;
+		this.thumbnailWidth = thumbnailWidth;
 	}
 
 	/**
 	 * @return Thumbnail height
 	 */
 	public String getThumbnailHeight() {
-		return thumbnail_height;
+		return thumbnailHeight;
 	}
 
 	/**
@@ -113,8 +126,8 @@ public class Avatar implements Serializable {
 	 * 
 	 * @param thumbnailHeight
 	 */
-	public void setThumbnail_height(String thumbnailHeight) {
-		this.thumbnail_height = thumbnailHeight;
+	public void setThumbnailHeight(String thumbnailHeight) {
+		this.thumbnailHeight = thumbnailHeight;
 	}
 
 }

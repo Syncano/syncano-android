@@ -1,5 +1,6 @@
 package com.syncano.android.lib.modules.collections;
 
+import com.google.gson.annotations.Expose;
 import com.syncano.android.lib.modules.Response;
 import com.syncano.android.lib.objects.Collection;
 
@@ -8,6 +9,7 @@ import com.syncano.android.lib.objects.Collection;
  */
 public class ResponseCollectionGet extends Response {
 	/** array of collections */
+	@Expose
 	private Collection[] collection;
 
 	/**

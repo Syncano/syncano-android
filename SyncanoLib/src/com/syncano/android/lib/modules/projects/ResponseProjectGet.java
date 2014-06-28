@@ -1,5 +1,6 @@
 package com.syncano.android.lib.modules.projects;
 
+import com.google.gson.annotations.Expose;
 import com.syncano.android.lib.modules.Response;
 import com.syncano.android.lib.objects.Project;
 
@@ -8,6 +9,7 @@ import com.syncano.android.lib.objects.Project;
  */
 public class ResponseProjectGet extends Response {
 	/** list of all projects */
+	@Expose
 	private Project[] project;
 
 	/**

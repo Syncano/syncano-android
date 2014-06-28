@@ -1,13 +1,12 @@
 package com.syncano.android.lib.objects;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
+
+import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Represents Data object from Syncano Api
@@ -22,36 +21,59 @@ public class Data implements Serializable, Cloneable {
 	/** Data state */
 	public static final String REJECTED = "Rejected";
 
+	/** parent id */
+	@Expose
+	@SerializedName(value = "parent_id")
+	private String parentId;
 	/** data id */
+	@Expose
 	private String id;
 	/** created at date */
-	private Date created_at;
+	@Expose
+	@SerializedName(value = "created_at")
+	private Date createdAt;
 	/** updated at date */
-	private Date updated_at;
+	@Expose
+	@SerializedName(value = "updated_at")
+	private Date updatedAt;
 	/** folder */
+	@Expose
 	private String folder;
 	/** state */
+	@Expose
 	private String state;
 	/** user associated with date */
+	@Expose
 	private User user;
 	/** key */
+	@Expose
 	private String key;
 	/** title */
+	@Expose
 	private String title;
 	/** text */
+	@Expose
 	private String text;
 	/** data link url */
+	@Expose
 	private String link;
 	/** source url */
-	private String source_url;
+	@Expose
+	@SerializedName(value = "source_url")
+	private String sourceUrl;
 	/** Image data associated with message. */
+	@Expose
 	private Image image;
 	/** additional map */
+	@Expose
 	private HashMap<String, String> additional;
 	/** children collection */
+	@Expose
 	private Data[] children;
 	/** number of children */
-	private Integer children_count;
+	@Expose
+	@SerializedName(value = "children_count")
+	private Integer childrenCount;
 
 	/**
 	 * @return id
@@ -72,8 +94,8 @@ public class Data implements Serializable, Cloneable {
 	/**
 	 * @return created at date
 	 */
-	public Date getCreated_at() {
-		return created_at;
+	public Date getCreatedAt() {
+		return createdAt;
 	}
 
 	/**
@@ -82,14 +104,14 @@ public class Data implements Serializable, Cloneable {
 	 * @param createdAt
 	 */
 	public void setCreatedAt(Date createdAt) {
-		this.created_at = createdAt;
+		this.createdAt = createdAt;
 	}
 
 	/**
 	 * @return updated at date
 	 */
 	public Date getUpdatedAt() {
-		return updated_at;
+		return updatedAt;
 	}
 
 	/**
@@ -98,7 +120,7 @@ public class Data implements Serializable, Cloneable {
 	 * @param updatedAt
 	 */
 	public void setUpdatedAt(Date updatedAt) {
-		this.updated_at = updatedAt;
+		this.updatedAt = updatedAt;
 	}
 
 	/**
@@ -217,7 +239,7 @@ public class Data implements Serializable, Cloneable {
 	 * @return source url
 	 */
 	public String getSourceUrl() {
-		return source_url;
+		return sourceUrl;
 	}
 
 	/**
@@ -226,7 +248,7 @@ public class Data implements Serializable, Cloneable {
 	 * @param sourceUrl
 	 */
 	public void setSourceUrl(String sourceUrl) {
-		this.source_url = sourceUrl;
+		this.sourceUrl = sourceUrl;
 	}
 
 	/**
@@ -280,8 +302,8 @@ public class Data implements Serializable, Cloneable {
 	/**
 	 * @return children count
 	 */
-	public Integer getChildren_count() {
-		return children_count;
+	public Integer getChildrenCount() {
+		return childrenCount;
 	}
 
 	/**
@@ -290,25 +312,21 @@ public class Data implements Serializable, Cloneable {
 	 * @param childrenCount
 	 */
 	public void setChildrenCount(Integer childrenCount) {
-		this.children_count = childrenCount;
+		this.childrenCount = childrenCount;
+	}
+
+	public String getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(String parentId) {
+		this.parentId = parentId;
 	}
 
 	/**
 	 * Deep cloning this object using fact that it is Serializable. May return null if there where problems.
 	 */
-	public Data clone() {
-		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			ObjectOutputStream oos = new ObjectOutputStream(baos);
-			oos.writeObject(this);
-
-			ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-			ObjectInputStream ois = new ObjectInputStream(bais);
-			return (Data) ois.readObject();
-		} catch (IOException e) {
-			return null;
-		} catch (ClassNotFoundException e) {
-			return null;
-		}
+	public Data clone(Gson gson) {
+		return gson.fromJson(gson.toJson(this), this.getClass());
 	}
 }

@@ -1,29 +1,30 @@
 package com.syncano.android.lib.modules;
 
-
 import java.util.HashMap;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.Constants;
 
 public abstract class Params {
 	// special place to put additional parameters
+	// this parameter is not exposed but it is added to request manually, see GsonHelper
 	private HashMap<String, String> otherParams = new HashMap<String, String>();
 	/** Api key needed to connect to api */
-	private String api_key;
+	@Expose
+	@SerializedName(value = "api_key")
+	private String apiKey;
+	/** User authorization key */
+	@Expose
+	@SerializedName(value = "auth_key")
+	private String authKey;
 	/** Session id of actual session, valid for two hours, renewed by sending heartbeat or any call to api */
-	private String session_id;
+	@Expose
+	@SerializedName(value = "session_id")
+	private String sessionId;
 	/** Actual timezone */
-	private String timezone = Constants.HYDRA_TIMEZONE;
-
-	/**
-	 * Default method to init response
-	 * 
-	 * @return new instance of response
-	 */
-
-	public Response instantiateResponse() {
-		return new Response();
-	}
+	@Expose
+	private String timezone = Constants.DEFAULT_TIMEZONE;
 
 	/**
 	 * Adds parameter to current object
@@ -36,6 +37,10 @@ public abstract class Params {
 		otherParams.put(key, value);
 	}
 
+	public HashMap<String, String> getAdditionalParams() {
+		return otherParams;
+	}
+
 	/**
 	 * Abstract method to get method name string used by api
 	 */
@@ -45,7 +50,7 @@ public abstract class Params {
 	 * @return returns api key
 	 */
 	public String getApiKey() {
-		return api_key;
+		return apiKey;
 	}
 
 	/**
@@ -54,23 +59,37 @@ public abstract class Params {
 	 * @param api_key
 	 *            new api key
 	 */
-	public void setApiKey(String api_key) {
-		this.api_key = api_key;
+	public void setApiKey(String apiKey) {
+		this.apiKey = apiKey;
+	}
+
+	/**
+	 * @return user authorization key
+	 */
+	public String getAuthKey() {
+		return authKey;
+	}
+
+	/**
+	 * @param Sets user authorization key
+	 */
+	public void setAuthKey(String authKey) {
+		this.authKey = authKey;
 	}
 
 	/**
 	 * @return sessionid of current session
 	 */
-	public String getSession_id() {
-		return session_id;
+	public String getSessionId() {
+		return sessionId;
 	}
 
 	/**
 	 * @param sessionId
 	 *            sets session id of current session
 	 */
-	public void setSession_id(String sessionId) {
-		this.session_id = sessionId;
+	public void setSessionId(String sessionId) {
+		this.sessionId = sessionId;
 	}
 
 	/**
@@ -87,5 +106,9 @@ public abstract class Params {
 	public void setTimezone(String timezone) {
 		this.timezone = timezone;
 
+	}
+
+	public Response instantiateResponse() {
+		return new Response();
 	}
 }

@@ -1,22 +1,27 @@
 package com.syncano.android.lib.modules.apikeys;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 
 /**
  * Updates specified API client's info.
  */
-public class ParamsApikeyUpdateDescription extends Params {
+public class ParamsApiKeyUpdateDescription extends Params {
 	/** Id of desired client, can be null */
-	private String client_id;
+	@Expose
+	@SerializedName(value = "api_client_id")
+	private String apiClientId;
 	/** Description to update */
+	@Expose
 	private String description;
 
 	/**
 	 * @param description
 	 *            New API client's description to set.
 	 */
-	public ParamsApikeyUpdateDescription(String description) {
+	public ParamsApiKeyUpdateDescription(String description) {
 		setDescription(description);
 	}
 
@@ -27,7 +32,7 @@ public class ParamsApikeyUpdateDescription extends Params {
 
 	@Override
 	public Response instantiateResponse() {
-		return new ResponseApikeyNew();
+		return new ResponseApiKeyNew();
 	}
 
 	/**
@@ -46,18 +51,18 @@ public class ParamsApikeyUpdateDescription extends Params {
 	}
 
 	/**
-	 * @return Clients id
+	 * @return API clients id
 	 */
-	public String getClientId() {
-		return client_id;
+	public String getApiClientId() {
+		return apiClientId;
 	}
 
 	/**
-	 * @param clientId
+	 * @param apiClientId
 	 *            API client id. If not specified, will update current client.
 	 */
-	public void setClientId(String clientId) {
-		this.client_id = clientId;
+	public void setApiClientId(String apiClientId) {
+		this.apiClientId = apiClientId;
 	}
 
 }

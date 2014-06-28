@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.projects;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 
 /**
@@ -7,14 +9,16 @@ import com.syncano.android.lib.modules.Params;
  */
 public class ParamsProjectDelete extends Params {
 	/** id of project */
-	private String project_id;
+	@Expose
+	@SerializedName(value = "project_id")
+	private String projectId;
 
 	/**
 	 * @param projectId
 	 *            Id of project in which exists collection. Cannot be <code>null</code>.
 	 */
 	public ParamsProjectDelete(String projectId) {
-		this.project_id = projectId;
+		this.projectId = projectId;
 	}
 
 	@Override
@@ -25,8 +29,8 @@ public class ParamsProjectDelete extends Params {
 	/**
 	 * @return id of project
 	 */
-	public String getProject_id() {
-		return project_id;
+	public String getProjectId() {
+		return projectId;
 	}
 
 	/**
@@ -34,8 +38,8 @@ public class ParamsProjectDelete extends Params {
 	 * 
 	 * @param project_id
 	 */
-	public void setProject_id(String project_id) {
-		this.project_id = project_id;
+	public void setProjectId(String projectId) {
+		this.projectId = projectId;
 	}
 
 }

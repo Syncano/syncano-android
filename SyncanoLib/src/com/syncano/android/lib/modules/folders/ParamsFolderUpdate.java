@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.folders;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 
 /**
@@ -8,17 +10,28 @@ import com.syncano.android.lib.modules.Params;
  */
 public class ParamsFolderUpdate extends Params {
 	/** project id */
-	private String project_id;
+	@Expose
+	@SerializedName(value = "project_id")
+	private String projectId;
 	/** collection id (optional) */
-	private String collection_id;
+	@Expose
+	@SerializedName(value = "collection_id")
+	private String collectionId;
 	/** collection key(optional) */
-	private String collection_key;
+	@Expose
+	@SerializedName(value = "collection_key")
+	private String collectionKey;
 	/** name */
+	@Expose
 	private String name;
 	/** new name */
-	private String new_name;
+	@Expose
+	@SerializedName(value = "new_name")
+	private String newName;
 	/** source id */
-	private String source_id;
+	@Expose
+	@SerializedName(value = "source_id")
+	private String sourceId;
 
 	/**
 	 * @param projectId
@@ -46,7 +59,7 @@ public class ParamsFolderUpdate extends Params {
 	 * @return project id
 	 */
 	public String getProjectId() {
-		return project_id;
+		return projectId;
 	}
 
 	/**
@@ -55,14 +68,14 @@ public class ParamsFolderUpdate extends Params {
 	 * @param projectId
 	 */
 	public void setProjectId(String projectId) {
-		this.project_id = projectId;
+		this.projectId = projectId;
 	}
 
 	/**
 	 * @return collection id
 	 */
 	public String getCollectionId() {
-		return collection_id;
+		return collectionId;
 	}
 
 	/**
@@ -71,14 +84,14 @@ public class ParamsFolderUpdate extends Params {
 	 * @param collectionId
 	 */
 	public void setCollectionId(String collectionId) {
-		this.collection_id = collectionId;
+		this.collectionId = collectionId;
 	}
 
 	/**
 	 * @return collection key
 	 */
 	public String getCollectionKey() {
-		return collection_key;
+		return collectionKey;
 	}
 
 	/**
@@ -87,7 +100,7 @@ public class ParamsFolderUpdate extends Params {
 	 * @param collectionKey
 	 */
 	public void setCollectionKey(String collectionKey) {
-		this.collection_key = collectionKey;
+		this.collectionKey = collectionKey;
 	}
 
 	/**
@@ -110,7 +123,7 @@ public class ParamsFolderUpdate extends Params {
 	 * @return new name
 	 */
 	public String getNewName() {
-		return new_name;
+		return newName;
 	}
 
 	/**
@@ -119,14 +132,14 @@ public class ParamsFolderUpdate extends Params {
 	 * @param newName
 	 */
 	public void setNewName(String newName) {
-		this.new_name = newName;
+		this.newName = newName;
 	}
 
 	/**
 	 * @return source id
 	 */
 	public String getSourceId() {
-		return source_id;
+		return sourceId;
 	}
 
 	/**
@@ -135,7 +148,7 @@ public class ParamsFolderUpdate extends Params {
 	 * @param sourceId
 	 */
 	public void setSourceId(String sourceId) {
-		this.source_id = sourceId;
+		this.sourceId = sourceId;
 	}
 
 }

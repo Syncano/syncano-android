@@ -1,8 +1,9 @@
 package com.syncano.android.lib.modules.data;
 
-
 import java.util.Date;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 
@@ -13,41 +14,71 @@ import com.syncano.android.lib.modules.Response;
  */
 public class ParamsDataGet extends Params {
 	/** project id */
-	private String project_id;
+	@Expose
+	@SerializedName(value = "project_id")
+	private String projectId;
 	/** collection id */
-	private String collection_id;
+	@Expose
+	@SerializedName(value = "collection_id")
+	private String collectionId;
 	/** collection key */
-	private String collection_key;
+	@Expose
+	@SerializedName(value = "collection_key")
+	private String collectionKey;
 	/** data ids array */
-	private String[] data_ids;
+	@Expose
+	@SerializedName(value = "data_ids")
+	private String[] dataIds;
 	/** state */
+	@Expose
 	private String state;
 	/** folders array */
+	@Expose
 	private String[] folders;
 	/** since id */
-	private String since_id;
+	@Expose
+	@SerializedName(value = "since_id")
+	private String sinceId;
 	/** since time date */
-	private Date since_time;
+	@Expose
+	@SerializedName(value = "since_time")
+	private Date sinceTime;
 	/** max id */
-	private String max_id;
+	@Expose
+	@SerializedName(value = "max_id")
+	private String maxId;
 	/** limit */
+	@Expose
 	private Integer limit;
 	/** order */
+	@Expose
 	private String order;
 	/** order by */
-	private String order_by;
+	@Expose
+	@SerializedName(value = "order_by")
+	private String orderBy;
 	/** filter */
+	@Expose
 	private String filter;
 	/** include children */
-	private Boolean include_children;
+	@Expose
+	@SerializedName(value = "include_children")
+	private Boolean includeChildren;
 	/** depth */
+	@Expose
 	private Integer depth;
 	/** children limit */
-	private Integer children_limit;
+	@Expose
+	@SerializedName(value = "children_limit")
+	private Integer childrenLimit;
 	/** parent ids array */
-	private String[] parent_ids;
+	@Expose
+	@SerializedName(value = "parent_ids")
+	private String[] parentIds;
 	/** by user */
-	private String by_user;
+	@Expose
+	@SerializedName(value = "by_user")
+	private String byUser;
 
 	public ParamsDataGet(String projectId, String collectionId, String collectionKey) {
 		setProjectId(projectId);
@@ -68,7 +99,7 @@ public class ParamsDataGet extends Params {
 	 * @return project id
 	 */
 	public String getProjectId() {
-		return project_id;
+		return projectId;
 	}
 
 	/**
@@ -77,14 +108,14 @@ public class ParamsDataGet extends Params {
 	 * @param projectId
 	 */
 	public void setProjectId(String projectId) {
-		this.project_id = projectId;
+		this.projectId = projectId;
 	}
 
 	/**
 	 * @return collection key
 	 */
 	public String getCollectionKey() {
-		return collection_key;
+		return collectionKey;
 	}
 
 	/**
@@ -93,14 +124,14 @@ public class ParamsDataGet extends Params {
 	 * @param collectionKey
 	 */
 	public void setCollectionKey(String collectionKey) {
-		this.collection_key = collectionKey;
+		this.collectionKey = collectionKey;
 	}
 
 	/**
 	 * @return collection id
 	 */
 	public String getCollectionId() {
-		return collection_id;
+		return collectionId;
 	}
 
 	/**
@@ -109,14 +140,14 @@ public class ParamsDataGet extends Params {
 	 * @param collectionId
 	 */
 	public void setCollectionId(String collectionId) {
-		this.collection_id = collectionId;
+		this.collectionId = collectionId;
 	}
 
 	/**
 	 * @return data ids array
 	 */
 	public String[] getDataIds() {
-		return data_ids;
+		return dataIds;
 	}
 
 	/**
@@ -125,7 +156,7 @@ public class ParamsDataGet extends Params {
 	 * @param dataIds
 	 */
 	public void setDataIds(String[] dataIds) {
-		this.data_ids = dataIds;
+		this.dataIds = dataIds;
 	}
 
 	/**
@@ -164,7 +195,7 @@ public class ParamsDataGet extends Params {
 	 * @return since id
 	 */
 	public String getSinceId() {
-		return since_id;
+		return sinceId;
 	}
 
 	/**
@@ -173,14 +204,14 @@ public class ParamsDataGet extends Params {
 	 * @param sinceId
 	 */
 	public void setSinceId(String sinceId) {
-		this.since_id = sinceId;
+		this.sinceId = sinceId;
 	}
 
 	/**
 	 * @return since time date
 	 */
 	public Date getSinceTime() {
-		return since_time;
+		return sinceTime;
 	}
 
 	/**
@@ -189,7 +220,7 @@ public class ParamsDataGet extends Params {
 	 * @param sinceTime
 	 */
 	public void setSinceTime(Date sinceTime) {
-		this.since_time = sinceTime;
+		this.sinceTime = sinceTime;
 	}
 
 	/**
@@ -197,7 +228,7 @@ public class ParamsDataGet extends Params {
 	 * @return max id
 	 */
 	public String getMaxId() {
-		return max_id;
+		return maxId;
 	}
 
 	/**
@@ -206,7 +237,7 @@ public class ParamsDataGet extends Params {
 	 * @param maxId
 	 */
 	public void setMaxId(String maxId) {
-		this.max_id = maxId;
+		this.maxId = maxId;
 	}
 
 	/**
@@ -245,7 +276,7 @@ public class ParamsDataGet extends Params {
 	 * @return order by
 	 */
 	public String getOrderBy() {
-		return order_by;
+		return orderBy;
 	}
 
 	/**
@@ -254,7 +285,7 @@ public class ParamsDataGet extends Params {
 	 * @param orderBy
 	 */
 	public void setOrderBy(String orderBy) {
-		this.order_by = orderBy;
+		this.orderBy = orderBy;
 	}
 
 	/**
@@ -277,7 +308,7 @@ public class ParamsDataGet extends Params {
 	 * @return include children
 	 */
 	public Boolean getIncludeChildren() {
-		return include_children;
+		return includeChildren;
 	}
 
 	/**
@@ -286,7 +317,7 @@ public class ParamsDataGet extends Params {
 	 * @param includeChildren
 	 */
 	public void setIncludeChildren(Boolean includeChildren) {
-		this.include_children = includeChildren;
+		this.includeChildren = includeChildren;
 	}
 
 	/**
@@ -309,7 +340,7 @@ public class ParamsDataGet extends Params {
 	 * @return children limit
 	 */
 	public Integer getChildrenLimit() {
-		return children_limit;
+		return childrenLimit;
 	}
 
 	/**
@@ -318,14 +349,14 @@ public class ParamsDataGet extends Params {
 	 * @param childrenLimit
 	 */
 	public void setChildrenLimit(Integer childrenLimit) {
-		this.children_limit = childrenLimit;
+		this.childrenLimit = childrenLimit;
 	}
 
 	/**
 	 * @return parent ids array
 	 */
 	public String[] getParentIds() {
-		return parent_ids;
+		return parentIds;
 	}
 
 	/**
@@ -333,15 +364,15 @@ public class ParamsDataGet extends Params {
 	 * 
 	 * @param parentIds
 	 */
-	public void setParent_ids(String[] parentIds) {
-		this.parent_ids = parentIds;
+	public void setParentIds(String[] parentIds) {
+		this.parentIds = parentIds;
 	}
 
 	/**
 	 * @return by_user
 	 */
 	public String getByUser() {
-		return by_user;
+		return byUser;
 	}
 
 	/**
@@ -350,7 +381,7 @@ public class ParamsDataGet extends Params {
 	 * @param byUser
 	 */
 	public void setByUser(String byUser) {
-		this.by_user = byUser;
+		this.byUser = byUser;
 	}
 
 }

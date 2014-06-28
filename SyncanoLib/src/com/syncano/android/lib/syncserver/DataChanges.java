@@ -2,10 +2,10 @@ package com.syncano.android.lib.syncserver;
 
 import android.util.Log;
 
-import org.json.JSONObject;
-
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.BuildConfig;
-import com.syncano.android.lib.ResponseReader;
 import com.syncano.android.lib.objects.Data;
 
 import java.io.Serializable;
@@ -24,10 +24,15 @@ public class DataChanges extends Data implements Serializable, Cloneable {
 	/** list of all added data */
 	private HashMap<String, Object> mAdded = new HashMap<String, Object>();
 
+	private Gson mGson;
+
 	/**
 	 * Default constructor
+	 * 
+	 * @param mGson
 	 */
-	public DataChanges() {
+	public DataChanges(Gson gson) {
+		mGson = gson;
 	}
 
 	/**
@@ -35,7 +40,12 @@ public class DataChanges extends Data implements Serializable, Cloneable {
 	 */
 	@Override
 	public DataChanges clone() {
-		return (DataChanges) super.clone();
+		try {
+			return (DataChanges) super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**
@@ -97,6 +107,25 @@ public class DataChanges extends Data implements Serializable, Cloneable {
 		DELETED, REPLACED, NEW, NO_CHANGE
 	}
 
+	private Field findFieldForKey(String key) {
+		Field[] fields = Data.class.getDeclaredFields();
+		for (Field f : fields) {
+			// check serialized name first
+			SerializedName sn = f.getAnnotation(SerializedName.class);
+			if (sn != null && key.equals(sn.value())) {
+				f.setAccessible(true);
+				return f;
+			}
+
+			// then check real name
+			if (sn == null && key.equals(f.getName())) {
+				f.setAccessible(true);
+				return f;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Sets replaced value
 	 * 
@@ -105,11 +134,12 @@ public class DataChanges extends Data implements Serializable, Cloneable {
 	 * @param json
 	 *            json with data
 	 */
-	protected void setReplacedValue(String key, JSONObject json) {
+	protected void setReplacedValue(String key, JsonElement json) {
 		if (BuildConfig.DEBUG) Log.d(LOG_TAG, "setReplacedValue: " + key);
 		try {
-			Field field = Data.class.getField(key);
-			ResponseReader.jsonObjectToJava(json, field, this);
+			Field field = findFieldForKey(key);
+			Object value = mGson.fromJson(json, field.getType());
+			field.set(this, value);
 			mReplaced.put(key, field.get(this));
 		} catch (Exception e) {
 			Log.e(LOG_TAG, "Can't set value for parameter: " + key + ". " + e.getMessage());
@@ -127,7 +157,7 @@ public class DataChanges extends Data implements Serializable, Cloneable {
 	protected void setDeletedValue(String key) {
 		if (BuildConfig.DEBUG) Log.d(LOG_TAG, "setDeletedValue: " + key);
 		try {
-			Field field = Data.class.getField(key);
+			Field field = findFieldForKey(key);
 			Object instance = field.getClass().newInstance();
 			field.set(this, instance);
 			mDeleted.put(key, instance);
@@ -144,11 +174,12 @@ public class DataChanges extends Data implements Serializable, Cloneable {
 	 * @param json
 	 *            json with data
 	 */
-	public void setAddedValue(String key, JSONObject json) {
+	public void setAddedValue(String key, JsonElement json) {
 		if (BuildConfig.DEBUG) Log.d(LOG_TAG, "setAddedValue: " + key);
 		try {
-			Field field = Data.class.getField(key);
-			ResponseReader.jsonObjectToJava(json, field, this);
+			Field field = findFieldForKey(key);
+			Object value = mGson.fromJson(json, field.getType());
+			field.set(this, value);
 			mAdded.put(key, field.get(this));
 		} catch (Exception e) {
 			Log.e(LOG_TAG, "Can't set value for parameter: " + key + ". " + e.getMessage());

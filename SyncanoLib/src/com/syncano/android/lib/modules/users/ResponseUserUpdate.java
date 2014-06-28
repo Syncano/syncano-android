@@ -1,5 +1,6 @@
 package com.syncano.android.lib.modules.users;
 
+import com.google.gson.annotations.Expose;
 import com.syncano.android.lib.modules.Response;
 import com.syncano.android.lib.objects.User;
 
@@ -8,6 +9,7 @@ import com.syncano.android.lib.objects.User;
  */
 public class ResponseUserUpdate extends Response {
 	/** updated user */
+	@Expose
 	private User user;
 
 	/**

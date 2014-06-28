@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.users;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 
@@ -8,16 +10,25 @@ import com.syncano.android.lib.modules.Response;
  */
 public class ParamsUserGet extends Params {
 	/** Project id */
-	private String project_id;
+	@Expose
+	@SerializedName(value = "project_id")
+	private String projectId;
 	/** Collection id */
-	private String collection_id;
+	@Expose
+	@SerializedName(value = "collection_id")
+	private String collectionId;
 	/** Collection key */
-	private String collection_key;
+	@Expose
+	@SerializedName(value = "collection_key")
+	private String collectionKey;
 	/** State of user */
+	@Expose
 	private String state;
 	/** Foldes arrays */
+	@Expose
 	private String[] folders;
 	/** Custom filter */
+	@Expose
 	private String filter;
 
 	/**
@@ -31,9 +42,9 @@ public class ParamsUserGet extends Params {
 	 *            Collection key. Can be <code>null</code>.
 	 */
 	public ParamsUserGet(String projectId, String collectionId, String collectionKey) {
-		this.project_id = projectId;
-		this.collection_id = collectionId;
-		this.collection_key = collectionKey;
+		this.projectId = projectId;
+		this.collectionId = collectionId;
+		this.collectionKey = collectionKey;
 	}
 
 	@Override
@@ -49,48 +60,48 @@ public class ParamsUserGet extends Params {
 	 * @return project id
 	 */
 	public String getProject_id() {
-		return project_id;
+		return projectId;
 	}
 
 	/**
 	 * Sets project id
 	 * 
-	 * @param project_id
+	 * @param projectId
 	 */
-	public void setProject_id(String project_id) {
-		this.project_id = project_id;
+	public void setProjectId(String projectId) {
+		this.projectId = projectId;
 	}
 
 	/**
 	 * @return collection id
 	 */
-	public String getCollection_id() {
-		return collection_id;
+	public String getCollectionId() {
+		return collectionId;
 	}
 
 	/**
 	 * Sets collection id
 	 * 
-	 * @param collection_id
+	 * @param collectionId
 	 */
-	public void setCollection_id(String collection_id) {
-		this.collection_id = collection_id;
+	public void setCollectionId(String collectionId) {
+		this.collectionId = collectionId;
 	}
 
 	/**
 	 * @return collection key
 	 */
-	public String getCollection_key() {
-		return collection_key;
+	public String getCollectionKey() {
+		return collectionKey;
 	}
 
 	/**
 	 * Sets collection key
 	 * 
-	 * @param collection_key
+	 * @param collectionKey
 	 */
-	public void setCollection_key(String collection_key) {
-		this.collection_key = collection_key;
+	public void setCollectionKey(String collectionKey) {
+		this.collectionKey = collectionKey;
 	}
 
 	/**

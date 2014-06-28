@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.data;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 
@@ -12,37 +14,63 @@ import com.syncano.android.lib.modules.Response;
  */
 public class ParamsDataUpdate extends Params {
 	/** Project id */
-	private String project_id;
+	@Expose
+	@SerializedName(value = "project_id")
+	private String projectId;
 	/** Collection id */
-	private String collection_id;
+	@Expose
+	@SerializedName(value = "collection_id")
+	private String collectionId;
 	/** Collection key */
-	private String collection_key;
+	@Expose
+	@SerializedName(value = "collection_key")
+	private String collectionKey;
 	/** Data id */
-	private String data_id;
+	@Expose
+	@SerializedName(value = "data_id")
+	private String dataId;
 	/** Data key */
-	private String data_key;
+	@Expose
+	@SerializedName(value = "data_key")
+	private String dataKey;
 	/** Update method */
-	private String update_method;
+	@Expose
+	@SerializedName(value = "update_method")
+	private String updateMethod;
 	/** User name */
-	private String user_name;
+	@Expose
+	@SerializedName(value = "user_name")
+	private String userName;
 	/** Source url */
-	private String source_url;
+	@Expose
+	@SerializedName(value = "source_url")
+	private String sourceUrl;
 	/** Title */
+	@Expose
 	private String title;
 	/** Text */
+	@Expose
 	private String text;
 	/** Link */
+	@Expose
 	private String link;
 	/** Image */
+	@Expose
 	private String image;
 	/** Image url */
-	private String image_url;
+	@Expose
+	@SerializedName(value = "image_url")
+	private String imageUrl;
 	/** Folder */
+	@Expose
 	private String folder;
 	/** State */
+	@Expose
 	private String state;
 	/** Parent id */
-	private String parent_id;
+	@Expose
+	@SerializedName(value = "parent_id")
+	private String parentId;
 
 	/**
 	 * Default constructor
@@ -79,7 +107,7 @@ public class ParamsDataUpdate extends Params {
 	 * @return project id
 	 */
 	public String getProjectId() {
-		return project_id;
+		return projectId;
 	}
 
 	/**
@@ -88,14 +116,14 @@ public class ParamsDataUpdate extends Params {
 	 * @param projectId
 	 */
 	public void setProjectId(String projectId) {
-		this.project_id = projectId;
+		this.projectId = projectId;
 	}
 
 	/**
 	 * @return collection key
 	 */
 	public String getCollectionKey() {
-		return collection_key;
+		return collectionKey;
 	}
 
 	/**
@@ -104,14 +132,14 @@ public class ParamsDataUpdate extends Params {
 	 * @param collectionKey
 	 */
 	public void setCollectionKey(String collectionKey) {
-		this.collection_key = collectionKey;
+		this.collectionKey = collectionKey;
 	}
 
 	/**
 	 * @return collection id
 	 */
 	public String getCollectionId() {
-		return collection_id;
+		return collectionId;
 	}
 
 	/**
@@ -120,14 +148,14 @@ public class ParamsDataUpdate extends Params {
 	 * @param collectionId
 	 */
 	public void setCollectionId(String collectionId) {
-		this.collection_id = collectionId;
+		this.collectionId = collectionId;
 	}
 
 	/**
 	 * @return user name
 	 */
 	public String getUserName() {
-		return user_name;
+		return userName;
 	}
 
 	/**
@@ -136,14 +164,14 @@ public class ParamsDataUpdate extends Params {
 	 * @param userName
 	 */
 	public void setUserName(String userName) {
-		this.user_name = userName;
+		this.userName = userName;
 	}
 
 	/**
 	 * @return source url
 	 */
 	public String getSourceUrl() {
-		return source_url;
+		return sourceUrl;
 	}
 
 	/**
@@ -152,7 +180,7 @@ public class ParamsDataUpdate extends Params {
 	 * @param sourceUrl
 	 */
 	public void setSourceUrl(String sourceUrl) {
-		this.source_url = sourceUrl;
+		this.sourceUrl = sourceUrl;
 	}
 
 	/**
@@ -223,7 +251,7 @@ public class ParamsDataUpdate extends Params {
 	 * @return image url
 	 */
 	public String getImageUrl() {
-		return image_url;
+		return imageUrl;
 	}
 
 	/**
@@ -232,7 +260,7 @@ public class ParamsDataUpdate extends Params {
 	 * @param imageUrl
 	 */
 	public void setImageUrl(String imageUrl) {
-		this.image_url = imageUrl;
+		this.imageUrl = imageUrl;
 	}
 
 	/**
@@ -271,7 +299,7 @@ public class ParamsDataUpdate extends Params {
 	 * @return data key
 	 */
 	public String getDataKey() {
-		return data_key;
+		return dataKey;
 	}
 
 	/**
@@ -280,14 +308,14 @@ public class ParamsDataUpdate extends Params {
 	 * @param dataKey
 	 */
 	public void setDataKey(String dataKey) {
-		this.data_key = dataKey;
+		this.dataKey = dataKey;
 	}
 
 	/**
 	 * @return parent id
 	 */
 	public String getParentId() {
-		return parent_id;
+		return parentId;
 	}
 
 	/**
@@ -296,14 +324,14 @@ public class ParamsDataUpdate extends Params {
 	 * @param parentId
 	 */
 	public void setParentId(String parentId) {
-		this.parent_id = parentId;
+		this.parentId = parentId;
 	}
 
 	/**
 	 * @return data id
 	 */
 	public String getDataId() {
-		return data_id;
+		return dataId;
 	}
 
 	/**
@@ -312,14 +340,14 @@ public class ParamsDataUpdate extends Params {
 	 * @param dataId
 	 */
 	public void setDataId(String dataId) {
-		this.data_id = dataId;
+		this.dataId = dataId;
 	}
 
 	/**
 	 * @return update method
 	 */
 	public String getUpdateMethod() {
-		return update_method;
+		return updateMethod;
 	}
 
 	/**
@@ -328,6 +356,6 @@ public class ParamsDataUpdate extends Params {
 	 * @param updateMethod
 	 */
 	public void setUpdateMethod(String updateMethod) {
-		this.update_method = updateMethod;
+		this.updateMethod = updateMethod;
 	}
 }

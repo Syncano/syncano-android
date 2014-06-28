@@ -1,36 +1,39 @@
 package com.syncano.android.lib;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.syncano.android.lib.BuildConfig;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 import com.syncano.android.lib.utils.DownloadTool;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 
 public class SyncanoBase {
 
 	private final static String LOG_TAG = SyncanoBase.class.getSimpleName();
-	/** Context for hydra */
+
 	private Context mContext;
 	/** Subdomain name string */
 	private String mInstanceSubdomain;
 	/** Api key string */
 	private String mApiKey;
+	/** User authorization key */
+	private String authKey;
+
+	private Gson mGson;
 
 	/** Max number of retries when something goes wrong */
 	private static final int NO_OF_TRIES = 3;
-	/** Response OK */
-	private static final String OK = "OK";
-	/** Response Not OK */
-	private static final String NOK = "NOK";
 
 	/**
 	 * Default constructor
@@ -48,6 +51,7 @@ public class SyncanoBase {
 		mContext = context;
 		mInstanceSubdomain = instanceSubdomain;
 		mApiKey = apiKey;
+		mGson = GsonHelper.createGson();
 	}
 
 	/**
@@ -74,10 +78,11 @@ public class SyncanoBase {
 	 */
 	public Response sendRequest(Params params) {
 		setApiKey(params);
-		RequestCreator request = new RequestCreator(params);
-		Response response = params.instantiateResponse();
-		sendRequest(getUrl(), request.getPostData(), response);
-		return response;
+		setAuthKey(params);
+		JSONRPCRequest req = new JSONRPCRequest(params);
+
+		String json = mGson.toJson(req);
+		return sendRequest(getUrl(), json, params.instantiateResponse());
 	}
 
 	/**
@@ -89,21 +94,15 @@ public class SyncanoBase {
 	 */
 	public Response[] sendBatchRequests(Params[] params) {
 		Response[] responses = new Response[params.length];
-		StringBuilder sb = new StringBuilder();
-		sb.append("[");
-
+		JSONRPCRequest[] requests = new JSONRPCRequest[params.length];
 		for (int i = 0; i < params.length; i++) {
 			setApiKey(params[i]);
-			RequestCreator request = new RequestCreator(params[i]);
-			request.setID(i + "");
-			sb.append(request.getPostData());
-			if (i != params.length - 1) sb.append(",");
+			setAuthKey(params[i]);
 			responses[i] = params[i].instantiateResponse();
+			requests[i] = new JSONRPCRequest(params[i], Integer.toString(i));
 		}
-		sb.append("]");
 
-		sendBatchRequest(getUrl(), sb.toString(), responses);
-		return responses;
+		return sendBatchRequest(getUrl(), mGson.toJson(requests), responses);
 	}
 
 	/**
@@ -119,6 +118,38 @@ public class SyncanoBase {
 	}
 
 	/**
+	 * Sets authorization key for specified params.
+	 * If Params already contains value, it will not be replaced.
+	 * 
+	 * @param params
+	 *            parameters that will be have auth key
+	 */
+	private void setAuthKey(Params params) {
+		if (params.getAuthKey() == null) {
+			params.setAuthKey(authKey);
+		}
+	}
+
+	/**
+	 * @return User authorization key
+	 */
+	public String getAuthKey() {
+		return authKey;
+	}
+
+	/**
+	 * To use most of API methods for User API key, auth_key is required for every request parameters. Setting
+	 * authorization key here will cause adding it automatically to every parameters just before request is sent. To get
+	 * authorization key, use user.login method.
+	 * 
+	 * @param User
+	 *            authorization key
+	 */
+	public void setAuthKey(String authKey) {
+		this.authKey = authKey;
+	}
+
+	/**
 	 * Sends asynchronous request
 	 * 
 	 * @param params
@@ -126,7 +157,26 @@ public class SyncanoBase {
 	 * @param listener
 	 *            listener that listens for response
 	 */
-	public void sendAsyncRequest(final Params[] params, final BatchCallback listener) {
+	public void sendAsyncRequest(final Params params, final Callback listener) {
+		(new AsyncTask<Void, Void, Response>() {
+			@Override
+			protected Response doInBackground(Void... p) {
+				Response response = sendRequest(params);
+				listener.finishedWorkerThread(response);
+				return response;
+			}
+
+			@Override
+			protected void onPostExecute(Response result) {
+				listener.finished(result);
+			}
+		}).execute();
+	}
+
+	/**
+	 * Sends asynchronous batch request
+	 */
+	public void sendAsyncBatchRequests(final Params[] params, final BatchCallback listener) {
 		(new AsyncTask<Void, Void, Response[]>() {
 			@Override
 			protected Response[] doInBackground(Void... p) {
@@ -143,13 +193,6 @@ public class SyncanoBase {
 	}
 
 	/**
-	 * Sends asynchronous batch request - will be added later
-	 */
-	public void sendAsyncBatchRequest(final Params params, final Callback listener) {
-		// TODO ?
-	}
-
-	/**
 	 * Sends request
 	 * 
 	 * @param url
@@ -159,37 +202,39 @@ public class SyncanoBase {
 	 * @param result
 	 *            result that will be filled with response data
 	 */
-	private void sendRequest(String url, String data, Response result) {
+	private Response sendRequest(String url, String data, Response result) {
 		if (BuildConfig.DEBUG) {
 			Log.d(LOG_TAG, "Sending: " + data);
 		}
 		if (!DownloadTool.connectionAvailable(mContext)) {
 			result.setResultCode(Response.CODE_ERROR_CONNECTION_OFF);
 			Log.e(LOG_TAG, "RequestSender, Connection off");
-			return;
+			return result;
 		}
 		// download
 		byte[] response = DownloadTool.download(mContext, url, null, data, NO_OF_TRIES, 0);
 		if (response == null) {
 			Log.e(LOG_TAG, "RequestSender, Connection error");
 			result.setResultCode(Response.CODE_ERROR_DOWNLOADED_DATA_NULL);
-			return;
+			return result;
 		}
 		// parse
-		try {
-			String s = new String(response);
-			if (BuildConfig.DEBUG) {
-				Log.d(LOG_TAG, "Received: " + s);
-			}
-			JSONObject jObject = new JSONObject(s);
-			ResponseReader.parseResponse(result, jObject.getJSONObject("result"));
-		} catch (JSONException e) {
-			Log.e(LOG_TAG, "RequestSender, JSONException, Parser error\n" + e.getMessage());
-			result.setResultCode(Response.CODE_ERROR_PARSER);
-			return;
+
+		String s = new String(response);
+		if (BuildConfig.DEBUG) {
+			Log.d(LOG_TAG, "Received: " + s);
 		}
 
-		ResponseReader.setResultCode(result);
+		JSONRPCResponse<Response> jsonres = new JSONRPCResponse<Response>();
+		jsonres.result = result;
+		try {
+			jsonres = mGson.fromJson(s, JSONRPCResponse.getTypeForParser(result.getClass()));
+		} catch (JsonSyntaxException e) {
+			jsonres.result.setResultCode(Response.CODE_ERROR_PARSER);
+		}
+
+		jsonres.result.refreshResultCode();
+		return jsonres.result;
 	}
 
 	/**
@@ -202,46 +247,37 @@ public class SyncanoBase {
 	 * @param result
 	 *            result array that will be filled with response data
 	 */
-	private void sendBatchRequest(String url, String data, Response[] responses) {
+	private Response[] sendBatchRequest(String url, String data, Response[] responses) {
 		if (!DownloadTool.connectionAvailable(mContext)) {
 			setResponseCode(responses, Response.CODE_ERROR_CONNECTION_OFF);
 			Log.e(LOG_TAG, "RequestSender, Connection off");
-			return;
+			return responses;
 		}
 		// download
 		byte[] response = DownloadTool.download(mContext, url, null, data, NO_OF_TRIES, 0);
 		if (response == null) {
 			Log.e(LOG_TAG, "RequestSender, Connection error");
 			setResponseCode(responses, Response.CODE_ERROR_DOWNLOADED_DATA_NULL);
-			return;
+			return responses;
 		}
 		// parse
-		try {
-			String s = new String(response);
-			JSONArray jArray = new JSONArray(s);
+		String s = new String(response);
+		JsonParser parser = new JsonParser();
+		JsonArray jArray = parser.parse(s).getAsJsonArray();
 
-			HashMap<String, JSONObject> map = new HashMap<String, JSONObject>(responses.length);
-			for (int i = 0; i < responses.length; i++) {
-				JSONObject jObject = jArray.getJSONObject(i);
-				String id = jObject.optString("id");
-				map.put(id, jObject.getJSONObject("result"));
-			}
-			for (int i = 0; i < responses.length; i++) {
-				ResponseReader.parseResponse(responses[i], map.get(i + ""));
-			}
-		} catch (JSONException e) {
-			Log.e(LOG_TAG, "RequestSender, JSONException, Parser error\n" + e.getMessage());
-			setResponseCode(responses, Response.CODE_ERROR_PARSER);
-			return;
+		HashMap<String, Response> map = new HashMap<String, Response>(responses.length);
+		for (int i = 0; i < responses.length; i++) {
+			JSONRPCResponse<Response> jsonres = mGson.fromJson(jArray.get(i),
+					JSONRPCResponse.getTypeForParser(responses[i].getClass()));
+			map.put(jsonres.id, jsonres.result);
 		}
 
-		for (Response result : responses) {
-			if (NOK.equals(result.getResult())) {
-				result.setResultCode(Response.CODE_ERROR_RECEIVED_FROM_SERVER);
-			} else if (OK.equals(result.getResult())) {
-				result.setResultCode(Response.CODE_SUCCESS);
-			}
+		for (int i = 0; i < responses.length; i++) {
+			responses[i] = map.get(Integer.toString(i));
+			responses[i].refreshResultCode();
 		}
+
+		return responses;
 	}
 
 	/**
@@ -278,5 +314,57 @@ public class SyncanoBase {
 		public void finishedWorkerThread(Response[] response) {
 		}
 	}
+	
+	/**
+	 * Callback for asynchronous image download.
+	 */
+	public abstract static class GetImageCallback {
+		/** Method called on UI Thread. */
+		public abstract void finished(Bitmap bitmap);
 
+		public void finishedWorkerThread(Bitmap bitmap) {
+		}
+	} 
+
+	/**
+	 * Download images from given URL. Usually used for downloading images from Data or User Avatars.
+	 * 
+	 * @param url
+	 *            Image URL
+	 * @return Null if failed to download
+	 */
+	public Bitmap getImage(String url) {
+		URL urlAdress;
+		try {
+			urlAdress = new URL(url);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return DownloadTool.downloadImage(mContext, urlAdress);
+	}
+
+	/**
+	 * Start getImage method in AsyncTask. When download finishes, listener will be notified.
+	 * 
+	 * @param url
+	 *            Image URL
+	 * @param listener
+	 *            Callback notifying about download finish
+	 */
+	public void getImageAsync(final String url, final GetImageCallback listener) {
+		(new AsyncTask<Void, Void, Bitmap>() {
+			@Override
+			protected Bitmap doInBackground(Void... p) {
+				Bitmap response = getImage(url);
+				listener.finishedWorkerThread(response);
+				return response;
+			}
+
+			@Override
+			protected void onPostExecute(Bitmap result) {
+				listener.finished(result);
+			}
+		}).execute();
+	}
 }

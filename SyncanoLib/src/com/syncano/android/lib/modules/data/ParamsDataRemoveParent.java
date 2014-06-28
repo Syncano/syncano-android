@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.data;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 
 /**
@@ -8,15 +10,25 @@ import com.syncano.android.lib.modules.Params;
  */
 public class ParamsDataRemoveParent extends Params {
 	/** Project id */
-	private String project_id;
+	@Expose
+	@SerializedName(value = "project_id")
+	private String projectId;
 	/** Collection id */
-	private String collection_id;
+	@Expose
+	@SerializedName(value = "collection_id")
+	private String collectionId;
 	/** Collection key */
-	private String collection_key;
+	@Expose
+	@SerializedName(value = "collection_key")
+	private String collectionKey;
 	/** Data id */
-	private String data_id;
+	@Expose
+	@SerializedName(value = "data_id")
+	private String dataId;
 	/** Parent id */
-	private String parent_id;
+	@Expose
+	@SerializedName(value = "parent_id")
+	private String parentId;
 
 	/**
 	 * @param projectId
@@ -42,7 +54,7 @@ public class ParamsDataRemoveParent extends Params {
 	 * @return project id
 	 */
 	public String getProjectId() {
-		return project_id;
+		return projectId;
 	}
 
 	/**
@@ -51,14 +63,14 @@ public class ParamsDataRemoveParent extends Params {
 	 * @param projectId
 	 */
 	public void setProjectId(String projectId) {
-		this.project_id = projectId;
+		this.projectId = projectId;
 	}
 
 	/**
 	 * @return collection id
 	 */
 	public String getCollectionId() {
-		return collection_id;
+		return collectionId;
 	}
 
 	/**
@@ -67,14 +79,14 @@ public class ParamsDataRemoveParent extends Params {
 	 * @param collectionId
 	 */
 	public void setCollectionId(String collectionId) {
-		this.collection_id = collectionId;
+		this.collectionId = collectionId;
 	}
 
 	/**
 	 * @return collection key
 	 */
 	public String getCollectionKey() {
-		return collection_key;
+		return collectionKey;
 	}
 
 	/**
@@ -83,14 +95,14 @@ public class ParamsDataRemoveParent extends Params {
 	 * @param collectionKey
 	 */
 	public void setCollectionKey(String collectionKey) {
-		this.collection_key = collectionKey;
+		this.collectionKey = collectionKey;
 	}
 
 	/**
 	 * @return data id
 	 */
 	public String getDataId() {
-		return data_id;
+		return dataId;
 	}
 
 	/**
@@ -99,14 +111,14 @@ public class ParamsDataRemoveParent extends Params {
 	 * @param dataId
 	 */
 	public void setDataId(String dataId) {
-		this.data_id = dataId;
+		this.dataId = dataId;
 	}
 
 	/**
 	 * @return parent id
 	 */
 	public String getParentId() {
-		return parent_id;
+		return parentId;
 	}
 
 	/**
@@ -115,6 +127,6 @@ public class ParamsDataRemoveParent extends Params {
 	 * @param parentId
 	 */
 	public void setParentId(String parentId) {
-		this.parent_id = parentId;
+		this.parentId = parentId;
 	}
 }

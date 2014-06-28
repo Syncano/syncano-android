@@ -1,5 +1,6 @@
 package com.syncano.android.lib.modules.projects;
 
+import com.google.gson.annotations.Expose;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
 
@@ -9,8 +10,10 @@ import com.syncano.android.lib.modules.Response;
 
 public class ParamsProjectNew extends Params {
 	/** New project's name */
+	@Expose
 	private String name;
 	/** New project's description */
+	@Expose
 	private String description;
 
 	/**

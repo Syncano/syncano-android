@@ -1,5 +1,6 @@
 package com.syncano.android.lib.modules.roles;
 
+import com.google.gson.annotations.Expose;
 import com.syncano.android.lib.modules.Response;
 import com.syncano.android.lib.objects.Role;
 
@@ -8,6 +9,7 @@ import com.syncano.android.lib.objects.Role;
  */
 public class ResponseRoleGet extends Response {
 	/** Array of roles */
+	@Expose
 	private Role[] roles;
 
 	/**

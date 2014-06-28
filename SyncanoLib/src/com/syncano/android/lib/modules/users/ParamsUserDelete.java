@@ -1,5 +1,7 @@
 package com.syncano.android.lib.modules.users;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 
 /**
@@ -7,9 +9,13 @@ import com.syncano.android.lib.modules.Params;
  */
 public class ParamsUserDelete extends Params {
 	/** Id of user */
-	private String user_id;
+	@Expose
+	@SerializedName(value = "user_id")
+	private String userId;
 	/** Name of user */
-	private String user_name;
+	@Expose
+	@SerializedName(value = "user_name")
+	private String userName;
 
 	/**
 	 * @param userId
@@ -18,8 +24,8 @@ public class ParamsUserDelete extends Params {
 	 *            User name defining user. Can be <code>null</code>.
 	 */
 	public ParamsUserDelete(String userId, String userName) {
-		this.user_id = userId;
-		this.user_name = userName;
+		this.userId = userId;
+		this.userName = userName;
 	}
 
 	@Override
@@ -30,8 +36,8 @@ public class ParamsUserDelete extends Params {
 	/**
 	 * @return user id
 	 */
-	public String getUser_id() {
-		return user_id;
+	public String getUserId() {
+		return userId;
 	}
 
 	/**
@@ -40,15 +46,15 @@ public class ParamsUserDelete extends Params {
 	 * @param user_id
 	 *            if for user
 	 */
-	public void setUser_id(String user_id) {
-		this.user_id = user_id;
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	/**
 	 * @return user name
 	 */
-	public String getUser_name() {
-		return user_name;
+	public String getUserName() {
+		return userName;
 	}
 
 	/**
@@ -57,8 +63,8 @@ public class ParamsUserDelete extends Params {
 	 * @param user_name
 	 *            user name
 	 */
-	public void setUser_name(String user_name) {
-		this.user_name = user_name;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 }

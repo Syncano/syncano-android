@@ -1,25 +1,50 @@
 package com.syncano.android.lib.modules.apikeys;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
+import com.syncano.android.lib.objects.ApiKey;
 
 /**
  * Creates a new API key client in current instance. Only Admin permission role can create new API clients.
  */
-public class ParamsApikeyNew extends Params {
+public class ParamsApiKeyNew extends Params {
+	/**
+	 * Type of new API client. Possible values:
+	 * <ul>
+	 * <li>backend (default) - API key that is not user-aware and has global permissions,</li>
+	 * <li>user - user-aware API key that can define per container permissions.</li>
+	 * </ul>
+	 */
+	@Expose
+	private String type;
 	/** Role id */
-	private String role_id;
+	@Expose
+	@SerializedName(value = "role_id")
+	private String roleId;
 	/** Description */
+	@Expose
 	private String description;
 
 	/**
-	 * @param roleId
-	 *            New API client's permission role id (see role.get()).
+	 * 
+	 * @param description
+	 *            Description of new API client.
+	 * @param type
+	 *            Type of new API client.
+	 */
+	public ParamsApiKeyNew(String description, String type) {
+		setDescription(description);
+		setType(type);
+	}
+
+	/**
+	 * 
 	 * @param description
 	 *            Description of new API client.
 	 */
-	public ParamsApikeyNew(String roleId, String description) {
-		setRoleId(roleId);
+	public ParamsApiKeyNew(String description) {
 		setDescription(description);
 	}
 
@@ -30,14 +55,34 @@ public class ParamsApikeyNew extends Params {
 
 	@Override
 	public Response instantiateResponse() {
-		return new ResponseApikeyNew();
+		return new ResponseApiKeyNew();
+	}
+
+	/**
+	 * @return Type of new API client
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * Sets type of new API client. Possible values:
+	 * <ul>
+	 * <li>backend (default) - API key that is not user-aware and has global permissions,</li>
+	 * <li>user - user-aware API key that can define per container permissions.</li>
+	 * </ul>
+	 * 
+	 * @param type
+	 */
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	/**
 	 * @return API client's permission role id
 	 */
 	public String getRoleId() {
-		return role_id;
+		return roleId;
 	}
 
 	/**
@@ -46,7 +91,7 @@ public class ParamsApikeyNew extends Params {
 	 * @param roleId
 	 */
 	public void setRoleId(String roleId) {
-		this.role_id = roleId;
+		this.roleId = roleId;
 	}
 
 	/**
