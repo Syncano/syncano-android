@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Response;
 import com.syncano.android.lib.objects.ApiKey;
 
-public class ResponseApiKeyNew extends Response {
+public class ResponseApiKeyNew extends Response { 
 	/** ApiKey from response */
 	@Expose
     @SerializedName(value = "apikey")
