@@ -10,22 +10,22 @@ import com.syncano.android.lib.objects.Role;
 public class ResponseRoleGet extends Response {
 	/** Array of roles */
 	@Expose
-	private Role[] roles;
+	private Role[] role;
 
 	/**
 	 * @return array of roles
 	 */
 	public Role[] getRoles() {
-		return roles;
+		return role;
 	}
 
 	/**
 	 * Sets array of roles
 	 * 
-	 * @param roles
+	 * @param role
 	 */
-	public void setRoles(Role[] roles) {
-		this.roles = roles;
+	public void setRoles(Role[] role) {
+		this.role = role;
 	}
 
 }

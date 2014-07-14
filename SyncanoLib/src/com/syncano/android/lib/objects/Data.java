@@ -57,6 +57,12 @@ public class Data implements Serializable, Cloneable {
 	/** data link url */
 	@Expose
 	private String link;
+	@Expose
+	private Integer data1;
+	@Expose
+	private Integer data2;
+	@Expose
+	private Integer data3;
 	/** source url */
 	@Expose
 	@SerializedName(value = "source_url")
@@ -217,6 +223,30 @@ public class Data implements Serializable, Cloneable {
 	 */
 	public void setText(String text) {
 		this.text = text;
+	}
+
+	public Integer getData1() {
+		return data1;
+	}
+
+	public void setData1(Integer data1) {
+		this.data1 = data1;
+	}
+
+	public Integer getData2() {
+		return data2;
+	}
+
+	public void setData2(Integer data2) {
+		this.data2 = data2;
+	}
+
+	public Integer getData3() {
+		return data3;
+	}
+
+	public void setData3(Integer data3) {
+		this.data3 = data3;
 	}
 
 	/**

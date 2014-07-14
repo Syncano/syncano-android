@@ -32,7 +32,7 @@ public class ParamsApiKeyUpdateDescription extends Params {
 
 	@Override
 	public Response instantiateResponse() {
-		return new ResponseApiKeyNew();
+		return new ResponseApiKeyUpdateDescription();
 	}
 
 	/**

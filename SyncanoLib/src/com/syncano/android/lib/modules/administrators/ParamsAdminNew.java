@@ -19,21 +19,23 @@ public class ParamsAdminNew extends Params {
 	@SerializedName(value = "role_id")
 	private String roleId;
 
+    /** Message that will be sent along with invitation to instance. */
+    @Expose
+    private String message;
+
 	/**
 	 * 
 	 * @param adminEmail
 	 *            Email of admin to add
 	 * @param roleId
 	 *            Initial role for current instance (see role.get())
+     * @param message
+     *            Message that will be sent along with invitation to instance.
 	 */
-	public ParamsAdminNew(String adminEmail, String roleId) {
+	public ParamsAdminNew(String adminEmail, String roleId, String message) {
 		setAdminEmail(adminEmail);
 		setRoleId(roleId);
-	}
-
-	@Override
-	public Response instantiateResponse() {
-		return new ResponseAdminNew();
+        setMessage(message);
 	}
 
 	@Override
@@ -75,4 +77,20 @@ public class ParamsAdminNew extends Params {
 		this.roleId = roleId;
 	}
 
+    /**
+     * Get message that will be sent along with invitation to instance.
+     * @return Message related with invitation.
+     */
+    public String getMessage() {
+        return message;
+    }
+
+    /**
+     * Sets message that will be sent along with invitation to instance.
+     * @param message
+     *          Message related with invitation.
+     */
+    public void setMessage(String message) {
+        this.message = message;
+    }
 }

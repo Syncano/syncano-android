@@ -7,7 +7,6 @@ import com.google.gson.reflect.TypeToken;
 import com.syncano.android.lib.modules.Response;
 import com.syncano.android.lib.modules.administrators.ResponseAdminGet;
 import com.syncano.android.lib.modules.administrators.ResponseAdminGetOne;
-import com.syncano.android.lib.modules.administrators.ResponseAdminNew;
 import com.syncano.android.lib.modules.administrators.ResponseAdminUpdate;
 import com.syncano.android.lib.modules.apikeys.ResponseApiKeyGet;
 import com.syncano.android.lib.modules.apikeys.ResponseApiKeyGetOne;
@@ -62,10 +61,7 @@ public class JSONRPCResponse<T extends Response> {
 		} else if (ResponseAdminGetOne.class.equals(clazz)) {
 			return (new TypeToken<JSONRPCResponse<ResponseAdminGetOne>>() {
 			}).getType();
-		} else if (ResponseAdminNew.class.equals(clazz)) {
-			return (new TypeToken<JSONRPCResponse<ResponseAdminNew>>() {
-			}).getType();
-		} else if (ResponseAdminUpdate.class.equals(clazz)) {
+		}  else if (ResponseAdminUpdate.class.equals(clazz)) {
 			return (new TypeToken<JSONRPCResponse<ResponseAdminUpdate>>() {
 			}).getType();
 		} else if (ResponseApiKeyGet.class.equals(clazz)) {

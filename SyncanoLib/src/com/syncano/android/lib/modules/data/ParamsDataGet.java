@@ -43,6 +43,8 @@ public class ParamsDataGet extends Params {
 	@Expose
 	@SerializedName(value = "since_time")
 	private Date sinceTime;
+	@Expose
+	private String since;
 	/** max id */
 	@Expose
 	@SerializedName(value = "max_id")
@@ -75,6 +77,9 @@ public class ParamsDataGet extends Params {
 	@Expose
 	@SerializedName(value = "parent_ids")
 	private String[] parentIds;
+	@Expose
+	@SerializedName(value = "child_ids")
+	private String[] childIds;
 	/** by user */
 	@Expose
 	@SerializedName(value = "by_user")
@@ -382,6 +387,22 @@ public class ParamsDataGet extends Params {
 	 */
 	public void setByUser(String byUser) {
 		this.byUser = byUser;
+	}
+
+	public String getSince() {
+		return since;
+	}
+
+	public void setSince(String since) {
+		this.since = since;
+	}
+
+	public String[] getChildIds() {
+		return childIds;
+	}
+
+	public void setChildIds(String[] childIds) {
+		this.childIds = childIds;
 	}
 
 }

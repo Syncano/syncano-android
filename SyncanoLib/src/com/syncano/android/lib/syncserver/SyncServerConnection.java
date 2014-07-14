@@ -396,7 +396,7 @@ public class SyncServerConnection implements DataListener {
 	 *            json with new message
 	 */
 	private void messageMessage(JsonObject json) {
-		mListener.message(json.get(OPT_OBJECT).getAsString(), json.get(OBJECT_TYPE_DATA).getAsString());
+		mListener.message(json.get(OPT_OBJECT).getAsString(), json.get(OBJECT_TYPE_DATA).getAsJsonObject());
 	}
 
 	/**
@@ -473,7 +473,7 @@ public class SyncServerConnection implements DataListener {
 
 		public void connected();
 
-		public void message(String object, String message);
+		public void message(String object, JsonObject message);
 	}
 
 	/**

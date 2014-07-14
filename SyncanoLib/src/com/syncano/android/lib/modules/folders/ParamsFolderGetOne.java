@@ -50,7 +50,7 @@ public class ParamsFolderGetOne extends Params {
 	}
 
 	public Response instantiateResponse() {
-		return new ResponseFolderNew();
+		return new ResponseFolderGetOne();
 	}
 
 	/**

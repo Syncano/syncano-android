@@ -8,7 +8,6 @@ import com.syncano.android.lib.modules.administrators.ParamsAdminNew;
 import com.syncano.android.lib.modules.administrators.ParamsAdminUpdate;
 import com.syncano.android.lib.modules.administrators.ResponseAdminGet;
 import com.syncano.android.lib.modules.administrators.ResponseAdminGetOne;
-import com.syncano.android.lib.modules.administrators.ResponseAdminNew;
 import com.syncano.android.lib.modules.administrators.ResponseAdminUpdate;
 import com.syncano.android.lib.modules.apikeys.ParamsApiKeyAuthorize;
 import com.syncano.android.lib.modules.apikeys.ParamsApiKeyDeauthorize;
@@ -132,8 +131,8 @@ public class Syncano extends SyncanoBase {
 	 *            parameters for request
 	 * @return response for this request
 	 */
-	public ResponseAdminNew adminNew(ParamsAdminNew params) {
-		return (ResponseAdminNew) sendRequest(params);
+	public Response adminNew(ParamsAdminNew params) {
+		return sendRequest(params);
 	}
 
 	/**
@@ -276,7 +275,7 @@ public class Syncano extends SyncanoBase {
 	 *            parameters for request
 	 * @return response for this request
 	 */
-	public ResponseRoleGet apikeyUpdateDescription(ParamsRoleGet params) {
+	public ResponseRoleGet roleGet(ParamsRoleGet params) {
 		return (ResponseRoleGet) sendRequest(params);
 	}
 
