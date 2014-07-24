@@ -38,10 +38,12 @@ public class ParamsDataGet extends Params {
 	/** since id */
 	@Expose
 	@SerializedName(value = "since_id")
+    @Deprecated
 	private String sinceId;
 	/** since time date */
 	@Expose
 	@SerializedName(value = "since_time")
+    @Deprecated
 	private Date sinceTime;
 	@Expose
 	private String since;
@@ -198,7 +200,9 @@ public class ParamsDataGet extends Params {
 
 	/**
 	 * @return since id
+     * @deprecated Use Since combined with Order By.
 	 */
+    @Deprecated
 	public String getSinceId() {
 		return sinceId;
 	}
@@ -208,13 +212,16 @@ public class ParamsDataGet extends Params {
 	 * 
 	 * @param sinceId
 	 */
+    @Deprecated
 	public void setSinceId(String sinceId) {
 		this.sinceId = sinceId;
 	}
 
 	/**
 	 * @return since time date
+     * @deprecated Use Since combined with Order By.
 	 */
+    @Deprecated
 	public Date getSinceTime() {
 		return sinceTime;
 	}
@@ -223,7 +230,9 @@ public class ParamsDataGet extends Params {
 	 * Sets since time date
 	 * 
 	 * @param sinceTime
+     * @deprecated Use Since combined with Order By.
 	 */
+    @Deprecated
 	public void setSinceTime(Date sinceTime) {
 		this.sinceTime = sinceTime;
 	}
@@ -405,4 +414,17 @@ public class ParamsDataGet extends Params {
 		this.childIds = childIds;
 	}
 
+    /**
+     * Add where filter to additional parameters.
+     * You can define multiple filters, all of them are joined with logical and.
+     * This way you can filter by some specified range by combining gte and lte.
+     *
+     * @param where
+     *            where filter
+     * @param value
+     *            value to filter
+     */
+    public void addWhereFilterParam(WhereFilter where, Integer value) {
+        addParam(where.toString(), value.toString());
+    }
 }

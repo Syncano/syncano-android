@@ -36,13 +36,14 @@ import com.syncano.android.test.config.Constants;
 public class UsersTest extends AndroidTestCase {
 
     private static final String USER_NAME = "SyncanoAndroidTestUser";
+    private static final String USER_NICK = "NickName";
+    private static final String USER_UPDATED_NICK = "NickNameUpdated";
     private static final String USER_PASSWORD = "password";
     private static final String USER_NEW_PASSWORD = "new_password";
 
     private Syncano syncano = null;
     private String projectId = null;
     private String collectionId = null;
-    private User user;
 
     @Override
     protected void setUp() throws Exception {
@@ -85,23 +86,36 @@ public class UsersTest extends AndroidTestCase {
 
     public void testUsers() {
 
+        User user;
+
         // User New
         ParamsUserNew paramsUserNew = new ParamsUserNew(USER_NAME);
         paramsUserNew.setPassword(USER_PASSWORD);
+        paramsUserNew.setNick(USER_NICK);
         ResponseUserNew responseUserNew = syncano.userNew(paramsUserNew);
+
         assertEquals(Response.CODE_SUCCESS, (int)responseUserNew.getResultCode());
+        assertNotNull(responseUserNew.getUser().getId());
+        assertEquals(USER_NAME, responseUserNew.getUser().getName());
+        assertEquals(USER_NICK, responseUserNew.getUser().getNick());
         user = responseUserNew.getUser();
 
         // User Login
         ParamsUserLogin paramsUserLogin = new ParamsUserLogin(USER_NAME, USER_PASSWORD);
         ResponseUserLogin responseUserLogin = syncano.userLogin(paramsUserLogin);
         assertEquals(Response.CODE_SUCCESS, (int)responseUserLogin.getResultCode());
+        assertNotNull(responseUserLogin.getAuthKey());
 
         // User Get All
         ParamsUserGetAll paramsUserGetAll = new ParamsUserGetAll();
         ResponseUserGetAll responseUserGetAll = syncano.userGetAll(paramsUserGetAll);
+
         assertEquals(Response.CODE_SUCCESS, (int)responseUserGetAll.getResultCode());
         assertTrue(responseUserGetAll.getUser().length > 0);
+        for (int i = 0; i < responseUserGetAll.getUser().length ; i++) {
+            assertNotNull(responseUserGetAll.getUser()[i].getId());
+            assertNotNull(responseUserGetAll.getUser()[i].getName());
+        }
 
         // User Get
         ParamsDataNew paramsDataNew = new ParamsDataNew(projectId, collectionId, null, Data.PENDING);
@@ -111,8 +125,13 @@ public class UsersTest extends AndroidTestCase {
 
         ParamsUserGet paramsUserGet = new ParamsUserGet(projectId, collectionId, null);
         ResponseUserGet responseUserGet = syncano.userGet(paramsUserGet);
+
         assertEquals(Response.CODE_SUCCESS, (int)responseUserGet.getResultCode());
         assertTrue(responseUserGet.getUser().length > 0);
+        for (int i = 0; i < responseUserGet.getUser().length ; i++) {
+            assertNotNull(responseUserGet.getUser()[i].getId());
+            assertNotNull(responseUserGet.getUser()[i].getName());
+        }
 
         ParamsDataDelete paramsDataDelete = new ParamsDataDelete(projectId, collectionId, null);
         paramsDataDelete.setDataIds(new String[] {responseDataNew.getData().getId()});
@@ -122,13 +141,19 @@ public class UsersTest extends AndroidTestCase {
         // User Get One
         ParamsUserGetOne paramsUserGetOne = new ParamsUserGetOne(user.getId(), null);
         ResponseUserGetOne responseUserGetOne = syncano.userGetOne(paramsUserGetOne);
+
         assertEquals(Response.CODE_SUCCESS, (int) responseUserGetOne.getResultCode());
+        assertNotNull(responseUserGetOne.getUser().getId());
+        assertEquals(USER_NAME, responseUserGetOne.getUser().getName());
+        assertEquals(USER_NICK, responseUserGetOne.getUser().getNick());
 
         // User Update
         ParamsUserUpdate paramsUserUpdate = new ParamsUserUpdate(user.getId(), null);
         paramsUserUpdate.setNewPassword(USER_NEW_PASSWORD);
+        paramsUserUpdate.setNick(USER_UPDATED_NICK);
         ResponseUserUpdate responseUserUpdate = syncano.userUpdate(paramsUserUpdate);
         assertEquals(Response.CODE_SUCCESS, (int) responseUserUpdate.getResultCode());
+        assertEquals(USER_UPDATED_NICK, responseUserUpdate.getUser().getNick());
 
         // User Count
         ParamsUserCount paramsUserCount = new ParamsUserCount();

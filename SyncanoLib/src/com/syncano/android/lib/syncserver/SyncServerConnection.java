@@ -39,6 +39,7 @@ public class SyncServerConnection implements DataListener {
 	private static final String OK = "OK";
 	private static final String PARAMS = "params";
 	private static final String MESSAGE_ID = "message_id";
+	private static final String TARGET = "target";
 
 	private static final String TYPE_CALLRESPONSE = "callresponse";
 	private static final String TYPE_MESSAGE = "message";
@@ -129,6 +130,15 @@ public class SyncServerConnection implements DataListener {
 	public void setSubscriptionListener(SubscriptionListener subscriptionListener) {
 		this.mSubscriptionListener = subscriptionListener;
 	}
+
+    /**
+     * Method sets new sync server listener
+     *
+     * @param syncServerListener
+     */
+    public void setSyncServerListener(SyncServerListener syncServerListener) {
+        this.mListener = syncServerListener;
+    }
 
 	/**
 	 * Method starts new connection
@@ -266,10 +276,11 @@ public class SyncServerConnection implements DataListener {
 	 *            json with response
 	 */
 	private void messageDeletedData(JsonObject json) {
-		JsonArray jsonIds = json.get(ARRAY_ID).getAsJsonArray();
-		int[] ids = new int[jsonIds.size()];
+		JsonObject target = json.get(TARGET).getAsJsonObject();
+		JsonArray jsonIds = target.get(ARRAY_ID).getAsJsonArray();
+		String[] ids = new String[jsonIds.size()];
 		for (int i = 0; i < ids.length; i++) {
-			ids[i] = jsonIds.get(i).getAsInt();
+			ids[i] = jsonIds.get(i).getAsString();
 		}
 		mSubscriptionListener.deleted(ids);
 	}
@@ -288,7 +299,7 @@ public class SyncServerConnection implements DataListener {
 		ArrayList<String> ids = new ArrayList<String>();
 
 		// get ids of changed objects
-		JsonObject target = json.get("target").getAsJsonObject();
+		JsonObject target = json.get(TARGET).getAsJsonObject();
 		JsonArray idsArray = target.get(ARRAY_ID).getAsJsonArray();
 		for (int i = 0; i < idsArray.size(); i++) {
 			String id = idsArray.get(i).getAsString();
@@ -481,7 +492,7 @@ public class SyncServerConnection implements DataListener {
 	 */
 
 	public interface SubscriptionListener {
-		public void deleted(int[] ids);
+		public void deleted(String[] ids);
 
 		public void changed(ArrayList<DataChanges> changes);
 

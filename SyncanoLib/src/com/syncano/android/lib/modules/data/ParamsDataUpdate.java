@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
+import com.syncano.android.lib.objects.Data;
 
 /**
  * Updates existing Data Object if data with specified data_id or data_key already exists. You can specify how to react
@@ -54,6 +55,15 @@ public class ParamsDataUpdate extends Params {
 	/** Link */
 	@Expose
 	private String link;
+    /** data1 */
+    @Expose
+    private Integer data1;
+    /** data2 */
+    @Expose
+    private Integer data2;
+    /** data3 */
+    @Expose
+    private Integer data3;
 	/** Image */
 	@Expose
 	private String image;
@@ -231,6 +241,51 @@ public class ParamsDataUpdate extends Params {
 		this.link = link;
 	}
 
+    /**
+     * @return data1
+     */
+    public Integer getData1() {
+        return data1;
+    }
+
+    /**
+     * Sets data1
+     * @param data1
+     */
+    public void setData1(Integer data1) {
+        this.data1 = data1;
+    }
+
+    /**
+     * @return data2
+     */
+    public Integer getData2() {
+        return data2;
+    }
+
+    /**
+     * Sets data2
+     * @param data2
+     */
+    public void setData2(Integer data2) {
+        this.data2 = data2;
+    }
+
+    /**
+     * @return data3
+     */
+    public Integer getData3() {
+        return data3;
+    }
+
+    /**
+     * Sets data3
+     * @param data3
+     */
+    public void setData3(Integer data3) {
+        this.data3 = data3;
+    }
+
 	/**
 	 * @return image in base64
 	 */
@@ -358,4 +413,22 @@ public class ParamsDataUpdate extends Params {
 	public void setUpdateMethod(String updateMethod) {
 		this.updateMethod = updateMethod;
 	}
+
+    /**
+     * Decrement given data field.
+     * @param data Data field to modify.
+     * @param decrementBy
+     */
+    public void setDecrement(Data.AdditionalData data, Integer decrementBy) {
+        addParam(data.toString() + "__dec", decrementBy.toString());
+    }
+
+    /**
+     * Increment given data field.
+     * @param data Data field to modify.
+     * @param incrementBy
+     */
+    public void setIncrement(Data.AdditionalData data, Integer incrementBy) {
+        addParam(data.toString() + "__inc", incrementBy.toString());
+    }
 }

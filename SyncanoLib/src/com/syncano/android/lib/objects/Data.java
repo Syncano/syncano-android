@@ -21,6 +21,24 @@ public class Data implements Serializable, Cloneable {
 	/** Data state */
 	public static final String REJECTED = "Rejected";
 
+    public enum AdditionalData {
+
+        DATA1 ("data1"),
+        DATA2 ("data2"),
+        DATA3 ("data3");
+
+        private String field;
+
+        private AdditionalData(String s) {
+            field = s;
+        }
+
+        @Override
+        public String toString(){
+            return field;
+        }
+    }
+
 	/** parent id */
 	@Expose
 	@SerializedName(value = "parent_id")
@@ -57,10 +75,13 @@ public class Data implements Serializable, Cloneable {
 	/** data link url */
 	@Expose
 	private String link;
+    /** data1 */
 	@Expose
 	private Integer data1;
+    /** data2 */
 	@Expose
 	private Integer data2;
+    /** data3 */
 	@Expose
 	private Integer data3;
 	/** source url */
@@ -225,29 +246,50 @@ public class Data implements Serializable, Cloneable {
 		this.text = text;
 	}
 
-	public Integer getData1() {
-		return data1;
-	}
+    /**
+     * @return data1
+     */
+    public Integer getData1() {
+        return data1;
+    }
 
-	public void setData1(Integer data1) {
-		this.data1 = data1;
-	}
+    /**
+     * Sets data1
+     * @param data1
+     */
+    public void setData1(Integer data1) {
+        this.data1 = data1;
+    }
 
-	public Integer getData2() {
-		return data2;
-	}
+    /**
+     * @return data2
+     */
+    public Integer getData2() {
+        return data2;
+    }
 
-	public void setData2(Integer data2) {
-		this.data2 = data2;
-	}
+    /**
+     * Sets data2
+     * @param data2
+     */
+    public void setData2(Integer data2) {
+        this.data2 = data2;
+    }
 
-	public Integer getData3() {
-		return data3;
-	}
+    /**
+     * @return data3
+     */
+    public Integer getData3() {
+        return data3;
+    }
 
-	public void setData3(Integer data3) {
-		this.data3 = data3;
-	}
+    /**
+     * Sets data3
+     * @param data3
+     */
+    public void setData3(Integer data3) {
+        this.data3 = data3;
+    }
 
 	/**
 	 * @return data link url

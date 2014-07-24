@@ -48,30 +48,53 @@ public class ApiKeyTest extends AndroidTestCase {
         // Api Key Start Session
         ParamsApiKeyStartSession paramsApiKeyStartSession = new ParamsApiKeyStartSession();
         ResponseApiKeyStartSession responseApiKeyStartSession = syncano.apikeyStartSession(paramsApiKeyStartSession);
+
         assertEquals(Response.CODE_SUCCESS, (int) responseApiKeyStartSession.getResultCode());
+        assertNotNull(responseApiKeyStartSession.getSessionId());
 
         // Api Key New
         ParamsApiKeyNew paramsApiKeyNew = new ParamsApiKeyNew(API_DESCRIPTION, API_KEY_ROLE_USER);
         ResponseApiKeyNew responseApiKeyNew =  syncano.apikeyNew(paramsApiKeyNew);
+
         assertEquals(Response.CODE_SUCCESS, (int) responseApiKeyNew.getResultCode());
+        assertNotNull(responseApiKeyNew.getApiKey().getApiKey());
+        assertNotNull(responseApiKeyNew.getApiKey().getId());
+        assertNotNull(responseApiKeyNew.getApiKey().getType());
+        assertNotNull(responseApiKeyNew.getApiKey().getRole());
+        assertEquals(API_DESCRIPTION, responseApiKeyNew.getApiKey().getDescription());
         apiKey = responseApiKeyNew.getApiKey();
 
         // Api Key Get
         ParamsApiKeyGet paramsApiKeyGet = new ParamsApiKeyGet();
         ResponseApiKeyGet responseApiKeyGet = syncano.apikeyGet(paramsApiKeyGet);
+
         assertEquals(Response.CODE_SUCCESS, (int) responseApiKeyGet.getResultCode());
         assertTrue(responseApiKeyGet.getApiKey().length > 0);
+        for (int i = 0; i < responseApiKeyGet.getApiKey().length ; i++) {
+            assertNotNull(responseApiKeyGet.getApiKey()[i].getApiKey());
+            assertNotNull(responseApiKeyGet.getApiKey()[i].getDescription());
+            assertNotNull(responseApiKeyGet.getApiKey()[i].getId());
+            assertNotNull(responseApiKeyGet.getApiKey()[i].getType());
+            assertNotNull(responseApiKeyGet.getApiKey()[i].getRole());
+        }
 
         // Api Key Get One
         ParamsApiKeyGetOne paramsApiKeyGetOne = new ParamsApiKeyGetOne();
         paramsApiKeyGetOne.setApiClientId(apiKey.getId());
         ResponseApiKeyGetOne responseApiKeyGetOne = syncano.apikeyGetOne(paramsApiKeyGetOne);
+
         assertEquals(Response.CODE_SUCCESS, (int) responseApiKeyGetOne.getResultCode());
+        assertNotNull(responseApiKeyGetOne.getApiKey().getApiKey());
+        assertNotNull(responseApiKeyGetOne.getApiKey().getId());
+        assertNotNull(responseApiKeyGetOne.getApiKey().getType());
+        assertNotNull(responseApiKeyGetOne.getApiKey().getRole());
+        assertEquals(API_DESCRIPTION, responseApiKeyGetOne.getApiKey().getDescription());
 
         // Api Key Update Description
         ParamsApiKeyUpdateDescription paramsApiKeyUpdateDescription = new ParamsApiKeyUpdateDescription(API_DESCRIPTION_UPDATED);
         ResponseApiKeyUpdateDescription responseApiKeyUpdateDescription = syncano.apikeyUpdateDescription(paramsApiKeyUpdateDescription);
         assertEquals(Response.CODE_SUCCESS, (int) responseApiKeyUpdateDescription.getResultCode());
+        assertEquals(API_DESCRIPTION_UPDATED, responseApiKeyUpdateDescription.getApiKey().getDescription());
 
         // Api Key Authorize
         ParamsApiKeyAuthorize paramsApiKeyAuthorize = new ParamsApiKeyAuthorize(apiKey.getId(), PERMISSION_SEND_NOTIFICATION);

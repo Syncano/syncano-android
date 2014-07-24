@@ -31,6 +31,9 @@ public class RolesTest extends AndroidTestCase {
         ResponseRoleGet responseRoleGet = syncano.roleGet(paramsRoleGet);
         assertEquals(Response.CODE_SUCCESS, (int) responseRoleGet.getResultCode());
         assertTrue(responseRoleGet.getRoles().length > 0);
-
+        for (int i = 0; i < responseRoleGet.getRoles().length ; i++) {
+            assertNotNull(responseRoleGet.getRoles()[i].getId());
+            assertNotNull(responseRoleGet.getRoles()[i].getName());
+        }
     }
 }

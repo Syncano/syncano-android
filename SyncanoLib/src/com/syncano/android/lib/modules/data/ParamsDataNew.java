@@ -43,6 +43,15 @@ public class ParamsDataNew extends Params {
 	/** Link */
 	@Expose
 	private String link;
+    /** data1 */
+    @Expose
+    private Integer data1;
+    /** data2 */
+    @Expose
+    private Integer data2;
+    /** data3 */
+    @Expose
+    private Integer data3;
 	/** Image base64 */
 	@Expose
 	private String image;
@@ -206,6 +215,51 @@ public class ParamsDataNew extends Params {
 	public void setLink(String link) {
 		this.link = link;
 	}
+
+    /**
+     * @return data1
+     */
+    public Integer getData1() {
+        return data1;
+    }
+
+    /**
+     * Sets data1
+     * @param data1
+     */
+    public void setData1(Integer data1) {
+        this.data1 = data1;
+    }
+
+    /**
+     * @return data2
+     */
+    public Integer getData2() {
+        return data2;
+    }
+
+    /**
+     * Sets data2
+     * @param data2
+     */
+    public void setData2(Integer data2) {
+        this.data2 = data2;
+    }
+
+    /**
+     * @return data3
+     */
+    public Integer getData3() {
+        return data3;
+    }
+
+    /**
+     * Sets data3
+     * @param data3
+     */
+    public void setData3(Integer data3) {
+        this.data3 = data3;
+    }
 
 	/**
 	 * 

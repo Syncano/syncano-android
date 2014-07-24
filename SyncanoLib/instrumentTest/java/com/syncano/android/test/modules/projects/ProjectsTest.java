@@ -27,6 +27,8 @@ public class ProjectsTest extends AndroidTestCase {
     private static final String API_KEY_ROLE_USER = "user";
     private static final String PROJECT_NAME = "CI Test Project";
     private static final String PROJECT_NAME_UPDATED = "CI Test Project Updated";
+    private static final String PROJECT_DESCRIPTION = "Project Description";
+    private static final String PROJECT_DESCRIPTION_UPDATED = "Project Description Updated";
     private static final String PERMISSION_READ_DATA = "read_data";
 
     private Syncano syncano = null;
@@ -59,27 +61,44 @@ public class ProjectsTest extends AndroidTestCase {
     public void testProjects() {
         // Projects New
         ParamsProjectNew paramsProjectNew = new ParamsProjectNew(PROJECT_NAME);
+        paramsProjectNew.setDescription(PROJECT_DESCRIPTION);
         ResponseProjectNew responseProjectNew = syncano.projectNew(paramsProjectNew);
+
         assertEquals(Response.CODE_SUCCESS, (int) responseProjectNew.getResultCode());
+        assertNotNull(responseProjectNew.getProject().getId());
+        assertEquals(PROJECT_NAME, responseProjectNew.getProject().getName());
+        assertEquals(PROJECT_DESCRIPTION, responseProjectNew.getProject().getDescription());
         projectId = responseProjectNew.getProject().getId();
 
         // Projects Get
         ParamsProjectGet paramsProjectGet = new ParamsProjectGet();
         ResponseProjectGet responseProjectGet = syncano.projectGet(paramsProjectGet);
+
         assertEquals(Response.CODE_SUCCESS, (int) responseProjectGet.getResultCode());
         assertTrue(responseProjectGet.getProject().length > 0);
+        for (int i = 0; i < responseProjectGet.getProject().length ; i++) {
+            assertNotNull(responseProjectGet.getProject()[i].getId());
+            assertNotNull(responseProjectGet.getProject()[i].getName());
+        }
 
         // Projects Get One
         ParamsProjectGetOne paramsProjectGetOne = new ParamsProjectGetOne(projectId);
         ResponseProjectGetOne responseProjectGetOne = syncano.projectGetOne(paramsProjectGetOne);
+
         assertEquals(Response.CODE_SUCCESS, (int) responseProjectGetOne.getResultCode());
+        assertNotNull(responseProjectGetOne.getProject().getId());
+        assertEquals(PROJECT_NAME, responseProjectGetOne.getProject().getName());
+        assertEquals(PROJECT_DESCRIPTION, responseProjectGetOne.getProject().getDescription());
 
         // Projects Update
         ParamsProjectUpdate paramsProjectUpdate = new ParamsProjectUpdate(projectId);
         paramsProjectUpdate.setName(PROJECT_NAME_UPDATED);
+        paramsProjectUpdate.setDescription(PROJECT_DESCRIPTION_UPDATED);
         ResponseProjectUpdate responseProjectUpdate = syncano.projectUpdate(paramsProjectUpdate);
+
         assertEquals(Response.CODE_SUCCESS, (int) responseProjectUpdate.getResultCode());
         assertEquals(PROJECT_NAME_UPDATED, responseProjectUpdate.getProject().getName());
+        assertEquals(PROJECT_DESCRIPTION_UPDATED, responseProjectUpdate.getProject().getDescription());
 
         // Projects Authorize
         ParamsProjectAuthorize paramsProjectAuthorize = new ParamsProjectAuthorize(apiKey.getId(), PERMISSION_READ_DATA, projectId);

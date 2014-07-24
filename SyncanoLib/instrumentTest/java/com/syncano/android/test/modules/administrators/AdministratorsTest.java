@@ -62,14 +62,23 @@ public class AdministratorsTest extends AndroidTestCase {
         // Admin Get
         ParamsAdminGet paramsAdminGet = new ParamsAdminGet();
         ResponseAdminGet responseAdminGet = syncano.adminGet(paramsAdminGet);
+
         assertEquals(Response.CODE_SUCCESS, (int) responseAdminGet.getResultCode());
         assertTrue(responseAdminGet.getAdmin().length > 0); // There should be at least one Admin.
+
+        for (int i = 0; i < responseAdminGet.getAdmin().length ; i++) {
+            assertNotNull(responseAdminGet.getAdmin()[i].getEmail());
+            assertNotNull(responseAdminGet.getAdmin()[i].getRole());
+        }
         admin = responseAdminGet.getAdmin()[0];
 
         // Admin Get One
         ParamsAdminGetOne paramsAdminGetOne = new ParamsAdminGetOne(null, admin.getId());
         ResponseAdminGetOne responseAdminGetOne = syncano.adminGetOne(paramsAdminGetOne);
+
         assertEquals(Response.CODE_SUCCESS, (int) responseAdminGetOne.getResultCode());
+        assertNotNull(responseAdminGetOne.getAdmin().getEmail());
+        assertNotNull(responseAdminGetOne.getAdmin().getRole());
 
         // Admin Update
         /* TODO Can't test until we can create test Admin.

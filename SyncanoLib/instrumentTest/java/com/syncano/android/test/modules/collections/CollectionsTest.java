@@ -32,6 +32,7 @@ import com.syncano.android.test.config.Constants;
 public class CollectionsTest extends AndroidTestCase {
 
     private static final String API_KEY_ROLE_USER = "user";
+    private static final String COLLECTION_NAME = "CI Test Collection";
     private static final String COLLECTION_DESCRIPTION_UPDATED = "Updated Description";
     private static final String PERMISSION_READ_DATA = "read_data";
     private static final String COLLECTION_TAG = "news";
@@ -79,21 +80,32 @@ public class CollectionsTest extends AndroidTestCase {
     public void testCollections() {
 
         // Collection New
-        ParamsCollectionNew paramsCollectionNew = new ParamsCollectionNew(projectId, "CI Test Collection");
+        ParamsCollectionNew paramsCollectionNew = new ParamsCollectionNew(projectId, COLLECTION_NAME);
         ResponseCollectionNew responseCollectionNew = syncano.collectionNew(paramsCollectionNew);
+
         assertEquals(Response.CODE_SUCCESS, (int) responseCollectionNew.getResultCode());
+        assertNotNull(responseCollectionNew.getCollection().getId());
+        assertEquals(COLLECTION_NAME, responseCollectionNew.getCollection().getName());
         collectionId = responseCollectionNew.getCollection().getId();
 
         // Collection Get
         ParamsCollectionGet paramsCollectionGet = new ParamsCollectionGet(projectId);
         ResponseCollectionGet responseCollectionGet = syncano.collectionGet(paramsCollectionGet);
+
         assertEquals(Response.CODE_SUCCESS, (int) responseCollectionGet.getResultCode());
         assertTrue(responseCollectionGet.getCollection().length > 0);
+        for (int i = 0; i < responseCollectionGet.getCollection().length ; i++) {
+            assertNotNull(responseCollectionGet.getCollection()[i].getId());
+            assertNotNull(responseCollectionGet.getCollection()[i].getName());
+        }
 
         // Collection Get One
         ParamsCollectionGetOne paramsCollectionGetOne = new ParamsCollectionGetOne(projectId, collectionId);
         ResponseCollectionGetOne responseCollectionGetOne = syncano.collectionGetOne(paramsCollectionGetOne);
         assertEquals(Response.CODE_SUCCESS, (int) responseCollectionGetOne.getResultCode());
+
+        assertNotNull(responseCollectionGetOne.getCollection().getId());
+        assertNotNull(responseCollectionGetOne.getCollection().getName());
 
         // Collection Activate
         ParamsCollectionActivate paramsCollectionActivate = new ParamsCollectionActivate(projectId, collectionId);
@@ -109,7 +121,10 @@ public class CollectionsTest extends AndroidTestCase {
         ParamsCollectionUpdate paramsCollectionUpdate = new ParamsCollectionUpdate(projectId, collectionId);
         paramsCollectionUpdate.setDescription(COLLECTION_DESCRIPTION_UPDATED);
         ResponseCollectionUpdate responseCollectionUpdate = syncano.collectionUpdate(paramsCollectionUpdate);
+
         assertEquals(Response.CODE_SUCCESS, (int) responseCollectionUpdate.getResultCode());
+        assertNotNull(responseCollectionUpdate.getCollection().getId());
+        assertNotNull(responseCollectionUpdate.getCollection().getName());
         assertEquals(COLLECTION_DESCRIPTION_UPDATED, responseCollectionUpdate.getCollection().getDescription());
 
         // Collection Authorize
