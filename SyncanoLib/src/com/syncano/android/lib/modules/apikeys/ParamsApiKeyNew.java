@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
-import com.syncano.android.lib.objects.ApiKey;
 
 /**
  * Creates a new API key client in current instance. Only Admin permission role can create new API clients.

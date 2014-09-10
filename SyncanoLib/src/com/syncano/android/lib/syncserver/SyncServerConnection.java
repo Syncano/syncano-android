@@ -13,6 +13,7 @@ import com.syncano.android.lib.BuildConfig;
 import com.syncano.android.lib.GsonHelper;
 import com.syncano.android.lib.modules.Params;
 import com.syncano.android.lib.modules.Response;
+import com.syncano.android.lib.objects.Channel;
 import com.syncano.android.lib.objects.Data;
 import com.syncano.android.lib.syncserver.SocketConnection.DataListener;
 
@@ -49,6 +50,7 @@ public class SyncServerConnection implements DataListener {
 	private static final String TYPE_REPLACE = "replace";
 	private static final String TYPE_ADD = "add";
 	private static final String OBJECT_TYPE_DATA = "data";
+	private static final String OBJECT_TYPE_CHANNEL = "channel";
 	private static final String ARRAY_ID = "id";
 
 	private static final int MAX_REQUESTS = 10;
@@ -131,14 +133,14 @@ public class SyncServerConnection implements DataListener {
 		this.mSubscriptionListener = subscriptionListener;
 	}
 
-    /**
-     * Method sets new sync server listener
-     *
-     * @param syncServerListener
-     */
-    public void setSyncServerListener(SyncServerListener syncServerListener) {
-        this.mListener = syncServerListener;
-    }
+	/**
+	 * Method sets new sync server listener
+	 *
+	 * @param syncServerListener
+	 */
+	public void setSyncServerListener(SyncServerListener syncServerListener) {
+		this.mListener = syncServerListener;
+	}
 
 	/**
 	 * Method starts new connection
@@ -160,7 +162,7 @@ public class SyncServerConnection implements DataListener {
 	/**
 	 * Method that passes message to different method depending on state of connection
 	 */
-	public void message(String data) {
+	public void onMessage(String data) {
 		if (BuildConfig.DEBUG) {
 			Log.d(LOG_TAG, "State: " + mState + " Message: " + data);
 		}
@@ -186,8 +188,8 @@ public class SyncServerConnection implements DataListener {
 	private void messageReceivedConnecting(String data) {
 		if (data == null) {
 			mState = STATE_NOT_CONNECTED;
-			mListener.error("Null received from server for login request");
-			mListener.disconnected();
+			mListener.onError("Null received from server for login request");
+			mListener.onDisconnected();
 			return;
 		}
 
@@ -195,14 +197,14 @@ public class SyncServerConnection implements DataListener {
 		if (AUTH.equals(json.get(OPT_TYPE).getAsString()) && OK.equals(json.get(OPT_RESULT).getAsString())) {
 			mUuid = json.get(OPT_UUID).getAsString();
 			mState = STATE_CONNECTED;
-			mListener.connected();
+			mListener.onConnected();
 			sendCalls();
 			return;
 		}
 
 		mState = STATE_NOT_CONNECTED;
-		mListener.error("For login request server returned: " + data);
-		mListener.disconnected();
+		mListener.onError("For login request server returned: " + data);
+		mListener.onDisconnected();
 	}
 
 	/**
@@ -223,7 +225,7 @@ public class SyncServerConnection implements DataListener {
 	 */
 	private void messageReceivedConnected(String data) {
 		if (data == null) {
-			mListener.error("Null message received");
+			mListener.onError("Null message received");
 			return;
 		}
 
@@ -231,7 +233,7 @@ public class SyncServerConnection implements DataListener {
 		String type = json.get(OPT_TYPE).getAsString();
 		String objectType = json.get(OPT_OBJECT).getAsString();
 		if (type == null || objectType == null) {
-			mListener.error("Message type or object null. " + data);
+			mListener.onError("Message type or object null. " + data);
 			return;
 		}
 		if (type.equals(TYPE_CALLRESPONSE)) {
@@ -266,7 +268,8 @@ public class SyncServerConnection implements DataListener {
 	 */
 	private void messageNewData(JsonObject json) {
 		Data data = mGson.fromJson(json.get(OBJECT_TYPE_DATA), Data.class);
-		mSubscriptionListener.added(data);
+		Channel channel = mGson.fromJson(json.get(OBJECT_TYPE_CHANNEL), Channel.class);
+		mSubscriptionListener.onAdded(data, channel);
 	}
 
 	/**
@@ -276,13 +279,14 @@ public class SyncServerConnection implements DataListener {
 	 *            json with response
 	 */
 	private void messageDeletedData(JsonObject json) {
+		Channel channel = mGson.fromJson(json.get(OBJECT_TYPE_CHANNEL), Channel.class);
 		JsonObject target = json.get(TARGET).getAsJsonObject();
 		JsonArray jsonIds = target.get(ARRAY_ID).getAsJsonArray();
 		String[] ids = new String[jsonIds.size()];
 		for (int i = 0; i < ids.length; i++) {
 			ids[i] = jsonIds.get(i).getAsString();
 		}
-		mSubscriptionListener.deleted(ids);
+		mSubscriptionListener.onDeleted(ids, channel);
 	}
 
 	/**
@@ -297,6 +301,9 @@ public class SyncServerConnection implements DataListener {
 		JsonElement j;
 		Iterator<Entry<String, JsonElement>> keys;
 		ArrayList<String> ids = new ArrayList<String>();
+
+		// get channel info
+		Channel channel = mGson.fromJson(json.get(OBJECT_TYPE_CHANNEL), Channel.class);
 
 		// get ids of changed objects
 		JsonObject target = json.get(TARGET).getAsJsonObject();
@@ -375,7 +382,7 @@ public class SyncServerConnection implements DataListener {
 			item.setId(id);
 			changesList.add(item);
 		}
-		mSubscriptionListener.changed(changesList);
+		mSubscriptionListener.onChanged(changesList, channel);
 	}
 
 	/**
@@ -388,7 +395,7 @@ public class SyncServerConnection implements DataListener {
 		int id = json.get(MESSAGE_ID).getAsInt();
 		Call call = sentCalls.get(id);
 		if (call == null) {
-			mListener.error("Received message for call that wasn't send: " + json.toString());
+			mListener.onError("Received message for call that wasn't send: " + json.toString());
 			return;
 		}
 		call.response = mGson.fromJson(json.get(OBJECT_TYPE_DATA), call.response.getClass());
@@ -407,21 +414,21 @@ public class SyncServerConnection implements DataListener {
 	 *            json with new message
 	 */
 	private void messageMessage(JsonObject json) {
-		mListener.message(json.get(OPT_OBJECT).getAsString(), json.get(OBJECT_TYPE_DATA).getAsJsonObject());
+		mListener.onMessage(json.get(OPT_OBJECT).getAsString(), json.get(OBJECT_TYPE_DATA).getAsJsonObject());
 	}
 
 	/**
 	 * Method that is called after disconnecting from socket
 	 */
-	public void disconnected() {
+	public void onDisconnected() {
 		mState = STATE_NOT_CONNECTED;
-		mListener.disconnected();
+		mListener.onDisconnected();
 	}
 
 	/**
 	 * Method that is called after connecting to socket
 	 */
-	public void connected() {
+	public void onConnected() {
 		JsonObject json = new JsonObject();
 		json.addProperty("api_key", mApiKey);
 		json.addProperty("instance", mInstanceSubdomain);
@@ -478,13 +485,13 @@ public class SyncServerConnection implements DataListener {
 	 */
 
 	public interface SyncServerListener {
-		public void disconnected();
+		public void onDisconnected();
 
-		public void error(String why);
+		public void onError(String why);
 
-		public void connected();
+		public void onConnected();
 
-		public void message(String object, JsonObject message);
+		public void onMessage(String object, JsonObject message);
 	}
 
 	/**
@@ -492,11 +499,11 @@ public class SyncServerConnection implements DataListener {
 	 */
 
 	public interface SubscriptionListener {
-		public void deleted(String[] ids);
+		public void onDeleted(String[] ids, Channel channel);
 
-		public void changed(ArrayList<DataChanges> changes);
+		public void onChanged(ArrayList<DataChanges> changes, Channel channel);
 
-		public void added(Data data);
+		public void onAdded(Data data, Channel channel);
 	}
 
 	/**

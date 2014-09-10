@@ -41,7 +41,7 @@ public class SocketConnection {
 
 	private final static String lOG_TAG = SocketConnection.class.getSimpleName();
 	/** read timeout variable */
-	private final static int READ_TIMEOUT = 60 * 1000;
+	private final static int READ_TIMEOUT = 180 * 1000;
 	/** read retry period variable */
 	private final static int READ_RETRY_PERIOD = 5;
 
@@ -93,6 +93,10 @@ public class SocketConnection {
 						read();
 					}
 				};
+				if (readExecutor == null || readExecutor.isShutdown()) {
+					// stop() was used. readExecutor is shutdown. Socket is disconnected.
+					return;
+				}
 				readExecutor.scheduleWithFixedDelay(r, 0, READ_RETRY_PERIOD, TimeUnit.MILLISECONDS);
 
 				Message msg = mHandler.obtainMessage();
@@ -153,11 +157,16 @@ public class SocketConnection {
 			readExecutor.shutdown();
 		}
 		if (mSocket != null) {
-			try {
-				mSocket.close();
-			} catch (IOException e) {
-				Log.e(lOG_TAG, e.getMessage());
-			}
+			// can't be run on UI thread
+			(new Thread(new Runnable() {
+				public void run() {
+					try {
+						mSocket.close();
+					} catch (IOException e) {
+						Log.e(lOG_TAG, e.getMessage());
+					}
+				}
+			})).start();
 		}
 
 		Message msg = mHandler.obtainMessage();
@@ -180,6 +189,8 @@ public class SocketConnection {
 			msg = mIn.readLine();
 		} catch (IOException e) {
 			Log.w(lOG_TAG, e.getMessage());
+			stop();
+			return;
 		}
 		if (msg != null) {
 			Message message = mHandler.obtainMessage();
@@ -208,11 +219,11 @@ public class SocketConnection {
 	 * Listener for new data or connection state
 	 */
 	public interface DataListener {
-		public void message(String data);
+		public void onMessage(String data);
 
-		public void disconnected();
+		public void onDisconnected();
 
-		public void connected();
+		public void onConnected();
 	}
 
 	/**
@@ -228,13 +239,13 @@ public class SocketConnection {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 				case MSG_DISCONNECTED:
-					mListener.disconnected();
+					mListener.onDisconnected();
 					break;
 				case MSG_NEW_DATA:
-					mListener.message((String) msg.obj);
+					mListener.onMessage((String) msg.obj);
 					break;
 				case MSG_CONNECTED:
-					mListener.connected();
+					mListener.onConnected();
 					break;
 			}
 

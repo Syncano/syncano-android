@@ -23,6 +23,7 @@ import com.syncano.android.lib.modules.projects.ParamsProjectDelete;
 import com.syncano.android.lib.modules.projects.ParamsProjectNew;
 import com.syncano.android.lib.modules.projects.ResponseProjectNew;
 import com.syncano.android.lib.modules.subscriptions.ParamsSubscriptionSubscribeCollection;
+import com.syncano.android.lib.objects.Channel;
 import com.syncano.android.lib.objects.Data;
 import com.syncano.android.lib.syncserver.DataChanges;
 import com.syncano.android.lib.syncserver.SyncServerConnection;
@@ -76,23 +77,23 @@ public class SyncServerTest extends AndroidTestCase {
         conn = new SyncServerConnection(mContext, Constants.INSTANCE_NAME, Constants.API_KEY,
                 new SyncServerListener() {
                     @Override
-                    public void message(String object, JsonObject message) {
+                    public void onMessage(String object, JsonObject message) {
                         Log.d(TAG, "message " + object + " " + message);
                     }
 
                     @Override
-                    public void error(String why) {
+                    public void onError(String why) {
                         Log.d(TAG, "error: " + why);
                     }
 
                     @Override
-                    public void disconnected() {
+                    public void onDisconnected() {
                         Log.d(TAG, "disconnected");
                         lock.countDown();
                     }
 
                     @Override
-                    public void connected() {
+                    public void onConnected() {
                         Log.d(TAG, "connected");
                         lock.countDown();
                     }
@@ -140,7 +141,7 @@ public class SyncServerTest extends AndroidTestCase {
         success = false;
         conn.setSubscriptionListener(new SubscriptionListenerImpl() {
             @Override
-            public void added(Data data) {
+            public void onAdded(Data data, Channel channel) {
                 assertNotNull(data);
                 assertEquals(DATA_TEXT, data.getText());
                 success = true;
@@ -173,7 +174,7 @@ public class SyncServerTest extends AndroidTestCase {
         success = false;
         conn.setSubscriptionListener(new SubscriptionListenerImpl() {
             @Override
-            public void changed(ArrayList<DataChanges> changes) {
+            public void onChanged(ArrayList<DataChanges> changes, Channel channel) {
                 assertNotNull(changes);
                 success = true;
                 subscriptionLock.countDown();
@@ -204,7 +205,7 @@ public class SyncServerTest extends AndroidTestCase {
         success = false;
         conn.setSubscriptionListener(new SubscriptionListenerImpl() {
             @Override
-            public void deleted(String[] ids) {
+            public void onDeleted(String[] ids, Channel channel) {
                 assertNotNull(ids);
                 assertTrue(ids.length > 0);
                 success = true;;
@@ -237,7 +238,7 @@ public class SyncServerTest extends AndroidTestCase {
         success = false;
         conn.setSyncServerListener(new SyncServerListenerImpl() {
             @Override
-            public void message(String object, JsonObject message) {
+            public void onMessage(String object, JsonObject message) {
                 assertNotNull(object);
                 assertNotNull(message);
                 assertEquals(NOTIFICATION_TEXT, message.get(PARAM_NOTIFICATION_TEXT).getAsString());
@@ -270,27 +271,27 @@ public class SyncServerTest extends AndroidTestCase {
     private class SubscriptionListenerImpl implements SubscriptionListener {
 
         @Override
-        public void deleted(String[] ids) {}
+        public void onDeleted(String[] ids, Channel channel) {}
 
         @Override
-        public void changed(ArrayList<DataChanges> changes) {}
+        public void onChanged(ArrayList<DataChanges> changes, Channel channel) {}
 
         @Override
-        public void added(Data data) {}
+        public void onAdded(Data data, Channel channel) {}
     }
 
     private class SyncServerListenerImpl implements SyncServerListener {
 
         @Override
-        public void disconnected() {}
+        public void onDisconnected() {}
 
         @Override
-        public void error(String why) {}
+        public void onError(String why) {}
 
         @Override
-        public void connected() {}
+        public void onConnected() {}
 
         @Override
-        public void message(String object, JsonObject message) {}
+        public void onMessage(String object, JsonObject message) {}
     }
 }

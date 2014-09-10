@@ -3,7 +3,6 @@ package com.syncano.android.lib.modules.administrators;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.syncano.android.lib.modules.Params;
-import com.syncano.android.lib.modules.Response;
 
 /**
  * Adds a new administrator to current instance. Account with admin_email must exist in Syncano. Only Admin permission
