@@ -24,6 +24,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 
+import com.syncano.android.lib.BuildConfig;
 import com.syncano.android.lib.R;
 
 import java.io.IOException;
@@ -37,7 +38,7 @@ import javax.net.ssl.HostnameVerifier;
 public class SimpleHttpClient {
 	private final static String LOG_TAG = SimpleHttpClient.class.getSimpleName();
 	/** Default user agent name */
-	private final static String USER_AGENT = "SimpleAndroidHttpClient PSz";
+	private final static String USER_AGENT = "syncano-android-" + BuildConfig.VERSION_NAME;
 	/** Timeout value */
 	private final static int NOT_SET = -1;
 	/** Recommended timeout value */
@@ -48,8 +49,6 @@ public class SimpleHttpClient {
 	private String mUrl;
 	/** Context for http client */
 	private Context mCtx;
-	/** User Agent name */
-	private String mUserAgent = null;
 	/** Connection timeout value */
 	private int mTimeout = NOT_SET;
 	/** Post data */
@@ -95,16 +94,6 @@ public class SimpleHttpClient {
 	}
 
 	/**
-	 * Sets custom user agent
-	 * 
-	 * @param agent
-	 *            desired user agent name
-	 */
-	public void setUserAgent(String agent) {
-		mUserAgent = agent;
-	}
-
-	/**
 	 * Method to send post data contained in mPostData field
 	 * 
 	 * @return input stream with response
@@ -122,11 +111,7 @@ public class SimpleHttpClient {
 		request.setHeader("Content-Type", "application/json-rpc");
 		request.setHeader("Accept-Encoding", "gzip");
 		mHttpclient = getHttpClient(mCtx);
-		if (mUserAgent == null) {
-			mHttpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, USER_AGENT);
-		} else {
-			mHttpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, mUserAgent);
-		}
+		mHttpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, USER_AGENT);
 		HttpParams httpParameters = mHttpclient.getParams();
 		if (mTimeout != NOT_SET) {
 			// Set the timeout in milliseconds until a connection is established.

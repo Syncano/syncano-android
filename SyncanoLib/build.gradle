@@ -13,6 +13,8 @@ android {
     buildToolsVersion "19.1.0"
 
     defaultConfig {
+        versionCode 1
+        versionName "1.0.1"
         minSdkVersion 8
         targetSdkVersion 11
     }
@@ -69,8 +71,8 @@ uploadArchives {
             // Value userName and password are used only for for uploadArchives.
             // If you don't need to do it, just put some values in quotes (userName: "user").
             // YOu can also put those values into gradle.properties file in your user directory.
-            authentication(userName: ossrhUsername,
-                    password: ossrhPassword)
+            authentication(userName: "ossrhUsername",
+                    password: "ossrhPassword")
         }
 
         pom.project {
