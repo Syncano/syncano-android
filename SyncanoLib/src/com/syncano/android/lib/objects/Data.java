@@ -43,6 +43,9 @@ public class Data implements Serializable, Cloneable {
 	@Expose
 	@SerializedName(value = "parent_id")
 	private String parentId;
+	@Expose
+	@SerializedName(value = "child_id")
+	private String childId;
 	/** data id */
 	@Expose
 	private String id;
@@ -400,5 +403,13 @@ public class Data implements Serializable, Cloneable {
 	 */
 	public Data clone(Gson gson) {
 		return gson.fromJson(gson.toJson(this), this.getClass());
+	}
+
+	public String getChildId() {
+		return childId;
+	}
+
+	public void setChildId(String childId) {
+		this.childId = childId;
 	}
 }
