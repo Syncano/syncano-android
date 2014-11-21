@@ -14,7 +14,6 @@ import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
@@ -24,7 +23,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 
-import com.syncano.android.lib.BuildConfig;
+import com.syncano.android.lib.Constants;
 import com.syncano.android.lib.R;
 
 import java.io.IOException;
@@ -33,12 +32,10 @@ import java.io.UnsupportedEncodingException;
 import java.security.KeyStore;
 import java.util.zip.GZIPInputStream;
 
-import javax.net.ssl.HostnameVerifier;
-
 public class SimpleHttpClient {
 	private final static String LOG_TAG = SimpleHttpClient.class.getSimpleName();
 	/** Default user agent name */
-	private final static String USER_AGENT = "syncano-android-" + BuildConfig.VERSION_NAME;
+	private final static String USER_AGENT = "syncano-android-" + Constants.VERSION_NAME;
 	/** Timeout value */
 	private final static int NOT_SET = -1;
 	/** Recommended timeout value */

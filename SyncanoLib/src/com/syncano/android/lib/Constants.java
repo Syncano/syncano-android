@@ -20,5 +20,6 @@ public class Constants {
 	public final static String SOCKET_ADDRESS = "api." + getServerUrl();
 	/** port of socket api */
 	public final static int SOCKET_PORT = 8200;
-
+    /** library version - should be updated before release */
+    public static final String VERSION_NAME = "1.0.3";
 }

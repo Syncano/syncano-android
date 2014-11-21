@@ -13,8 +13,6 @@ android {
     buildToolsVersion "19.1.0"
 
     defaultConfig {
-        versionCode 1
-        versionName "1.0.1"
         minSdkVersion 8
         targetSdkVersion 11
     }
@@ -49,7 +47,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 group = 'com.syncano'
-version = '1.0.1'
+version = '1.0.3'
 
 configurations {
     archives {
