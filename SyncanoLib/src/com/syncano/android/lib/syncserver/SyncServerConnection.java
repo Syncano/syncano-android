@@ -327,10 +327,10 @@ public class SyncServerConnection implements DataListener {
 
 		j = json.get(TYPE_DELETE);
 		if (j != null) {
-			keys = j.getAsJsonObject().entrySet().iterator();
-			while (keys.hasNext()) {
-				Entry<String, JsonElement> entry = keys.next();
-				data.setDeletedValue(entry.getKey());
+			JsonArray keysArray = j.getAsJsonArray();
+			for (int i = 0; i < keysArray.size(); i++) {
+				String key = keysArray.get(i).getAsString();
+				data.setDeletedValue(key);
 			}
 		}
 
