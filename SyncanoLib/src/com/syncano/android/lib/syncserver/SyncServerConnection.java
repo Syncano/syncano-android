@@ -16,6 +16,7 @@ import com.syncano.android.lib.modules.Response;
 import com.syncano.android.lib.objects.Channel;
 import com.syncano.android.lib.objects.Data;
 import com.syncano.android.lib.syncserver.SocketConnection.DataListener;
+import com.syncano.android.lib.utils.SimpleHttpClient;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -432,6 +433,7 @@ public class SyncServerConnection implements DataListener {
 		JsonObject json = new JsonObject();
 		json.addProperty("api_key", mApiKey);
 		json.addProperty("instance", mInstanceSubdomain);
+        json.addProperty("user-agent", SimpleHttpClient.USER_AGENT);
 		mConnection.send(json.toString());
 	}
 

@@ -35,7 +35,7 @@ import java.util.zip.GZIPInputStream;
 public class SimpleHttpClient {
 	private final static String LOG_TAG = SimpleHttpClient.class.getSimpleName();
 	/** Default user agent name */
-	private final static String USER_AGENT = "syncano-android-" + Constants.VERSION_NAME;
+	public final static String USER_AGENT = "syncano-android-" + Constants.VERSION_NAME;
 	/** Timeout value */
 	private final static int NOT_SET = -1;
 	/** Recommended timeout value */
