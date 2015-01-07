@@ -29,6 +29,10 @@ public class ParamsDataGet extends Params {
 	@Expose
 	@SerializedName(value = "data_ids")
 	private String[] dataIds;
+	/** data keys array */
+	@Expose
+	@SerializedName(value = "data_keys")
+	private String[] dataKeys;
 	/** state */
 	@Expose
 	private String state;
@@ -427,4 +431,12 @@ public class ParamsDataGet extends Params {
     public void addWhereFilterParam(WhereFilter where, Integer value) {
         addParam(where.toString(), value.toString());
     }
+
+	public String[] getDataKeys() {
+		return dataKeys;
+	}
+
+	public void setDataKeys(String[] dataKeys) {
+		this.dataKeys = dataKeys;
+	}
 }
