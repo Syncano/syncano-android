@@ -4,6 +4,3 @@ SyncanoLib/build/
 local.properties
 build
 *.iml
-gradlew
-gradlew.bat
-gradle

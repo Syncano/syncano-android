@@ -1,1 +1,1 @@
-include ':SyncanoLib'
+include ':library'
