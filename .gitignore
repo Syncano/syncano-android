@@ -1,1 +1,9 @@
 SyncanoLib/build/
+.gradle
+.idea
+local.properties
+build
+*.iml
+gradlew
+gradlew.bat
+gradle
