@@ -1,17 +1,17 @@
 package syncano.com.library;
 
-import syncano.com.library.api.Account;
+import syncano.com.library.api.AccountSyncanoClient;
 
 public class Syncano {
 
     private HttpClient httpClient;
 
-    public Syncano(String apiKey, String authKey) {
-        httpClient = new HttpClient(apiKey, authKey);
+    public Syncano(String apiKey) {
+        httpClient = new HttpClient(apiKey);
     }
 
-    public Account account() {
+    public AccountSyncanoClient account() {
 
-        return new Account(httpClient);
+        return new AccountSyncanoClient(httpClient);
     }
 }
