@@ -1,7 +1,5 @@
 package com.syncano.android.lib.api;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 import com.syncano.android.lib.Constants;
 import com.syncano.android.lib.Syncano;
