@@ -1,7 +1,7 @@
-package syncano.com.library.api;
+package com.syncano.android.lib.api;
 
-import syncano.com.library.data.Account;
-import syncano.com.library.HttpClient;
+import com.syncano.android.lib.data.Account;
+import com.syncano.android.lib.HttpClient;
 import java.util.LinkedHashMap;
 
 public class AccountSyncanoClient extends SyncanoClient

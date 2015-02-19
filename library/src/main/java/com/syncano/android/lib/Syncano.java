@@ -1,6 +1,6 @@
-package syncano.com.library;
+package com.syncano.android.lib;
 
-import syncano.com.library.api.AccountSyncanoClient;
+import com.syncano.android.lib.api.AccountSyncanoClient;
 
 public class Syncano {
 

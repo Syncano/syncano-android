@@ -1,6 +1,6 @@
-package syncano.com.library.api;
+package com.syncano.android.lib.api;
 
-import syncano.com.library.HttpClient;
+import com.syncano.android.lib.HttpClient;
 
 public class SyncanoClient
 {

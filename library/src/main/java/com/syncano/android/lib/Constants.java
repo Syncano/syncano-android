@@ -1,6 +1,6 @@
-package syncano.com.library;
+package com.syncano.android.lib;
 
-public class Constatnts {
+public class Constants {
 
     /** Server url. */
     public static final String SERVER_URL = "https://syncanotest1-env.elasticbeanstalk.com";

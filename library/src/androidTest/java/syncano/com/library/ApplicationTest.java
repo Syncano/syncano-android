@@ -1,6 +1,7 @@
-package syncano.com.library;
+package com.syncano.android.lib;
 
-import syncano.com.library.data.Account;
+import com.syncano.android.lib.data.Account;
+
 import android.app.Application;
 import android.test.ApplicationTestCase;
 import android.util.Log;
@@ -34,11 +35,19 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         Log.d("test", a.getId());
         Log.d("test", a.getEmail());
 
+        /*Response<Account> response = new GetAccount().send(syncano);
+        Account a = response.getData();
 
-        Account newAccount = syncano.account().createAccount("testssasdddummy@asd.as", "testssspasdassword", "Marsacisnek", "Lipadcskai");
+        Invitation[] invitations = syncano.account().getInvitations();
+
+        CreateAccount createAccount = new CreateAccount("mail@o2.pl", "pass");
+        createAccount.setFirstName("Klaudiusz");
+        createAccount.send(syncano);*/
+
+        /*Account newAccount = syncano.account().createAccount("test1ssasdddummy@asd.as", "testssspasdassword", "Marsacisnek", "Lipadcskai");
         Log.d("test", newAccount.getFirstName());
         Log.d("test", newAccount.getLastName());
         Log.d("test", newAccount.getId());
-        Log.d("test", newAccount.getEmail());
+        Log.d("test", newAccount.getEmail());*/
     }
 }

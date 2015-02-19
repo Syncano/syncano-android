@@ -1,4 +1,4 @@
-package syncano.com.library.data;
+package com.syncano.android.lib.data;
 
 import java.io.Serializable;
 import com.google.gson.annotations.Expose;

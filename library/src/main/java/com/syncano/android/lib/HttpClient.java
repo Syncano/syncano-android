@@ -1,4 +1,4 @@
-package syncano.com.library;
+package com.syncano.android.lib;
 
 import android.util.Log;
 import com.google.gson.Gson;
@@ -29,6 +29,7 @@ import java.util.Map;
 
 public class HttpClient {
 
+    private static final String TAG = HttpClient.class.getSimpleName();
     private String apiKey;
 
     public HttpClient(String apiKey) {
@@ -40,7 +41,7 @@ public class HttpClient {
     public <T> T sendRequest(String requestMethod, String method,Class<T> classOfT, LinkedHashMap<String, String> parameters)
     {
         // prepare connection to be sent
-        HttpsURLConnection connection = prepareConnection(Constatnts.SERVER_URL + method, requestMethod, parameters);
+        HttpsURLConnection connection = prepareConnection(Constants.SERVER_URL + method, requestMethod, parameters);
         T response = receive(connection, classOfT);
 
        return response;
@@ -49,7 +50,7 @@ public class HttpClient {
     public <T> T sendRequest(String requestMethod, String method,Class<T> classOfT)
     {
         // prepare connection to be sent
-        HttpsURLConnection connection = prepareConnection(Constatnts.SERVER_URL + method, requestMethod, null);
+        HttpsURLConnection connection = prepareConnection(Constants.SERVER_URL + method, requestMethod, null);
         T response = receive(connection, classOfT);
 
         return response;
@@ -69,7 +70,7 @@ public class HttpClient {
             connection.setRequestProperty("Accept", "*/*");
             connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             connection.setRequestProperty("Authorization", "Token " + apiKey);
-            connection.setRequestProperty(CoreProtocolPNames.USER_AGENT, Constatnts.USER_AGENT);
+            connection.setRequestProperty(CoreProtocolPNames.USER_AGENT, Constants.USER_AGENT);
 
             if (parameters != null)
             {
@@ -157,7 +158,10 @@ public class HttpClient {
                     response.append('\n');
                 }
                 rd.close();
-                Log.e("HttpClient", response.toString());
+
+                if (BuildConfig.DEBUG) {
+                    Log.e(TAG, response.toString());
+                }
                 return null;
             }
 
@@ -167,6 +171,7 @@ public class HttpClient {
             e.printStackTrace();
         }
 
+        Log.d(TAG, response.toString());
        return new Gson().fromJson(response.toString(), classOfT);
     }
 
