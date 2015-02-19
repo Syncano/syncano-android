@@ -1,11 +1,18 @@
 package com.syncano.android.lib.api;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.syncano.android.lib.Constants;
 import com.syncano.android.lib.Syncano;
+import com.syncano.android.lib.annotation.SyncanoParam;
+import com.syncano.android.lib.data.Invitation;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 public abstract class BaseApiMethod <T> {
 
@@ -40,9 +47,33 @@ public abstract class BaseApiMethod <T> {
         return new Gson().fromJson(json, getResultType());
     }
 
-    protected LinkedHashMap<String, String> prepareParams()
+    protected LinkedHashMap<String, String> prepareParams(Object o)
     {
-        // Find params using reflection and annotation to fields.
+        Field[] allFields = o.getClass().getDeclaredFields();
+
+        for (Field field : allFields)
+        {
+            field.setAccessible(true);
+
+            try {
+                String fieldName;
+                SyncanoParam syncanoParam = field.getAnnotation(SyncanoParam.class);
+
+                if (syncanoParam != null)
+                {
+                    fieldName = syncanoParam.name();
+                }
+                else {
+                    fieldName = field.getName();
+                }
+                Log.d("test", "name = " + fieldName + " value= " + field.get(o));
+            }
+            catch (IllegalAccessException e)
+            {
+                Log.d("BaseApiMethod", e.toString());
+            }
+
+        }
         return null;
     }
 }
