@@ -2,6 +2,7 @@ package com.syncano.android.lib;
 
 import android.util.Log;
 import com.google.gson.Gson;
+import com.syncano.android.lib.api.Response;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -36,25 +37,20 @@ public class HttpClient {
         this.apiKey = apiKey;
     }
 
-    // requestMethod - GET / POST / PUT / PATCH / DELETE
-    // method - Syncano API method to call
-    public <T> T sendRequest(String requestMethod, String method,Class<T> classOfT, LinkedHashMap<String, String> parameters)
+    public String sendRequest(String requestMethod, String url, Response response, LinkedHashMap<String, String> parameters)
     {
         // prepare connection to be sent
-        HttpsURLConnection connection = prepareConnection(Constants.SERVER_URL + method, requestMethod, parameters);
-        T response = receive(connection, classOfT);
-
-       return response;
+        HttpsURLConnection connection = prepareConnection(url, requestMethod, parameters);
+        return receive(connection, response);
     }
 
-    public <T> T sendRequest(String requestMethod, String method,Class<T> classOfT)
+    public String sendRequest(String requestMethod, String url, Response response)
     {
         // prepare connection to be sent
-        HttpsURLConnection connection = prepareConnection(Constants.SERVER_URL + method, requestMethod, null);
-        T response = receive(connection, classOfT);
-
-        return response;
+        HttpsURLConnection connection = prepareConnection(url, requestMethod, null);
+        return receive(connection, response);
     }
+
 
     private HttpsURLConnection prepareConnection(String url, String requestMethod, LinkedHashMap<String, String> parameters) {
 
@@ -74,23 +70,13 @@ public class HttpClient {
 
             if (parameters != null)
             {
-                /*
-                for (Map.Entry<String, String> entry : parameters.entrySet())
-                {
-                    if (entry.getKey().isEmpty() == false) {
-                        connection.setRequestProperty(entry.getKey(), entry.getValue());
-                    }
-                }*/
-
-
                 OutputStream os = connection.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
                 writer.write(getQuery(parameters));
                 writer.flush();
                 writer.close();
+
                 os.close();
-
-
             }
 
             return connection;
@@ -129,50 +115,43 @@ public class HttpClient {
         return result.toString();
     }
 
-    private <T> T receive (HttpURLConnection connection, Class<T> classOfT)
+    private String receive(HttpURLConnection connection, Response response)
     {
-        StringBuffer response = new StringBuffer();
         try {
             // read answer
             int connectionResponseCode = connection.getResponseCode();
+            response.setResultCode(connectionResponseCode);
 
             if (connectionResponseCode >= 200 && connectionResponseCode < 400)
             {
-                InputStream is = connection.getInputStream();
-                BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-                String line;
-                while ((line = rd.readLine()) != null) {
-                    response.append(line);
-                    response.append('\n');
-                }
-                rd.close();
+                return readResponse (connection.getInputStream());
             }
-
             else
             {
-                InputStream is = connection.getErrorStream();
-                BufferedReader rd = new BufferedReader(new InputStreamReader(is));
-                String line;
-                while ((line = rd.readLine()) != null) {
-                    response.append(line);
-                    response.append('\n');
-                }
-                rd.close();
-
-                if (BuildConfig.DEBUG) {
-                    Log.e(TAG, response.toString());
-                }
+                response.setError(readResponse (connection.getErrorStream()));
                 return null;
             }
-
-
         }
         catch (IOException e) {
             e.printStackTrace();
         }
 
-        Log.d(TAG, response.toString());
-       return new Gson().fromJson(response.toString(), classOfT);
+        return null;
+    }
+
+    private String readResponse(InputStream stream) throws IOException
+    {
+        StringBuffer responseString = new StringBuffer();
+
+        BufferedReader rd = new BufferedReader(new InputStreamReader(stream));
+        String line;
+        while ((line = rd.readLine()) != null) {
+            responseString.append(line);
+            responseString.append('\n');
+        }
+        rd.close();
+
+        return responseString.toString();
     }
 
     // Temporary solution. It has to be changed to verify Syncano's certificate instead of accepting the cert without verifying.
