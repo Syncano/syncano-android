@@ -1,12 +1,19 @@
 package com.syncano.android.lib;
 
+import com.syncano.android.lib.annotation.SyncanoParam;
 import com.syncano.android.lib.api.account.AccountGet;
 import com.syncano.android.lib.api.Response;
 import com.syncano.android.lib.data.Account;
+import com.syncano.android.lib.data.Invitation;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
 import android.util.Log;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
@@ -22,7 +29,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     protected void setUp() throws Exception {
         super.setUp();
 
-        syncano = new Syncano("");
+        Syncano.init("c39742252034618f71c5d7e9ff556fe21464d0ee");
     }
 
     @Override
@@ -32,15 +39,10 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
 
     public void testAccount() {
 
-        Response<Account> response = new AccountGet().send(syncano);
-        Account account = response.getData();
-
-        Log.d("test", account.getFirstName());
-        Log.d("test", account.getLastName());
-        Log.d("test", account.getId());
-        Log.d("test", account.getEmail());
+        Response<Account> response = new AccountGet().send();
 
 
-        //Response<Invitation>
+
+
     }
 }

@@ -1,11 +1,27 @@
 package com.syncano.android.lib;
 
 public class Syncano {
+    private static Syncano syncanoInstance = null;
 
-    private HttpClient httpClient;
+    private HttpClient httpClient = null;
 
-    public Syncano(String apiKey) {
-        httpClient = new HttpClient(apiKey);
+    private Syncano() {
+        httpClient = new HttpClient();
+    }
+
+    public static Syncano getInstance() {
+        if (syncanoInstance == null) {
+            syncanoInstance = new Syncano();
+        }
+        return syncanoInstance;
+    }
+
+    public static void init(String apiKey) {
+        getInstance().setApiKey(apiKey);
+    }
+
+    public void setApiKey(String apiKey) {
+        httpClient.setApiKey(apiKey);
     }
 
     public HttpClient getHttpClient() {

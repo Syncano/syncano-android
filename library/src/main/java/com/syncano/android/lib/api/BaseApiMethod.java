@@ -34,10 +34,10 @@ public abstract class BaseApiMethod <T> {
 
     protected abstract Type getResultType();
 
-    public Response<T> send(Syncano syncano)
+    public Response<T> send()
     {
         Response<T> response = new Response<T>();
-        String json = syncano.getHttpClient().sendRequest(getRequestMethod(), Constants.SERVER_URL + getMethod(), response);
+        String json = Syncano.getInstance().getHttpClient().sendRequest(getRequestMethod(), Constants.SERVER_URL + getMethod(), response);
         response.setData(parseResult(json));
         return response;
     }

@@ -1,7 +1,6 @@
 package com.syncano.android.lib;
 
 import com.syncano.android.lib.api.Response;
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,10 +29,6 @@ public class HttpClient {
 
     private static final String TAG = HttpClient.class.getSimpleName();
     private String apiKey;
-
-    public HttpClient(String apiKey) {
-        this.apiKey = apiKey;
-    }
 
     public String sendRequest(String requestMethod, String url, Response response, LinkedHashMap<String, String> parameters)
     {
@@ -152,8 +147,15 @@ public class HttpClient {
         return responseString.toString();
     }
 
+    public void setApiKey(String newApiKey)
+    {
+        if (newApiKey != null && newApiKey.isEmpty() == false) {
+            this.apiKey = newApiKey;
+        }
+    }
+
     // Temporary solution. It has to be changed to verify Syncano's certificate instead of accepting the cert without verifying.
-    private void trustAllCertificates () {
+    private void trustAllCertificates() {
         SSLContext sc = null;
         try {
             sc = SSLContext.getInstance("SSL");
