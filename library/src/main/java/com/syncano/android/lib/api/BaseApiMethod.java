@@ -6,13 +6,10 @@ import com.google.gson.Gson;
 import com.syncano.android.lib.Constants;
 import com.syncano.android.lib.Syncano;
 import com.syncano.android.lib.annotation.SyncanoParam;
-import com.syncano.android.lib.data.Invitation;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 
 public abstract class BaseApiMethod <T> {
 

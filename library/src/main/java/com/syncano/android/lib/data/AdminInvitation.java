@@ -6,7 +6,7 @@ import com.syncano.android.lib.choice.State;
 
 import java.io.Serializable;
 
-public class Invitation implements Serializable {
+public class AdminInvitation implements Serializable {
 
     @Expose
     private State state;
@@ -20,10 +20,10 @@ public class Invitation implements Serializable {
     @Expose
     private String email;
 
-    public Invitation() {
+    public AdminInvitation() {
     }
 
-    public Invitation (State state, Role role, int id, String email)
+    public AdminInvitation(State state, Role role, int id, String email)
     {
         this.state = state;
         this.role = role;

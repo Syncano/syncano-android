@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * Represents Account object from Syncano Api
  */
-public class Account implements Serializable {
+public class AdminFull implements Serializable {
     private static final long serialVersionUID = -6806030269092528126L;
 
     /** account id */
@@ -25,10 +25,10 @@ public class Account implements Serializable {
     @SerializedName(value = "last_name")
     private String lastName;
 
-    public Account() {
+    public AdminFull() {
     }
 
-    public Account(String id, String email, String firstName, String lastName) {
+    public AdminFull(String id, String email, String firstName, String lastName) {
         this.id = id;
         this.email = email;
         this.firstName = firstName;

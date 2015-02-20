@@ -2,11 +2,11 @@ package com.syncano.android.lib.api.account;
 
 import com.syncano.android.lib.annotation.SyncanoParam;
 import com.syncano.android.lib.api.BaseApiMethod;
-import com.syncano.android.lib.data.Account;
+import com.syncano.android.lib.data.AdminFull;
 
 import java.lang.reflect.Type;
 
-public class AccountRegister extends BaseApiMethod <Account> {
+public class AccountRegister extends BaseApiMethod <AdminFull> {
 
     @SyncanoParam(required = true)
     private String email;
@@ -37,7 +37,7 @@ public class AccountRegister extends BaseApiMethod <Account> {
 
     @Override
     protected Type getResultType() {
-        return Account.class;
+        return AdminFull.class;
     }
 
     public String getEmail() {

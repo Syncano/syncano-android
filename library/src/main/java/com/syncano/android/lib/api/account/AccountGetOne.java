@@ -1,13 +1,13 @@
 package com.syncano.android.lib.api.account;
 
 import com.syncano.android.lib.api.BaseApiMethod;
-import com.syncano.android.lib.data.Account;
+import com.syncano.android.lib.data.AdminFull;
 
 import java.lang.reflect.Type;
 
-public class AccountGet extends BaseApiMethod <Account> {
+public class AccountGetOne extends BaseApiMethod <AdminFull> {
 
-    public AccountGet() {
+    public AccountGetOne() {
     }
 
     @Override
@@ -23,6 +23,6 @@ public class AccountGet extends BaseApiMethod <Account> {
     @Override
     protected Type getResultType() {
 
-        return Account.class;
+        return AdminFull.class;
     }
 }
