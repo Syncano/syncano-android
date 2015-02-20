@@ -25,6 +25,16 @@ public class Account implements Serializable {
     @SerializedName(value = "last_name")
     private String lastName;
 
+    public Account() {
+    }
+
+    public Account(String id, String email, String firstName, String lastName) {
+        this.id = id;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
     /** account id */
     public String getId() {
         return id;

@@ -59,8 +59,7 @@ public abstract class BaseApiMethod <T> {
                 String fieldName;
                 SyncanoParam syncanoParam = field.getAnnotation(SyncanoParam.class);
 
-                if (syncanoParam != null)
-                {
+                if (syncanoParam != null && syncanoParam.name() != null && syncanoParam.name().isEmpty() == false) {
                     fieldName = syncanoParam.name();
                 }
                 else {

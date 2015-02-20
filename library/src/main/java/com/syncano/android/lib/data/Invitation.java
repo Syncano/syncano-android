@@ -1,11 +1,29 @@
 package com.syncano.android.lib.data;
 
+import com.google.gson.annotations.Expose;
+import com.syncano.android.lib.choice.Role;
+import com.syncano.android.lib.choice.State;
+
 import java.io.Serializable;
-import com.syncano.android.lib.annotation.SyncanoParam;
 
 public class Invitation implements Serializable {
 
-    public Invitation (String state, String role, int id, String email)
+    @Expose
+    private State state;
+
+    @Expose
+    private Role role;
+
+    @Expose
+    private int id;
+
+    @Expose
+    private String email;
+
+    public Invitation() {
+    }
+
+    public Invitation (State state, Role role, int id, String email)
     {
         this.state = state;
         this.role = role;
@@ -13,12 +31,35 @@ public class Invitation implements Serializable {
         this.email = email;
     }
 
-    @SyncanoParam(name = "stejt")
-    private String state;
+    public State getState() {
+        return state;
+    }
 
-    private String role;
+    public void setState(State state) {
+        this.state = state;
+    }
 
-    private int id;
+    public Role getRole() {
+        return role;
+    }
 
-    private String email;
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

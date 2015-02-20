@@ -1,7 +1,5 @@
 package com.syncano.android.lib;
 
-import android.util.Log;
-import com.google.gson.Gson;
 import com.syncano.android.lib.api.Response;
 
 import java.io.BufferedWriter;

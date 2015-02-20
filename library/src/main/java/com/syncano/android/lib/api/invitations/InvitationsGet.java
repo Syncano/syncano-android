@@ -7,7 +7,7 @@ import com.syncano.android.lib.data.Page;
 
 import java.lang.reflect.Type;
 
-public class InvitationGet extends BaseApiMethod <Page<Invitation>> {
+public class InvitationsGet extends BaseApiMethod <Page<Invitation>> {
 
     @Override
     protected String getRequestMethod() {
