@@ -27,4 +27,5 @@ public class Syncano {
     public HttpClient getHttpClient() {
         return httpClient;
     }
+
 }

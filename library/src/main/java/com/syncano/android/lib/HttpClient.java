@@ -1,6 +1,5 @@
 package com.syncano.android.lib;
 
-import com.syncano.android.lib.api.Response;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,7 +29,7 @@ public class HttpClient {
     private static final String TAG = HttpClient.class.getSimpleName();
     private String apiKey;
 
-    public String sendRequest(String requestMethod, String url, Response response, LinkedHashMap<String, String> parameters)
+    /*public String sendRequest(String requestMethod, String url, Response response, LinkedHashMap<String, String> parameters)
     {
         // prepare connection to be sent
         HttpsURLConnection connection = prepareConnection(url, requestMethod, parameters);
@@ -42,7 +41,7 @@ public class HttpClient {
         // prepare connection to be sent
         HttpsURLConnection connection = prepareConnection(url, requestMethod, null);
         return receive(connection, response);
-    }
+    }*/
 
 
     private HttpsURLConnection prepareConnection(String url, String requestMethod, LinkedHashMap<String, String> parameters) {
@@ -108,7 +107,7 @@ public class HttpClient {
         return result.toString();
     }
 
-    private String receive(HttpURLConnection connection, Response response)
+    /*private String receive(HttpURLConnection connection, Response response)
     {
         try {
             // read answer
@@ -130,7 +129,7 @@ public class HttpClient {
         }
 
         return null;
-    }
+    }*/
 
     private String readResponse(InputStream stream) throws IOException
     {

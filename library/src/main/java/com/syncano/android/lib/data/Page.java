@@ -2,13 +2,15 @@ package com.syncano.android.lib.data;
 
 import com.google.gson.annotations.Expose;
 
+import java.util.ArrayList;
+
 public class Page<T> {
 
     @Expose(deserialize = true, serialize = false)
     private String prev;
 
     @Expose(deserialize = true, serialize = false)
-    private T[] objects;
+    private ArrayList<T> objects;
 
     @Expose(deserialize = true, serialize = false)
     private String next;
@@ -21,11 +23,11 @@ public class Page<T> {
         this.prev = prev;
     }
 
-    public T[] getObjects() {
+    public ArrayList<T> getObjects() {
         return objects;
     }
 
-    public void setObjects(T[] objects) {
+    public void setObjects(ArrayList<T> objects) {
         this.objects = objects;
     }
 
