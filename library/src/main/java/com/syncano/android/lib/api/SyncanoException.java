@@ -1,6 +1,6 @@
 package com.syncano.android.lib.api;
 
-public class SyncanoError {
+public class SyncanoException extends Exception {
     /**
      * Status code when response is ok.
      */
@@ -10,6 +10,11 @@ public class SyncanoError {
      * Status code when response is ok.
      */
     public final static int CODE_SUCCESS = 0;
+
+    /**
+     * Status code when Http error appeared.
+     */
+    public final static int CODE_HTTP_ERROR = 1;
 
     /**
      * Internal results code.

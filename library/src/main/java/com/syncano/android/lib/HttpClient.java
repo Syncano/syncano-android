@@ -1,5 +1,7 @@
 package com.syncano.android.lib;
 
+import com.syncano.android.lib.api.SyncanoException;
+
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,24 +29,21 @@ import java.util.Map;
 public class HttpClient {
 
     private static final String TAG = HttpClient.class.getSimpleName();
-    private String apiKey;
 
-    /*public String sendRequest(String requestMethod, String url, Response response, LinkedHashMap<String, String> parameters)
-    {
+    public String sendRequest(String apiKey, String requestMethod, String url, LinkedHashMap<String, String> parameters) throws SyncanoException {
         // prepare connection to be sent
-        HttpsURLConnection connection = prepareConnection(url, requestMethod, parameters);
-        return receive(connection, response);
+        HttpsURLConnection connection = prepareConnection(apiKey, url, requestMethod, parameters);
+        return receive(connection);
     }
 
-    public String sendRequest(String requestMethod, String url, Response response)
-    {
+    public String sendRequest(String apiKey, String requestMethod, String url) throws SyncanoException {
         // prepare connection to be sent
-        HttpsURLConnection connection = prepareConnection(url, requestMethod, null);
-        return receive(connection, response);
-    }*/
+        HttpsURLConnection connection = prepareConnection(apiKey, url, requestMethod, null);
+        return receive(connection);
+    }
 
 
-    private HttpsURLConnection prepareConnection(String url, String requestMethod, LinkedHashMap<String, String> parameters) {
+    private HttpsURLConnection prepareConnection(String apiKey, String url, String requestMethod, LinkedHashMap<String, String> parameters) {
 
         // TODO change this to verify Syncano's certificate once it is provided.
         trustAllCertificates ();
@@ -107,12 +106,10 @@ public class HttpClient {
         return result.toString();
     }
 
-    /*private String receive(HttpURLConnection connection, Response response)
-    {
+    private String receive(HttpURLConnection connection) throws SyncanoException {
         try {
             // read answer
             int connectionResponseCode = connection.getResponseCode();
-            response.setResultCode(connectionResponseCode);
 
             if (connectionResponseCode >= 200 && connectionResponseCode < 400)
             {
@@ -120,8 +117,12 @@ public class HttpClient {
             }
             else
             {
-                response.setError(readResponse (connection.getErrorStream()));
-                return null;
+                SyncanoException exception = new SyncanoException();
+                exception.setResultCode(SyncanoException.CODE_HTTP_ERROR);
+                exception.setError("Http error occurred.");
+                exception.setHttpResultCode(connectionResponseCode);
+                exception.setHttpError(readResponse(connection.getErrorStream()));
+                throw exception;
             }
         }
         catch (IOException e) {
@@ -129,7 +130,7 @@ public class HttpClient {
         }
 
         return null;
-    }*/
+    }
 
     private String readResponse(InputStream stream) throws IOException
     {
@@ -144,13 +145,6 @@ public class HttpClient {
         rd.close();
 
         return responseString.toString();
-    }
-
-    public void setApiKey(String newApiKey)
-    {
-        if (newApiKey != null && newApiKey.isEmpty() == false) {
-            this.apiKey = newApiKey;
-        }
     }
 
     // Temporary solution. It has to be changed to verify Syncano's certificate instead of accepting the cert without verifying.

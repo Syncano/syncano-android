@@ -4,15 +4,24 @@ import android.app.Application;
 import android.test.ApplicationTestCase;
 import android.util.Log;
 
+import com.google.gson.annotations.Expose;
 import com.syncano.android.lib.annotation.SyncanoClass;
-import com.syncano.android.lib.api.objects.SyncanoObject;
-import com.syncano.android.lib.data.DataObject;
-import com.syncano.android.lib.data.Page;
+import com.syncano.android.lib.api.Page;
+import com.syncano.android.lib.api.SyncanoException;
+import com.syncano.android.lib.callbacks.GetCallback;
+import com.syncano.android.lib.callbacks.GetOneCallback;
+import com.syncano.android.lib.data.SyncanoObject;
+
+import java.util.List;
+
 
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
 public class ApplicationTest extends ApplicationTestCase<Application> {
+
+    private static final String TAG = ApplicationTest.class.getSimpleName();
+
     public ApplicationTest() {
         super(Application.class);
     }
@@ -23,7 +32,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     protected void setUp() throws Exception {
         super.setUp();
 
-        Syncano.init("c39742252034618f71c5d7e9ff556fe21464d0ee");
+        syncano = new Syncano("c39742252034618f71c5d7e9ff556fe21464d0ee", "test_seba");
     }
 
     @Override
@@ -34,68 +43,52 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     public void testAccount() {
 
 
-        TestClass obj = new TestClass();
-        /*SyncanoObjects.create(obj);*/
+        /*UserClass userClass = new UserClass();
+        userClass.imie = "Marek";
+        userClass.wiek = 30.0f;
+        syncano.createObject(userClass, new GetOneCallback<UserClass>() {
 
-        /*Response<Page<TestClass>> response = SyncanoObject.get("instance", TestClass.class);
-
-
-        /*List<TestClass> list = response.getData();
-        List<TestClass> list2 =  response.getNext();
-        Log.d("dawid", "Item id: " + response.getData().getObjects().get(0).getId());
-
-
-        //SyncanoObjects.get("", TestClass.class, 5);
-
-
-        r.success();
-        r.getError();
-        r.getResultCode();
-        r.getHttpResultCode();
-        r.getHttpError();
-
-
-
-
-        GetCallback<TestClass> callback = new GetCallback<TestClass>() {
-            public void done(List<Testclass> list) {
-                // zapis do bazy
-                // odswiez liste
-
+            @Override
+            public void success(UserClass object) {
+                Log.d("ApplicationTest", "Success: " + object);
+                //Log.d("ApplicationTest", "User: " + object.imie + " " + object.wiek);
             }
 
-            public void error(SyncanoError errorMessage) {
-
+            @Override
+            public void failure(SyncanoException error) {
+                Log.d("ApplicationTest", "Failure: " + error);
+                Log.d("ApplicationTest", "HttpError: " + error.getHttpError());
             }
-        };
-
-
-
-        Syncan.getObjects(params, new GetCallback<TestClass>() {
-            public void done(List<Testclass> list) {}
-            public void error(SyncanoError errorMessage) {}
         });
+*/
 
+        syncano.getObjects(UserClass.class, null, new GetCallback<UserClass>() {
+            @Override
+            public void success(Page<UserClass> page) {
+                Log.d("ApplicationTest", "Success: " + page);
+                for (UserClass user : page.getObjects())
+                {
+                    Log.d("ApplicationTest", "User: " + user.imie + " " + user.wiek);
+                }
+            }
 
-
-
-
-        SyncanoObject.getNextPage(int id, params, TestClass.class, Callback)
-        SyncanoObject.getPrevPage(int id, params, TestClass.class, Callback)
-
-
-        SyncanoObject.getNextPage(0, params, TestClass.class, Callback)
+            @Override
+            public void failure(SyncanoException error) {
+                Log.d(TAG, "SyncanoError: " + error);
+                Log.d(TAG, "HttpError: " + error.getHttpError());
+            }
+        });
     }
 
-    onListEnd() {
-        if(page.hasNext()) {
-            SyncanoObject.get(page.getNext(), callback);
-        }*/
-    }
-
-    @SyncanoClass(name = "TestClass")
-    class TestClass extends DataObject
+    @SyncanoClass(name = "mojasuperklasa")
+    class UserClass extends SyncanoObject
     {
+        @Expose
+        public String imie;
+
+        @Expose
+        public float wiek;
+
 
     }
 }

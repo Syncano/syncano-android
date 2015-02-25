@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
-public abstract class DataObject {
+public abstract class SyncanoObject {
 
     @Expose
     private int id;

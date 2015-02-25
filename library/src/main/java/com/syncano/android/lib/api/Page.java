@@ -1,8 +1,8 @@
-package com.syncano.android.lib.data;
+package com.syncano.android.lib.api;
 
 import com.google.gson.annotations.Expose;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class Page<T> {
 
@@ -10,7 +10,7 @@ public class Page<T> {
     private String prev;
 
     @Expose(deserialize = true, serialize = false)
-    private ArrayList<T> objects;
+    private List<T> objects;
 
     @Expose(deserialize = true, serialize = false)
     private String next;
@@ -23,11 +23,11 @@ public class Page<T> {
         this.prev = prev;
     }
 
-    public ArrayList<T> getObjects() {
+    public List<T> getObjects() {
         return objects;
     }
 
-    public void setObjects(ArrayList<T> objects) {
+    public void setObjects(List<T> objects) {
         this.objects = objects;
     }
 

@@ -1,4 +1,4 @@
-package com.syncano.android.lib.data;
+package com.syncano.android.lib.api;
 
 import com.google.gson.JsonElement;
 
