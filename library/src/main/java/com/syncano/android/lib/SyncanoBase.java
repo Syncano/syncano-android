@@ -65,7 +65,7 @@ public abstract class SyncanoBase {
         return syncanoClass.name();
     }
 
-    protected <T> void requestList(Class<T> type, String requestMethod, String url, Params params, GetCallback<T> callback)
+    protected <T> void requestList(Class<T> type, String requestMethod, String url, Object params, GetCallback<T> callback)
     {
         try {
             String json = httpClient.sendRequest(getApiKey(), requestMethod, Constants.SERVER_URL + url);
@@ -92,7 +92,7 @@ public abstract class SyncanoBase {
         }
     }
 
-    protected <T> void requestDetail(Class<T> type, String requestMethod, String url, GetOneCallback<T> callback)
+    protected <T> void requestDetail(Class<T> type, String requestMethod, String url, Object params, GetOneCallback<T> callback)
     {
         try {
             String json = httpClient.sendRequest(getApiKey(), requestMethod, Constants.SERVER_URL + url);

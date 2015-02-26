@@ -41,12 +41,12 @@ public class Syncano extends SyncanoBase {
 
     // ==================== Objects ==================== //
 
-    public <T extends SyncanoObject> void createObject(T object, GetOneCallback<T> callback)
+    public <T extends SyncanoObject> void createOrUpdateObject(T object, GetOneCallback<T> callback)
     {
         Class<T> type = (Class<T>) object.getClass();
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_LIST_URL, getInstance(), className);
-        requestDetail(type, METHOD_POST, url, callback);
+        requestDetail(type, METHOD_POST, url, null, callback);
     }
 
     public <T extends SyncanoObject> void getObject(int id, GetOneCallback<T> callback)

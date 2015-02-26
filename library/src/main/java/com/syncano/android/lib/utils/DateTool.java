@@ -47,7 +47,7 @@ public class DateTool {
 	 *             if date is in invalid format
 	 */
 	private static Date parse(String stringDate) throws NumberFormatException {
-		if (stringDate.length() != 25 && stringDate.length() != 32 && stringDate.length() != 31) return null;
+		if (stringDate.length() != 25 && stringDate.length() != 27 && stringDate.length() != 32 && stringDate.length() != 31) return null;
 		int year = Integer.parseInt(stringDate.substring(0, 4));
 		int month = Integer.parseInt(stringDate.substring(5, 7)) - 1;
 		int day = Integer.parseInt(stringDate.substring(8, 10));

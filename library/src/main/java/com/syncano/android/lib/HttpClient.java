@@ -1,5 +1,7 @@
 package com.syncano.android.lib;
 
+import android.util.Log;
+
 import com.syncano.android.lib.api.SyncanoException;
 
 import java.io.BufferedWriter;
@@ -143,6 +145,11 @@ public class HttpClient {
             responseString.append('\n');
         }
         rd.close();
+
+        if (BuildConfig.DEBUG)
+        {
+            Log.d(HttpClient.class.getSimpleName(), "Response: " + responseString.toString());
+        }
 
         return responseString.toString();
     }

@@ -1,30 +1,26 @@
 package com.syncano.android.lib.data;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
+import com.syncano.android.lib.annotation.SyncanoField;
 
 import java.util.Date;
 
 public abstract class SyncanoObject {
 
-    @Expose
+    private static final String FIELD_ID = "id";
+    private static final String FIELD_CREATED_AT = "created_at";
+    private static final String FIELD_UPDATED_AT = "updated_at";
+    private static final String FIELD_REVISION = "revision";
+
+    @SyncanoField(name = FIELD_ID, readOnly = true)
     private int id;
 
-    @Expose
-    private String title;
-
-    @Expose
-    private String author;
-
-    @Expose
-    @SerializedName(value = "created_at")
+    @SyncanoField(name = FIELD_CREATED_AT, readOnly = true)
     private Date createdAt;
 
-    @Expose
-    @SerializedName(value = "updated_at")
+    @SyncanoField(name = FIELD_UPDATED_AT, readOnly = true)
     private Date updatedAt;
 
-    @Expose
+    @SyncanoField(name = FIELD_REVISION, readOnly = true)
     private int revision;
 
     public int getId() {
@@ -33,22 +29,6 @@ public abstract class SyncanoObject {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(String author) {
-        this.author = author;
     }
 
     public Date getCreatedAt() {

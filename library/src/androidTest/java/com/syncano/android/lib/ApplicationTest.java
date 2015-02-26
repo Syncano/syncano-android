@@ -4,13 +4,16 @@ import android.app.Application;
 import android.test.ApplicationTestCase;
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.google.gson.annotations.Expose;
 import com.syncano.android.lib.annotation.SyncanoClass;
+import com.syncano.android.lib.annotation.SyncanoField;
 import com.syncano.android.lib.api.Page;
 import com.syncano.android.lib.api.SyncanoException;
 import com.syncano.android.lib.callbacks.GetCallback;
 import com.syncano.android.lib.callbacks.GetOneCallback;
 import com.syncano.android.lib.data.SyncanoObject;
+import com.syncano.android.lib.utils.GsonHelper;
 
 import java.util.List;
 
@@ -43,10 +46,13 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     public void testAccount() {
 
 
-        /*UserClass userClass = new UserClass();
-        userClass.imie = "Marek";
-        userClass.wiek = 30.0f;
-        syncano.createObject(userClass, new GetOneCallback<UserClass>() {
+        UserClass userClass = new UserClass();
+        userClass.userName = "Marek";
+        userClass.password = "secret password";
+
+        //Log.d(TAG, "json: " + GsonHelper.createGson().toJson(userClass));
+
+        /*syncano.createOrUpdateObject(userClass, new GetOneCallback<UserClass>() {
 
             @Override
             public void success(UserClass object) {
@@ -59,16 +65,17 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
                 Log.d("ApplicationTest", "Failure: " + error);
                 Log.d("ApplicationTest", "HttpError: " + error.getHttpError());
             }
-        });
-*/
+        });*/
 
         syncano.getObjects(UserClass.class, null, new GetCallback<UserClass>() {
             @Override
             public void success(Page<UserClass> page) {
-                Log.d("ApplicationTest", "Success: " + page);
+                Log.d(TAG, "Success: " + page);
                 for (UserClass user : page.getObjects())
                 {
-                    Log.d("ApplicationTest", "User: " + user.imie + " " + user.wiek);
+                    Log.d(TAG, "User: " + new Gson().toJson(user));
+                    Log.d(TAG, "    getCreatedAt: " + user.getCreatedAt());
+                    Log.d(TAG, "    getUpdatedAt: " + user.getUpdatedAt());
                 }
             }
 
@@ -80,14 +87,14 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
         });
     }
 
-    @SyncanoClass(name = "mojasuperklasa")
+    @SyncanoClass(name = "User")
     class UserClass extends SyncanoObject
     {
-        @Expose
-        public String imie;
+        @SyncanoField(name = "user_name")
+        public String userName;
 
-        @Expose
-        public float wiek;
+        @SyncanoField(name = "password")
+        public String password;
 
 
     }
