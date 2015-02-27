@@ -11,11 +11,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
+
 import org.apache.http.params.CoreProtocolPNames;
 import java.net.HttpURLConnection;
-import java.net.URLEncoder;
 import java.security.cert.X509Certificate;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -25,16 +24,14 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.X509TrustManager;
 import javax.net.ssl.HttpsURLConnection;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class HttpClient {
 
     private static final String TAG = HttpClient.class.getSimpleName();
 
-    public String sendRequest(String apiKey, String requestMethod, String url, LinkedHashMap<String, String> parameters) throws SyncanoException {
+    public String sendRequest(String apiKey, String requestMethod, String url, String jsonParameters) throws SyncanoException {
         // prepare connection to be sent
-        HttpsURLConnection connection = prepareConnection(apiKey, url, requestMethod, parameters);
+        HttpsURLConnection connection = prepareConnection(apiKey, url, requestMethod, jsonParameters);
         return receive(connection);
     }
 
@@ -45,7 +42,7 @@ public class HttpClient {
     }
 
 
-    private HttpsURLConnection prepareConnection(String apiKey, String url, String requestMethod, LinkedHashMap<String, String> parameters) {
+    private HttpsURLConnection prepareConnection(String apiKey, String url, String requestMethod, String jsonParameters) {
 
         // TODO change this to verify Syncano's certificate once it is provided.
         trustAllCertificates ();
@@ -53,19 +50,24 @@ public class HttpClient {
         try {
             final HttpsURLConnection connection;
 
+            if (BuildConfig.DEBUG) {
+                Log.d(TAG, "Request Method: " + requestMethod + " URL: " + url);
+                Log.d(TAG, "Request Params: " + jsonParameters);
+            }
+
             URL destinationURL = new URL (url);
             connection = (HttpsURLConnection) destinationURL.openConnection();
             connection.setRequestMethod(requestMethod);
             connection.setRequestProperty("Accept", "*/*");
-            connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Authorization", "Token " + apiKey);
             connection.setRequestProperty(CoreProtocolPNames.USER_AGENT, Constants.USER_AGENT);
 
-            if (parameters != null)
+            if (jsonParameters != null)
             {
                 OutputStream os = connection.getOutputStream();
                 BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                writer.write(getQuery(parameters));
+                writer.write(jsonParameters);
                 writer.flush();
                 writer.close();
 
@@ -79,33 +81,6 @@ public class HttpClient {
         }
 
         return null;
-    }
-
-    private String getQuery(LinkedHashMap<String, String> parameters)
-    {
-        StringBuilder result = new StringBuilder();
-        boolean first = true;
-
-        for (Map.Entry<String, String> entry : parameters.entrySet())
-        {
-            if (first)
-                first = false;
-            else
-                result.append("&");
-
-            try
-            {
-                result.append(URLEncoder.encode(entry.getKey(), "UTF-8"));
-                result.append("=");
-                result.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
-            }
-            catch (UnsupportedEncodingException e)
-            {
-                e.printStackTrace();
-            }
-        }
-
-        return result.toString();
     }
 
     private String receive(HttpURLConnection connection) throws SyncanoException {
@@ -134,8 +109,7 @@ public class HttpClient {
         return null;
     }
 
-    private String readResponse(InputStream stream) throws IOException
-    {
+    private String readResponse(InputStream stream) throws IOException {
         StringBuffer responseString = new StringBuffer();
 
         BufferedReader rd = new BufferedReader(new InputStreamReader(stream));
@@ -146,9 +120,8 @@ public class HttpClient {
         }
         rd.close();
 
-        if (BuildConfig.DEBUG)
-        {
-            Log.d(HttpClient.class.getSimpleName(), "Response: " + responseString.toString());
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "Response: " + responseString.toString());
         }
 
         return responseString.toString();

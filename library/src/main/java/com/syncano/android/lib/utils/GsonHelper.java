@@ -1,7 +1,5 @@
 package com.syncano.android.lib.utils;
 
-import android.util.Log;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Date;

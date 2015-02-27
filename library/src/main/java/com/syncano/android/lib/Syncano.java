@@ -1,21 +1,14 @@
 package com.syncano.android.lib;
 
-import android.util.Log;
-
+import com.syncano.android.lib.api.Page;
 import com.syncano.android.lib.api.Params;
+import com.syncano.android.lib.callbacks.DeleteCallback;
 import com.syncano.android.lib.callbacks.GetCallback;
-import com.syncano.android.lib.callbacks.GetOneCallback;
 import com.syncano.android.lib.data.SyncanoObject;
-
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 
 public class Syncano extends SyncanoBase {
 
     private static Syncano sharedInstance = null;
-
-
-
 
     /**
      * Create Syncano object.
@@ -28,6 +21,7 @@ public class Syncano extends SyncanoBase {
 
     /**
      * Create static Syncano instance.
+     * Use getSharedInstance() to get its reference.
      * @param apiKey Api key.
      * @param instance Syncano instance related with apiKey.
      */
@@ -41,39 +35,52 @@ public class Syncano extends SyncanoBase {
 
     // ==================== Objects ==================== //
 
-    public <T extends SyncanoObject> void createOrUpdateObject(T object, GetOneCallback<T> callback)
-    {
+    /**
+     * Create object on Syncano.
+     * @param object Object that will be created.
+     *               This object should match class created on Syncano.
+     *               Fields should be marked with @SyncanoField annotation.
+     * @param callback Notifies about success or fail. Returns created object.
+     * @param <T> Type of object to save. It should be marked with @SyncanoClass annotation.
+     */
+    public <T extends SyncanoObject> void createObject(T object, GetCallback<T> callback) {
+
         Class<T> type = (Class<T>) object.getClass();
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_LIST_URL, getInstance(), className);
-        requestDetail(type, METHOD_POST, url, null, callback);
+        requestCreate(type, url, object, callback);
     }
 
-    public <T extends SyncanoObject> void getObject(int id, GetOneCallback<T> callback)
-    {
+    public <T extends SyncanoObject> void getObject(Class<T> type, int id, Params params, GetCallback<T> callback) {
 
+        String className = getSyncanoClassName(type);
+        String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstance(), className, id);
+        requestGetOne(type, url, params, callback);
     }
 
-    public <T extends SyncanoObject> void getObjects(Class<T> type, Params params, GetCallback<T> callback)
-    {
+    public <T extends SyncanoObject> void getObjectsPage(Class<T> type, Params params, GetCallback<Page<T>> callback) {
+
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_LIST_URL, getInstance(), className);
-        requestList(type, METHOD_GET, url, null, callback);
+        requestGetPage(type, url, params, callback);
     }
 
-    public <T extends SyncanoObject> void getObjectsNextPage(int id, Params params, GetCallback<T> callback)
-    {
+    public <T extends SyncanoObject> void updateObject(T object, GetCallback<T> callback) {
+
+        if (object.getId() == 0) {
+            throw new RuntimeException("Trying to update object without id!");
+        }
+
+        Class<T> type = (Class<T>) object.getClass();
+        String className = getSyncanoClassName(type);
+        String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstance(), className, object.getId());
+        requestUpdate(type, url, object, callback);
     }
 
-    public <T extends SyncanoObject> void getObjectsPrevPage(int id, Params params, GetCallback<T> callback)
-    {
-    }
+    public <T extends SyncanoObject> void deleteObject(Class<T> type, int id, DeleteCallback callback) {
 
-    public static <T extends SyncanoObject> void updateObjects(T object, GetOneCallback<T> callback)
-    {
-    }
-
-    public static <T extends SyncanoObject> void deleteObjects(int id, GetOneCallback<T> callback)
-    {
+        String className = getSyncanoClassName(type);
+        String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstance(), className, id);
+        requestDelete(url, callback);
     }
 }
