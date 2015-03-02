@@ -16,7 +16,7 @@ public class Syncano extends SyncanoBase {
      * @param instance Syncano instance related with apiKey.
      */
     public Syncano(String apiKey, String instance) {
-        super(apiKey, instance, new HttpClient());
+        super(apiKey, instance);
     }
 
     /**

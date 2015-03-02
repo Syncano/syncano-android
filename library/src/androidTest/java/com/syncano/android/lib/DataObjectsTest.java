@@ -92,7 +92,7 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
         lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
 
         // ----------------- Update -----------------
-        /*resultRef.value.userName = newUserName;
+        resultRef.value.userName = newUserName;
         lock = new CountDownLatch(1);
         syncano.updateObject(resultRef.value, new GetCallback<UserClass>() {
             @Override
@@ -108,7 +108,7 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
                 fail("Failed to update object.");
             }
         });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);*/
+        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
 
         // ----------------- Get Page -----------------
         lock = new CountDownLatch(1);
@@ -138,7 +138,7 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
 
             @Override
             public void failure(SyncanoException error) {
-                fail("Failed to get object.");
+                fail("Failed to delete object. " + error.getHttpResultCode());
             }
         });
         lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
