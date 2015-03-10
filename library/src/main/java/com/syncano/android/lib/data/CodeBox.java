@@ -5,19 +5,7 @@ import com.syncano.android.lib.choice.RuntimeName;
 
 import org.json.JSONObject;
 
-import java.util.Date;
-import java.util.List;
-
-public class CodeBox {
-
-    @SyncanoField(name = "id", readOnly = true)
-    private int id;
-
-    @SyncanoField(name = "created_at", readOnly = true)
-    private Date createdAt;
-
-    @SyncanoField(name = "updated_at", readOnly = true)
-    private Date updatedAt;
+public class CodeBox extends Entity {
 
     @SyncanoField(name = "name")
     private String name;
@@ -33,30 +21,6 @@ public class CodeBox {
 
     @SyncanoField(name = "config")
     private JSONObject config;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Date getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public Date getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
-    }
 
     public String getName() {
         return name;
