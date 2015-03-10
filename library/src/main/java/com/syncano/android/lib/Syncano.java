@@ -4,6 +4,7 @@ import com.syncano.android.lib.api.Page;
 import com.syncano.android.lib.api.Params;
 import com.syncano.android.lib.callbacks.DeleteCallback;
 import com.syncano.android.lib.callbacks.GetCallback;
+import com.syncano.android.lib.data.CodeBox;
 import com.syncano.android.lib.data.SyncanoObject;
 
 public class Syncano extends SyncanoBase {
@@ -81,6 +82,39 @@ public class Syncano extends SyncanoBase {
 
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstance(), className, id);
+        requestDelete(url, callback);
+    }
+
+    // ==================== CodeBoxes ==================== //
+
+    public void createCodeBox(CodeBox codeBox, GetCallback<CodeBox> callback) {
+        String url = String.format(Constants.CODEBOXES_LIST_URL, getInstance());
+        requestCreate(CodeBox.class, url, codeBox, callback);
+    }
+
+    public void getCodeBox(int id, GetCallback<CodeBox> callback) {
+        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getInstance(), id);
+        requestGetOne(CodeBox.class, url, null, callback);
+    }
+
+    public void getCodeBoxes(GetCallback<Page<CodeBox>> callback) {
+        String url = String.format(Constants.CODEBOXES_LIST_URL, getInstance());
+        requestGetPage(CodeBox.class, url, null, callback);
+    }
+
+    public void updateCodeBox(CodeBox codeBox, GetCallback<CodeBox> callback) {
+
+        if (codeBox.getId() == 0) {
+            throw new RuntimeException("Trying to update object without id!");
+        }
+
+        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getInstance(), codeBox.getId());
+        requestUpdate(CodeBox.class, url, codeBox, callback);
+    }
+
+    public void deleteCodeBox(int id, DeleteCallback callback) {
+
+        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getInstance(), id);
         requestDelete(url, callback);
     }
 }

@@ -9,6 +9,8 @@ import com.syncano.android.lib.api.Page;
 import com.syncano.android.lib.api.SyncanoException;
 import com.syncano.android.lib.callbacks.DeleteCallback;
 import com.syncano.android.lib.callbacks.GetCallback;
+import com.syncano.android.lib.choice.RuntimeName;
+import com.syncano.android.lib.data.CodeBox;
 import com.syncano.android.lib.data.SyncanoObject;
 
 import java.util.concurrent.CountDownLatch;
@@ -18,16 +20,16 @@ import java.util.concurrent.TimeUnit;
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
-public class DataObjectsTest extends ApplicationTestCase<Application> {
+public class CodeBoxesTest extends ApplicationTestCase<Application> {
 
-    private static final String TAG = DataObjectsTest.class.getSimpleName();
+    private static final String TAG = CodeBoxesTest.class.getSimpleName();
 
     private final static int TIMEOUT_MILLIS = 10 * 1000;
 
     private Syncano syncano;
     private CountDownLatch lock;
 
-    public DataObjectsTest() {
+    public CodeBoxesTest() {
         super(Application.class);
     }
 
@@ -45,22 +47,24 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
 
     public void testDataObjects() throws InterruptedException {
 
-        String userName = "Andrzej Kartofel";
-        String password = "Potato";
-        String newUserName = "Andrzej Ziemniak";
+        String codeBoxName = "CodeBox Test";
+        String codeBoxNewName = "CodeBox Test New";
+        RuntimeName runtime = RuntimeName.NODEJS;
+        String source = "var msg = 'this is message from our Codebox'; console.log(msg);";
 
-        final UserClass userClass = new UserClass();
-        userClass.userName = userName;
-        userClass.password = password;
+        final CodeBox codeBox = new CodeBox();
+        codeBox.setName(codeBoxName);
+        codeBox.setRuntimeName(runtime);
+        codeBox.setSource(source);
 
-        final WeakReference<UserClass> resultRef = new WeakReference<>();
+        final WeakReference<CodeBox> resultRef = new WeakReference<>();
 
         // ----------------- Create -----------------
         lock = new CountDownLatch(1);
-        syncano.createObject(userClass, new GetCallback<UserClass>() {
+        syncano.createCodeBox(codeBox, new GetCallback<CodeBox>() {
 
             @Override
-            public void success(UserClass object) {
+            public void success(CodeBox object) {
                 assertNotNull(object);
                 resultRef.value = object;
                 lock.countDown();
@@ -75,12 +79,13 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
 
         // ----------------- Get One -----------------
         lock = new CountDownLatch(1);
-        syncano.getObject(UserClass.class, resultRef.value.getId(), null, new GetCallback<UserClass>() {
+        syncano.getCodeBox(resultRef.value.getId(), new GetCallback<CodeBox>() {
             @Override
-            public void success(UserClass object) {
+            public void success(CodeBox object) {
                 assertNotNull(object);
-                assertEquals(resultRef.value.userName, object.userName);
-                assertEquals(resultRef.value.userName, object.userName);
+                assertEquals(resultRef.value.getName(), object.getName());
+                assertEquals(resultRef.value.getRuntimeName(), object.getRuntimeName());
+                assertEquals(resultRef.value.getSource(), object.getSource());
                 lock.countDown();
             }
 
@@ -92,14 +97,15 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
         lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
 
         // ----------------- Update -----------------
-        resultRef.value.userName = newUserName;
+        resultRef.value.setName(codeBoxNewName);
         lock = new CountDownLatch(1);
-        syncano.updateObject(resultRef.value, new GetCallback<UserClass>() {
+        syncano.updateCodeBox(resultRef.value, new GetCallback<CodeBox>() {
             @Override
-            public void success(UserClass object) {
+            public void success(CodeBox object) {
                 assertNotNull(object);
-                assertEquals(resultRef.value.userName, object.userName);
-                assertEquals(resultRef.value.userName, object.userName);
+                assertEquals(resultRef.value.getName(), object.getName());
+                assertEquals(resultRef.value.getRuntimeName(), object.getRuntimeName());
+                assertEquals(resultRef.value.getSource(), object.getSource());
                 lock.countDown();
             }
 
@@ -112,9 +118,9 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
 
         // ----------------- Get Page -----------------
         lock = new CountDownLatch(1);
-        syncano.getObjectsPage(UserClass.class, null, new GetCallback<Page<UserClass>>() {
+        syncano.getCodeBoxes(new GetCallback<Page<CodeBox>>() {
             @Override
-            public void success(Page<UserClass> page) {
+            public void success(Page<CodeBox> page) {
                 assertNotNull(page);
                 assertNotNull(page.getObjects());
                 assertTrue("List should contain at least one item.", page.getObjects().size() > 0);
@@ -130,7 +136,7 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
 
         // ----------------- Delete -----------------
         lock = new CountDownLatch(1);
-        syncano.deleteObject(UserClass.class, resultRef.value.getId(), new DeleteCallback() {
+        syncano.deleteCodeBox(resultRef.value.getId(), new DeleteCallback() {
             @Override
             public void success() {
                 lock.countDown();
@@ -145,9 +151,9 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
 
         // ----------------- Get One -----------------
         lock = new CountDownLatch(1);
-        syncano.getObject(UserClass.class, resultRef.value.getId(), null, new GetCallback<UserClass>() {
+        syncano.getCodeBox(resultRef.value.getId(), new GetCallback<CodeBox>() {
             @Override
-            public void success(UserClass object) {
+            public void success(CodeBox object) {
                 assertNull("Failed to delete.", object);
             }
 
@@ -157,15 +163,5 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
             }
         });
         lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
-    }
-
-    @SyncanoClass(name = "User")
-    class UserClass extends SyncanoObject
-    {
-        @SyncanoField(name = "user_name")
-        public String userName;
-
-        @SyncanoField(name = "password")
-        public String password;
     }
 }
