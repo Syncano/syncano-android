@@ -3,15 +3,12 @@ package com.syncano.android.lib;
 import android.app.Application;
 import android.test.ApplicationTestCase;
 
-import com.syncano.android.lib.annotation.SyncanoClass;
-import com.syncano.android.lib.annotation.SyncanoField;
 import com.syncano.android.lib.api.Page;
 import com.syncano.android.lib.api.SyncanoException;
 import com.syncano.android.lib.callbacks.DeleteCallback;
 import com.syncano.android.lib.callbacks.GetCallback;
 import com.syncano.android.lib.choice.RuntimeName;
 import com.syncano.android.lib.data.CodeBox;
-import com.syncano.android.lib.data.SyncanoObject;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -45,7 +42,7 @@ public class CodeBoxesTest extends ApplicationTestCase<Application> {
         super.tearDown();
     }
 
-    public void testDataObjects() throws InterruptedException {
+    public void testCodeBoxes() throws InterruptedException {
 
         String codeBoxName = "CodeBox Test";
         String codeBoxNewName = "CodeBox Test New";

@@ -15,4 +15,8 @@ public class Constants {
     // ==================== CodeBoxes ==================== //
     public static final String CODEBOXES_LIST_URL = "/v1/instances/%s/codeboxes/";
     public static final String CODEBOXES_DETAIL_URL = "/v1/instances/%s/codeboxes/%d/";
+
+    // ==================== Webhooks ==================== //
+    public static final String WEBHOOKS_LIST_URL = "/v1/instances/%s/webhooks/";
+    public static final String WEBHOOKS_DETAIL_URL = "/v1/instances/%s/webhooks/%s/";
 }

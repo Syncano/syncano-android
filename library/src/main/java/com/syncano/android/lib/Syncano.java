@@ -6,6 +6,7 @@ import com.syncano.android.lib.callbacks.DeleteCallback;
 import com.syncano.android.lib.callbacks.GetCallback;
 import com.syncano.android.lib.data.CodeBox;
 import com.syncano.android.lib.data.SyncanoObject;
+import com.syncano.android.lib.data.Webhook;
 
 public class Syncano extends SyncanoBase {
 
@@ -116,5 +117,42 @@ public class Syncano extends SyncanoBase {
 
         String url = String.format(Constants.CODEBOXES_DETAIL_URL, getInstance(), id);
         requestDelete(url, callback);
+    }
+
+    // ==================== Webhooks ==================== //
+
+    public void createWebhook(Webhook webhook, GetCallback<Webhook> callback) {
+        String url = String.format(Constants.WEBHOOKS_LIST_URL, getInstance());
+        requestCreate(Webhook.class, url, webhook, callback);
+    }
+
+    public void getWebhook(String slug, GetCallback<Webhook> callback) {
+        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), slug);
+        requestGetOne(Webhook.class, url, null, callback);
+    }
+
+    public void getWebhooks(GetCallback<Page<Webhook>> callback) {
+        String url = String.format(Constants.WEBHOOKS_LIST_URL, getInstance());
+        requestGetPage(Webhook.class, url, null, callback);
+    }
+
+    public void updateWebhook(Webhook webhook, GetCallback<Webhook> callback) {
+
+        if (webhook.getSlug() == null || webhook.getSlug().isEmpty()) {
+            throw new RuntimeException("Trying to update Webhook without slug!");
+        }
+
+        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), webhook.getSlug());
+        requestUpdate(Webhook.class, url, webhook, callback);
+    }
+
+    public void deleteCodeBox(String slug, DeleteCallback callback) {
+
+        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), slug);
+        requestDelete(url, callback);
+    }
+
+    public void runWebhook() {
+
     }
 }
