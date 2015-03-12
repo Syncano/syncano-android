@@ -5,6 +5,7 @@ import com.syncano.android.lib.api.Params;
 import com.syncano.android.lib.callbacks.DeleteCallback;
 import com.syncano.android.lib.callbacks.GetCallback;
 import com.syncano.android.lib.data.CodeBox;
+import com.syncano.android.lib.data.RunCodeBoxResult;
 import com.syncano.android.lib.data.SyncanoObject;
 import com.syncano.android.lib.data.Webhook;
 
@@ -152,7 +153,8 @@ public class Syncano extends SyncanoBase {
         requestDelete(url, callback);
     }
 
-    public void runWebhook() {
-
+    public void runWebhook(String slug, GetCallback<RunCodeBoxResult> callback) {
+        String url = String.format(Constants.WEBHOOKS_RUN_URL, getInstance(), slug);
+        requestGetOne(RunCodeBoxResult.class, url, null, callback);
     }
 }

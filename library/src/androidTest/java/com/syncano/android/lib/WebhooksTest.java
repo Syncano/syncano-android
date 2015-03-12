@@ -10,6 +10,7 @@ import com.syncano.android.lib.callbacks.DeleteCallback;
 import com.syncano.android.lib.callbacks.GetCallback;
 import com.syncano.android.lib.choice.RuntimeName;
 import com.syncano.android.lib.data.CodeBox;
+import com.syncano.android.lib.data.RunCodeBoxResult;
 import com.syncano.android.lib.data.Webhook;
 
 import java.util.concurrent.CountDownLatch;
@@ -30,6 +31,7 @@ public class WebhooksTest extends ApplicationTestCase<Application> {
     private final WeakReference<CodeBox> codeBoxWeakReference = new WeakReference<>();
 
     private static final String SLUG = "slug01";
+    private static final String EXPECTED_RESULT = "this is message from our Codebox";
 
     public WebhooksTest() {
         super(Application.class);
@@ -42,7 +44,7 @@ public class WebhooksTest extends ApplicationTestCase<Application> {
 
         String codeBoxName = "CodeBox Test";
         RuntimeName runtime = RuntimeName.NODEJS;
-        String source = "var msg = 'this is message from our Codebox'; console.log(msg);";
+        String source = "var msg = '" + EXPECTED_RESULT + "'; console.log(msg);";
 
         final CodeBox codeBox = new CodeBox(codeBoxName, source, runtime);
 
@@ -179,6 +181,23 @@ public class WebhooksTest extends ApplicationTestCase<Application> {
             @Override
             public void failure(SyncanoException error) {
                 fail("Failed to get list");
+            }
+        });
+        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+
+        // ----------------- Run -----------------
+        lock = new CountDownLatch(1);
+        syncano.runWebhook(resultRef.value.getSlug(), new GetCallback<RunCodeBoxResult>() {
+            @Override
+            public void success(RunCodeBoxResult object) {
+                assertNotNull(object);
+                assertEquals(EXPECTED_RESULT, object.getResult());
+                lock.countDown();
+            }
+
+            @Override
+            public void failure(SyncanoException error) {
+                fail("Failed to run CodeBox.");
             }
         });
         lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
