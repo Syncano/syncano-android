@@ -146,7 +146,7 @@ public class Syncano extends SyncanoBase {
         requestUpdate(Webhook.class, url, webhook, callback);
     }
 
-    public void deleteCodeBox(String slug, DeleteCallback callback) {
+    public void deleteWebhook(String slug, DeleteCallback callback) {
 
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), slug);
         requestDelete(url, callback);

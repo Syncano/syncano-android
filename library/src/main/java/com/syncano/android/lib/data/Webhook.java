@@ -5,10 +5,10 @@ import com.syncano.android.lib.annotation.SyncanoField;
 
 public class Webhook {
 
-    @SyncanoField(name = "slug", readOnly = true)
+    @SyncanoField(name = "slug", readOnly = true, required = true)
     private String slug;
 
-    @SyncanoField(name = "codebox")
+    @SyncanoField(name = "codebox", required = true)
     private int codebox;
 
     @SyncanoField(name = "public_link", readOnly = true)
@@ -16,6 +16,14 @@ public class Webhook {
 
     @SyncanoField(name = "public")
     private boolean isPublic;
+
+    public Webhook() {
+    }
+
+    public Webhook(String slug, int codebox) {
+        this.slug = slug;
+        this.codebox = codebox;
+    }
 
     public String getSlug() {
         return slug;
@@ -41,11 +49,11 @@ public class Webhook {
         this.publicLink = publicLink;
     }
 
-    public boolean isPublic() {
+    public boolean getIsPublic() {
         return isPublic;
     }
 
-    public void setPublic(boolean isPublic) {
+    public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
     }
 }

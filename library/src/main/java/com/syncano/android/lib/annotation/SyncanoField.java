@@ -10,5 +10,6 @@ import java.lang.annotation.Target;
 public @interface SyncanoField {
     public String name();
     public boolean readOnly() default false;
+    public boolean required() default false;
 }
 

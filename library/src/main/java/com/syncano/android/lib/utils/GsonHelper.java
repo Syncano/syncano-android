@@ -50,7 +50,7 @@ public class GsonHelper {
 
             // Don't serialize read only fields (like "id" or "created_at").
             // We want only to receive it, not send.
-            if (syncanoField == null || syncanoField.readOnly() == true) {
+            if (syncanoField == null || (syncanoField.readOnly() == true && syncanoField.required() == false )) {
                 return true;
             }
 
