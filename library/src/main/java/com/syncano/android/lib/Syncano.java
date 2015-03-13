@@ -51,7 +51,7 @@ public class Syncano extends SyncanoBase {
         Class<T> type = (Class<T>) object.getClass();
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_LIST_URL, getInstance(), className);
-        requestCreate(type, url, object, callback);
+        requestPost(type, url, object, callback);
     }
 
     public <T extends SyncanoObject> void getObject(Class<T> type, int id, Params params, GetCallback<T> callback) {
@@ -91,7 +91,7 @@ public class Syncano extends SyncanoBase {
 
     public void createCodeBox(CodeBox codeBox, GetCallback<CodeBox> callback) {
         String url = String.format(Constants.CODEBOXES_LIST_URL, getInstance());
-        requestCreate(CodeBox.class, url, codeBox, callback);
+        requestPost(CodeBox.class, url, codeBox, callback);
     }
 
     public void getCodeBox(int id, GetCallback<CodeBox> callback) {
@@ -120,11 +120,16 @@ public class Syncano extends SyncanoBase {
         requestDelete(url, callback);
     }
 
+    public void runCodeBox(int id, GetCallback<RunCodeBoxResult> callback) {
+        String url = String.format(Constants.CODEBOXES_RUN_URL, getInstance(), id);
+        requestPost(RunCodeBoxResult.class, url, null, callback);
+    }
+
     // ==================== Webhooks ==================== //
 
     public void createWebhook(Webhook webhook, GetCallback<Webhook> callback) {
         String url = String.format(Constants.WEBHOOKS_LIST_URL, getInstance());
-        requestCreate(Webhook.class, url, webhook, callback);
+        requestPost(Webhook.class, url, webhook, callback);
     }
 
     public void getWebhook(String slug, GetCallback<Webhook> callback) {

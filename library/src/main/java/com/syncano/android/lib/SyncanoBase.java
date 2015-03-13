@@ -61,7 +61,7 @@ public abstract class SyncanoBase {
         return syncanoClass.name();
     }
 
-    protected <T> void requestCreate(Class<T> type, String url, Object params, GetCallback<T> callback) {
+    protected <T> void requestPost(Class<T> type, String url, Object params, GetCallback<T> callback) {
         try {
             String json = request(SimpleHttpClient.METHOD_POST, url, params);
             T result = gson.fromJson(json, type);

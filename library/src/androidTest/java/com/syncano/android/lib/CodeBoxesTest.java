@@ -9,6 +9,7 @@ import com.syncano.android.lib.callbacks.DeleteCallback;
 import com.syncano.android.lib.callbacks.GetCallback;
 import com.syncano.android.lib.choice.RuntimeName;
 import com.syncano.android.lib.data.CodeBox;
+import com.syncano.android.lib.data.RunCodeBoxResult;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +23,7 @@ public class CodeBoxesTest extends ApplicationTestCase<Application> {
     private static final String TAG = CodeBoxesTest.class.getSimpleName();
 
     private final static int TIMEOUT_MILLIS = 10 * 1000;
+    private static final String EXPECTED_RESULT = "this is message from our Codebox";
 
     private Syncano syncano;
     private CountDownLatch lock;
@@ -47,7 +49,7 @@ public class CodeBoxesTest extends ApplicationTestCase<Application> {
         String codeBoxName = "CodeBox Test";
         String codeBoxNewName = "CodeBox Test New";
         RuntimeName runtime = RuntimeName.NODEJS;
-        String source = "var msg = 'this is message from our Codebox'; console.log(msg);";
+        String source = "var msg = '" + EXPECTED_RESULT + "'; console.log(msg);";
 
         final CodeBox codeBox = new CodeBox();
         codeBox.setName(codeBoxName);
@@ -127,6 +129,22 @@ public class CodeBoxesTest extends ApplicationTestCase<Application> {
             @Override
             public void failure(SyncanoException error) {
                 fail("Failed to get list");
+            }
+        });
+        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+
+        // ----------------- Run -----------------
+        lock = new CountDownLatch(1);
+        syncano.runCodeBox(resultRef.value.getId(), new GetCallback<RunCodeBoxResult>() {
+            @Override
+            public void success(RunCodeBoxResult object) {
+                assertNotNull(object);
+                lock.countDown();
+            }
+
+            @Override
+            public void failure(SyncanoException error) {
+                fail("Failed to run CodeBox.");
             }
         });
         lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
