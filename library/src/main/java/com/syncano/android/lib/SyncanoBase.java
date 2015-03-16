@@ -1,24 +1,13 @@
 package com.syncano.android.lib;
 
 
-import android.util.Log;
-
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.reflect.TypeToken;
 import com.syncano.android.lib.annotation.SyncanoClass;
-import com.syncano.android.lib.api.Page;
-import com.syncano.android.lib.api.PageInternal;
+import com.syncano.android.lib.api.Request;
+import com.syncano.android.lib.api.Response;
 import com.syncano.android.lib.api.SyncanoException;
-import com.syncano.android.lib.callbacks.DeleteCallback;
-import com.syncano.android.lib.callbacks.GetCallback;
-import com.syncano.android.lib.utils.DownloadTool;
 import com.syncano.android.lib.utils.GsonHelper;
-import com.syncano.android.lib.utils.SimpleHttpClient;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
+import com.syncano.android.lib.utils.SyncanoHttpClient;
 
 public abstract class SyncanoBase {
 
@@ -61,7 +50,7 @@ public abstract class SyncanoBase {
         return syncanoClass.name();
     }
 
-    protected <T> void requestPost(Class<T> type, String url, Object params, GetCallback<T> callback) {
+    /*protected <T> void requestPost(Class<T> type, String url, Object params, GetCallback<T> callback) {
         try {
             String json = request(SimpleHttpClient.METHOD_POST, url, params);
             T result = gson.fromJson(json, type);
@@ -151,39 +140,19 @@ public abstract class SyncanoBase {
         } catch (SyncanoException e) {
             callback.failure(e);
         }
-    }
+    }*/
 
     /**
      * Send request and receive json.
-     * @param requestMethod
-     * @param url
-     * @param params
+     * @param syncanoRequest
      * @return
      * @throws SyncanoException
      */
-    protected String request(String requestMethod, String url, Object params) throws SyncanoException {
+    public Response request(Request<?> syncanoRequest) {
 
-        String jsonParams = null;
-        if (params != null) {
-            jsonParams = gson.toJson(params);
-        }
+        SyncanoHttpClient http = new SyncanoHttpClient();
+        http.setTimeout(0);
 
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Request: " + requestMethod + "  " + url);
-            Log.d(TAG, "Request params: " + jsonParams);
-        }
-
-        byte[] response = DownloadTool.download(requestMethod, getApiKey(), Constants.SERVER_URL + url, null, jsonParams, 0);
-        String str = null;
-
-        if (response != null) {
-            str = new String(response);
-        }
-
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Received: " + str);
-        }
-
-        return str;
+        return http.send(syncanoRequest, apiKey);
     }
 }

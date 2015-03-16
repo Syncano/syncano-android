@@ -1,8 +1,9 @@
 package com.syncano.android.lib.callbacks;
 
-import com.syncano.android.lib.api.SyncanoException;
+import com.syncano.android.lib.api.Response;
 
-public interface SyncanoCallback {
+public interface SyncanoCallback <T> {
 
-    public void failure(SyncanoException error);
+    public void success (Response response, T result);
+    public void failure(Response response);
 }

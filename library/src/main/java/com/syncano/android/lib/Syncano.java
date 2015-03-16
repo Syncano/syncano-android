@@ -1,9 +1,10 @@
 package com.syncano.android.lib;
 
 import com.syncano.android.lib.api.Page;
-import com.syncano.android.lib.api.Params;
-import com.syncano.android.lib.callbacks.DeleteCallback;
-import com.syncano.android.lib.callbacks.GetCallback;
+import com.syncano.android.lib.api.RequestGet;
+import com.syncano.android.lib.api.RequestGetPage;
+import com.syncano.android.lib.api.RequestPost;
+import com.syncano.android.lib.callbacks.SyncanoCallback;
 import com.syncano.android.lib.data.CodeBox;
 import com.syncano.android.lib.data.RunCodeBoxResult;
 import com.syncano.android.lib.data.SyncanoObject;
@@ -46,7 +47,7 @@ public class Syncano extends SyncanoBase {
      * @param callback Notifies about success or fail. Returns created object.
      * @param <T> Type of object to save. It should be marked with @SyncanoClass annotation.
      */
-    public <T extends SyncanoObject> void createObject(T object, GetCallback<T> callback) {
+    /*public <T extends SyncanoObject> void createObject(T object, GetCallback<T> callback) {
 
         Class<T> type = (Class<T>) object.getClass();
         String className = getSyncanoClassName(type);
@@ -161,5 +162,16 @@ public class Syncano extends SyncanoBase {
     public void runWebhook(String slug, GetCallback<RunCodeBoxResult> callback) {
         String url = String.format(Constants.WEBHOOKS_RUN_URL, getInstance(), slug);
         requestGetOne(RunCodeBoxResult.class, url, null, callback);
+    }*/
+
+    // ==================== Webhooks ==================== //
+    public RequestPost createWebhook(Webhook webhook) {
+        String url = String.format(Constants.WEBHOOKS_LIST_URL, getInstance());
+        return new RequestPost(Webhook.class, url, this, webhook);
+    }
+
+    public RequestGet getWebhooks() {
+        String url = String.format(Constants.WEBHOOKS_LIST_URL, getInstance());
+        return new RequestGetPage(Webhook.class, url, this);
     }
 }

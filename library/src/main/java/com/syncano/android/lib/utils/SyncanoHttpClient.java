@@ -26,8 +26,10 @@ import org.apache.http.params.HttpProtocolParams;
 
 import com.syncano.android.lib.BuildConfig;
 import com.syncano.android.lib.Constants;
-import com.syncano.android.lib.api.SyncanoException;
+import com.syncano.android.lib.api.Request;
+import com.syncano.android.lib.api.Response;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -46,8 +48,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-public class SimpleHttpClient {
-	private final static String LOG_TAG = SimpleHttpClient.class.getSimpleName();
+public class SyncanoHttpClient {
+	private final static String LOG_TAG = SyncanoHttpClient.class.getSimpleName();
 
     public static final String METHOD_GET = "GET";
     public static final String METHOD_POST = "POST";
@@ -55,29 +57,25 @@ public class SimpleHttpClient {
     public static final String METHOD_PATCH = "PATCH";
     public static final String METHOD_DELETE = "DELETE";
 
+    private static final String TAG = SyncanoHttpClient.class.getSimpleName();
+
 	/** Timeout value */
 	private final static int NOT_SET = -1;
 	/** Recommended timeout value */
 	private static final int TIMEOUT = 30000;
 	/** Default socket timeout */
 	private static final int SOCKET_TIMEOUT = 60000;
-	/** Url where every call is sent */
-	private String mUrl;
 	/** Connection timeout value */
-	private int mTimeout = NOT_SET;
+	private int timeout = NOT_SET;
 	/** Post data */
-	private StringEntity mPostData = null;
+	private StringEntity postData = null;
 	/** Http client used to connect to API */
-	private DefaultHttpClient mHttpclient;
+	private DefaultHttpClient httpclient;
 
 	/**
 	 * Default constructor
-
-	 * @param url
-	 *            Url where every call is sent
 	 */
-	SimpleHttpClient(String url) {
-		mUrl = url;
+	public SyncanoHttpClient() {
 	}
 
 	/**
@@ -87,7 +85,7 @@ public class SimpleHttpClient {
 	 *            timeout value in milliseconds
 	 */
 	public void setTimeout(int millis) {
-		mTimeout = millis;
+		timeout = millis;
 	}
 
 	/**
@@ -97,77 +95,96 @@ public class SimpleHttpClient {
 	 * @param text
 	 *            Text to send
 	 */
-	public void setPostData(String text) {
+	private void setPostData(String text) {
         if (text == null)
             return;
 
 		try {
-			mPostData = new StringEntity(text, "UTF-8");
+			postData = new StringEntity(text, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			Log.e(LOG_TAG, "Unsupported encoding: " + e.toString());
 		}
 	}
 
 	/**
-	 * Method to send post data contained in mPostData field
+	 * Method to send post data contained in postData field
 	 * 
-	 * @return input stream with response
-	 * @throws java.io.IOException
+	 * @return Response with data
 	 */
-	public InputStream send(String apiKey, String requestMethod) throws IOException, SyncanoException {
-		HttpUriRequest request;
+	public Response send(Request <?> syncanoRequest, String apiKey) {
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "Request: " + syncanoRequest.getRequestMethod() + "  " + syncanoRequest.getUrl());
+            Log.d(TAG, "Request params: " + syncanoRequest.prepareParams());
+        }
 
-        if (METHOD_GET.equals(requestMethod)) {
-            request = new HttpGet(mUrl);
-        } else if (METHOD_POST.equals(requestMethod)) {
-            HttpPost httpPost = new HttpPost(mUrl);
-            if (mPostData != null) {
-                httpPost.setEntity(mPostData);
+
+		HttpUriRequest request;
+        String url = Constants.SERVER_URL + syncanoRequest.getUrl();
+        setPostData(syncanoRequest.prepareParams());
+
+        if (METHOD_GET.equals(syncanoRequest.getRequestMethod())) {
+            request = new HttpGet(url);
+        } else if (METHOD_POST.equals(syncanoRequest.getRequestMethod())) {
+            HttpPost httpPost = new HttpPost(url);
+            if (postData != null) {
+                httpPost.setEntity(postData);
             }
             request = httpPost;
-        } else if (METHOD_PUT.equals(requestMethod)) {
-            HttpPut httpPut = new HttpPut(mUrl);
-            if (mPostData != null) {
-                httpPut.setEntity(mPostData);
+        } else if (METHOD_PUT.equals(syncanoRequest.getRequestMethod())) {
+            HttpPut httpPut = new HttpPut(url);
+            if (postData != null) {
+                httpPut.setEntity(postData);
             }
             request = httpPut;
-        } else if (METHOD_PATCH.equals(requestMethod)) {
-            HttpPatch httpPatch = new HttpPatch(mUrl);
-            if (mPostData != null) {
-                httpPatch.setEntity(mPostData);
+        } else if (METHOD_PATCH.equals(syncanoRequest.getRequestMethod())) {
+            HttpPatch httpPatch = new HttpPatch(url);
+            if (postData != null) {
+                httpPatch.setEntity(postData);
             }
             request = httpPatch;
-        } else if (METHOD_DELETE.equals(requestMethod)) {
-            request = new HttpDelete(mUrl);
+        } else if (METHOD_DELETE.equals(syncanoRequest.getRequestMethod())) {
+            request = new HttpDelete(url);
         } else {
-            request = new HttpGet(mUrl);
+            request = new HttpGet(url);
         }
 
 		request.setHeader("Content-Type", "application/json");
 		request.setHeader("Accept-Encoding", "gzip");
         request.setHeader("Authorization", "Token " + apiKey);
-		mHttpclient = getHttpClient();
-		mHttpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, Constants.USER_AGENT);
-		HttpParams httpParameters = mHttpclient.getParams();
-		if (mTimeout != NOT_SET) {
+		httpclient = getHttpClient();
+		httpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, Constants.USER_AGENT);
+		HttpParams httpParameters = httpclient.getParams();
+		if (timeout != NOT_SET) {
 			// Set the timeout in milliseconds until a connection is established.
 			// The default value is zero, that means the timeout is not used.
-			HttpConnectionParams.setConnectionTimeout(httpParameters, mTimeout * 1000);
+			HttpConnectionParams.setConnectionTimeout(httpParameters, timeout * 1000);
 			// Set the default socket timeout (SO_TIMEOUT)
 			// in milliseconds which is the timeout for waiting for data.
-			HttpConnectionParams.setSoTimeout(httpParameters, mTimeout * 1000);
+			HttpConnectionParams.setSoTimeout(httpParameters, timeout * 1000);
 		}
 
+        Response syncanoResponse = new Response();
 		HttpResponse response = null;
+
 		try {
-			response = mHttpclient.execute(request);
+			response = httpclient.execute(request);
 		} catch (ClientProtocolException e) {
 			Log.w(LOG_TAG, "ClientProtocolException");
-		}
-		if (response == null) return null;
+            syncanoResponse.setResultCode(Response.CODE_CLIENT_PROTOCOL_EXCEPTION);
+            syncanoResponse.setError(e.toString());
+            return syncanoResponse;
+		} catch (IOException e) {
+            Log.w(LOG_TAG, "IOException");
+            syncanoResponse.setResultCode(Response.CODE_ILLEGAL_IO_EXCEPTION);
+            syncanoResponse.setError(e.toString());
+            return syncanoResponse;
+        }
 
         InputStream is = null;
 		try {
+
+            syncanoResponse.setHttpResultCode(response.getStatusLine().getStatusCode());
+            syncanoResponse.setHttpReasonPhrase(response.getStatusLine().getReasonPhrase());
 
             if (BuildConfig.DEBUG) {
                 Log.d(LOG_TAG, "HTTP Response: " + response.getStatusLine().getStatusCode() + "  " + response.getStatusLine().getReasonPhrase());
@@ -181,20 +198,54 @@ public class SimpleHttpClient {
                     if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
                         is = new GZIPInputStream(is);
                     }
+
+                    byte[] data = readToByteArray(is);
+                    if (data != null) {
+                        String json = new String(data);
+                        if (BuildConfig.DEBUG) {
+                            Log.d(TAG, "Received: " + json);
+                        }
+                        syncanoResponse.setData(syncanoRequest.parseResult(json));
+                    }
                 }
             } else {
-                SyncanoException exception = new SyncanoException();
-                exception.setResultCode(SyncanoException.CODE_HTTP_ERROR);
-                exception.setError("Http error occurred.");
-                exception.setHttpResultCode(response.getStatusLine().getStatusCode());
-                exception.setHttpError(response.getStatusLine().getReasonPhrase());
-                throw exception;
+                syncanoResponse.setResultCode(Response.CODE_HTTP_ERROR);
+                syncanoResponse.setError("Http error.");
             }
 		} catch (IllegalStateException e) {
 			Log.w(LOG_TAG, "IllegalStateException");
-		}
-		return is;
+            syncanoResponse.setResultCode(Response.CODE_ILLEGAL_STATE_EXCEPTION);
+            syncanoResponse.setError(e.toString());
+            return syncanoResponse;
+		} catch (IOException e) {
+            Log.w(LOG_TAG, "IOException");
+            syncanoResponse.setResultCode(Response.CODE_ILLEGAL_IO_EXCEPTION);
+            syncanoResponse.setError(e.toString());
+            return syncanoResponse;
+        }
+
+		return syncanoResponse;
 	}
+
+    /**
+     * Copies whole InputStream to byte array
+     *
+     * @param is InputStream to copy
+     *
+     * @return byte[] containing copied InputStream
+     *
+     */
+    private static byte[] readToByteArray(InputStream is) throws IOException {
+        if (is == null)
+            return null;
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte buffer[] = new byte[1024];
+        for (int s; (s = is.read(buffer)) != -1;) {
+            baos.write(buffer, 0, s);
+        }
+        return baos.toByteArray();
+    }
 
 	/**
 	 * Method to get new http client with socket factory which allows to connect only to selected domains
@@ -244,9 +295,9 @@ public class SimpleHttpClient {
 	 * Method to close connection with server
 	 */
 	public void close() {
-		if (mHttpclient != null) {
+		if (httpclient != null) {
 			try {
-				mHttpclient.getConnectionManager().shutdown();
+				httpclient.getConnectionManager().shutdown();
 			} catch (Exception e) {
 				Log.e(LOG_TAG, "Error while shutting down http client: " + e.toString());
 			}

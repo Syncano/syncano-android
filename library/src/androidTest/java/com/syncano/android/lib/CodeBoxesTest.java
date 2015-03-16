@@ -5,8 +5,6 @@ import android.test.ApplicationTestCase;
 
 import com.syncano.android.lib.api.Page;
 import com.syncano.android.lib.api.SyncanoException;
-import com.syncano.android.lib.callbacks.DeleteCallback;
-import com.syncano.android.lib.callbacks.GetCallback;
 import com.syncano.android.lib.choice.RuntimeName;
 import com.syncano.android.lib.data.CodeBox;
 import com.syncano.android.lib.data.RunCodeBoxResult;
@@ -46,7 +44,7 @@ public class CodeBoxesTest extends ApplicationTestCase<Application> {
 
     public void testCodeBoxes() throws InterruptedException {
 
-        String codeBoxName = "CodeBox Test";
+        /*String codeBoxName = "CodeBox Test";
         String codeBoxNewName = "CodeBox Test New";
         RuntimeName runtime = RuntimeName.NODEJS;
         String source = "var msg = '" + EXPECTED_RESULT + "'; console.log(msg);";
@@ -177,6 +175,6 @@ public class CodeBoxesTest extends ApplicationTestCase<Application> {
                 lock.countDown();
             }
         });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);*/
     }
 }
