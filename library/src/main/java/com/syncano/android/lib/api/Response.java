@@ -89,12 +89,12 @@ public class Response <T> {
     /**
      * Internal results code.
      */
-    private Integer resultCode;
+    private int resultCode;
 
     /**
      * Http results code.
      */
-    private Integer httpResultCode;
+    private int httpResultCode;
 
     /**
      * Error when something went wrong.
@@ -111,6 +111,14 @@ public class Response <T> {
      */
     private T data;
 
+    /**
+     * Returns true if http result code is ok.
+     * @return
+     */
+    public boolean isOk() {
+        return httpResultCode >= 200 && httpResultCode < 400;
+    }
+
     public Integer getResultCode() {
         return resultCode;
     }
@@ -119,7 +127,7 @@ public class Response <T> {
         this.resultCode = resultCode;
     }
 
-    public Integer getHttpResultCode() {
+    public int getHttpResultCode() {
         return httpResultCode;
     }
 

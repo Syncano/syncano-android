@@ -1,8 +1,11 @@
 package com.syncano.android.lib;
 
 import com.syncano.android.lib.api.Page;
+import com.syncano.android.lib.api.Request;
+import com.syncano.android.lib.api.RequestDelete;
 import com.syncano.android.lib.api.RequestGet;
 import com.syncano.android.lib.api.RequestGetPage;
+import com.syncano.android.lib.api.RequestPatch;
 import com.syncano.android.lib.api.RequestPost;
 import com.syncano.android.lib.callbacks.SyncanoCallback;
 import com.syncano.android.lib.data.CodeBox;
@@ -86,92 +89,81 @@ public class Syncano extends SyncanoBase {
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstance(), className, id);
         requestDelete(url, callback);
-    }
+    }*/
 
     // ==================== CodeBoxes ==================== //
 
-    public void createCodeBox(CodeBox codeBox, GetCallback<CodeBox> callback) {
+    public RequestPost createCodeBox(CodeBox codeBox) {
         String url = String.format(Constants.CODEBOXES_LIST_URL, getInstance());
-        requestPost(CodeBox.class, url, codeBox, callback);
+        return new RequestPost(CodeBox.class, url, this, codeBox);
     }
 
-    public void getCodeBox(int id, GetCallback<CodeBox> callback) {
+    public RequestGet getCodeBox(int id) {
         String url = String.format(Constants.CODEBOXES_DETAIL_URL, getInstance(), id);
-        requestGetOne(CodeBox.class, url, null, callback);
+        return new RequestGet(CodeBox.class, url, this);
     }
 
-    public void getCodeBoxes(GetCallback<Page<CodeBox>> callback) {
+    public RequestGet getCodeBoxes() {
         String url = String.format(Constants.CODEBOXES_LIST_URL, getInstance());
-        requestGetPage(CodeBox.class, url, null, callback);
+        return new RequestGet(CodeBox.class, url, this);
     }
 
-    public void updateCodeBox(CodeBox codeBox, GetCallback<CodeBox> callback) {
+    public RequestPatch updateCodeBox(CodeBox codeBox) {
 
         if (codeBox.getId() == 0) {
             throw new RuntimeException("Trying to update object without id!");
         }
 
         String url = String.format(Constants.CODEBOXES_DETAIL_URL, getInstance(), codeBox.getId());
-        requestUpdate(CodeBox.class, url, codeBox, callback);
+        return new RequestPatch(CodeBox.class, url, this, codeBox);
     }
 
-    public void deleteCodeBox(int id, DeleteCallback callback) {
+    public RequestDelete deleteCodeBox(int id) {
 
         String url = String.format(Constants.CODEBOXES_DETAIL_URL, getInstance(), id);
-        requestDelete(url, callback);
+        return new RequestDelete(CodeBox.class, url, this);
     }
 
-    public void runCodeBox(int id, GetCallback<RunCodeBoxResult> callback) {
+    public RequestPost runCodeBox(int id) {
         String url = String.format(Constants.CODEBOXES_RUN_URL, getInstance(), id);
-        requestPost(RunCodeBoxResult.class, url, null, callback);
+        return new RequestPost(CodeBox.class, url, this, null);
     }
 
     // ==================== Webhooks ==================== //
 
-    public void createWebhook(Webhook webhook, GetCallback<Webhook> callback) {
+    public RequestPost createWebhook(Webhook webhook) {
         String url = String.format(Constants.WEBHOOKS_LIST_URL, getInstance());
-        requestPost(Webhook.class, url, webhook, callback);
+        return new RequestPost(Webhook.class, url, this, webhook);
     }
 
-    public void getWebhook(String slug, GetCallback<Webhook> callback) {
+    public RequestGet getWebhook(String slug) {
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), slug);
-        requestGetOne(Webhook.class, url, null, callback);
+        return new RequestGet(Webhook.class, url, this);
     }
 
-    public void getWebhooks(GetCallback<Page<Webhook>> callback) {
+    public RequestGet getWebhooks() {
         String url = String.format(Constants.WEBHOOKS_LIST_URL, getInstance());
-        requestGetPage(Webhook.class, url, null, callback);
+        return new RequestGetPage(Webhook.class, url, this);
     }
 
-    public void updateWebhook(Webhook webhook, GetCallback<Webhook> callback) {
+    public RequestPatch updateWebhook(Webhook webhook) {
 
         if (webhook.getSlug() == null || webhook.getSlug().isEmpty()) {
             throw new RuntimeException("Trying to update Webhook without slug!");
         }
 
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), webhook.getSlug());
-        requestUpdate(Webhook.class, url, webhook, callback);
+        return new RequestPatch(Webhook.class, url, this, webhook);
     }
 
-    public void deleteWebhook(String slug, DeleteCallback callback) {
+    public RequestDelete deleteWebhook(String slug) {
 
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), slug);
-        requestDelete(url, callback);
+        return new RequestDelete(Webhook.class, url, this);
     }
 
-    public void runWebhook(String slug, GetCallback<RunCodeBoxResult> callback) {
+    public RequestGet runWebhook(String slug) {
         String url = String.format(Constants.WEBHOOKS_RUN_URL, getInstance(), slug);
-        requestGetOne(RunCodeBoxResult.class, url, null, callback);
-    }*/
-
-    // ==================== Webhooks ==================== //
-    public RequestPost createWebhook(Webhook webhook) {
-        String url = String.format(Constants.WEBHOOKS_LIST_URL, getInstance());
-        return new RequestPost(Webhook.class, url, this, webhook);
-    }
-
-    public RequestGet getWebhooks() {
-        String url = String.format(Constants.WEBHOOKS_LIST_URL, getInstance());
-        return new RequestGetPage(Webhook.class, url, this);
+        return new RequestGet(RunCodeBoxResult.class, url, this);
     }
 }

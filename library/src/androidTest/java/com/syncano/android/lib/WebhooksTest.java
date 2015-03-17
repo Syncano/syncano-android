@@ -4,9 +4,11 @@ import android.app.Application;
 import android.test.ApplicationTestCase;
 import android.util.Log;
 
+import com.syncano.android.lib.api.Page;
 import com.syncano.android.lib.api.Response;
 import com.syncano.android.lib.choice.RuntimeName;
 import com.syncano.android.lib.data.CodeBox;
+import com.syncano.android.lib.data.RunCodeBoxResult;
 import com.syncano.android.lib.data.Webhook;
 
 import java.util.concurrent.CountDownLatch;
@@ -22,10 +24,9 @@ public class WebhooksTest extends ApplicationTestCase<Application> {
     private final static int TIMEOUT_MILLIS = 10 * 1000;
 
     private Syncano syncano;
-    private CountDownLatch lock;
-    private final WeakReference<CodeBox> codeBoxWeakReference = new WeakReference<>();
+    private CodeBox codeBox;
 
-    private static final String SLUG = "slug07";
+    private static final String SLUG = "slug01";
     private static final String EXPECTED_RESULT = "this is message from our Codebox";
 
     public WebhooksTest() {
@@ -41,132 +42,63 @@ public class WebhooksTest extends ApplicationTestCase<Application> {
         RuntimeName runtime = RuntimeName.NODEJS;
         String source = "var msg = '" + EXPECTED_RESULT + "'; console.log(msg);";
 
-        final CodeBox codeBox = new CodeBox(codeBoxName, source, runtime);
+        final CodeBox newCodeBox = new CodeBox(codeBoxName, source, runtime);
 
         // ----------------- Create CodeBox -----------------
-        /*lock = new CountDownLatch(1);
-        syncano.createCodeBox(codeBox, new GetCallback<CodeBox>() {
+        Response<CodeBox> responseCodeBoxCreate = syncano.createCodeBox(newCodeBox).send();
 
-            @Override
-            public void success(CodeBox object) {
-                assertNotNull(object);
-                codeBoxWeakReference.value = object;
-                lock.countDown();
-            }
-
-            @Override
-            public void failure(SyncanoException error) {
-                fail("Failed to create object.");
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+        assertEquals(Response.HTTP_CODE_CREATED, responseCodeBoxCreate.getHttpResultCode());
+        assertNotNull(responseCodeBoxCreate.getData());
+        codeBox = responseCodeBoxCreate.getData();
 
         // ----------------- Delete Webhook -----------------
         // Make sure slug is not taken.
-        lock = new CountDownLatch(1);
-        syncano.deleteWebhook(SLUG, new DeleteCallback() {
-            @Override
-            public void success() {
-                lock.countDown();
-            }
-
-            @Override
-            public void failure(SyncanoException error) {
-                lock.countDown();
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);*/
+        syncano.deleteWebhook(SLUG).send();
     }
 
     @Override
     protected void tearDown() throws Exception {
         // ----------------- Delete CodeBox -----------------
-        /*lock = new CountDownLatch(1);
-        syncano.deleteCodeBox(codeBoxWeakReference.value.getId(), new DeleteCallback() {
-            @Override
-            public void success() {
-                lock.countDown();
-            }
-
-            @Override
-            public void failure(SyncanoException error) {
-                fail("Failed to delete object. " + error.getHttpResultCode());
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
-        super.tearDown();*/
+        Response<CodeBox> responseCodeBoxDelete = syncano.deleteCodeBox(codeBox.getId()).send();
+        assertTrue(responseCodeBoxDelete.isOk());
     }
 
     public void testWebhooks() throws InterruptedException {
 
-        final Webhook webhook = new Webhook(SLUG, 1);
-
-        Response <Webhook> responseCreateWebhooks = syncano.createWebhook(webhook).send();
-        Log.d("Webhook Test", "Created:" + responseCreateWebhooks.getData());
-        Response <Webhook> responseGetWebhooks = syncano.getWebhooks().send();
-
-        /*final WeakReference<Webhook> resultRef = new WeakReference<>();
+        final Webhook newWebhook = new Webhook(SLUG, 1);
+        Webhook webhook;
 
         // ----------------- Create -----------------
-        lock = new CountDownLatch(1);
-        syncano.createWebhook(webhook, new GetCallback<Webhook>() {
+        Response <Webhook> responseCreateWebhooks = syncano.createWebhook(newWebhook).send();
 
-            @Override
-            public void success(Webhook object) {
-                assertNotNull(object);
-                resultRef.value = object;
-                lock.countDown();
-            }
-
-            @Override
-            public void failure(SyncanoException error) {
-                fail("Failed to create object.");
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+        assertEquals(Response.HTTP_CODE_CREATED, responseCreateWebhooks.getHttpResultCode());
+        assertNotNull(responseCreateWebhooks.getData());
+        webhook = responseCreateWebhooks.getData();
 
         // ----------------- Get One -----------------
-        lock = new CountDownLatch(1);
-        syncano.getWebhook(resultRef.value.getSlug(), new GetCallback<Webhook>() {
-            @Override
-            public void success(Webhook object) {
-                assertNotNull(object);
-                assertEquals(resultRef.value.getSlug(), object.getSlug());
-                assertEquals(resultRef.value.getCodebox(), object.getCodebox());
-                assertEquals(resultRef.value.getPublicLink(), object.getPublicLink());
-                assertEquals(resultRef.value.getIsPublic(), object.getIsPublic());
-                lock.countDown();
-            }
+        Response <Webhook> responseGetWebhook = syncano.getWebhook(SLUG).send();
 
-            @Override
-            public void failure(SyncanoException error) {
-                fail("Failed to get object.");
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+        assertEquals(Response.HTTP_CODE_SUCCESS, responseGetWebhook.getHttpResultCode());
+        assertNotNull(responseGetWebhook.getData());
+        assertEquals(webhook.getSlug(), responseGetWebhook.getData().getSlug());
+        assertEquals(webhook.getCodebox(), responseGetWebhook.getData().getCodebox());
+        assertEquals(webhook.getPublicLink(), responseGetWebhook.getData().getPublicLink());
+        assertEquals(webhook.getIsPublic(), responseGetWebhook.getData().getIsPublic());
 
         // ----------------- Update -----------------
-        resultRef.value.setCodebox(codeBoxWeakReference.value.getId());
-        lock = new CountDownLatch(1);
-        syncano.updateWebhook(resultRef.value, new GetCallback<Webhook>() {
-            @Override
-            public void success(Webhook object) {
-                assertNotNull(object);
-                assertEquals(resultRef.value.getSlug(), object.getSlug());
-                assertEquals(resultRef.value.getCodebox(), object.getCodebox());
-                assertEquals(resultRef.value.getPublicLink(), object.getPublicLink());
-                assertEquals(resultRef.value.getIsPublic(), object.getIsPublic());
-                lock.countDown();
-            }
+        webhook.setCodebox(codeBox.getId());
+        Response <Webhook> responseUpdateWebhook = syncano.updateWebhook(webhook).send();
 
-            @Override
-            public void failure(SyncanoException error) {
-                fail("Failed to update object.");
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+        assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdateWebhook.getHttpResultCode());
+        assertNotNull(responseUpdateWebhook.getData());
+        assertEquals(webhook.getSlug(), responseUpdateWebhook.getData().getSlug());
+        assertEquals(webhook.getCodebox(), responseUpdateWebhook.getData().getCodebox());
+        assertEquals(webhook.getPublicLink(), responseUpdateWebhook.getData().getPublicLink());
+        assertEquals(webhook.getIsPublic(), responseUpdateWebhook.getData().getIsPublic());
 
         // ----------------- Get Page -----------------
+        /*Response <Page<Webhook>> responseGetWebhooks = syncano.getWebhooks().send();
+
         lock = new CountDownLatch(1);
         syncano.getWebhooks(new GetCallback<Page<Webhook>>() {
             @Override
@@ -182,53 +114,24 @@ public class WebhooksTest extends ApplicationTestCase<Application> {
                 fail("Failed to get list");
             }
         });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);*/
 
         // ----------------- Run -----------------
-        lock = new CountDownLatch(1);
-        syncano.runWebhook(resultRef.value.getSlug(), new GetCallback<RunCodeBoxResult>() {
-            @Override
-            public void success(RunCodeBoxResult object) {
-                assertNotNull(object);
-                assertEquals(EXPECTED_RESULT, object.getResult());
-                lock.countDown();
-            }
+        Response <RunCodeBoxResult> responseRunWebhook = syncano.runWebhook(SLUG).send();
 
-            @Override
-            public void failure(SyncanoException error) {
-                fail("Failed to run CodeBox.");
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+        assertEquals(Response.HTTP_CODE_SUCCESS, responseRunWebhook.getHttpResultCode());
+        assertNotNull(responseRunWebhook.getData());
+        assertEquals(EXPECTED_RESULT, responseRunWebhook.getData().getResult());
 
         // ----------------- Delete -----------------
-        lock = new CountDownLatch(1);
-        syncano.deleteWebhook(resultRef.value.getSlug(), new DeleteCallback() {
-            @Override
-            public void success() {
-                lock.countDown();
-            }
+        Response <Webhook> responseDeleteWebhook = syncano.deleteWebhook(SLUG).send();
 
-            @Override
-            public void failure(SyncanoException error) {
-                fail("Failed to delete object. " + error.getHttpResultCode());
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+        assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteWebhook.getHttpResultCode());
 
         // ----------------- Get One -----------------
-        lock = new CountDownLatch(1);
-        syncano.getWebhook(resultRef.value.getSlug(), new GetCallback<Webhook>() {
-            @Override
-            public void success(Webhook object) {
-                assertNull("Failed to delete.", object);
-            }
+        Response <Webhook> responseGetOneWebhook = syncano.getWebhook(SLUG).send();
 
-            @Override
-            public void failure(SyncanoException error) {
-                lock.countDown();
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);*/
+        // After delete, Webhook should not be found.
+        assertEquals(Response.HTTP_CODE_NOT_FOUND, responseGetOneWebhook.getHttpResultCode());
     }
 }

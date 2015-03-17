@@ -4,6 +4,7 @@ import android.app.Application;
 import android.test.ApplicationTestCase;
 
 import com.syncano.android.lib.api.Page;
+import com.syncano.android.lib.api.Response;
 import com.syncano.android.lib.api.SyncanoException;
 import com.syncano.android.lib.choice.RuntimeName;
 import com.syncano.android.lib.data.CodeBox;
@@ -24,7 +25,6 @@ public class CodeBoxesTest extends ApplicationTestCase<Application> {
     private static final String EXPECTED_RESULT = "this is message from our Codebox";
 
     private Syncano syncano;
-    private CountDownLatch lock;
 
     public CodeBoxesTest() {
         super(Application.class);
@@ -44,77 +44,46 @@ public class CodeBoxesTest extends ApplicationTestCase<Application> {
 
     public void testCodeBoxes() throws InterruptedException {
 
-        /*String codeBoxName = "CodeBox Test";
+        String codeBoxName = "CodeBox Test";
         String codeBoxNewName = "CodeBox Test New";
         RuntimeName runtime = RuntimeName.NODEJS;
         String source = "var msg = '" + EXPECTED_RESULT + "'; console.log(msg);";
 
-        final CodeBox codeBox = new CodeBox();
-        codeBox.setName(codeBoxName);
-        codeBox.setRuntimeName(runtime);
-        codeBox.setSource(source);
+        final CodeBox newCodeBox = new CodeBox();
+        newCodeBox.setName(codeBoxName);
+        newCodeBox.setRuntimeName(runtime);
+        newCodeBox.setSource(source);
 
-        final WeakReference<CodeBox> resultRef = new WeakReference<>();
+        CodeBox codeBox;
 
         // ----------------- Create -----------------
-        lock = new CountDownLatch(1);
-        syncano.createCodeBox(codeBox, new GetCallback<CodeBox>() {
+        Response <CodeBox> responseCreateCodeBox = syncano.createCodeBox(newCodeBox).send();
 
-            @Override
-            public void success(CodeBox object) {
-                assertNotNull(object);
-                resultRef.value = object;
-                lock.countDown();
-            }
-
-            @Override
-            public void failure(SyncanoException error) {
-                fail("Failed to create object.");
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+        assertEquals(Response.HTTP_CODE_CREATED, responseCreateCodeBox.getHttpResultCode());
+        assertNotNull(responseCreateCodeBox.getData());
+        codeBox = responseCreateCodeBox.getData();
 
         // ----------------- Get One -----------------
-        lock = new CountDownLatch(1);
-        syncano.getCodeBox(resultRef.value.getId(), new GetCallback<CodeBox>() {
-            @Override
-            public void success(CodeBox object) {
-                assertNotNull(object);
-                assertEquals(resultRef.value.getName(), object.getName());
-                assertEquals(resultRef.value.getRuntimeName(), object.getRuntimeName());
-                assertEquals(resultRef.value.getSource(), object.getSource());
-                lock.countDown();
-            }
+        Response <CodeBox> responseGetCodeBox = syncano.getCodeBox(codeBox.getId()).send();
 
-            @Override
-            public void failure(SyncanoException error) {
-                fail("Failed to get object.");
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+        assertEquals(Response.HTTP_CODE_SUCCESS, responseGetCodeBox.getHttpResultCode());
+        assertNotNull(responseGetCodeBox.getData());
+        assertEquals(codeBox.getName(), responseGetCodeBox.getData().getName());
+        assertEquals(codeBox.getRuntimeName(), responseGetCodeBox.getData().getRuntimeName());
+        assertEquals(codeBox.getSource(), responseGetCodeBox.getData().getSource());
 
         // ----------------- Update -----------------
-        resultRef.value.setName(codeBoxNewName);
-        lock = new CountDownLatch(1);
-        syncano.updateCodeBox(resultRef.value, new GetCallback<CodeBox>() {
-            @Override
-            public void success(CodeBox object) {
-                assertNotNull(object);
-                assertEquals(resultRef.value.getName(), object.getName());
-                assertEquals(resultRef.value.getRuntimeName(), object.getRuntimeName());
-                assertEquals(resultRef.value.getSource(), object.getSource());
-                lock.countDown();
-            }
+        codeBox.setName(codeBoxNewName);
+        Response <CodeBox> responseUpdateCodeBox = syncano.updateCodeBox(codeBox).send();
 
-            @Override
-            public void failure(SyncanoException error) {
-                fail("Failed to update object.");
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+        assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdateCodeBox.getHttpResultCode());
+        assertNotNull(responseUpdateCodeBox.getData());
+        assertEquals(codeBox.getName(), responseUpdateCodeBox.getData().getName());
+        assertEquals(codeBox.getRuntimeName(), responseUpdateCodeBox.getData().getRuntimeName());
+        assertEquals(codeBox.getSource(), responseUpdateCodeBox.getData().getSource());
 
         // ----------------- Get Page -----------------
-        lock = new CountDownLatch(1);
+        /*lock = new CountDownLatch(1);
         syncano.getCodeBoxes(new GetCallback<Page<CodeBox>>() {
             @Override
             public void success(Page<CodeBox> page) {
@@ -129,52 +98,23 @@ public class CodeBoxesTest extends ApplicationTestCase<Application> {
                 fail("Failed to get list");
             }
         });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);*/
 
         // ----------------- Run -----------------
-        lock = new CountDownLatch(1);
-        syncano.runCodeBox(resultRef.value.getId(), new GetCallback<RunCodeBoxResult>() {
-            @Override
-            public void success(RunCodeBoxResult object) {
-                assertNotNull(object);
-                lock.countDown();
-            }
+        Response <RunCodeBoxResult> responseRunCodeBox = syncano.runCodeBox(codeBox.getId()).send();
 
-            @Override
-            public void failure(SyncanoException error) {
-                fail("Failed to run CodeBox.");
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+        assertEquals(responseRunCodeBox.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responseRunCodeBox.getHttpResultCode());
+        assertNotNull(responseRunCodeBox.getData());
 
         // ----------------- Delete -----------------
-        lock = new CountDownLatch(1);
-        syncano.deleteCodeBox(resultRef.value.getId(), new DeleteCallback() {
-            @Override
-            public void success() {
-                lock.countDown();
-            }
+        Response <CodeBox> responseDeleteCodeBox = syncano.deleteCodeBox(codeBox.getId()).send();
 
-            @Override
-            public void failure(SyncanoException error) {
-                fail("Failed to delete object. " + error.getHttpResultCode());
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+        assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteCodeBox.getHttpResultCode());
 
         // ----------------- Get One -----------------
-        lock = new CountDownLatch(1);
-        syncano.getCodeBox(resultRef.value.getId(), new GetCallback<CodeBox>() {
-            @Override
-            public void success(CodeBox object) {
-                assertNull("Failed to delete.", object);
-            }
+        Response <CodeBox> responseGetOneCodeBox = syncano.getCodeBox(codeBox.getId()).send();
 
-            @Override
-            public void failure(SyncanoException error) {
-                lock.countDown();
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);*/
+        // After delete, CodeBox should not be found.
+        assertEquals(Response.HTTP_CODE_NOT_FOUND, responseGetOneCodeBox.getHttpResultCode());
     }
 }
