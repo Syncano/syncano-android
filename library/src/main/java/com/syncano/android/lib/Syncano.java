@@ -44,35 +44,30 @@ public class Syncano extends SyncanoBase {
 
     /**
      * Create object on Syncano.
-     * @param object Object that will be created.
-     *               This object should match class created on Syncano.
-     *               Fields should be marked with @SyncanoField annotation.
-     * @param callback Notifies about success or fail. Returns created object.
-     * @param <T> Type of object to save. It should be marked with @SyncanoClass annotation.
      */
-    /*public <T extends SyncanoObject> void createObject(T object, GetCallback<T> callback) {
+    public <T extends SyncanoObject> RequestPost createObject(T object) {
 
         Class<T> type = (Class<T>) object.getClass();
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_LIST_URL, getInstance(), className);
-        requestPost(type, url, object, callback);
+        return new RequestPost(type, url, this, object);
     }
 
-    public <T extends SyncanoObject> void getObject(Class<T> type, int id, Params params, GetCallback<T> callback) {
+    public <T extends SyncanoObject> RequestGet getObject(Class<T> type, int id) {
 
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstance(), className, id);
-        requestGetOne(type, url, params, callback);
+        return new RequestGet(type, url, this);
     }
 
-    public <T extends SyncanoObject> void getObjectsPage(Class<T> type, Params params, GetCallback<Page<T>> callback) {
+    /*public <T extends SyncanoObject> void getObjectsPage(Class<T> type, Params params, GetCallback<Page<T>> callback) {
 
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_LIST_URL, getInstance(), className);
         requestGetPage(type, url, params, callback);
-    }
+    }*/
 
-    public <T extends SyncanoObject> void updateObject(T object, GetCallback<T> callback) {
+    public <T extends SyncanoObject> RequestPatch updateObject(T object) {
 
         if (object.getId() == 0) {
             throw new RuntimeException("Trying to update object without id!");
@@ -81,15 +76,15 @@ public class Syncano extends SyncanoBase {
         Class<T> type = (Class<T>) object.getClass();
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstance(), className, object.getId());
-        requestUpdate(type, url, object, callback);
+        return new RequestPatch(type, url, this, object);
     }
 
-    public <T extends SyncanoObject> void deleteObject(Class<T> type, int id, DeleteCallback callback) {
+    public <T extends SyncanoObject> RequestDelete deleteObject(Class<T> type, int id) {
 
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstance(), className, id);
-        requestDelete(url, callback);
-    }*/
+        return new RequestDelete(type, url, this);
+    }
 
     // ==================== CodeBoxes ==================== //
 

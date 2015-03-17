@@ -6,6 +6,7 @@ import android.test.ApplicationTestCase;
 import com.syncano.android.lib.annotation.SyncanoClass;
 import com.syncano.android.lib.annotation.SyncanoField;
 import com.syncano.android.lib.api.Page;
+import com.syncano.android.lib.api.Response;
 import com.syncano.android.lib.api.SyncanoException;
 import com.syncano.android.lib.data.SyncanoObject;
 
@@ -23,7 +24,6 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
     private final static int TIMEOUT_MILLIS = 10 * 1000;
 
     private Syncano syncano;
-    private CountDownLatch lock;
 
     public DataObjectsTest() {
         super(Application.class);
@@ -43,73 +43,42 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
 
     public void testDataObjects() throws InterruptedException {
 
-        /*String userName = "Andrzej Kartofel";
+        String userName = "Andrzej Kartofel";
         String password = "Potato";
         String newUserName = "Andrzej Ziemniak";
 
-        final UserClass userClass = new UserClass();
-        userClass.userName = userName;
-        userClass.password = password;
+        final UserClass newUserObject = new UserClass();
+        newUserObject.userName = userName;
+        newUserObject.password = password;
 
-        final WeakReference<UserClass> resultRef = new WeakReference<>();
+        final UserClass userObject;
 
         // ----------------- Create -----------------
-        lock = new CountDownLatch(1);
-        syncano.createObject(userClass, new GetCallback<UserClass>() {
+        Response <UserClass> responseCreateObject = syncano.createObject(newUserObject).send();
 
-            @Override
-            public void success(UserClass object) {
-                assertNotNull(object);
-                resultRef.value = object;
-                lock.countDown();
-            }
-
-            @Override
-            public void failure(SyncanoException error) {
-                fail("Failed to create object.");
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+        assertEquals(Response.HTTP_CODE_CREATED, responseCreateObject.getHttpResultCode());
+        assertNotNull(responseCreateObject.getData());
+        userObject = responseCreateObject.getData();
 
         // ----------------- Get One -----------------
-        lock = new CountDownLatch(1);
-        syncano.getObject(UserClass.class, resultRef.value.getId(), null, new GetCallback<UserClass>() {
-            @Override
-            public void success(UserClass object) {
-                assertNotNull(object);
-                assertEquals(resultRef.value.userName, object.userName);
-                assertEquals(resultRef.value.userName, object.userName);
-                lock.countDown();
-            }
+        Response <UserClass> responseGetUser = syncano.getObject(UserClass.class, userObject.getId()).send();
 
-            @Override
-            public void failure(SyncanoException error) {
-                fail("Failed to get object.");
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+        assertEquals(Response.HTTP_CODE_SUCCESS, responseGetUser.getHttpResultCode());
+        assertNotNull(responseGetUser.getData());
+        assertEquals(userObject.userName, responseGetUser.getData().userName);
+        assertEquals(userObject.userName, responseGetUser.getData().userName);
 
         // ----------------- Update -----------------
-        resultRef.value.userName = newUserName;
-        lock = new CountDownLatch(1);
-        syncano.updateObject(resultRef.value, new GetCallback<UserClass>() {
-            @Override
-            public void success(UserClass object) {
-                assertNotNull(object);
-                assertEquals(resultRef.value.userName, object.userName);
-                assertEquals(resultRef.value.userName, object.userName);
-                lock.countDown();
-            }
+        userObject.userName = newUserName;
+        Response <UserClass> responseUpdateUser = syncano.updateObject(userObject).send();
 
-            @Override
-            public void failure(SyncanoException error) {
-                fail("Failed to update object.");
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+        assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdateUser.getHttpResultCode());
+        assertNotNull(responseUpdateUser.getData());
+        assertEquals(userObject.userName, responseUpdateUser.getData().userName);
+        assertEquals(userObject.userName, responseUpdateUser.getData().userName);
 
         // ----------------- Get Page -----------------
-        lock = new CountDownLatch(1);
+        /*lock = new CountDownLatch(1);
         syncano.getObjectsPage(UserClass.class, null, new GetCallback<Page<UserClass>>() {
             @Override
             public void success(Page<UserClass> page) {
@@ -124,37 +93,12 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
                 fail("Failed to get list");
             }
         });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
+        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);*/
 
         // ----------------- Delete -----------------
-        lock = new CountDownLatch(1);
-        syncano.deleteObject(UserClass.class, resultRef.value.getId(), new DeleteCallback() {
-            @Override
-            public void success() {
-                lock.countDown();
-            }
+        Response <UserClass> responseDeleteObject = syncano.deleteObject(UserClass.class, userObject.getId()).send();
 
-            @Override
-            public void failure(SyncanoException error) {
-                fail("Failed to delete object. " + error.getHttpResultCode());
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);
-
-        // ----------------- Get One -----------------
-        lock = new CountDownLatch(1);
-        syncano.getObject(UserClass.class, resultRef.value.getId(), null, new GetCallback<UserClass>() {
-            @Override
-            public void success(UserClass object) {
-                assertNull("Failed to delete.", object);
-            }
-
-            @Override
-            public void failure(SyncanoException error) {
-                lock.countDown();
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);*/
+        assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteObject.getHttpResultCode());
     }
 
     @SyncanoClass(name = "User")
