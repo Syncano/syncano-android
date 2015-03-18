@@ -3,7 +3,6 @@ package com.syncano.android.lib;
 import android.app.Application;
 import android.test.ApplicationTestCase;
 
-import com.syncano.android.lib.api.Page;
 import com.syncano.android.lib.api.Response;
 import com.syncano.android.lib.choice.RuntimeName;
 import com.syncano.android.lib.data.CodeBox;

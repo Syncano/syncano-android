@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import com.syncano.android.lib.annotation.SyncanoClass;
 import com.syncano.android.lib.api.Request;
 import com.syncano.android.lib.api.Response;
-import com.syncano.android.lib.api.SyncanoException;
 import com.syncano.android.lib.utils.GsonHelper;
 import com.syncano.android.lib.utils.SyncanoHttpClient;
 

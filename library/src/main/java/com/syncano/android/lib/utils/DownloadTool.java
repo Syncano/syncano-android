@@ -2,13 +2,10 @@ package com.syncano.android.lib.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.ConnectivityManager;
 import android.util.Log;
 
 import com.syncano.android.lib.BuildConfig;
-import com.syncano.android.lib.api.SyncanoException;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;

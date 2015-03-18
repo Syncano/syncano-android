@@ -5,15 +5,10 @@ import android.test.ApplicationTestCase;
 
 import com.syncano.android.lib.annotation.SyncanoClass;
 import com.syncano.android.lib.annotation.SyncanoField;
-import com.syncano.android.lib.api.Page;
 import com.syncano.android.lib.api.Response;
-import com.syncano.android.lib.api.SyncanoException;
-import com.syncano.android.lib.data.CodeBox;
 import com.syncano.android.lib.data.SyncanoObject;
 
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 
 /**
