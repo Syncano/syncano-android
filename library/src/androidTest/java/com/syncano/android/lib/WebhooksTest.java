@@ -46,7 +46,7 @@ public class WebhooksTest extends ApplicationTestCase<Application> {
         // ----------------- Create CodeBox -----------------
         Response<CodeBox> responseCodeBoxCreate = syncano.createCodeBox(newCodeBox).send();
 
-        assertEquals(Response.HTTP_CODE_CREATED, responseCodeBoxCreate.getHttpResultCode());
+        assertEquals(responseCodeBoxCreate.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responseCodeBoxCreate.getHttpResultCode());
         assertNotNull(responseCodeBoxCreate.getData());
         codeBox = responseCodeBoxCreate.getData();
 

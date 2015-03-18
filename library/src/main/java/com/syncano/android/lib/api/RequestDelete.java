@@ -13,9 +13,4 @@ public class RequestDelete<T> extends SimpleRequest<T> {
     public String getRequestMethod() {
         return SyncanoHttpClient.METHOD_DELETE;
     }
-
-    @Override
-    public String prepareParams() {
-        return null;
-    }
 }

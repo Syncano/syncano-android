@@ -112,15 +112,22 @@ public class SyncanoHttpClient {
 	 * @return Response with data
 	 */
 	public Response send(Request <?> syncanoRequest, String apiKey) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Request: " + syncanoRequest.getRequestMethod() + "  " + syncanoRequest.getUrl());
-            Log.d(TAG, "Request params: " + syncanoRequest.prepareParams());
+		HttpUriRequest request;
+        String urlParameters = syncanoRequest.getUrlParams();
+
+        if (urlParameters == null) {
+            urlParameters = "";
         }
 
+        String parameters = syncanoRequest.prepareParams();
 
-		HttpUriRequest request;
-        String url = Constants.SERVER_URL + syncanoRequest.getUrl();
-        setPostData(syncanoRequest.prepareParams());
+        String url = Constants.SERVER_URL + syncanoRequest.getUrl() + urlParameters;
+        setPostData(parameters);
+
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, "Request: " + syncanoRequest.getRequestMethod() + "  " + url);
+            Log.d(TAG, "Request params: " + parameters);
+        }
 
         if (METHOD_GET.equals(syncanoRequest.getRequestMethod())) {
             request = new HttpGet(url);

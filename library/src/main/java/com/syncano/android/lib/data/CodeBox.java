@@ -7,19 +7,25 @@ import org.json.JSONObject;
 
 public class CodeBox extends Entity {
 
-    @SyncanoField(name = "name", required = true)
+    public static final String FIELD_NAME = "name";
+    public static final String FIELD_DESCRIPTION = "description";
+    public static final String FIELD_SOURCE = "source";
+    public static final String FIELD_RUNTIME_NAME = "runtime_name";
+    public static final String FIELD_CONFIG = "config";
+
+    @SyncanoField(name = FIELD_NAME, required = true)
     private String name;
 
-    @SyncanoField(name = "description")
+    @SyncanoField(name = FIELD_DESCRIPTION)
     private String description;
 
-    @SyncanoField(name = "source", required = true)
+    @SyncanoField(name = FIELD_SOURCE, required = true)
     private String source;
 
-    @SyncanoField(name = "runtime_name", required = true)
+    @SyncanoField(name = FIELD_RUNTIME_NAME, required = true)
     private RuntimeName runtimeName;
 
-    @SyncanoField(name = "config")
+    @SyncanoField(name = FIELD_CONFIG)
     private JSONObject config;
 
     public CodeBox() {
