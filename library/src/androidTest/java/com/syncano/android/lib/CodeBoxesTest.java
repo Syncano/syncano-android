@@ -9,7 +9,9 @@ import com.syncano.android.lib.api.SyncanoException;
 import com.syncano.android.lib.choice.RuntimeName;
 import com.syncano.android.lib.data.CodeBox;
 import com.syncano.android.lib.data.RunCodeBoxResult;
+import com.syncano.android.lib.data.Webhook;
 
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -82,23 +84,11 @@ public class CodeBoxesTest extends ApplicationTestCase<Application> {
         assertEquals(codeBox.getRuntimeName(), responseUpdateCodeBox.getData().getRuntimeName());
         assertEquals(codeBox.getSource(), responseUpdateCodeBox.getData().getSource());
 
-        // ----------------- Get Page -----------------
-        /*lock = new CountDownLatch(1);
-        syncano.getCodeBoxes(new GetCallback<Page<CodeBox>>() {
-            @Override
-            public void success(Page<CodeBox> page) {
-                assertNotNull(page);
-                assertNotNull(page.getObjects());
-                assertTrue("List should contain at least one item.", page.getObjects().size() > 0);
-                lock.countDown();
-            }
+        // ----------------- Get List -----------------
+        Response <List<CodeBox>> responseGetCodeBoxes = syncano.getCodeBoxes().send();
 
-            @Override
-            public void failure(SyncanoException error) {
-                fail("Failed to get list");
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);*/
+        assertNotNull(responseGetCodeBoxes.getData());
+        assertTrue("List should contain at least one item.", responseGetCodeBoxes.getData().size() > 0);
 
         // ----------------- Run -----------------
         Response <RunCodeBoxResult> responseRunCodeBox = syncano.runCodeBox(codeBox.getId()).send();

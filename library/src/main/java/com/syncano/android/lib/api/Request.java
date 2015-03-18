@@ -5,16 +5,15 @@ import com.syncano.android.lib.Syncano;
 import com.syncano.android.lib.callbacks.SyncanoCallback;
 import com.syncano.android.lib.utils.GsonHelper;
 
-public abstract class Request <T> {
+import java.lang.reflect.Type;
 
-    private Class<T> responseType;
-    private String url;
+public abstract class Request<T> {
+
     protected Gson gson;
+    private String url;
     private Syncano syncano;
 
-
-    protected Request(Class<T> responseType, String url, Syncano syncano) {
-        this.responseType = responseType;
+    protected Request(String url, Syncano syncano) {
         this.url = url;
         this.syncano = syncano;
         gson = GsonHelper.createGson();
@@ -36,12 +35,9 @@ public abstract class Request <T> {
         return url;
     }
 
-    public T parseResult(String json) {
-        return gson.fromJson(json, responseType);
-    }
+    public abstract T parseResult(String json);
 
     public Response<T> send() {
-
         return syncano.request(this);
     }
 

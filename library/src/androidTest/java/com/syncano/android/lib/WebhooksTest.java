@@ -2,7 +2,6 @@ package com.syncano.android.lib;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
-import android.util.Log;
 
 import com.syncano.android.lib.api.Page;
 import com.syncano.android.lib.api.Response;
@@ -11,7 +10,7 @@ import com.syncano.android.lib.data.CodeBox;
 import com.syncano.android.lib.data.RunCodeBoxResult;
 import com.syncano.android.lib.data.Webhook;
 
-import java.util.concurrent.CountDownLatch;
+import java.util.List;
 
 
 /**
@@ -96,25 +95,11 @@ public class WebhooksTest extends ApplicationTestCase<Application> {
         assertEquals(webhook.getPublicLink(), responseUpdateWebhook.getData().getPublicLink());
         assertEquals(webhook.getIsPublic(), responseUpdateWebhook.getData().getIsPublic());
 
-        // ----------------- Get Page -----------------
-        /*Response <Page<Webhook>> responseGetWebhooks = syncano.getWebhooks().send();
+        // ----------------- Get List -----------------
+        Response <List<Webhook>> responseGetWebhooks = syncano.getWebhooks().send();
 
-        lock = new CountDownLatch(1);
-        syncano.getWebhooks(new GetCallback<Page<Webhook>>() {
-            @Override
-            public void success(Page<Webhook> page) {
-                assertNotNull(page);
-                assertNotNull(page.getObjects());
-                assertTrue("List should contain at least one item.", page.getObjects().size() > 0);
-                lock.countDown();
-            }
-
-            @Override
-            public void failure(SyncanoException error) {
-                fail("Failed to get list");
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);*/
+        assertNotNull(responseGetWebhooks.getData());
+        assertTrue("List should contain at least one item.", responseGetWebhooks.getData().size() > 0);
 
         // ----------------- Run -----------------
         Response <RunCodeBoxResult> responseRunWebhook = syncano.runWebhook(SLUG).send();

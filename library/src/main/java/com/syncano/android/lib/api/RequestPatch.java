@@ -3,7 +3,7 @@ package com.syncano.android.lib.api;
 import com.syncano.android.lib.Syncano;
 import com.syncano.android.lib.utils.SyncanoHttpClient;
 
-public class RequestPatch<T> extends Request <T> {
+public class RequestPatch<T> extends SimpleRequest<T> {
 
     private Object data;
 

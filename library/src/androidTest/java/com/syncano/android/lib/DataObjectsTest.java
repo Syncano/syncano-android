@@ -8,8 +8,10 @@ import com.syncano.android.lib.annotation.SyncanoField;
 import com.syncano.android.lib.api.Page;
 import com.syncano.android.lib.api.Response;
 import com.syncano.android.lib.api.SyncanoException;
+import com.syncano.android.lib.data.CodeBox;
 import com.syncano.android.lib.data.SyncanoObject;
 
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -77,23 +79,11 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
         assertEquals(userObject.userName, responseUpdateUser.getData().userName);
         assertEquals(userObject.userName, responseUpdateUser.getData().userName);
 
-        // ----------------- Get Page -----------------
-        /*lock = new CountDownLatch(1);
-        syncano.getObjectsPage(UserClass.class, null, new GetCallback<Page<UserClass>>() {
-            @Override
-            public void success(Page<UserClass> page) {
-                assertNotNull(page);
-                assertNotNull(page.getObjects());
-                assertTrue("List should contain at least one item.", page.getObjects().size() > 0);
-                lock.countDown();
-            }
+        // ----------------- Get List -----------------
+        Response <List<UserClass>> responseGetCodeBoxes = syncano.getObjects(UserClass.class).send();
 
-            @Override
-            public void failure(SyncanoException error) {
-                fail("Failed to get list");
-            }
-        });
-        lock.await(TIMEOUT_MILLIS, TimeUnit.MICROSECONDS);*/
+        assertNotNull(responseGetCodeBoxes.getData());
+        assertTrue("List should contain at least one item.", responseGetCodeBoxes.getData().size() > 0);
 
         // ----------------- Delete -----------------
         Response <UserClass> responseDeleteObject = syncano.deleteObject(UserClass.class, userObject.getId()).send();

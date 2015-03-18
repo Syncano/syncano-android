@@ -1,13 +1,10 @@
 package com.syncano.android.lib;
 
-import com.syncano.android.lib.api.Page;
-import com.syncano.android.lib.api.Request;
 import com.syncano.android.lib.api.RequestDelete;
 import com.syncano.android.lib.api.RequestGet;
-import com.syncano.android.lib.api.RequestGetPage;
+import com.syncano.android.lib.api.RequestGetList;
 import com.syncano.android.lib.api.RequestPatch;
 import com.syncano.android.lib.api.RequestPost;
-import com.syncano.android.lib.callbacks.SyncanoCallback;
 import com.syncano.android.lib.data.CodeBox;
 import com.syncano.android.lib.data.RunCodeBoxResult;
 import com.syncano.android.lib.data.SyncanoObject;
@@ -60,12 +57,11 @@ public class Syncano extends SyncanoBase {
         return new RequestGet(type, url, this);
     }
 
-    /*public <T extends SyncanoObject> void getObjectsPage(Class<T> type, Params params, GetCallback<Page<T>> callback) {
-
+    public <T extends SyncanoObject> RequestGetList getObjects(Class<T> type) {
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_LIST_URL, getInstance(), className);
-        requestGetPage(type, url, params, callback);
-    }*/
+        return new RequestGetList(type, url, this);
+    }
 
     public <T extends SyncanoObject> RequestPatch updateObject(T object) {
 
@@ -98,9 +94,9 @@ public class Syncano extends SyncanoBase {
         return new RequestGet(CodeBox.class, url, this);
     }
 
-    public RequestGet getCodeBoxes() {
+    public RequestGetList getCodeBoxes() {
         String url = String.format(Constants.CODEBOXES_LIST_URL, getInstance());
-        return new RequestGet(CodeBox.class, url, this);
+        return new RequestGetList(CodeBox.class, url, this);
     }
 
     public RequestPatch updateCodeBox(CodeBox codeBox) {
@@ -136,9 +132,9 @@ public class Syncano extends SyncanoBase {
         return new RequestGet(Webhook.class, url, this);
     }
 
-    public RequestGet getWebhooks() {
+    public RequestGetList getWebhooks() {
         String url = String.format(Constants.WEBHOOKS_LIST_URL, getInstance());
-        return new RequestGetPage(Webhook.class, url, this);
+        return new RequestGetList(Webhook.class, url, this);
     }
 
     public RequestPatch updateWebhook(Webhook webhook) {
