@@ -5,6 +5,7 @@ import android.test.ApplicationTestCase;
 
 import com.syncano.android.lib.api.FieldsFilter;
 import com.syncano.android.lib.api.RequestGet;
+import com.syncano.android.lib.api.RequestGetList;
 import com.syncano.android.lib.api.Response;
 import com.syncano.android.lib.choice.RuntimeName;
 import com.syncano.android.lib.data.CodeBox;
@@ -61,11 +62,17 @@ public class FieldsFilterTest extends ApplicationTestCase<Application> {
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetCodeBox.getHttpResultCode());
         assertNotNull(responseGetCodeBox.getData());
+        assertNotNull(responseGetCodeBox.getData().getName());
+        assertNull(responseGetCodeBox.getData().getSource());
     }
 
-    /*public void testGetManyFilter() {
-        Response <List<CodeBox>> responseGetCodeBoxes = syncano.getCodeBoxes().send();
+    public void testGetManyFilter() {
+        RequestGetList requestGetList = syncano.getCodeBoxes();
+        FieldsFilter filter = new FieldsFilter(FieldsFilter.FilterType.INCLUDE_FIELDS, Arrays.asList(CodeBox.FIELD_ID, CodeBox.FIELD_NAME));
+        requestGetList.setFieldsFilter(filter);
+        Response <List<CodeBox>> responseGetCodeBoxes = requestGetList.send();
+
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetCodeBoxes.getHttpResultCode());
         assertNotNull(responseGetCodeBoxes.getData());
-    }*/
+    }
 }

@@ -8,20 +8,13 @@ import com.syncano.android.lib.Syncano;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RequestGetList<T> extends ListRequest<T> {
+public class RequestGetList<T> extends RequestGet<List<T>> {
+
+    protected Class<T> resultType;
 
     public RequestGetList(Class<T> resultType, String url, Syncano syncano) {
-        super(resultType, url, syncano);
-    }
-
-    @Override
-    public String getRequestMethod() {
-        return null;
-    }
-
-    @Override
-    public String prepareParams() {
-        return null;
+        super(url, syncano);
+        this.resultType = resultType;
     }
 
     @Override

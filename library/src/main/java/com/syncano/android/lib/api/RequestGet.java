@@ -6,12 +6,12 @@ import com.syncano.android.lib.utils.SyncanoHttpClient;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RequestGet<T> extends SimpleRequest<T> {
+public abstract class RequestGet<T> extends Request<T> {
 
     private FieldsFilter fieldsFilter;
 
-    public RequestGet(Class<T> responseType, String url, Syncano syncano) {
-        super(responseType, url, syncano);
+    public RequestGet(String url, Syncano syncano) {
+        super(url, syncano);
     }
 
     @Override

@@ -3,6 +3,7 @@ package com.syncano.android.lib;
 import com.syncano.android.lib.api.RequestDelete;
 import com.syncano.android.lib.api.RequestGet;
 import com.syncano.android.lib.api.RequestGetList;
+import com.syncano.android.lib.api.RequestGetOne;
 import com.syncano.android.lib.api.RequestPatch;
 import com.syncano.android.lib.api.RequestPost;
 import com.syncano.android.lib.data.CodeBox;
@@ -50,11 +51,11 @@ public class Syncano extends SyncanoBase {
         return new RequestPost(type, url, this, object);
     }
 
-    public <T extends SyncanoObject> RequestGet getObject(Class<T> type, int id) {
+    public <T extends SyncanoObject> RequestGetOne getObject(Class<T> type, int id) {
 
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstance(), className, id);
-        return new RequestGet(type, url, this);
+        return new RequestGetOne(type, url, this);
     }
 
     public <T extends SyncanoObject> RequestGetList getObjects(Class<T> type) {
@@ -89,9 +90,9 @@ public class Syncano extends SyncanoBase {
         return new RequestPost(CodeBox.class, url, this, codeBox);
     }
 
-    public RequestGet getCodeBox(int id) {
+    public RequestGetOne getCodeBox(int id) {
         String url = String.format(Constants.CODEBOXES_DETAIL_URL, getInstance(), id);
-        return new RequestGet(CodeBox.class, url, this);
+        return new RequestGetOne(CodeBox.class, url, this);
     }
 
     public RequestGetList getCodeBoxes() {
@@ -127,9 +128,9 @@ public class Syncano extends SyncanoBase {
         return new RequestPost(Webhook.class, url, this, webhook);
     }
 
-    public RequestGet getWebhook(String slug) {
+    public RequestGetOne getWebhook(String slug) {
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), slug);
-        return new RequestGet(Webhook.class, url, this);
+        return new RequestGetOne(Webhook.class, url, this);
     }
 
     public RequestGetList getWebhooks() {
@@ -153,8 +154,8 @@ public class Syncano extends SyncanoBase {
         return new RequestDelete(Webhook.class, url, this);
     }
 
-    public RequestGet runWebhook(String slug) {
+    public RequestGetOne runWebhook(String slug) {
         String url = String.format(Constants.WEBHOOKS_RUN_URL, getInstance(), slug);
-        return new RequestGet(RunCodeBoxResult.class, url, this);
+        return new RequestGetOne(RunCodeBoxResult.class, url, this);
     }
 }
