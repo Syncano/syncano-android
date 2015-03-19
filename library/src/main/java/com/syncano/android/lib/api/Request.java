@@ -5,7 +5,11 @@ import com.syncano.android.lib.Syncano;
 import com.syncano.android.lib.callbacks.SyncanoCallback;
 import com.syncano.android.lib.utils.GsonHelper;
 
+import org.apache.http.NameValuePair;
+
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.List;
 import java.util.Map;
 
 public abstract class Request<T> {
@@ -38,7 +42,7 @@ public abstract class Request<T> {
      * Prepare URL params.
      * @return
      */
-    protected Map<String, String> prepareUrlParams() {
+    public List<NameValuePair> prepareUrlParams() {
         return null;
     }
 
@@ -48,22 +52,29 @@ public abstract class Request<T> {
      * @throws UnsupportedEncodingException
      */
     public String getUrlParams() {
-        Map<String, String> params = prepareUrlParams();
+        List<NameValuePair> params = prepareUrlParams();
 
         if (params == null) {
             return null;
         }
 
         StringBuilder postData = new StringBuilder();
-        for (Map.Entry<String, String> param : params.entrySet()) {
+        for (NameValuePair param : params) {
 
             if (postData.length() != 0) postData.append('&');
             else postData.append("?");
 
-            postData.append(param.getKey());
-            postData.append('=');
-            postData.append(String.valueOf(param.getValue()));
+            String name = null;
+            String value = null;
 
+            try {
+                name = URLEncoder.encode(param.getName(), "UTF-8");
+                value = URLEncoder.encode(param.getValue(), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+            postData.append(name).append('=').append(value);
         }
 
         return postData.toString();

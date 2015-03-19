@@ -1,7 +1,5 @@
 package com.syncano.android.lib.api;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -9,10 +7,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.syncano.android.lib.utils.DateTool;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Where {
@@ -30,26 +26,33 @@ public class Where {
 
     public Where() {
         query = new HashMap<>();
-
-        //eq("created_at", new Date(110000));
-        //in("id", Arrays.asList(1, 2, 3, 4));
-
-        //Log.d("WhereFilterJson", "json: query=" + buildQuery());
     }
 
     /**
      * Greater than.
+     * Checking if value is greater than provided.
+     * For string comparing length of the string.
      */
     public Where gt(String fieldName, Number value) {
         addFilter(fieldName, FILTER_GT, value);
         return this;
     }
 
+    /**
+     * Greater than.
+     * Checking if value is greater than provided.
+     * For string comparing length of the string.
+     */
     public Where gt(String fieldName, String value) {
         addFilter(fieldName, FILTER_GT, value);
         return this;
     }
 
+    /**
+     * Greater than.
+     * Checking if value is greater than provided.
+     * For string comparing length of the string.
+     */
     public Where gt(String fieldName, Date value) {
         addFilter(fieldName, FILTER_GT, value);
         return this;
@@ -57,17 +60,29 @@ public class Where {
 
     /**
      * Greater than or equal to.
+     * Checking if value is greater than or equal to provided.
+     * For string comparing length of the string.
      */
     public Where gte(String fieldName, Number value) {
         addFilter(fieldName, FILTER_GTE, value);
         return this;
     }
 
+    /**
+     * Greater than or equal to.
+     * Checking if value is greater than or equal to provided.
+     * For string comparing length of the string.
+     */
     public Where gte(String fieldName, String value) {
         addFilter(fieldName, FILTER_GTE, value);
         return this;
     }
 
+    /**
+     * Greater than or equal to.
+     * Checking if value is greater than or equal to provided.
+     * For string comparing length of the string.
+     */
     public Where gte(String fieldName, Date value) {
         addFilter(fieldName, FILTER_GTE, value);
         return this;
@@ -75,17 +90,29 @@ public class Where {
 
     /**
      * Less than.
+     * Checking if value is lower than provided.
+     * For string comparing length of the string.
      */
     public Where lt(String fieldName, Number value) {
         addFilter(fieldName, FILTER_LT, value);
         return this;
     }
 
+    /**
+     * Less than.
+     * Checking if value is lower than provided.
+     * For string comparing length of the string.
+     */
     public Where lt(String fieldName, String value) {
         addFilter(fieldName, FILTER_LT, value);
         return this;
     }
 
+    /**
+     * Less than.
+     * Checking if value is lower than provided.
+     * For string comparing length of the string.
+     */
     public Where lt(String fieldName, Date value) {
         addFilter(fieldName, FILTER_LT, value);
         return this;
@@ -93,17 +120,29 @@ public class Where {
 
     /**
      * Less than or equal to.
+     * Checking if value is lower or equal than provided.
+     * For string comparing length of the string.
      */
     public Where lte(String fieldName, Number value) {
         addFilter(fieldName, FILTER_LTE, value);
         return this;
     }
 
+    /**
+     * Less than or equal to.
+     * Checking if value is lower or equal than provided.
+     * For string comparing length of the string.
+     */
     public Where lte(String fieldName, String value) {
         addFilter(fieldName, FILTER_LTE, value);
         return this;
     }
 
+    /**
+     * Less than or equal to.
+     * Checking if value is lower or equal than provided.
+     * For string comparing length of the string.
+     */
     public Where lte(String fieldName, Date value) {
         addFilter(fieldName, FILTER_LTE, value);
         return this;
@@ -111,22 +150,35 @@ public class Where {
 
     /**
      * Equal to.
+     * Checking if value is equal than provided.
      */
     public Where eq(String fieldName, Number value) {
         addFilter(fieldName, FILTER_EQ, value);
         return this;
     }
 
+    /**
+     * Equal to.
+     * Checking if value is equal than provided.
+     */
     public Where eq(String fieldName, Boolean value) {
         addFilter(fieldName, FILTER_EQ, value);
         return this;
     }
 
+    /**
+     * Equal to.
+     * Checking if value is equal than provided.
+     */
     public Where eq(String fieldName, String value) {
         addFilter(fieldName, FILTER_EQ, value);
         return this;
     }
 
+    /**
+     * Equal to.
+     * Checking if value is equal than provided.
+     */
     public Where eq(String fieldName, Date value) {
         addFilter(fieldName, FILTER_EQ, value);
         return this;
@@ -134,22 +186,39 @@ public class Where {
 
     /**
      * Not equal to.
+     * Checking if value different than provided.
+     * For string comparing length of the string.
      */
     public Where neq(String fieldName, Number value) {
         addFilter(fieldName, FILTER_NEQ, value);
         return this;
     }
 
+    /**
+     * Not equal to.
+     * Checking if value different than provided.
+     * For string comparing length of the string.
+     */
     public Where neq(String fieldName, Boolean value) {
         addFilter(fieldName, FILTER_NEQ, value);
         return this;
     }
 
+    /**
+     * Not equal to.
+     * Checking if value different than provided.
+     * For string comparing length of the string.
+     */
     public Where neq(String fieldName, String value) {
         addFilter(fieldName, FILTER_NEQ, value);
         return this;
     }
 
+    /**
+     * Not equal to.
+     * Checking if value different than provided.
+     * For string comparing length of the string.
+     */
     public Where neq(String fieldName, Date value) {
         addFilter(fieldName, FILTER_NEQ, value);
         return this;
@@ -157,6 +226,7 @@ public class Where {
 
     /**
      * Exist.
+     * Checking if field is not empty.
      */
     public Where exists(String fieldName, Boolean exists) {
         addFilter(fieldName, FILTER_EXISTS, exists);
@@ -165,8 +235,10 @@ public class Where {
 
     /**
      * In a given list.
+     * Checking if value of the field is on the provided list.
+     * (list can contain up to 128 values)
      */
-    /*public Where in(String fieldName, List<Integer> values) {
+    public Where in(String fieldName, Number[] values) {
         JsonArray jsonArray = new JsonArray();
 
         for (Number element : values) {
@@ -177,7 +249,12 @@ public class Where {
         return this;
     }
 
-    public Where in(String fieldName, List<Boolean> values) {
+    /**
+     * In a given list.
+     * Checking if value of the field is on the provided list.
+     * (list can contain up to 128 values)
+     */
+    public Where in(String fieldName, Boolean[] values) {
         JsonArray jsonArray = new JsonArray();
 
         for (Boolean element : values) {
@@ -188,7 +265,12 @@ public class Where {
         return this;
     }
 
-    public Where in(String fieldName, List<String> values) {
+    /**
+     * In a given list.
+     * Checking if value of the field is on the provided list.
+     * (list can contain up to 128 values)
+     */
+    public Where in(String fieldName, String[] values) {
         JsonArray jsonArray = new JsonArray();
 
         for (String element : values) {
@@ -199,7 +281,12 @@ public class Where {
         return this;
     }
 
-    public Where in(String fieldName, List<Date> values) {
+    /**
+     * In a given list.
+     * Checking if value of the field is on the provided list.
+     * (list can contain up to 128 values)
+     */
+    public Where in(String fieldName, Date[] values) {
         JsonArray jsonArray = new JsonArray();
 
         for (Date element : values) {
@@ -208,7 +295,7 @@ public class Where {
 
         addFilter(fieldName, FILTER_IN, jsonArray);
         return this;
-    }*/
+    }
 
     private void addFilter(String field, String filter, Number value) {
         addFilter(field, filter, new JsonPrimitive(value));

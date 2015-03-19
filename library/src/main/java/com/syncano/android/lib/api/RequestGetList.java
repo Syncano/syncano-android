@@ -6,16 +6,35 @@ import com.syncano.android.lib.Syncano;
 import com.syncano.android.lib.data.PageInternal;
 
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class RequestGetList<T> extends RequestGet<List<T>> {
 
     protected Class<T> resultType;
+    private Where where;
 
     public RequestGetList(Class<T> resultType, String url, Syncano syncano) {
         super(url, syncano);
         this.resultType = resultType;
+    }
+
+    @Override
+    public List<NameValuePair> prepareUrlParams() {
+        List<NameValuePair> urlParams = super.prepareUrlParams();
+
+        if (urlParams == null) {
+            urlParams = new ArrayList<>();
+        }
+
+        if (where != null) {
+            urlParams.add(new BasicNameValuePair("query", where.buildQuery()));
+        }
+
+        return urlParams;
     }
 
     @Override
@@ -32,5 +51,9 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
         }
 
         return resultList;
+    }
+
+    public void setWhereFilter(Where where) {
+        this.where = where;
     }
 }

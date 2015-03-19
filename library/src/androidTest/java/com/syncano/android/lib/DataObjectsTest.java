@@ -5,7 +5,9 @@ import android.test.ApplicationTestCase;
 
 import com.syncano.android.lib.annotation.SyncanoClass;
 import com.syncano.android.lib.annotation.SyncanoField;
+import com.syncano.android.lib.api.RequestGetList;
 import com.syncano.android.lib.api.Response;
+import com.syncano.android.lib.api.Where;
 import com.syncano.android.lib.data.SyncanoObject;
 
 import java.util.List;
@@ -86,6 +88,26 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteObject.getHttpResultCode());
     }
 
+    public void testWhereFilter() {
+        UserClass userOne = (UserClass) syncano.createObject(new UserClass("User", "One")).send().getData();
+        UserClass userTwo = (UserClass) syncano.createObject(new UserClass("User", "Two")).send().getData();
+
+        Where where = new Where();
+        where.eq(UserClass.FIELD_ID, userOne.getId());
+
+        RequestGetList<UserClass> requestGetList = syncano.getObjects(UserClass.class);
+        requestGetList.setWhereFilter(where);
+        Response<List<UserClass>> response= requestGetList.send();
+
+        assertEquals(response.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
+        assertNotNull(response.getData());
+        assertEquals(1, response.getData().size()); // Should be only one item with given id.
+
+
+        syncano.deleteObject(UserClass.class, userOne.getId());
+        syncano.deleteObject(UserClass.class, userTwo.getId());
+    }
+
     @SyncanoClass(name = "User")
     class UserClass extends SyncanoObject
     {
@@ -94,5 +116,13 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
 
         @SyncanoField(name = "password")
         public String password;
+
+        UserClass() {
+        }
+
+        UserClass(String userName, String password) {
+            this.userName = userName;
+            this.password = password;
+        }
     }
 }

@@ -3,8 +3,11 @@ package com.syncano.android.lib.api;
 import com.syncano.android.lib.Syncano;
 import com.syncano.android.lib.utils.SyncanoHttpClient;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class RequestGet<T> extends Request<T> {
 
@@ -20,11 +23,11 @@ public abstract class RequestGet<T> extends Request<T> {
     }
 
     @Override
-    public Map<String, String> prepareUrlParams() {
-        Map<String, String> urlParams = super.prepareUrlParams();
+    public List<NameValuePair> prepareUrlParams() {
+        List<NameValuePair> urlParams = super.prepareUrlParams();
 
         if (urlParams == null) {
-            urlParams = new HashMap<>();
+            urlParams = new ArrayList<>();
         }
 
         if (fieldsFilter != null && fieldsFilter.getFieldNames() != null && fieldsFilter.getFieldNames().size() > 0) {
@@ -35,7 +38,7 @@ public abstract class RequestGet<T> extends Request<T> {
                 filterFields.append(fieldName);
             }
 
-            urlParams.put(fieldsFilter.getFilterTypeString(), filterFields.toString());
+            urlParams.add(new BasicNameValuePair(fieldsFilter.getFilterTypeString(), filterFields.toString()));
         }
 
         return urlParams;
