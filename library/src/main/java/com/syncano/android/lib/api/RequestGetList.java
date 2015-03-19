@@ -2,6 +2,7 @@ package com.syncano.android.lib.api;
 
 
 import com.google.gson.JsonElement;
+import com.syncano.android.lib.Constants;
 import com.syncano.android.lib.Syncano;
 import com.syncano.android.lib.data.PageInternal;
 
@@ -16,6 +17,7 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
 
     protected Class<T> resultType;
     private Where where;
+    private String orderBy;
 
     public RequestGetList(Class<T> resultType, String url, Syncano syncano) {
         super(url, syncano);
@@ -31,7 +33,11 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
         }
 
         if (where != null) {
-            urlParams.add(new BasicNameValuePair("query", where.buildQuery()));
+            urlParams.add(new BasicNameValuePair(Constants.URL_PARAM_QUERY, where.buildQuery()));
+        }
+
+        if (orderBy != null) {
+            urlParams.add(new BasicNameValuePair(Constants.URL_PARAM_ORDER_BY, orderBy));
         }
 
         return urlParams;
@@ -55,5 +61,14 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
 
     public void setWhereFilter(Where where) {
         this.where = where;
+    }
+
+    /**
+     * You can order objects using this method. Field must be marked as "order_index" in class schema.
+     * @param fieldName Field to order by.
+     * @param reverse If true, change from ascending to descending.
+     */
+    public void setOrderBy(String fieldName, boolean reverse) {
+        orderBy = reverse ? "-" + fieldName : fieldName;
     }
 }

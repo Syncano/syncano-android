@@ -1,6 +1,8 @@
 package com.syncano.android.lib.api;
 
 
+import com.syncano.android.lib.Constants;
+
 import java.util.List;
 
 public class FieldsFilter {
@@ -26,9 +28,9 @@ public class FieldsFilter {
 
     public String getFilterTypeString() {
         if (FilterType.EXCLUDE_FIELDS.equals(filterType)) {
-            return "excluded_fields";
+            return Constants.URL_PARAM_EXCLUDED_FIELDS;
         } else {
-            return "fields";
+            return Constants.URL_PARAM_FIELDS;
         }
     }
 

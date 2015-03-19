@@ -108,6 +108,24 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
         syncano.deleteObject(UserClass.class, userTwo.getId());
     }
 
+    public void testOrderBy() {
+        UserClass userOne = (UserClass) syncano.createObject(new UserClass("User", "One")).send().getData();
+        UserClass userTwo = (UserClass) syncano.createObject(new UserClass("User", "Two")).send().getData();
+
+        RequestGetList<UserClass> requestGetList = syncano.getObjects(UserClass.class);
+        requestGetList.setOrderBy(UserClass.FIELD_ID, true);
+        Response<List<UserClass>> response= requestGetList.send();
+
+        assertEquals(response.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
+        assertNotNull(response.getData());
+        assertTrue(response.getData().size() > 1);
+        // If order is descending, first id on list should be bigger.
+        assertTrue(response.getData().get(0).getId() > response.getData().get(1).getId());
+
+        syncano.deleteObject(UserClass.class, userOne.getId());
+        syncano.deleteObject(UserClass.class, userTwo.getId());
+    }
+
     @SyncanoClass(name = "User")
     class UserClass extends SyncanoObject
     {
