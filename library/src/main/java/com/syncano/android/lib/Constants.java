@@ -12,6 +12,7 @@ public class Constants {
     public final static String URL_PARAM_ORDER_BY = "order_by";
     public final static String URL_PARAM_FIELDS = "fields";
     public final static String URL_PARAM_EXCLUDED_FIELDS = "excluded_fields";
+    public final static String URL_PARAM_PAGE_SIZE = "page_size";
 
     // ==================== Objects ==================== //
     public static final String OBJECTS_LIST_URL = "/v1/instances/%s/classes/%s/objects/";

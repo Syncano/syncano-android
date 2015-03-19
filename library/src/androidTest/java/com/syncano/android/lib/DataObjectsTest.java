@@ -126,6 +126,24 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
         syncano.deleteObject(UserClass.class, userTwo.getId());
     }
 
+    public void testPageSize() {
+        UserClass userOne = (UserClass) syncano.createObject(new UserClass("User", "One")).send().getData();
+        UserClass userTwo = (UserClass) syncano.createObject(new UserClass("User", "Two")).send().getData();
+
+        int limitItems = 1;
+
+        RequestGetList<UserClass> requestGetList = syncano.getObjects(UserClass.class);
+        requestGetList.setLimit(limitItems);
+        Response<List<UserClass>> response= requestGetList.send();
+
+        assertEquals(response.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
+        assertNotNull(response.getData());
+        assertEquals(limitItems, response.getData().size());
+
+        syncano.deleteObject(UserClass.class, userOne.getId());
+        syncano.deleteObject(UserClass.class, userTwo.getId());
+    }
+
     @SyncanoClass(name = "User")
     class UserClass extends SyncanoObject
     {

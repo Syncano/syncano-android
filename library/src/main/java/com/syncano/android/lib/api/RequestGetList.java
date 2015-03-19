@@ -18,6 +18,7 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
     protected Class<T> resultType;
     private Where where;
     private String orderBy;
+    private int pageSize = 0;
 
     public RequestGetList(Class<T> resultType, String url, Syncano syncano) {
         super(url, syncano);
@@ -40,6 +41,10 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
             urlParams.add(new BasicNameValuePair(Constants.URL_PARAM_ORDER_BY, orderBy));
         }
 
+        if (pageSize > 0) {
+            urlParams.add(new BasicNameValuePair(Constants.URL_PARAM_PAGE_SIZE, String.valueOf(pageSize)));
+        }
+
         return urlParams;
     }
 
@@ -59,6 +64,10 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
         return resultList;
     }
 
+    /**
+     * Filter your objects using query parameter.
+     * @param where Filtering query.
+     */
     public void setWhereFilter(Where where) {
         this.where = where;
     }
@@ -70,5 +79,13 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
      */
     public void setOrderBy(String fieldName, boolean reverse) {
         orderBy = reverse ? "-" + fieldName : fieldName;
+    }
+
+    /**
+     * Set limit of how many items do you want to get.
+     * @param limit Maximum amount of items.
+     */
+    public void setLimit(int limit) {
+        pageSize = limit;
     }
 }
