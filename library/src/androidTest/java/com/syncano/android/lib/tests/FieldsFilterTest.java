@@ -1,8 +1,10 @@
-package com.syncano.android.lib;
+package com.syncano.android.lib.tests;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
 
+import com.syncano.android.lib.Config;
+import com.syncano.android.lib.Syncano;
 import com.syncano.android.lib.api.FieldsFilter;
 import com.syncano.android.lib.api.RequestGet;
 import com.syncano.android.lib.api.RequestGetList;

@@ -10,7 +10,6 @@ import org.apache.http.NameValuePair;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.List;
-import java.util.Map;
 
 public abstract class Request<T> {
 
@@ -91,6 +90,6 @@ public abstract class Request<T> {
     }
 
     public void sendAsync(SyncanoCallback<T> callback) {
-        // call run() on new Thread
+        syncano.requestAsync(this, callback);
     }
 }

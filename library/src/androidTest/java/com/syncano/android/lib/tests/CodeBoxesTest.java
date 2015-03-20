@@ -1,8 +1,10 @@
-package com.syncano.android.lib;
+package com.syncano.android.lib.tests;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
 
+import com.syncano.android.lib.Config;
+import com.syncano.android.lib.Syncano;
 import com.syncano.android.lib.api.Response;
 import com.syncano.android.lib.choice.RuntimeName;
 import com.syncano.android.lib.data.CodeBox;
@@ -18,7 +20,6 @@ public class CodeBoxesTest extends ApplicationTestCase<Application> {
 
     private static final String TAG = CodeBoxesTest.class.getSimpleName();
 
-    private final static int TIMEOUT_MILLIS = 10 * 1000;
     private static final String EXPECTED_RESULT = "this is message from our Codebox";
 
     private Syncano syncano;
