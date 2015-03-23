@@ -1,10 +1,10 @@
-package com.syncano.library.tests;
+package com.syncano.library.android.tests;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
 
-import com.syncano.library.Config;
 import com.syncano.library.Syncano;
+import com.syncano.library.android.Config;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.callbacks.SyncanoCallback;

@@ -1,4 +1,4 @@
-package com.syncano.library;
+package com.syncano.library.android;
 
 public class WeakReference <T> {
 
