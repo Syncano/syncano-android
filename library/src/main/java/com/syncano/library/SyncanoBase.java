@@ -16,11 +16,11 @@ public abstract class SyncanoBase {
 
     private static final String TAG = SyncanoBase.class.getSimpleName();
 
-    private String apiKey;
-    private String instance;
+    protected String apiKey;
+    protected String instance;
 
-    private Gson gson;
-    private ExecutorService requestExecutor = Executors.newFixedThreadPool(3);
+    protected Gson gson;
+    protected ExecutorService requestExecutor = Executors.newFixedThreadPool(3);
 
     protected SyncanoBase(String apiKey, String instance) {
         this.apiKey = apiKey;

@@ -4,7 +4,7 @@ import android.app.Application;
 import android.test.ApplicationTestCase;
 
 import com.syncano.library.android.Config;
-import com.syncano.library.Syncano;
+import com.syncano.library.android.SyncanoAndroid;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.RuntimeName;
 import com.syncano.library.data.CodeBox;
@@ -22,7 +22,7 @@ public class CodeBoxesTest extends ApplicationTestCase<Application> {
 
     private static final String EXPECTED_RESULT = "this is message from our Codebox";
 
-    private Syncano syncano;
+    private SyncanoAndroid syncano;
 
     public CodeBoxesTest() {
         super(Application.class);
@@ -32,7 +32,7 @@ public class CodeBoxesTest extends ApplicationTestCase<Application> {
     protected void setUp() throws Exception {
         super.setUp();
 
-        syncano = new Syncano(Config.API_KEY, Config.INSTANCE_NAME);
+        syncano = new SyncanoAndroid(Config.API_KEY, Config.INSTANCE_NAME);
     }
 
     @Override

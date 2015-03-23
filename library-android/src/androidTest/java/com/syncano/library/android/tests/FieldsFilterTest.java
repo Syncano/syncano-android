@@ -4,7 +4,7 @@ import android.app.Application;
 import android.test.ApplicationTestCase;
 
 import com.syncano.library.android.Config;
-import com.syncano.library.Syncano;
+import com.syncano.library.android.SyncanoAndroid;
 import com.syncano.library.api.FieldsFilter;
 import com.syncano.library.api.RequestGet;
 import com.syncano.library.api.RequestGetList;
@@ -24,7 +24,7 @@ public class FieldsFilterTest extends ApplicationTestCase<Application> {
     private static final String TAG = FieldsFilterTest.class.getSimpleName();
 
     private CodeBox codeBox;
-    private Syncano syncano;
+    private SyncanoAndroid syncano;
 
     public FieldsFilterTest() {
         super(Application.class);
@@ -33,7 +33,7 @@ public class FieldsFilterTest extends ApplicationTestCase<Application> {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        syncano = new Syncano(Config.API_KEY, Config.INSTANCE_NAME);
+        syncano = new SyncanoAndroid(Config.API_KEY, Config.INSTANCE_NAME);
 
         String codeBoxName = "CodeBox Test";
         RuntimeName runtime = RuntimeName.NODEJS;

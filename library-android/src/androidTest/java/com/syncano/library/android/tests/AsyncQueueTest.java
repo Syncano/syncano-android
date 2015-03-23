@@ -3,8 +3,8 @@ package com.syncano.library.android.tests;
 import android.app.Application;
 import android.test.ApplicationTestCase;
 
-import com.syncano.library.Syncano;
 import com.syncano.library.android.Config;
+import com.syncano.library.android.SyncanoAndroid;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.callbacks.SyncanoCallback;
@@ -25,7 +25,7 @@ public class AsyncQueueTest extends ApplicationTestCase<Application> {
     private static final int TEST_REQUESTS = 10;
 
     private CountDownLatch lock;
-    private Syncano syncano;
+    private SyncanoAndroid syncano;
 
     public AsyncQueueTest() {
         super(Application.class);
@@ -35,7 +35,7 @@ public class AsyncQueueTest extends ApplicationTestCase<Application> {
     protected void setUp() throws Exception {
         super.setUp();
 
-        syncano = new Syncano(Config.API_KEY, Config.INSTANCE_NAME);
+        syncano = new SyncanoAndroid(Config.API_KEY, Config.INSTANCE_NAME);
     }
 
     @Override

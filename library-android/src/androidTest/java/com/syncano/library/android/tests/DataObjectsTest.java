@@ -3,8 +3,8 @@ package com.syncano.library.android.tests;
 import android.app.Application;
 import android.test.ApplicationTestCase;
 
-import com.syncano.library.Syncano;
 import com.syncano.library.android.Config;
+import com.syncano.library.android.SyncanoAndroid;
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.RequestGetList;
@@ -22,7 +22,7 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
 
     private static final String TAG = DataObjectsTest.class.getSimpleName();
 
-    private Syncano syncano;
+    private SyncanoAndroid syncano;
 
     public DataObjectsTest() {
         super(Application.class);
@@ -32,7 +32,7 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
     protected void setUp() throws Exception {
         super.setUp();
 
-        syncano = new Syncano(Config.API_KEY, Config.INSTANCE_NAME);
+        syncano = new SyncanoAndroid(Config.API_KEY, Config.INSTANCE_NAME);
     }
 
     @Override
