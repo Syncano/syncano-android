@@ -61,15 +61,18 @@ public class SyncanoHttpClient {
 
 	/** Timeout value */
 	private final static int NOT_SET = -1;
-	/** Recommended timeout value */
-	private static final int TIMEOUT = 30000;
-	/** Default socket timeout */
+
+    /** Recommended timeout value */
+
+    private static final int TIMEOUT = 30000;
+
+    /** Default socket timeout */
 	private static final int SOCKET_TIMEOUT = 60000;
-	/** Connection timeout value */
+
+    /** Connection timeout value */
 	private int timeout = NOT_SET;
-	/** Post data */
-	private StringEntity postData = null;
-	/** Http client used to connect to API */
+
+    /** Http client used to connect to API */
 	private DefaultHttpClient httpclient;
 
 	/**
@@ -89,24 +92,6 @@ public class SyncanoHttpClient {
 	}
 
 	/**
-	 * Sets post data which is sent later by send() method.
-     * May be applied for POST, PUT, PATCH.
-	 * 
-	 * @param text
-	 *            Text to send
-	 */
-	private void setPostData(String text) {
-        if (text == null)
-            return;
-
-		try {
-			postData = new StringEntity(text, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			Log.e(LOG_TAG, "Unsupported encoding: " + e.toString());
-		}
-	}
-
-	/**
 	 * Method to send post data contained in postData field
 	 * 
 	 * @return Response with data
@@ -122,39 +107,13 @@ public class SyncanoHttpClient {
         String parameters = syncanoRequest.prepareParams();
 
         String url = Constants.SERVER_URL + syncanoRequest.getUrl() + urlParameters;
-        setPostData(parameters);
 
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "Request: " + syncanoRequest.getRequestMethod() + "  " + url);
             Log.d(TAG, "Request params: " + parameters);
         }
 
-        if (METHOD_GET.equals(syncanoRequest.getRequestMethod())) {
-            request = new HttpGet(url);
-        } else if (METHOD_POST.equals(syncanoRequest.getRequestMethod())) {
-            HttpPost httpPost = new HttpPost(url);
-            if (postData != null) {
-                httpPost.setEntity(postData);
-            }
-            request = httpPost;
-        } else if (METHOD_PUT.equals(syncanoRequest.getRequestMethod())) {
-            HttpPut httpPut = new HttpPut(url);
-            if (postData != null) {
-                httpPut.setEntity(postData);
-            }
-            request = httpPut;
-        } else if (METHOD_PATCH.equals(syncanoRequest.getRequestMethod())) {
-            HttpPatch httpPatch = new HttpPatch(url);
-            if (postData != null) {
-                httpPatch.setEntity(postData);
-            }
-            request = httpPatch;
-        } else if (METHOD_DELETE.equals(syncanoRequest.getRequestMethod())) {
-            request = new HttpDelete(url);
-        } else {
-            request = new HttpGet(url);
-        }
-
+        request = getHttpUriRequest(syncanoRequest.getRequestMethod(), url, parameters);
 		request.setHeader("Content-Type", "application/json");
 		request.setHeader("Accept-Encoding", "gzip");
         request.setHeader("Authorization", "Token " + apiKey);
@@ -233,6 +192,44 @@ public class SyncanoHttpClient {
 
 		return syncanoResponse;
 	}
+
+    private HttpUriRequest getHttpUriRequest(String requestMethod, String url, String parameters) {
+
+        StringEntity postData = null;
+        if (parameters != null) {
+            try {
+                postData = new StringEntity(parameters, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                Log.e(LOG_TAG, "Unsupported encoding: " + e.toString());
+            }
+        }
+
+        if (METHOD_GET.equals(requestMethod)) {
+            return new HttpGet(url);
+        } else if (METHOD_POST.equals(requestMethod)) {
+            HttpPost httpPost = new HttpPost(url);
+            if (postData != null) {
+                httpPost.setEntity(postData);
+            }
+            return httpPost;
+        } else if (METHOD_PUT.equals(requestMethod)) {
+            HttpPut httpPut = new HttpPut(url);
+            if (postData != null) {
+                httpPut.setEntity(postData);
+            }
+            return httpPut;
+        } else if (METHOD_PATCH.equals(requestMethod)) {
+            HttpPatch httpPatch = new HttpPatch(url);
+            if (postData != null) {
+                httpPatch.setEntity(postData);
+            }
+            return httpPatch;
+        } else if (METHOD_DELETE.equals(requestMethod)) {
+            return new HttpDelete(url);
+        } else {
+            return new HttpGet(url);
+        }
+    }
 
     /**
      * Copies whole InputStream to byte array
