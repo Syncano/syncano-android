@@ -44,6 +44,13 @@ public abstract class SyncanoBase {
         this.instance = instance;
     }
 
+    /**
+     * DataObjects endpoints are using class names in path.
+     * Class must be marked with SyncanoClass annotation.
+     *
+     * @param clazz Class to extract class name.
+     * @return Class name from SyncanoClass annotation.
+     */
     protected static String getSyncanoClassName(Class<?> clazz) {
         SyncanoClass syncanoClass = clazz.getAnnotation(SyncanoClass.class);
 
@@ -54,6 +61,11 @@ public abstract class SyncanoBase {
         return syncanoClass.name();
     }
 
+    /**
+     * Send synchronous http request.
+     * @param syncanoRequest Request with url, method and parameters.
+     * @return Response for request.
+     */
     public Response request(Request<?> syncanoRequest) {
 
         SyncanoHttpClient http = new SyncanoHttpClient();
@@ -62,6 +74,13 @@ public abstract class SyncanoBase {
         return http.send(syncanoRequest, apiKey);
     }
 
+    /**
+     * Send asynchronous http request. There asynchronous requests may
+     * be executed same time (three Threads). If there is more requests, they
+     * are waiting in queue.
+     * @param syncanoRequest Request with url, method and parameters.
+     * @param callback Callback to notify when request receives response.
+     */
     public <T> void requestAsync(final Request<T> syncanoRequest, final SyncanoCallback<T> callback) {
         requestExecutor.execute(new Runnable() {
             @Override

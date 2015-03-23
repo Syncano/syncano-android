@@ -41,6 +41,9 @@ public class Syncano extends SyncanoBase {
 
     /**
      * Create object on Syncano.
+     * @param object Object to create. It need to extend SyncanoObject.
+     * @param <T> Result type.
+     * @return New DataObject.
      */
     public <T extends SyncanoObject> RequestPost createObject(T object) {
 
@@ -50,6 +53,13 @@ public class Syncano extends SyncanoBase {
         return new RequestPost(type, url, this, object);
     }
 
+    /**
+     * Get details of a Data Object.
+     * @param type Type of the object.
+     * @param id Object id.
+     * @param <T> Result type.
+     * @return Existing DataObject.
+     */
     public <T extends SyncanoObject> RequestGetOne getObject(Class<T> type, int id) {
 
         String className = getSyncanoClassName(type);
@@ -57,12 +67,24 @@ public class Syncano extends SyncanoBase {
         return new RequestGetOne(type, url, this);
     }
 
+    /**
+     * Get a list of Data Objects associated with a given Class.
+     * @param type Type for result List item.
+     * @param <T> Result type.
+     * @return List of DataObjects.
+     */
     public <T extends SyncanoObject> RequestGetList getObjects(Class<T> type) {
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_LIST_URL, getInstance(), className);
         return new RequestGetList(type, url, this);
     }
 
+    /**
+     * Update Data Object.
+     * @param object Object to update. It need to have id.
+     * @param <T> Result type.
+     * @return Updated DataObject.
+     */
     public <T extends SyncanoObject> RequestPatch updateObject(T object) {
 
         if (object.getId() == 0) {
@@ -75,6 +97,13 @@ public class Syncano extends SyncanoBase {
         return new RequestPatch(type, url, this, object);
     }
 
+    /**
+     * Delete a Data Object.
+     * @param type Type of object to delete.
+     * @param id Object id.
+     * @param <T> Result type.
+     * @return null
+     */
     public <T extends SyncanoObject> RequestDelete deleteObject(Class<T> type, int id) {
 
         String className = getSyncanoClassName(type);
@@ -84,21 +113,40 @@ public class Syncano extends SyncanoBase {
 
     // ==================== CodeBoxes ==================== //
 
+    /**
+     * Create a CodeBox.
+     * @param codeBox CodeBox to create.
+     * @return New CodeBox.
+     */
     public RequestPost createCodeBox(CodeBox codeBox) {
         String url = String.format(Constants.CODEBOXES_LIST_URL, getInstance());
         return new RequestPost(CodeBox.class, url, this, codeBox);
     }
 
+    /**
+     * Get details of previously created CodeBox.
+     * @param id CodeBox id.
+     * @return Existing CodeBox.
+     */
     public RequestGetOne getCodeBox(int id) {
         String url = String.format(Constants.CODEBOXES_DETAIL_URL, getInstance(), id);
         return new RequestGetOne(CodeBox.class, url, this);
     }
 
+    /**
+     * Get a list of previously created CodeBoxes.
+     * @return List of existing CodeBoxes.
+     */
     public RequestGetList getCodeBoxes() {
         String url = String.format(Constants.CODEBOXES_LIST_URL, getInstance());
         return new RequestGetList(CodeBox.class, url, this);
     }
 
+    /**
+     * Update a CodeBox.
+     * @param codeBox CodeBox to update. It need to have id.
+     * @return Updated CodeBox.
+     */
     public RequestPatch updateCodeBox(CodeBox codeBox) {
 
         if (codeBox.getId() == 0) {
@@ -109,12 +157,23 @@ public class Syncano extends SyncanoBase {
         return new RequestPatch(CodeBox.class, url, this, codeBox);
     }
 
+    /**
+     * Delete previously created CodeBox.
+     * @param id CodeBox id.
+     * @return null
+     */
     public RequestDelete deleteCodeBox(int id) {
 
         String url = String.format(Constants.CODEBOXES_DETAIL_URL, getInstance(), id);
         return new RequestDelete(CodeBox.class, url, this);
     }
 
+    /**
+     * Run CodeBox asynchronous. Result of this request is not result of the CodeBox.
+     * Result will be stored in associated Trace.
+     * @param id CodeBox id.
+     * @return Result with link do Trace.
+     */
     public RequestPost runCodeBox(int id) {
         String url = String.format(Constants.CODEBOXES_RUN_URL, getInstance(), id);
         return new RequestPost(CodeBox.class, url, this, null);
@@ -122,21 +181,40 @@ public class Syncano extends SyncanoBase {
 
     // ==================== Webhooks ==================== //
 
+    /**
+     * Create a new Webhook
+     * @param webhook Webhook to create.
+     * @return New Webhook.
+     */
     public RequestPost createWebhook(Webhook webhook) {
         String url = String.format(Constants.WEBHOOKS_LIST_URL, getInstance());
         return new RequestPost(Webhook.class, url, this, webhook);
     }
 
+    /**
+     * Get details of previously created Webhook.
+     * @param slug Webhook id.
+     * @return Existing Webhook.
+     */
     public RequestGetOne getWebhook(String slug) {
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), slug);
         return new RequestGetOne(Webhook.class, url, this);
     }
 
+    /**
+     * Get a list of previously created Webhooks.
+     * @return List of existing Webhooks.
+     */
     public RequestGetList getWebhooks() {
         String url = String.format(Constants.WEBHOOKS_LIST_URL, getInstance());
         return new RequestGetList(Webhook.class, url, this);
     }
 
+    /**
+     * Update a Webhook.
+     * @param webhook Webhook to update. It need to have slug.
+     * @return Updated Webhook.
+     */
     public RequestPatch updateWebhook(Webhook webhook) {
 
         if (webhook.getSlug() == null || webhook.getSlug().isEmpty()) {
@@ -147,12 +225,22 @@ public class Syncano extends SyncanoBase {
         return new RequestPatch(Webhook.class, url, this, webhook);
     }
 
+    /**
+     * Delete a Webhook.
+     * @param slug Webhook id.
+     * @return null
+     */
     public RequestDelete deleteWebhook(String slug) {
 
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), slug);
         return new RequestDelete(Webhook.class, url, this);
     }
 
+    /**
+     * Run a Webhook synchronous. It should contain result of associated CodeBox.
+     * @param slug Webhook id.
+     * @return Result of executed CodeBox.
+     */
     public RequestGetOne runWebhook(String slug) {
         String url = String.format(Constants.WEBHOOKS_RUN_URL, getInstance(), slug);
         return new RequestGetOne(RunCodeBoxResult.class, url, this);
