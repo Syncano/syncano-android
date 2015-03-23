@@ -24,7 +24,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 
-import com.syncano.library.lib.BuildConfig;
+import com.syncano.library.BuildConfig;
 import com.syncano.library.Constants;
 import com.syncano.library.api.Request;
 import com.syncano.library.api.Response;

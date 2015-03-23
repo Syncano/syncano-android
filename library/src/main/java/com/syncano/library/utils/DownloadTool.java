@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import com.syncano.library.lib.BuildConfig;
+import com.syncano.library.BuildConfig;
 
 import java.io.IOException;
 import java.io.InputStream;
