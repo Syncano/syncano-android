@@ -7,6 +7,7 @@ import com.syncano.library.api.RequestPatch;
 import com.syncano.library.api.RequestPost;
 import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.RunCodeBoxResult;
+import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.Webhook;
 
@@ -244,5 +245,47 @@ public class Syncano extends SyncanoBase {
     public RequestGetOne runWebhook(String slug) {
         String url = String.format(Constants.WEBHOOKS_RUN_URL, getInstance(), slug);
         return new RequestGetOne(RunCodeBoxResult.class, url, this);
+    }
+
+    // ==================== Classes ==================== //
+
+    /**
+     * Create a class.
+     * @param clazz Class to create.
+     * @return Created class.
+     */
+    public RequestPost createSyncanoClass(SyncanoClass clazz) {
+        String url = String.format(Constants.CLASSES_LIST_URL, getInstance());
+        return new RequestPost(SyncanoClass.class, url, this, clazz);
+    }
+
+    /**
+     * Get an information on a selected Class.
+     * @param name Class name.
+     * @return Existing class.
+     */
+    public RequestGetOne getSyncanoClass(String name) {
+        String url = String.format(Constants.CLASSES_DETAIL_URL, getInstance(), name);
+        return new RequestGetOne(SyncanoClass.class, url, this);
+    }
+
+    /**
+     * Get a list of Classes associated with an Instance.
+     * @return List of classes.
+     */
+    public RequestGetList getSyncanoClasses() {
+        String url = String.format(Constants.CLASSES_LIST_URL, getInstance());
+        return new RequestGetList(SyncanoClass.class, url, this);
+    }
+
+    /**
+     * Delete a Class.
+     * @param name Class to delete.
+     * @return null
+     */
+    public RequestDelete deleteSyncanoClass(String name) {
+
+        String url = String.format(Constants.CLASSES_DETAIL_URL, getInstance(), name);
+        return new RequestDelete(SyncanoClass.class, url, this);
     }
 }

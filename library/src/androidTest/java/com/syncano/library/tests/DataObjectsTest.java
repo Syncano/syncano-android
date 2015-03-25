@@ -5,12 +5,11 @@ import android.test.ApplicationTestCase;
 
 import com.syncano.library.Config;
 import com.syncano.library.Syncano;
-import com.syncano.library.annotation.SyncanoClass;
-import com.syncano.library.annotation.SyncanoField;
+import com.syncano.library.TestSyncanoClass;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.Where;
-import com.syncano.library.data.SyncanoObject;
+import com.syncano.library.data.SyncanoClass;
 
 import java.util.List;
 
@@ -33,6 +32,16 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
         super.setUp();
 
         syncano = new Syncano(Config.API_KEY, Config.INSTANCE_NAME);
+
+        // Make sure class exists.
+        String className = Syncano.getSyncanoClassName(TestSyncanoClass.class);
+        Response<SyncanoClass> responseGetSyncanoClass = syncano.getSyncanoClass(className).send();
+
+        if (responseGetSyncanoClass.getHttpResultCode() == Response.HTTP_CODE_NOT_FOUND) {
+            SyncanoClass syncanoClass = new SyncanoClass(className, TestSyncanoClass.getSchema());
+            Response<SyncanoClass> responseCreateClass = syncano.createSyncanoClass(syncanoClass).send();
+            assertEquals(responseCreateClass.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responseCreateClass.getHttpResultCode());
+        }
     }
 
     @Override
@@ -42,79 +51,79 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
 
     public void testDataObjects() throws InterruptedException {
 
-        String userName = "Andrzej Kartofel";
-        String password = "Potato";
-        String newUserName = "Andrzej Ziemniak";
+        String valueOne = "user01";
+        String valueTwo = "pass01";
+        String newValueOne = "user02";
 
-        final UserClass newUserObject = new UserClass();
-        newUserObject.userName = userName;
-        newUserObject.password = password;
+        final TestSyncanoClass newUserObject = new TestSyncanoClass();
+        newUserObject.valueOne = valueOne;
+        newUserObject.valueTwo = valueTwo;
 
-        final UserClass userObject;
+        final TestSyncanoClass testObject;
 
         // ----------------- Create -----------------
-        Response <UserClass> responseCreateObject = syncano.createObject(newUserObject).send();
+        Response <TestSyncanoClass> responseCreateObject = syncano.createObject(newUserObject).send();
 
         assertEquals(Response.HTTP_CODE_CREATED, responseCreateObject.getHttpResultCode());
         assertNotNull(responseCreateObject.getData());
-        userObject = responseCreateObject.getData();
+        testObject = responseCreateObject.getData();
 
         // ----------------- Get One -----------------
-        Response <UserClass> responseGetUser = syncano.getObject(UserClass.class, userObject.getId()).send();
+        Response <TestSyncanoClass> responseGetUser = syncano.getObject(TestSyncanoClass.class, testObject.getId()).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetUser.getHttpResultCode());
         assertNotNull(responseGetUser.getData());
-        assertEquals(userObject.userName, responseGetUser.getData().userName);
-        assertEquals(userObject.userName, responseGetUser.getData().userName);
+        assertEquals(testObject.valueOne, responseGetUser.getData().valueOne);
+        assertEquals(testObject.valueOne, responseGetUser.getData().valueOne);
 
         // ----------------- Update -----------------
-        userObject.userName = newUserName;
-        Response <UserClass> responseUpdateUser = syncano.updateObject(userObject).send();
+        testObject.valueOne = newValueOne;
+        Response <TestSyncanoClass> responseUpdateUser = syncano.updateObject(testObject).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdateUser.getHttpResultCode());
         assertNotNull(responseUpdateUser.getData());
-        assertEquals(userObject.userName, responseUpdateUser.getData().userName);
-        assertEquals(userObject.userName, responseUpdateUser.getData().userName);
+        assertEquals(testObject.valueOne, responseUpdateUser.getData().valueOne);
+        assertEquals(testObject.valueOne, responseUpdateUser.getData().valueOne);
 
         // ----------------- Get List -----------------
-        Response <List<UserClass>> responseGetCodeBoxes = syncano.getObjects(UserClass.class).send();
+        Response <List<TestSyncanoClass>> responseGetCodeBoxes = syncano.getObjects(TestSyncanoClass.class).send();
 
         assertNotNull(responseGetCodeBoxes.getData());
         assertTrue("List should contain at least one item.", responseGetCodeBoxes.getData().size() > 0);
 
         // ----------------- Delete -----------------
-        Response <UserClass> responseDeleteObject = syncano.deleteObject(UserClass.class, userObject.getId()).send();
+        Response <TestSyncanoClass> responseDeleteObject = syncano.deleteObject(TestSyncanoClass.class, testObject.getId()).send();
 
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteObject.getHttpResultCode());
     }
 
     public void testWhereFilter() {
-        UserClass userOne = (UserClass) syncano.createObject(new UserClass("User", "One")).send().getData();
-        UserClass userTwo = (UserClass) syncano.createObject(new UserClass("User", "Two")).send().getData();
+        TestSyncanoClass objectOne = (TestSyncanoClass) syncano.createObject(new TestSyncanoClass("User", "One")).send().getData();
+        TestSyncanoClass objectTwo = (TestSyncanoClass) syncano.createObject(new TestSyncanoClass("User", "Two")).send().getData();
 
         Where where = new Where();
-        where.eq(UserClass.FIELD_ID, userOne.getId());
+        where.eq(TestSyncanoClass.FIELD_ID, objectOne.getId());
 
-        RequestGetList<UserClass> requestGetList = syncano.getObjects(UserClass.class);
+        RequestGetList<TestSyncanoClass> requestGetList = syncano.getObjects(TestSyncanoClass.class);
         requestGetList.setWhereFilter(where);
-        Response<List<UserClass>> response= requestGetList.send();
+        Response<List<TestSyncanoClass>> response= requestGetList.send();
 
         assertEquals(response.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
         assertNotNull(response.getData());
         assertEquals(1, response.getData().size()); // Should be only one item with given id.
 
 
-        syncano.deleteObject(UserClass.class, userOne.getId());
-        syncano.deleteObject(UserClass.class, userTwo.getId());
+        syncano.deleteObject(TestSyncanoClass.class, objectOne.getId());
+        syncano.deleteObject(TestSyncanoClass.class, objectTwo.getId());
     }
 
     public void testOrderBy() {
-        UserClass userOne = (UserClass) syncano.createObject(new UserClass("User", "One")).send().getData();
-        UserClass userTwo = (UserClass) syncano.createObject(new UserClass("User", "Two")).send().getData();
+        TestSyncanoClass objectOne = (TestSyncanoClass) syncano.createObject(new TestSyncanoClass("User", "One")).send().getData();
+        TestSyncanoClass objectTwo = (TestSyncanoClass) syncano.createObject(new TestSyncanoClass("User", "Two")).send().getData();
 
-        RequestGetList<UserClass> requestGetList = syncano.getObjects(UserClass.class);
-        requestGetList.setOrderBy(UserClass.FIELD_ID, true);
-        Response<List<UserClass>> response= requestGetList.send();
+        RequestGetList<TestSyncanoClass> requestGetList = syncano.getObjects(TestSyncanoClass.class);
+        requestGetList.setOrderBy(TestSyncanoClass.FIELD_ID, true);
+        Response<List<TestSyncanoClass>> response= requestGetList.send();
 
         assertEquals(response.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
         assertNotNull(response.getData());
@@ -122,43 +131,25 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
         // If order is descending, first id on list should be bigger.
         assertTrue(response.getData().get(0).getId() > response.getData().get(1).getId());
 
-        syncano.deleteObject(UserClass.class, userOne.getId());
-        syncano.deleteObject(UserClass.class, userTwo.getId());
+        syncano.deleteObject(TestSyncanoClass.class, objectOne.getId());
+        syncano.deleteObject(TestSyncanoClass.class, objectTwo.getId());
     }
 
     public void testPageSize() {
-        UserClass userOne = (UserClass) syncano.createObject(new UserClass("User", "One")).send().getData();
-        UserClass userTwo = (UserClass) syncano.createObject(new UserClass("User", "Two")).send().getData();
+        TestSyncanoClass objectOne = (TestSyncanoClass) syncano.createObject(new TestSyncanoClass("User", "One")).send().getData();
+        TestSyncanoClass objectTwo = (TestSyncanoClass) syncano.createObject(new TestSyncanoClass("User", "Two")).send().getData();
 
         int limitItems = 1;
 
-        RequestGetList<UserClass> requestGetList = syncano.getObjects(UserClass.class);
+        RequestGetList<TestSyncanoClass> requestGetList = syncano.getObjects(TestSyncanoClass.class);
         requestGetList.setLimit(limitItems);
-        Response<List<UserClass>> response= requestGetList.send();
+        Response<List<TestSyncanoClass>> response= requestGetList.send();
 
         assertEquals(response.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
         assertNotNull(response.getData());
         assertEquals(limitItems, response.getData().size());
 
-        syncano.deleteObject(UserClass.class, userOne.getId());
-        syncano.deleteObject(UserClass.class, userTwo.getId());
-    }
-
-    @SyncanoClass(name = "User")
-    class UserClass extends SyncanoObject
-    {
-        @SyncanoField(name = "user_name")
-        public String userName;
-
-        @SyncanoField(name = "password")
-        public String password;
-
-        UserClass() {
-        }
-
-        UserClass(String userName, String password) {
-            this.userName = userName;
-            this.password = password;
-        }
+        syncano.deleteObject(TestSyncanoClass.class, objectOne.getId());
+        syncano.deleteObject(TestSyncanoClass.class, objectTwo.getId());
     }
 }

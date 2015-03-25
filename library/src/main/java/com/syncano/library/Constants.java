@@ -27,4 +27,8 @@ public class Constants {
     public static final String WEBHOOKS_LIST_URL = "/v1/instances/%s/webhooks/";
     public static final String WEBHOOKS_DETAIL_URL = "/v1/instances/%s/webhooks/%s/";
     public static final String WEBHOOKS_RUN_URL = "/v1/instances/%s/webhooks/%s/run/";
+
+    // ==================== Classes ==================== //
+    public static final String CLASSES_LIST_URL = "/v1/instances/%s/classes/";
+    public static final String CLASSES_DETAIL_URL = "/v1/instances/%s/classes/%s/";
 }

@@ -54,7 +54,7 @@ public abstract class SyncanoBase {
      * @param clazz Class to extract class name.
      * @return Class name from SyncanoClass annotation.
      */
-    protected static String getSyncanoClassName(Class<?> clazz) {
+    public static String getSyncanoClassName(Class<?> clazz) {
         SyncanoClass syncanoClass = clazz.getAnnotation(SyncanoClass.class);
 
         if (syncanoClass == null) {
