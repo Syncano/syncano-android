@@ -1,4 +1,4 @@
-package com.syncano.library.android;
+package com.syncano.library;
 
 public class Config {
     public static final String API_KEY = "";

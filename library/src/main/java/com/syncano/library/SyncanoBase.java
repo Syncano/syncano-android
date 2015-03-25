@@ -1,6 +1,9 @@
 package com.syncano.library;
 
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.google.gson.Gson;
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.api.Request;
@@ -82,15 +85,24 @@ public abstract class SyncanoBase {
      * @param callback Callback to notify when request receives response.
      */
     public <T> void requestAsync(final Request<T> syncanoRequest, final SyncanoCallback<T> callback) {
+        final Handler handler = new Handler(Looper.getMainLooper());
+
         requestExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                Response<T> response = syncanoRequest.send();
-                if (response.isOk()) {
-                    callback.success(response, response.getData());
-                } else {
-                    callback.failure(response);
-                }
+                final Response<T> response = syncanoRequest.send();
+
+                // Post result to UI thread.
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (response.isOk()) {
+                            callback.success(response, response.getData());
+                        } else {
+                            callback.failure(response);
+                        }
+                    }
+                });
             }
         });
     }

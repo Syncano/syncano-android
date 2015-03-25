@@ -1,10 +1,10 @@
-package com.syncano.library.android.tests;
+package com.syncano.library.tests;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
 
-import com.syncano.library.android.Config;
-import com.syncano.library.android.SyncanoAndroid;
+import com.syncano.library.Config;
+import com.syncano.library.Syncano;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.RuntimeName;
 import com.syncano.library.data.CodeBox;
@@ -21,7 +21,7 @@ public class WebhooksTest extends ApplicationTestCase<Application> {
 
     private static final String TAG = WebhooksTest.class.getSimpleName();
 
-    private SyncanoAndroid syncano;
+    private Syncano syncano;
     private CodeBox codeBox;
 
     private static final String SLUG = "slug01";
@@ -34,7 +34,7 @@ public class WebhooksTest extends ApplicationTestCase<Application> {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        syncano = new SyncanoAndroid(Config.API_KEY, Config.INSTANCE_NAME);
+        syncano = new Syncano(Config.API_KEY, Config.INSTANCE_NAME);
 
         String codeBoxName = "CodeBox Test";
         RuntimeName runtime = RuntimeName.NODEJS;
