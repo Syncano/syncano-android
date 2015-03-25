@@ -13,6 +13,8 @@ public class Constants {
     public final static String URL_PARAM_FIELDS = "fields";
     public final static String URL_PARAM_EXCLUDED_FIELDS = "excluded_fields";
     public final static String URL_PARAM_PAGE_SIZE = "page_size";
+    public final static String URL_PARAM_PAGE_DIRECTION = "direction";
+    public final static String URL_PARAM_PAGE_SINCE_ID = "last_pk";
 
     // ==================== Objects ==================== //
     public static final String OBJECTS_LIST_URL = "/v1/instances/%s/classes/%s/objects/";

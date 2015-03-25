@@ -11,6 +11,7 @@ import com.syncano.library.api.Response;
 import com.syncano.library.api.Where;
 import com.syncano.library.data.SyncanoClass;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -55,14 +56,14 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
         String valueTwo = "pass01";
         String newValueOne = "user02";
 
-        final TestSyncanoClass newUserObject = new TestSyncanoClass();
-        newUserObject.valueOne = valueOne;
-        newUserObject.valueTwo = valueTwo;
+        final TestSyncanoClass newTestObject = new TestSyncanoClass();
+        newTestObject.valueOne = valueOne;
+        newTestObject.valueTwo = valueTwo;
 
         final TestSyncanoClass testObject;
 
         // ----------------- Create -----------------
-        Response <TestSyncanoClass> responseCreateObject = syncano.createObject(newUserObject).send();
+        Response <TestSyncanoClass> responseCreateObject = syncano.createObject(newTestObject).send();
 
         assertEquals(Response.HTTP_CODE_CREATED, responseCreateObject.getHttpResultCode());
         assertNotNull(responseCreateObject.getData());
@@ -151,5 +152,47 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
 
         syncano.deleteObject(TestSyncanoClass.class, objectOne.getId());
         syncano.deleteObject(TestSyncanoClass.class, objectTwo.getId());
+    }
+
+    public void testSinceId() {
+
+        int testObjectCount = 3;
+        int limitItems = 1;
+
+        List<TestSyncanoClass> objects = new ArrayList<>(testObjectCount);
+
+        // Create test objects
+        for (int i = 0; i < testObjectCount; i++) {
+            TestSyncanoClass testObject = new TestSyncanoClass("valueOne: " + i, "valueTwo: " + i);
+            Response <TestSyncanoClass> responseCreateObject = syncano.createObject(testObject).send();
+            assertEquals(Response.HTTP_CODE_CREATED, responseCreateObject.getHttpResultCode());
+            objects.add(responseCreateObject.getData());
+        }
+
+        int idInMiddle = objects.get(objects.size() / 2).getId();
+
+        // Get with bigger id
+        RequestGetList<TestSyncanoClass> requestNext = syncano.getObjects(TestSyncanoClass.class);
+        requestNext.setLimit(limitItems);
+        requestNext.setSinceId(idInMiddle, false);
+        Response<List<TestSyncanoClass>> responseNext = requestNext.send();
+
+        assertEquals(responseNext.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responseNext.getHttpResultCode());
+        assertTrue(responseNext.getData().get(0).getId() > idInMiddle);
+
+        // Get with smaller id
+        RequestGetList<TestSyncanoClass> requestPrevious = syncano.getObjects(TestSyncanoClass.class);
+        requestPrevious.setLimit(limitItems);
+        requestPrevious.setSinceId(idInMiddle, true);
+        Response<List<TestSyncanoClass>> responsePrevious= requestPrevious.send();
+
+        assertEquals(responsePrevious.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responsePrevious.getHttpResultCode());
+        assertTrue(responsePrevious.getData().get(0).getId() < idInMiddle);
+
+        // Clean after test
+        for (TestSyncanoClass objectToDelete : objects) {
+            Response <TestSyncanoClass> responseDeleteObject = syncano.deleteObject(TestSyncanoClass.class, objectToDelete.getId()).send();
+            assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteObject.getHttpResultCode());
+        }
     }
 }

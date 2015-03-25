@@ -15,10 +15,16 @@ import java.util.List;
 
 public class RequestGetList<T> extends RequestGet<List<T>> {
 
+    private static final int DIRECTION_NEXT = 1;
+    private static final int DIRECTION_PREV = 0;
+
     protected Class<T> resultType;
     private Where where;
     private String orderBy;
     private int pageSize = 0;
+
+    private int sinceId = 0;
+    private int direction = DIRECTION_NEXT;
 
     public RequestGetList(Class<T> resultType, String url, Syncano syncano) {
         super(url, syncano);
@@ -43,6 +49,11 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
 
         if (pageSize > 0) {
             urlParams.add(new BasicNameValuePair(Constants.URL_PARAM_PAGE_SIZE, String.valueOf(pageSize)));
+        }
+
+        if (sinceId > 0) {
+            urlParams.add(new BasicNameValuePair(Constants.URL_PARAM_PAGE_SINCE_ID, String.valueOf(sinceId)));
+            urlParams.add(new BasicNameValuePair(Constants.URL_PARAM_PAGE_DIRECTION, String.valueOf(direction)));
         }
 
         return urlParams;
@@ -87,5 +98,23 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
      */
     public void setLimit(int limit) {
         pageSize = limit;
+    }
+
+    /**
+     * Set since id for paging.
+     * If revert is false, "next page" will be requested.
+     * When reverted, direction will be changed and objects with
+     * smaller id will be get. It's equivalent of "previous page".
+     * @param id Id to start from paging.
+     * @param revert If true, page direction will be changed.
+     */
+    public void setSinceId(int id, boolean revert) {
+        sinceId = id;
+
+        if (revert) {
+            direction = DIRECTION_PREV;
+        } else {
+            direction = DIRECTION_NEXT;
+        }
     }
 }
