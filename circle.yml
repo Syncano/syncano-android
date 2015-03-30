@@ -1,3 +1,7 @@
+dependencies:
+  pre:
+    - sed -i -e "s/YOUR_API_KEY/${YOUR_API_KEY}/g" /home/ubuntu/syncano-android/library/src/androidTest/java/com/syncano/library/Config.java
+    - sed -i -e "s/YOUR_INSTANCE_NAME/${YOUR_INSTANCE_NAME}/g" /home/ubuntu/syncano-android/library/src/androidTest/java/com/syncano/library/Config.java
 test:
   override:
     # start the emulator
