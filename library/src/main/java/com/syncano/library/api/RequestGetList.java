@@ -52,7 +52,7 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
         }
 
         if (lastPk > 0) {
-            urlParams.add(new BasicNameValuePair(Constants.URL_PARAM_PAGE_SINCE_ID, String.valueOf(lastPk)));
+            urlParams.add(new BasicNameValuePair(Constants.URL_PARAM_PAGE_LAST_PK, String.valueOf(lastPk)));
             urlParams.add(new BasicNameValuePair(Constants.URL_PARAM_PAGE_DIRECTION, String.valueOf(direction)));
         }
 
