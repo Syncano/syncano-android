@@ -103,7 +103,7 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
         TestSyncanoClass objectTwo = (TestSyncanoClass) syncano.createObject(new TestSyncanoClass("User", "Two")).send().getData();
 
         Where where = new Where();
-        where.eq(TestSyncanoClass.FIELD_ID, objectOne.getId());
+        where.eq(TestSyncanoClass.FIELD_ID, objectOne.getId()).neq(TestSyncanoClass.FIELD_ID, objectTwo.getId());
 
         RequestGetList<TestSyncanoClass> requestGetList = syncano.getObjects(TestSyncanoClass.class);
         requestGetList.setWhereFilter(where);
@@ -154,7 +154,7 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
         syncano.deleteObject(TestSyncanoClass.class, objectTwo.getId());
     }
 
-    public void testSinceId() {
+    public void testLastPk() {
 
         int testObjectCount = 3;
         int limitItems = 1;

@@ -314,9 +314,15 @@ public class Where {
     }
 
     private void addFilter(String field, String filter, JsonElement value) {
-        JsonObject jsonObject = new JsonObject();
+
+        JsonObject jsonObject = query.get(field);
+
+        if (jsonObject == null) {
+            jsonObject = new JsonObject();
+            query.put(field, jsonObject);
+        }
+
         jsonObject.add(filter, value);
-        query.put(field, jsonObject);
     }
 
     public String buildQuery() {
