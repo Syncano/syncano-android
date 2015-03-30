@@ -15,3 +15,10 @@ To run tests call from command line:
 
 Remember to provide correct Api Key and Instance Name in:
 /library/src/androidTest/java/com/syncano/library/Config.java
+
+========== TESTS COVERAGE ==========
+To generate test coverage call "createDebugCoverageReport" from command line:
+./gradlew createDebugCoverageReport
+
+Coverage report will be located in:
+/library/build/outputs/reports/coverage/
