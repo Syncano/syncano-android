@@ -174,7 +174,7 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
         // Get with bigger id
         RequestGetList<TestSyncanoClass> requestNext = syncano.getObjects(TestSyncanoClass.class);
         requestNext.setLimit(limitItems);
-        requestNext.setSinceId(idInMiddle, false);
+        requestNext.setLastPk(idInMiddle, false);
         Response<List<TestSyncanoClass>> responseNext = requestNext.send();
 
         assertEquals(responseNext.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responseNext.getHttpResultCode());
@@ -183,7 +183,7 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
         // Get with smaller id
         RequestGetList<TestSyncanoClass> requestPrevious = syncano.getObjects(TestSyncanoClass.class);
         requestPrevious.setLimit(limitItems);
-        requestPrevious.setSinceId(idInMiddle, true);
+        requestPrevious.setLastPk(idInMiddle, true);
         Response<List<TestSyncanoClass>> responsePrevious= requestPrevious.send();
 
         assertEquals(responsePrevious.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responsePrevious.getHttpResultCode());
