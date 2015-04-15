@@ -118,8 +118,7 @@ public class SyncanoBase {
 	}
 
 	/**
-	 * Sets authorization key for specified params.
-	 * If Params already contains value, it will not be replaced.
+	 * Sets authorization key for specified params. If Params already contains value, it will not be replaced.
 	 * 
 	 * @param params
 	 *            parameters that will be have auth key
@@ -263,7 +262,17 @@ public class SyncanoBase {
 		// parse
 		String s = new String(response);
 		JsonParser parser = new JsonParser();
-		JsonArray jArray = parser.parse(s).getAsJsonArray();
+		JsonArray jArray = null;
+		try {
+			jArray = parser.parse(s).getAsJsonArray();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		if (jArray == null) {
+			Log.e(LOG_TAG, "RequestSender, Connection error");
+			setResponseCode(responses, Response.CODE_ERROR_PARSER);
+			return responses;
+		}
 
 		HashMap<String, Response> map = new HashMap<String, Response>(responses.length);
 		for (int i = 0; i < responses.length; i++) {
@@ -314,7 +323,7 @@ public class SyncanoBase {
 		public void finishedWorkerThread(Response[] response) {
 		}
 	}
-	
+
 	/**
 	 * Callback for asynchronous image download.
 	 */
@@ -324,7 +333,7 @@ public class SyncanoBase {
 
 		public void finishedWorkerThread(Bitmap bitmap) {
 		}
-	} 
+	}
 
 	/**
 	 * Download images from given URL. Usually used for downloading images from Data or User Avatars.
