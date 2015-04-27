@@ -6,7 +6,7 @@ public class Constants {
     public static final String SERVER_URL = "https://syncanotest1-env.elasticbeanstalk.com";
 
     /** User agent name */
-    public final static String USER_AGENT = "syncano-android-4.0";
+    public final static String USER_AGENT = "syncano-android-" + BuildConfig.VERSION_NAME;
 
     public final static String URL_PARAM_QUERY = "query";
     public final static String URL_PARAM_ORDER_BY = "order_by";
