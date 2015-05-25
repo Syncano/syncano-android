@@ -33,4 +33,9 @@ public class Constants {
     // ==================== Classes ==================== //
     public static final String CLASSES_LIST_URL = "/v1/instances/%s/classes/";
     public static final String CLASSES_DETAIL_URL = "/v1/instances/%s/classes/%s/";
+
+    // ==================== Users ==================== //
+    public static final String USERS_LIST_URL = "/v1/instances/%s/users/";
+    public static final String USERS_DETAIL_URL = "/v1/instances/%s/users/%d/";
+    public static final String USER_AUTH = "/v1/instances/%s/user/auth/";
 }

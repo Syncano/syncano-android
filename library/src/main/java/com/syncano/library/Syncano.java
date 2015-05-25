@@ -1,5 +1,6 @@
 package com.syncano.library;
 
+import com.google.gson.JsonObject;
 import com.syncano.library.api.RequestDelete;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.RequestGetOne;
@@ -9,6 +10,7 @@ import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.RunCodeBoxResult;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
+import com.syncano.library.data.User;
 import com.syncano.library.data.Webhook;
 
 public class Syncano extends SyncanoBase {
@@ -287,5 +289,47 @@ public class Syncano extends SyncanoBase {
 
         String url = String.format(Constants.CLASSES_DETAIL_URL, getInstance(), name);
         return new RequestDelete(SyncanoClass.class, url, this);
+    }
+
+    // ==================== Users ==================== //
+    public RequestPost createUser(User user) {
+        String url = String.format(Constants.USERS_LIST_URL, getInstance());
+        return new RequestPost(User.class, url, this, user);
+    }
+
+    public RequestGetOne getUser(int id) {
+        String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), id);
+        return new RequestGetOne(User.class, url, this);
+    }
+
+    public RequestGetList getUsers() {
+        String url = String.format(Constants.USERS_LIST_URL, getInstance());
+        return new RequestGetList(User.class, url, this);
+    }
+
+    public RequestPatch updateUser(User user) {
+
+        if (user.getId() == 0 ) {
+            throw new RuntimeException("Trying to update User without id!");
+        }
+
+        String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), user.getId());
+        return new RequestPatch(User.class, url, this, user);
+    }
+
+    public RequestDelete deleteUser(int id) {
+
+        String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), id);
+        return new RequestDelete(User.class, url, this);
+    }
+
+    public RequestPost authUser(String username, String password) {
+        String url = String.format(Constants.USER_AUTH, getInstance());
+
+        JsonObject jsonParams = new JsonObject();
+        jsonParams.addProperty(User.FIELD_USER_NAME, username);
+        jsonParams.addProperty(User.FIELD_PASSWORD, password);
+
+        return new RequestPost(User.class, url, this, jsonParams);
     }
 }

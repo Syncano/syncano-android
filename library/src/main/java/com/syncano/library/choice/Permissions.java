@@ -2,7 +2,7 @@ package com.syncano.library.choice;
 
 import com.google.gson.annotations.SerializedName;
 
-public enum Role {
+public enum Permissions {
     @SerializedName(value = "full")
     FULL,
 
@@ -10,5 +10,8 @@ public enum Role {
     WRITE,
 
     @SerializedName(value = "read")
-    READ
+    READ,
+
+    @SerializedName(value = "none")
+    NONE
 }
