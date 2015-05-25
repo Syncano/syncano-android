@@ -292,21 +292,42 @@ public class Syncano extends SyncanoBase {
     }
 
     // ==================== Users ==================== //
+
+    /**
+     * Create a new User.
+     * To be able to register Users you'll have to create an API Key that has allow_user_create flag set to true.
+     * @param user User to create.
+     * @return
+     */
     public RequestPost createUser(User user) {
         String url = String.format(Constants.USERS_LIST_URL, getInstance());
         return new RequestPost(User.class, url, this, user);
     }
 
+    /**
+     * Get details of previously created User.
+     * @param id Id of existing User.
+     * @return
+     */
     public RequestGetOne getUser(int id) {
         String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), id);
         return new RequestGetOne(User.class, url, this);
     }
 
+    /**
+     * Get a list of previously created CodeBoxes.
+     * @return
+     */
     public RequestGetList getUsers() {
         String url = String.format(Constants.USERS_LIST_URL, getInstance());
         return new RequestGetList(User.class, url, this);
     }
 
+    /**
+     * Update a User.
+     * @param user User to update. It need to have id.
+     * @return
+     */
     public RequestPatch updateUser(User user) {
 
         if (user.getId() == 0 ) {
@@ -317,12 +338,23 @@ public class Syncano extends SyncanoBase {
         return new RequestPatch(User.class, url, this, user);
     }
 
+    /**
+     * Delete a User.
+     * @param id Id of existing User.
+     * @return
+     */
     public RequestDelete deleteUser(int id) {
 
         String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), id);
         return new RequestDelete(User.class, url, this);
     }
 
+    /**
+     * Authenticate a User.
+     * @param username User name from registration.
+     * @param password User password.
+     * @return
+     */
     public RequestPost authUser(String username, String password) {
         String url = String.format(Constants.USER_AUTH, getInstance());
 
@@ -332,4 +364,7 @@ public class Syncano extends SyncanoBase {
 
         return new RequestPost(User.class, url, this, jsonParams);
     }
+
+    // ==================== Groups ==================== //
+
 }
