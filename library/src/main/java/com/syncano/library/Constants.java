@@ -38,4 +38,8 @@ public class Constants {
     public static final String USERS_LIST_URL = "/v1/instances/%s/users/";
     public static final String USERS_DETAIL_URL = "/v1/instances/%s/users/%d/";
     public static final String USER_AUTH = "/v1/instances/%s/user/auth/";
+
+    // ==================== Groups ==================== //
+    public static final String GROUPS_LIST_URL = "/v1/instances/%s/groups/";
+    public static final String GROUPS_DETAIL_URL = "/v1/instances/%s/groups/%d/";
 }

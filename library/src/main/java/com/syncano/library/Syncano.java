@@ -7,6 +7,7 @@ import com.syncano.library.api.RequestGetOne;
 import com.syncano.library.api.RequestPatch;
 import com.syncano.library.api.RequestPost;
 import com.syncano.library.data.CodeBox;
+import com.syncano.library.data.Group;
 import com.syncano.library.data.RunCodeBoxResult;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
@@ -315,7 +316,7 @@ public class Syncano extends SyncanoBase {
     }
 
     /**
-     * Get a list of previously created CodeBoxes.
+     * Get a list of previously created Users.
      * @return
      */
     public RequestGetList getUsers() {
@@ -367,4 +368,62 @@ public class Syncano extends SyncanoBase {
 
     // ==================== Groups ==================== //
 
+    /**
+     * Create a new Group.
+     * @param group Group to create.
+     * @return
+     */
+    public RequestPost createGroup(Group group) {
+        String url = String.format(Constants.GROUPS_LIST_URL, getInstance());
+        return new RequestPost(Group.class, url, this, group);
+    }
+
+    /**
+     * Get details of previously created Group.
+     * @param id Id of existing Group.
+     * @return
+     */
+    public RequestGetOne getGroup(int id) {
+        String url = String.format(Constants.GROUPS_DETAIL_URL, getInstance(), id);
+        return new RequestGetOne(Group.class, url, this);
+    }
+
+    /**
+     * Get a list of previously created Groups.
+     * @return
+     */
+    public RequestGetList getGroups() {
+        String url = String.format(Constants.GROUPS_LIST_URL, getInstance());
+        return new RequestGetList(Group.class, url, this);
+    }
+
+    /**
+     * Update a Group.
+     * @param group Group to update. It need to have id.
+     * @return
+     */
+    public RequestPatch updateGroup(Group group) {
+
+        if (group.getId() == 0 ) {
+            throw new RuntimeException("Trying to update Group without id!");
+        }
+
+        String url = String.format(Constants.GROUPS_DETAIL_URL, getInstance(), group.getId());
+        return new RequestPatch(Group.class, url, this, group);
+    }
+
+    /**
+     * Delete a Group.
+     * @param id Id of existing Group.
+     * @return
+     */
+    public RequestDelete deleteGroup(int id) {
+
+        String url = String.format(Constants.GROUPS_DETAIL_URL, getInstance(), id);
+        return new RequestDelete(Group.class, url, this);
+    }
+
+    // List group users
+    // Add user to group
+    // Delete user from group
 }
