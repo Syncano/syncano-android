@@ -103,7 +103,7 @@ public class WebhooksTest extends ApplicationTestCase<Application> {
         // ----------------- Run -----------------
         Response <RunCodeBoxResult> responseRunWebhook = syncano.runWebhook(SLUG).send();
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseRunWebhook.getHttpResultCode());
+        assertEquals(responseRunWebhook.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responseRunWebhook.getHttpResultCode());
         assertNotNull(responseRunWebhook.getData());
         assertEquals(EXPECTED_RESULT, responseRunWebhook.getData().getResult());
 

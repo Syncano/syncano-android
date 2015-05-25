@@ -8,6 +8,7 @@ import com.syncano.library.Syncano;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.RuntimeName;
 import com.syncano.library.data.CodeBox;
+import com.syncano.library.data.Profile;
 import com.syncano.library.data.RunCodeBoxResult;
 import com.syncano.library.data.User;
 import com.syncano.library.data.Webhook;
@@ -72,6 +73,13 @@ public class UsersTest extends ApplicationTestCase<Application> {
         assertEquals(Response.HTTP_CODE_CREATED, responseCreateUser.getHttpResultCode());
         assertNotNull(responseCreateUser.getData());
         user = responseCreateUser.getData();
+
+        // ----------------- Get Profile -----------------
+        assertNotNull(user.getProfile());
+        Response <Profile> responseGetProfile = syncano.getObject(Profile.class, user.getProfile().getId()).send();
+
+        assertEquals(Response.HTTP_CODE_SUCCESS, responseGetProfile.getHttpResultCode());
+        assertNotNull(responseGetProfile.getData());
 
         // ----------------- Get One -----------------
         Response <User> responseGetUser = syncano.getUser(user.getId()).send();
