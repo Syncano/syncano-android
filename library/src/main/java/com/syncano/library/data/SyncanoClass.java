@@ -3,6 +3,7 @@ package com.syncano.library.data;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.syncano.library.annotation.SyncanoField;
+import com.syncano.library.choice.SyncanoClassPermissions;
 
 import java.util.Date;
 
@@ -49,10 +50,10 @@ public class SyncanoClass {
     private String group;
 
     @SyncanoField(name = FIELD_GROUP_PERMISSIONS)
-    private String groupPermissions;
+    private SyncanoClassPermissions groupPermissions;
 
     @SyncanoField(name = FIELD_OTHER_PERMISSIONS)
-    private String otherPermissions;
+    private SyncanoClassPermissions otherPermissions;
 
     @SyncanoField(name = FIELD_METADATA)
     private JsonElement metadata;
@@ -137,19 +138,19 @@ public class SyncanoClass {
         this.group = group;
     }
 
-    public String getGroupPermissions() {
+    public SyncanoClassPermissions getGroupPermissions() {
         return groupPermissions;
     }
 
-    public void setGroupPermissions(String groupPermissions) {
+    public void setGroupPermissions(SyncanoClassPermissions groupPermissions) {
         this.groupPermissions = groupPermissions;
     }
 
-    public String getOtherPermissions() {
+    public SyncanoClassPermissions getOtherPermissions() {
         return otherPermissions;
     }
 
-    public void setOtherPermissions(String otherPermissions) {
+    public void setOtherPermissions(SyncanoClassPermissions otherPermissions) {
         this.otherPermissions = otherPermissions;
     }
 

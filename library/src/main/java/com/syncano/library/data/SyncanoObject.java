@@ -1,17 +1,102 @@
 package com.syncano.library.data;
 
 import com.syncano.library.annotation.SyncanoField;
+import com.syncano.library.choice.DataObjectPermissions;
 
 public abstract class SyncanoObject extends Entity {
 
-    private static final String FIELD_REVISION = "revision";
-    private static final String FIELD_EXPECTED_REVISION = "expected_revision";
+    public static final String FIELD_REVISION = "revision";
+    public static final String FIELD_EXPECTED_REVISION = "expected_revision";
+    public static final String FIELD_OWNER = "owner";
+    public static final String FIELD_OWNER_PERMISSIONS = "owner_permissions";
+    public static final String FIELD_GROUP = "group";
+    public static final String FIELD_GROUP_PERMISSIONS = "group_permissions";
+    public static final String FIELD_OTHER_PERMISSIONS = "other_permissions";
+    public static final String FIELD_CHANNEL = "channel";
+    public static final String FIELD_CHANNEL_ROOM = "channel_room";
 
-    @SyncanoField(name = FIELD_REVISION, readOnly = true)
+    @SyncanoField(name = FIELD_OWNER)
+    private Integer owner;
+
+    @SyncanoField(name = FIELD_OWNER_PERMISSIONS)
+    private DataObjectPermissions ownerPermissions;
+
+    @SyncanoField(name = FIELD_GROUP)
+    private Group group;
+
+    @SyncanoField(name = FIELD_GROUP_PERMISSIONS)
+    private DataObjectPermissions groupPermissions;
+
+    @SyncanoField(name = FIELD_OTHER_PERMISSIONS)
+    private DataObjectPermissions otherPermissions;
+
+    @SyncanoField(name = FIELD_CHANNEL)
+    private Channel channel;
+
+    @SyncanoField(name = FIELD_CHANNEL_ROOM)
+    private String channelRoom;
+
+    @SyncanoField(name = FIELD_REVISION)
     private int revision;
 
     @SyncanoField(name = FIELD_EXPECTED_REVISION)
     private int expectedRevision;
+
+    public String getChannelRoom() {
+        return channelRoom;
+    }
+
+    public void setChannelRoom(String channelRoom) {
+        this.channelRoom = channelRoom;
+    }
+
+    public Integer getOwner() {
+        return owner;
+    }
+
+    public void setOwner(Integer owner) {
+        this.owner = owner;
+    }
+
+    public DataObjectPermissions getOwnerPermissions() {
+        return ownerPermissions;
+    }
+
+    public void setOwnerPermissions(DataObjectPermissions ownerPermissions) {
+        this.ownerPermissions = ownerPermissions;
+    }
+
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public DataObjectPermissions getGroupPermisions() {
+        return groupPermissions;
+    }
+
+    public void setGroupPermisions(DataObjectPermissions groupPermisions) {
+        this.groupPermissions = groupPermisions;
+    }
+
+    public DataObjectPermissions getOtherPermissions() {
+        return otherPermissions;
+    }
+
+    public void setOtherPermissions(DataObjectPermissions otherPermissions) {
+        this.otherPermissions = otherPermissions;
+    }
+
+    public Channel getChannel() {
+        return channel;
+    }
+
+    public void setChannel(Channel channel) {
+        this.channel = channel;
+    }
 
     public int getRevision() {
         return revision;

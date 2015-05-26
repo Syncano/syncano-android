@@ -65,7 +65,7 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
         // ----------------- Create -----------------
         Response <TestSyncanoClass> responseCreateObject = syncano.createObject(newTestObject).send();
 
-        assertEquals(Response.HTTP_CODE_CREATED, responseCreateObject.getHttpResultCode());
+        assertEquals(responseCreateObject.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responseCreateObject.getHttpResultCode());
         assertNotNull(responseCreateObject.getData());
         testObject = responseCreateObject.getData();
 
