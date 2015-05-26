@@ -5,8 +5,12 @@ import android.test.ApplicationTestCase;
 
 import com.syncano.library.Config;
 import com.syncano.library.Syncano;
+import com.syncano.library.TestSyncanoClass;
+import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
+import com.syncano.library.api.Where;
 import com.syncano.library.data.Group;
+import com.syncano.library.data.GroupMembership;
 import com.syncano.library.data.Profile;
 import com.syncano.library.data.User;
 
@@ -22,8 +26,13 @@ public class GroupsTest extends ApplicationTestCase<Application> {
 
     private Syncano syncano;
 
+    private static final String USER_NAME = "testuser";
+    private static final String PASSWORD = "password";
+
     private static final String GROUP_NAME = "group";
     private static final String NEW_GROUP_NAME = "new_group";
+
+    private User user;
 
     public GroupsTest() {
         super(Application.class);
@@ -33,11 +42,45 @@ public class GroupsTest extends ApplicationTestCase<Application> {
     protected void setUp() throws Exception {
         super.setUp();
         syncano = new Syncano(Config.API_KEY, Config.INSTANCE_NAME);
+
+        // ----------------- Get Or Create Test User -----------------
+        Response<User> responseUserAuth = syncano.authUser(USER_NAME, PASSWORD).send();
+        if (responseUserAuth.isOk() && responseUserAuth.getData() != null) {
+            user = responseUserAuth.getData();
+        } else {
+            Response<User> responseCreateUser = syncano.createUser(new User(USER_NAME, PASSWORD)).send();
+
+            assertEquals(Response.HTTP_CODE_CREATED, responseCreateUser.getHttpResultCode());
+            assertNotNull(responseCreateUser.getData());
+            user = responseCreateUser.getData();
+        }
+
+        // ----------------- Remove All Groups -----------------
+        Where where = new Where();
+        where.eq(Group.FIELD_NAME, GROUP_NAME);
+
+        RequestGetList<Group> requestGetGroups = syncano.getGroups();
+        requestGetGroups.setWhereFilter(where);
+        Response<List<Group>> responseGetGroups= requestGetGroups.send();
+
+        assertEquals(Response.HTTP_CODE_SUCCESS, responseGetGroups.getHttpResultCode());
+        assertNotNull(responseGetGroups.getData());
+
+        for (Group item : responseGetGroups.getData()) {
+            Response<Group> responseDeleteGroup = syncano.deleteGroup(item.getId()).send();
+            assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteGroup.getHttpResultCode());
+        }
     }
 
     @Override
     protected void tearDown() throws Exception {
        super.tearDown();
+
+        // ----------------- Delete Test User -----------------
+        if (user != null) {
+            Response<User> responseDeleteUser = syncano.deleteUser(user.getId()).send();
+            assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteUser.getHttpResultCode());
+        }
     }
 
 
@@ -49,7 +92,7 @@ public class GroupsTest extends ApplicationTestCase<Application> {
         // ----------------- Create -----------------
         Response<Group> responseCreateGroup = syncano.createGroup(newGroup).send();
 
-        assertEquals(Response.HTTP_CODE_CREATED, responseCreateGroup.getHttpResultCode());
+        assertEquals(responseCreateGroup.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responseCreateGroup.getHttpResultCode());
         assertNotNull(responseCreateGroup.getData());
         group = responseCreateGroup.getData();
 
@@ -77,6 +120,47 @@ public class GroupsTest extends ApplicationTestCase<Application> {
         // ----------------- Delete -----------------
         Response<Group> responseDeleteGroup = syncano.deleteGroup(group.getId()).send();
 
+        assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteGroup.getHttpResultCode());
+    }
+
+    public void testGroupMembership() throws InterruptedException {
+
+        GroupMembership groupMembership;
+
+        // ----------------- Create Temporary Group -----------------
+        Response<Group> responseCreateGroup = syncano.createGroup(new Group(GROUP_NAME)).send();
+        assertEquals(Response.HTTP_CODE_CREATED, responseCreateGroup.getHttpResultCode());
+        Group group = responseCreateGroup.getData();
+
+        // ----------------- Add User To Group -----------------
+        Response<GroupMembership> responseAddUserToGroup = syncano.addUserToGroup(group.getId(), user.getId()).send();
+
+        assertEquals(Response.HTTP_CODE_CREATED, responseAddUserToGroup.getHttpResultCode());
+        assertNotNull(responseAddUserToGroup.getData());
+        groupMembership = responseAddUserToGroup.getData();
+        assertNotNull(groupMembership.getUser());
+
+        // ----------------- Get Group Membership -----------------
+        Response<GroupMembership> responseGetGroupMembership = syncano.getGroupMembership(group.getId(), groupMembership.getId()).send();
+
+        assertEquals(Response.HTTP_CODE_SUCCESS, responseGetGroupMembership.getHttpResultCode());
+        assertNotNull(responseGetGroupMembership.getData());
+        assertNotNull(responseGetGroupMembership.getData().getUser());
+        assertEquals(groupMembership.getId(), responseGetGroupMembership.getData().getId());
+
+        // ----------------- Get Group Membership List -----------------
+        Response<List<GroupMembership>> responseGetGroupMemberships = syncano.getGroupMemberships(group.getId()).send();
+
+        assertNotNull(responseGetGroupMemberships.getData());
+        assertTrue("List should contain at least one item.", responseGetGroupMemberships.getData().size() > 0);
+
+        // ----------------- Delete Group Membership -----------------
+        Response<GroupMembership> responseDeleteUserFromGroup = syncano.deleteUserFromGroup(group.getId(), groupMembership.getId()).send();
+
+        assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteUserFromGroup.getHttpResultCode());
+
+        // ----------------- Delete Temporary Group -----------------
+        Response<Group> responseDeleteGroup = syncano.deleteGroup(group.getId()).send();
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteGroup.getHttpResultCode());
     }
 }

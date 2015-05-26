@@ -8,6 +8,7 @@ import com.syncano.library.api.RequestPatch;
 import com.syncano.library.api.RequestPost;
 import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Group;
+import com.syncano.library.data.GroupMembership;
 import com.syncano.library.data.RunCodeBoxResult;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
@@ -423,7 +424,51 @@ public class Syncano extends SyncanoBase {
         return new RequestDelete(Group.class, url, this);
     }
 
-    // List group users
-    // Add user to group
-    // Delete user from group
+    /**
+     * Get details of previously created Membership.
+     * @param groupId Id of existing Group.
+     * @param membershipId Membership id.
+     * @return
+     */
+    public RequestGetOne getGroupMembership(int groupId, int membershipId) {
+        String url = String.format(Constants.GROUPS_USERS_DETAIL_URL, getInstance(), groupId, membershipId);
+        return new RequestGetOne(GroupMembership.class, url, this);
+    }
+
+    /**
+     * Get a list of previously created Memberships.
+     * @param groupId Id of existing Group.
+     * @return
+     */
+    public RequestGetList getGroupMemberships(int groupId) {
+        String url = String.format(Constants.GROUPS_USERS_LIST_URL, getInstance(), groupId);
+        return new RequestGetList(User.class, url, this);
+    }
+
+    /**
+     * Add user to a Group.
+     * @param groupId Id of existing Group.
+     * @param userId Id of existing User.
+     * @return Object representing Membership.
+     */
+    public RequestPost addUserToGroup(int groupId, int userId) {
+        String url = String.format(Constants.GROUPS_USERS_LIST_URL, getInstance(), groupId);
+
+        JsonObject jsonParams = new JsonObject();
+        jsonParams.addProperty(Constants.POST_PARAM_USER, userId);
+
+        return new RequestPost(GroupMembership.class, url, this, jsonParams);
+    }
+
+    /**
+     * Delete a Group mambership.
+     * @param groupId Id of existing Group.
+     * @param membershipId Membership id.
+     * @return
+     */
+    public RequestDelete deleteUserFromGroup(int groupId, int membershipId) {
+
+        String url = String.format(Constants.GROUPS_USERS_DETAIL_URL, getInstance(), groupId, membershipId);
+        return new RequestDelete(GroupMembership.class, url, this);
+    }
 }

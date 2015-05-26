@@ -16,6 +16,8 @@ public class Constants {
     public final static String URL_PARAM_PAGE_DIRECTION = "direction";
     public final static String URL_PARAM_PAGE_LAST_PK = "last_pk";
 
+    public final static String POST_PARAM_USER = "user";
+
     // ==================== Objects ==================== //
     public static final String OBJECTS_LIST_URL = "/v1/instances/%s/classes/%s/objects/";
     public static final String OBJECTS_DETAIL_URL = "/v1/instances/%s/classes/%s/objects/%d/";
@@ -42,4 +44,6 @@ public class Constants {
     // ==================== Groups ==================== //
     public static final String GROUPS_LIST_URL = "/v1/instances/%s/groups/";
     public static final String GROUPS_DETAIL_URL = "/v1/instances/%s/groups/%d/";
+    public static final String GROUPS_USERS_LIST_URL = "/v1/instances/%s/groups/%d/users/";
+    public static final String GROUPS_USERS_DETAIL_URL = "/v1/instances/%s/groups/%d/users/%d/";
 }
