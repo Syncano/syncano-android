@@ -46,4 +46,8 @@ public class Constants {
     public static final String GROUPS_DETAIL_URL = "/v1/instances/%s/groups/%d/";
     public static final String GROUPS_USERS_LIST_URL = "/v1/instances/%s/groups/%d/users/";
     public static final String GROUPS_USERS_DETAIL_URL = "/v1/instances/%s/groups/%d/users/%d/";
+
+    // ==================== Channels ==================== //
+    public static final String CHANNELS_LIST_URL = "/v1/instances/%s/channels/";
+    public static final String CHANNELS_DETAIL_URL = "/v1/instances/%s/channels/%s/";
 }

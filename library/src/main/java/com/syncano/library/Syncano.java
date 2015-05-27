@@ -6,6 +6,7 @@ import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.RequestGetOne;
 import com.syncano.library.api.RequestPatch;
 import com.syncano.library.api.RequestPost;
+import com.syncano.library.data.Channel;
 import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Group;
 import com.syncano.library.data.GroupMembership;
@@ -471,4 +472,65 @@ public class Syncano extends SyncanoBase {
         String url = String.format(Constants.GROUPS_USERS_DETAIL_URL, getInstance(), groupId, membershipId);
         return new RequestDelete(GroupMembership.class, url, this);
     }
+
+    // ==================== Channels ==================== //
+
+    /**
+     * Create a new Channel
+     * @param channel Channel to create.
+     * @return New Channel.
+     */
+    public RequestPost createChannel(Channel channel) {
+        String url = String.format(Constants.CHANNELS_LIST_URL, getInstance());
+        return new RequestPost(Channel.class, url, this, channel);
+    }
+
+    /**
+     * Get details of previously created Channel.
+     * @param channelName Channel id.
+     * @return Existing Channel.
+     */
+    public RequestGetOne getChannel(String channelName) {
+        String url = String.format(Constants.CHANNELS_DETAIL_URL, getInstance(), channelName);
+        return new RequestGetOne(Channel.class, url, this);
+    }
+
+    /**
+     * Get a list of previously created Channels.
+     * @return List of existing Channels.
+     */
+    public RequestGetList getChannels() {
+        String url = String.format(Constants.CHANNELS_LIST_URL, getInstance());
+        return new RequestGetList(Channel.class, url, this);
+    }
+
+    /**
+     * Update a Channel.
+     * @param channel Channel to update. It need to have name (slug).
+     * @return Updated Channel.
+     */
+    public RequestPatch updateChannel(Channel channel) {
+
+        if (channel.getName() == null || channel.getName().isEmpty()) {
+            throw new RuntimeException("Trying to update Channel without name (slug)!");
+        }
+
+        String url = String.format(Constants.CHANNELS_DETAIL_URL, getInstance(), channel.getName());
+        return new RequestPatch(Channel.class, url, this, channel);
+    }
+
+    /**
+     * Delete a Channel.
+     * @param channelName Channel id.
+     * @return null
+     */
+    public RequestDelete deleteChannel(String channelName) {
+
+        String url = String.format(Constants.CHANNELS_DETAIL_URL, getInstance(), channelName);
+        return new RequestDelete(Channel.class, url, this);
+    }
+
+//    getChannels - poll
+//    getChannels - history
+//    postChannels - publish
 }
