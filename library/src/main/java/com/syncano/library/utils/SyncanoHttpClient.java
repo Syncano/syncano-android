@@ -96,7 +96,7 @@ public class SyncanoHttpClient {
 	 * 
 	 * @return Response with data
 	 */
-	public Response send(Request <?> syncanoRequest, String apiKey) {
+	public Response send(Request <?> syncanoRequest, String apiKey, String userKey) {
 		HttpUriRequest request;
         String urlParameters = syncanoRequest.getUrlParams();
 
@@ -116,7 +116,12 @@ public class SyncanoHttpClient {
         request = getHttpUriRequest(syncanoRequest.getRequestMethod(), url, parameters);
 		request.setHeader("Content-Type", "application/json");
 		request.setHeader("Accept-Encoding", "gzip");
-        request.setHeader("Authorization", "Token " + apiKey);
+        request.setHeader("X-API-KEY", apiKey);
+
+        if (userKey != null && !userKey.isEmpty()) {
+            request.setHeader("X-USER-KEY", userKey);
+        }
+
 		httpclient = getHttpClient();
 		httpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, Constants.USER_AGENT);
 		HttpParams httpParameters = httpclient.getParams();

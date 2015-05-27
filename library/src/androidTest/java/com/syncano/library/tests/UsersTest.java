@@ -106,6 +106,12 @@ public class UsersTest extends ApplicationTestCase<Application> {
         Response<User> responseUserAuth = syncano.authUser(USER_NAME, NEW_PASSWORD).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseUserAuth.getHttpResultCode());
+        assertNotNull(responseUserAuth.getData());
+        assertNotNull(responseUserAuth.getData().getUserKey());
+
+        // This is how user key should be used.
+        // All next requests will be used using apiKey and userKey.
+        syncano.setUserKey(responseUserAuth.getData().getUserKey());
 
         // ----------------- Delete -----------------
         Response <User> responseDeleteUser = syncano.deleteUser(user.getId()).send();

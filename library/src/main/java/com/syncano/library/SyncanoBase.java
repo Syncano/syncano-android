@@ -20,6 +20,7 @@ public abstract class SyncanoBase {
     private static final String TAG = SyncanoBase.class.getSimpleName();
 
     protected String apiKey;
+    protected String userKey;
     protected String instance;
 
     protected Gson gson;
@@ -37,6 +38,23 @@ public abstract class SyncanoBase {
 
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
+    }
+
+    /**
+     * User authentication key used for all requests.
+     * @return User authentication key.
+     */
+    public String getUserKey() {
+        return userKey;
+    }
+
+    /**
+     * Setting user key here will cause adding it automatically to every request just before it's sent. To get
+     * authorization key, use authUser method on Syncano object.
+     * @param userKey After authUser, it's available under user.getUserKey().
+     */
+    public void setUserKey(String userKey) {
+        this.userKey = userKey;
     }
 
     public String getInstance() {
@@ -74,7 +92,7 @@ public abstract class SyncanoBase {
         SyncanoHttpClient http = new SyncanoHttpClient();
         http.setTimeout(0);
 
-        return http.send(syncanoRequest, apiKey);
+        return http.send(syncanoRequest, apiKey, userKey);
     }
 
     /**
