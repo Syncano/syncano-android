@@ -3,11 +3,13 @@ package com.syncano.library.tests;
 import android.app.Application;
 import android.test.ApplicationTestCase;
 
+import com.google.gson.JsonObject;
 import com.syncano.library.Config;
 import com.syncano.library.Syncano;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.ChannelType;
 import com.syncano.library.data.Channel;
+import com.syncano.library.data.Notification;
 
 import java.util.List;
 
@@ -41,9 +43,10 @@ public class ChannelsTest extends ApplicationTestCase<Application> {
         super.tearDown();
     }
 
-    public void testWebhooks() throws InterruptedException {
+    public void testChannels() throws InterruptedException {
 
         final Channel newChannel = new Channel(CHANNEL_NAME);
+        newChannel.setCustomPublish(true); // Required to pass publish test
         Channel channel;
 
         // ----------------- Create -----------------
@@ -54,7 +57,7 @@ public class ChannelsTest extends ApplicationTestCase<Application> {
         channel = responseCreateChannel.getData();
 
         // ----------------- Get One -----------------
-        Response <Channel> responseGetChannel = syncano.getChannel(CHANNEL_NAME).send();
+        Response <Channel> responseGetChannel = syncano.getChannel(channel.getName()).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetChannel.getHttpResultCode());
         assertNotNull(responseGetChannel.getData());
@@ -75,9 +78,27 @@ public class ChannelsTest extends ApplicationTestCase<Application> {
         assertNotNull(responseGetChannels.getData());
         assertTrue("List should contain at least one item.", responseGetChannels.getData().size() > 0);
 
+        JsonObject payload = new JsonObject();
+        payload.addProperty("my_property", "my_value");
+
+        final Notification newNotification = new Notification("room", payload);
+
+        // ----------------- Publish Notification -----------------
+        Response <Notification> responsePublish= syncano.publishOnChannel(channel.getName(), newNotification).send();
+
+        assertEquals(responsePublish.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responsePublish.getHttpResultCode());
+        assertNotNull(responsePublish.getData());
+        assertNotNull(responsePublish.getData().getPayload());
+        assertTrue(responsePublish.getData().getPayload().has("my_property"));
+
+        // ----------------- Get Notification History -----------------
+        Response <List<Channel>> responseGetChannelsHistory = syncano.getChannelsHistory(channel.getName()).send();
+
+        assertNotNull(responseGetChannelsHistory.getData());
+        assertTrue("List should contain at least one item.", responseGetChannelsHistory.getData().size() > 0);
 
         // ----------------- Delete -----------------
-        Response <Channel> responseDeleteChannel = syncano.deleteChannel(CHANNEL_NAME).send();
+        Response <Channel> responseDeleteChannel = syncano.deleteChannel(channel.getName()).send();
 
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteChannel.getHttpResultCode());
     }

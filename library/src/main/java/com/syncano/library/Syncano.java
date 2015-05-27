@@ -10,6 +10,7 @@ import com.syncano.library.data.Channel;
 import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Group;
 import com.syncano.library.data.GroupMembership;
+import com.syncano.library.data.Notification;
 import com.syncano.library.data.RunCodeBoxResult;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
@@ -80,6 +81,7 @@ public class Syncano extends SyncanoBase {
      * @return List of DataObjects.
      */
     public <T extends SyncanoObject> RequestGetList getObjects(Class<T> type) {
+
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_LIST_URL, getInstance(), className);
         return new RequestGetList(type, url, this);
@@ -125,6 +127,7 @@ public class Syncano extends SyncanoBase {
      * @return New CodeBox.
      */
     public RequestPost createCodeBox(CodeBox codeBox) {
+
         String url = String.format(Constants.CODEBOXES_LIST_URL, getInstance());
         return new RequestPost(CodeBox.class, url, this, codeBox);
     }
@@ -135,6 +138,7 @@ public class Syncano extends SyncanoBase {
      * @return Existing CodeBox.
      */
     public RequestGetOne getCodeBox(int id) {
+
         String url = String.format(Constants.CODEBOXES_DETAIL_URL, getInstance(), id);
         return new RequestGetOne(CodeBox.class, url, this);
     }
@@ -144,6 +148,7 @@ public class Syncano extends SyncanoBase {
      * @return List of existing CodeBoxes.
      */
     public RequestGetList getCodeBoxes() {
+
         String url = String.format(Constants.CODEBOXES_LIST_URL, getInstance());
         return new RequestGetList(CodeBox.class, url, this);
     }
@@ -181,6 +186,7 @@ public class Syncano extends SyncanoBase {
      * @return Result with link do Trace.
      */
     public RequestPost runCodeBox(int id) {
+
         String url = String.format(Constants.CODEBOXES_RUN_URL, getInstance(), id);
         return new RequestPost(CodeBox.class, url, this, null);
     }
@@ -193,6 +199,7 @@ public class Syncano extends SyncanoBase {
      * @return New Webhook.
      */
     public RequestPost createWebhook(Webhook webhook) {
+
         String url = String.format(Constants.WEBHOOKS_LIST_URL, getInstance());
         return new RequestPost(Webhook.class, url, this, webhook);
     }
@@ -203,6 +210,7 @@ public class Syncano extends SyncanoBase {
      * @return Existing Webhook.
      */
     public RequestGetOne getWebhook(String slug) {
+
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), slug);
         return new RequestGetOne(Webhook.class, url, this);
     }
@@ -212,6 +220,7 @@ public class Syncano extends SyncanoBase {
      * @return List of existing Webhooks.
      */
     public RequestGetList getWebhooks() {
+
         String url = String.format(Constants.WEBHOOKS_LIST_URL, getInstance());
         return new RequestGetList(Webhook.class, url, this);
     }
@@ -248,6 +257,7 @@ public class Syncano extends SyncanoBase {
      * @return Result of executed CodeBox.
      */
     public RequestGetOne runWebhook(String slug) {
+
         String url = String.format(Constants.WEBHOOKS_RUN_URL, getInstance(), slug);
         return new RequestGetOne(RunCodeBoxResult.class, url, this);
     }
@@ -260,6 +270,7 @@ public class Syncano extends SyncanoBase {
      * @return Created class.
      */
     public RequestPost createSyncanoClass(SyncanoClass clazz) {
+
         String url = String.format(Constants.CLASSES_LIST_URL, getInstance());
         return new RequestPost(SyncanoClass.class, url, this, clazz);
     }
@@ -270,6 +281,7 @@ public class Syncano extends SyncanoBase {
      * @return Existing class.
      */
     public RequestGetOne getSyncanoClass(String name) {
+
         String url = String.format(Constants.CLASSES_DETAIL_URL, getInstance(), name);
         return new RequestGetOne(SyncanoClass.class, url, this);
     }
@@ -279,6 +291,7 @@ public class Syncano extends SyncanoBase {
      * @return List of classes.
      */
     public RequestGetList getSyncanoClasses() {
+
         String url = String.format(Constants.CLASSES_LIST_URL, getInstance());
         return new RequestGetList(SyncanoClass.class, url, this);
     }
@@ -303,6 +316,7 @@ public class Syncano extends SyncanoBase {
      * @return
      */
     public RequestPost createUser(User user) {
+
         String url = String.format(Constants.USERS_LIST_URL, getInstance());
         return new RequestPost(User.class, url, this, user);
     }
@@ -313,6 +327,7 @@ public class Syncano extends SyncanoBase {
      * @return
      */
     public RequestGetOne getUser(int id) {
+
         String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), id);
         return new RequestGetOne(User.class, url, this);
     }
@@ -322,6 +337,7 @@ public class Syncano extends SyncanoBase {
      * @return
      */
     public RequestGetList getUsers() {
+
         String url = String.format(Constants.USERS_LIST_URL, getInstance());
         return new RequestGetList(User.class, url, this);
     }
@@ -359,6 +375,7 @@ public class Syncano extends SyncanoBase {
      * @return
      */
     public RequestPost authUser(String username, String password) {
+
         String url = String.format(Constants.USER_AUTH, getInstance());
 
         JsonObject jsonParams = new JsonObject();
@@ -376,6 +393,7 @@ public class Syncano extends SyncanoBase {
      * @return
      */
     public RequestPost createGroup(Group group) {
+
         String url = String.format(Constants.GROUPS_LIST_URL, getInstance());
         return new RequestPost(Group.class, url, this, group);
     }
@@ -386,6 +404,7 @@ public class Syncano extends SyncanoBase {
      * @return
      */
     public RequestGetOne getGroup(int id) {
+
         String url = String.format(Constants.GROUPS_DETAIL_URL, getInstance(), id);
         return new RequestGetOne(Group.class, url, this);
     }
@@ -395,6 +414,7 @@ public class Syncano extends SyncanoBase {
      * @return
      */
     public RequestGetList getGroups() {
+
         String url = String.format(Constants.GROUPS_LIST_URL, getInstance());
         return new RequestGetList(Group.class, url, this);
     }
@@ -432,6 +452,7 @@ public class Syncano extends SyncanoBase {
      * @return
      */
     public RequestGetOne getGroupMembership(int groupId, int membershipId) {
+
         String url = String.format(Constants.GROUPS_USERS_DETAIL_URL, getInstance(), groupId, membershipId);
         return new RequestGetOne(GroupMembership.class, url, this);
     }
@@ -442,6 +463,7 @@ public class Syncano extends SyncanoBase {
      * @return
      */
     public RequestGetList getGroupMemberships(int groupId) {
+
         String url = String.format(Constants.GROUPS_USERS_LIST_URL, getInstance(), groupId);
         return new RequestGetList(User.class, url, this);
     }
@@ -481,6 +503,7 @@ public class Syncano extends SyncanoBase {
      * @return New Channel.
      */
     public RequestPost createChannel(Channel channel) {
+
         String url = String.format(Constants.CHANNELS_LIST_URL, getInstance());
         return new RequestPost(Channel.class, url, this, channel);
     }
@@ -491,6 +514,7 @@ public class Syncano extends SyncanoBase {
      * @return Existing Channel.
      */
     public RequestGetOne getChannel(String channelName) {
+
         String url = String.format(Constants.CHANNELS_DETAIL_URL, getInstance(), channelName);
         return new RequestGetOne(Channel.class, url, this);
     }
@@ -530,7 +554,31 @@ public class Syncano extends SyncanoBase {
         return new RequestDelete(Channel.class, url, this);
     }
 
-//    getChannels - poll
-//    getChannels - history
-//    postChannels - publish
+
+    /**
+     * Get a list of Notifications.
+     * @param channelName Channel id.
+     * @return Notification list.
+     */
+    public RequestGetList getChannelsHistory(String channelName) {
+
+        String url = String.format(Constants.CHANNELS_HISTORY_URL, getInstance(), channelName);
+        return new RequestGetList(Notification.class, url, this);
+    }
+
+    /**
+     * Publish custom message.
+     * To allow your Users to send custom messages, you'll have to create a channel that:
+     *  Has appropriate permissions - publish permission type for either group_permissions or other_permissions (depending on which Users should be granted the ability to send the messages)
+     *  Has custom_publish flag set to true
+     * @param channelName Channel to publish on.
+     * @param notification Notification to publish. Payload and Room are required. Room might be null.
+     * @return Published Notification.
+     */
+    public RequestPost publishOnChannel(String channelName, Notification notification) {
+
+        String url = String.format(Constants.CHANNELS_PUBLISH_URL, getInstance(), channelName);
+
+        return new RequestPost(Notification.class, url, this, notification);
+    }
 }
