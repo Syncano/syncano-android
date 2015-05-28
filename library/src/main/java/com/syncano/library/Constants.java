@@ -35,6 +35,7 @@ public class Constants {
     public static final String WEBHOOKS_RUN_URL = "/v1/instances/%s/webhooks/%s/run/";
 
     // ==================== Classes ==================== //
+    public static final String USER_PROFILE_CLASS_NAME = "user_profile";
     public static final String CLASSES_LIST_URL = "/v1/instances/%s/classes/";
     public static final String CLASSES_DETAIL_URL = "/v1/instances/%s/classes/%s/";
 

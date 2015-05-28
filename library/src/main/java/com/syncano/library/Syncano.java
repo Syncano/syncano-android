@@ -6,6 +6,7 @@ import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.RequestGetOne;
 import com.syncano.library.api.RequestPatch;
 import com.syncano.library.api.RequestPost;
+import com.syncano.library.data.AbstractUser;
 import com.syncano.library.data.Channel;
 import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Group;
@@ -297,6 +298,21 @@ public class Syncano extends SyncanoBase {
     }
 
     /**
+     * Update a Class.
+     * @param clazz SyncanoClass to update. It need to have name.
+     * @return Updated Class.
+     */
+    public RequestPatch updateSyncanoClass(SyncanoClass clazz) {
+
+        if (clazz.getName() == null || clazz.getName().isEmpty()) {
+            throw new RuntimeException("Trying to update Class without name!");
+        }
+
+        String url = String.format(Constants.CLASSES_DETAIL_URL, getInstance(), clazz.getName());
+        return new RequestPatch(SyncanoClass.class, url, this, clazz);
+    }
+
+    /**
      * Delete a Class.
      * @param name Class to delete.
      * @return null
@@ -322,6 +338,18 @@ public class Syncano extends SyncanoBase {
     }
 
     /**
+     * Create a new custom User.
+     * To be able to register Users you'll have to create an API Key that has allow_user_create flag set to true.
+     * @param user User to create.
+     * @return
+     */
+    public <T extends AbstractUser> RequestPost createCustomUser(T user) {
+        Class<T> type = (Class<T>) user.getClass();
+        String url = String.format(Constants.USERS_LIST_URL, getInstance());
+        return new RequestPost(type, url, this, user);
+    }
+
+    /**
      * Get details of previously created User.
      * @param id Id of existing User.
      * @return
@@ -333,6 +361,17 @@ public class Syncano extends SyncanoBase {
     }
 
     /**
+     * Get details of previously created User.
+     * @param id Id of existing User.
+     * @return
+     */
+    public <T extends AbstractUser> RequestGetOne getCustomUser(Class<T> type, int id) {
+
+        String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), id);
+        return new RequestGetOne(type, url, this);
+    }
+
+    /**
      * Get a list of previously created Users.
      * @return
      */
@@ -340,6 +379,16 @@ public class Syncano extends SyncanoBase {
 
         String url = String.format(Constants.USERS_LIST_URL, getInstance());
         return new RequestGetList(User.class, url, this);
+    }
+
+    /**
+     * Get a list of previously created custom Users.
+     * @return
+     */
+    public <T extends AbstractUser> RequestGetList getCustomUsers(Class<T> type) {
+
+        String url = String.format(Constants.USERS_LIST_URL, getInstance());
+        return new RequestGetList(type, url, this);
     }
 
     /**
@@ -358,6 +407,22 @@ public class Syncano extends SyncanoBase {
     }
 
     /**
+     * Update a custom User.
+     * @param user User to update. It need to have id.
+     * @return
+     */
+    public <T extends AbstractUser> RequestPatch updateCustomUser(T user) {
+
+        if (user.getId() == 0 ) {
+            throw new RuntimeException("Trying to update User without id!");
+        }
+
+        Class<T> type = (Class<T>) user.getClass();
+        String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), user.getId());
+        return new RequestPatch(type, url, this, user);
+    }
+
+    /**
      * Delete a User.
      * @param id Id of existing User.
      * @return
@@ -366,6 +431,17 @@ public class Syncano extends SyncanoBase {
 
         String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), id);
         return new RequestDelete(User.class, url, this);
+    }
+
+    /**
+     * Delete a custom User.
+     * @param id Id of existing User.
+     * @return
+     */
+    public <T extends AbstractUser> RequestDelete deleteUser(Class<T> type, int id) {
+
+        String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), id);
+        return new RequestDelete(type, url, this);
     }
 
     /**
@@ -383,6 +459,23 @@ public class Syncano extends SyncanoBase {
         jsonParams.addProperty(User.FIELD_PASSWORD, password);
 
         return new RequestPost(User.class, url, this, jsonParams);
+    }
+
+    /**
+     * Authenticate a custom User.
+     * @param username User name from registration.
+     * @param password User password.
+     * @return
+     */
+    public <T extends AbstractUser> RequestPost authCustomUser(Class<T> type, String username, String password) {
+
+        String url = String.format(Constants.USER_AUTH, getInstance());
+
+        JsonObject jsonParams = new JsonObject();
+        jsonParams.addProperty(User.FIELD_USER_NAME, username);
+        jsonParams.addProperty(User.FIELD_PASSWORD, password);
+
+        return new RequestPost(type, url, this, jsonParams);
     }
 
     // ==================== Groups ==================== //
