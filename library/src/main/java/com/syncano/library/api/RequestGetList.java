@@ -32,31 +32,25 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
     }
 
     @Override
-    public List<NameValuePair> prepareUrlParams() {
-        List<NameValuePair> urlParams = super.prepareUrlParams();
-
-        if (urlParams == null) {
-            urlParams = new ArrayList<>();
-        }
+    public void prepareUrlParams() {
+        super.prepareUrlParams();
 
         if (where != null) {
-            urlParams.add(new BasicNameValuePair(Constants.URL_PARAM_QUERY, where.buildQuery()));
+            addUrlParam(Constants.URL_PARAM_QUERY, where.buildQuery());
         }
 
         if (orderBy != null) {
-            urlParams.add(new BasicNameValuePair(Constants.URL_PARAM_ORDER_BY, orderBy));
+            addUrlParam(Constants.URL_PARAM_ORDER_BY, orderBy);
         }
 
         if (pageSize > 0) {
-            urlParams.add(new BasicNameValuePair(Constants.URL_PARAM_PAGE_SIZE, String.valueOf(pageSize)));
+            addUrlParam(Constants.URL_PARAM_PAGE_SIZE, String.valueOf(pageSize));
         }
 
         if (lastPk > 0) {
-            urlParams.add(new BasicNameValuePair(Constants.URL_PARAM_PAGE_LAST_PK, String.valueOf(lastPk)));
-            urlParams.add(new BasicNameValuePair(Constants.URL_PARAM_PAGE_DIRECTION, String.valueOf(direction)));
+            addUrlParam(Constants.URL_PARAM_PAGE_LAST_PK, String.valueOf(lastPk));
+            addUrlParam(Constants.URL_PARAM_PAGE_DIRECTION, String.valueOf(direction));
         }
-
-        return urlParams;
     }
 
     @Override

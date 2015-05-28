@@ -23,12 +23,8 @@ public abstract class RequestGet<T> extends Request<T> {
     }
 
     @Override
-    public List<NameValuePair> prepareUrlParams() {
-        List<NameValuePair> urlParams = super.prepareUrlParams();
-
-        if (urlParams == null) {
-            urlParams = new ArrayList<>();
-        }
+    public void prepareUrlParams() {
+        super.prepareUrlParams();
 
         if (fieldsFilter != null && fieldsFilter.getFieldNames() != null && fieldsFilter.getFieldNames().size() > 0) {
 
@@ -38,10 +34,8 @@ public abstract class RequestGet<T> extends Request<T> {
                 filterFields.append(fieldName);
             }
 
-            urlParams.add(new BasicNameValuePair(fieldsFilter.getFilterTypeString(), filterFields.toString()));
+            addUrlParam(fieldsFilter.getFilterTypeString(), filterFields.toString());
         }
-
-        return urlParams;
     }
 
     public void setFieldsFilter(FieldsFilter fieldsFilter) {

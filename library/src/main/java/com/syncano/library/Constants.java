@@ -15,6 +15,7 @@ public class Constants {
     public final static String URL_PARAM_PAGE_SIZE = "page_size";
     public final static String URL_PARAM_PAGE_DIRECTION = "direction";
     public final static String URL_PARAM_PAGE_LAST_PK = "last_pk";
+    public final static String URL_PARAM_ROOM = "room";
 
     public final static String POST_PARAM_USER = "user";
     public final static String POST_PARAM_ROOM = "room";

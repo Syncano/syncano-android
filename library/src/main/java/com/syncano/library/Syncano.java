@@ -651,11 +651,16 @@ public class Syncano extends SyncanoBase {
     /**
      * Get a list of Notifications.
      * @param channelName Channel id.
+     * @param room Room to get history of. Might be null.
      * @return Notification list.
      */
-    public RequestGetList getChannelsHistory(String channelName) {
+    public RequestGetList getChannelsHistory(String channelName, String room) {
 
         String url = String.format(Constants.CHANNELS_HISTORY_URL, getInstance(), channelName);
+        RequestGetList request = new RequestGetList(Notification.class, url, this);
+        if (room != null) {
+            request.addUrlParam(Constants.URL_PARAM_ROOM, room);
+        }
         return new RequestGetList(Notification.class, url, this);
     }
 

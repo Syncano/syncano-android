@@ -92,7 +92,7 @@ public class ChannelsTest extends ApplicationTestCase<Application> {
         assertTrue(responsePublish.getData().getPayload().has("my_property"));
 
         // ----------------- Get Notification History -----------------
-        Response <List<Channel>> responseGetChannelsHistory = syncano.getChannelsHistory(channel.getName()).send();
+        Response <List<Channel>> responseGetChannelsHistory = syncano.getChannelsHistory(channel.getName(), "room").send();
 
         assertNotNull(responseGetChannelsHistory.getData());
         assertTrue("List should contain at least one item.", responseGetChannelsHistory.getData().size() > 0);

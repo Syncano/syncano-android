@@ -6,14 +6,17 @@ import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.utils.GsonHelper;
 
 import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Request<T> {
 
     protected Gson gson;
+    private List<NameValuePair> urlParams = new ArrayList<>();
     private String url;
     private Syncano syncano;
 
@@ -41,8 +44,17 @@ public abstract class Request<T> {
      * Prepare URL params.
      * @return
      */
-    public List<NameValuePair> prepareUrlParams() {
-        return null;
+    public void prepareUrlParams() {
+    }
+
+    /**
+     * Add custom params to url.
+     * Used most for get queries.
+     * @param key Parameter key.
+     * @param value Parameter value.
+     */
+    public void addUrlParam(String key, String value) {
+        urlParams.add(new BasicNameValuePair(key, value));
     }
 
     /**
@@ -51,14 +63,14 @@ public abstract class Request<T> {
      * @throws UnsupportedEncodingException
      */
     public String getUrlParams() {
-        List<NameValuePair> params = prepareUrlParams();
 
-        if (params == null) {
+        prepareUrlParams();
+        if (urlParams == null || urlParams.isEmpty()) {
             return null;
         }
 
         StringBuilder postData = new StringBuilder();
-        for (NameValuePair param : params) {
+        for (NameValuePair param : urlParams) {
 
             if (postData.length() != 0) postData.append('&');
             else postData.append("?");
