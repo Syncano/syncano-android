@@ -43,7 +43,7 @@ public class SyncServerTest extends ApplicationTestCase<Application> {
     protected void setUp() throws Exception {
         super.setUp();
         syncano = new Syncano(Config.API_KEY, Config.INSTANCE_NAME);
-        syncServer = new SyncServer(getContext(), syncano, null);
+        syncServer = new SyncServer(syncano, null);
 
         // ----------------- Delete Channel -----------------
         // Make sure slug is not taken.
