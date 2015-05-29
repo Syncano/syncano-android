@@ -658,10 +658,12 @@ public class Syncano extends SyncanoBase {
 
         String url = String.format(Constants.CHANNELS_HISTORY_URL, getInstance(), channelName);
         RequestGetList request = new RequestGetList(Notification.class, url, this);
+
         if (room != null) {
             request.addUrlParam(Constants.URL_PARAM_ROOM, room);
         }
-        return new RequestGetList(Notification.class, url, this);
+
+        return request;
     }
 
     /**
@@ -678,5 +680,30 @@ public class Syncano extends SyncanoBase {
         String url = String.format(Constants.CHANNELS_PUBLISH_URL, getInstance(), channelName);
 
         return new RequestPost(Notification.class, url, this, notification);
+    }
+
+    /**
+     * Poll realtime notifications. Timeout for a request to a channel is 5 minutes.
+     * When the request times out it returns 200 OK empty request.
+     * To handle this simply repeat the previous request with an unchanged last_id.
+     * @param channelName Channel to poll from.
+     * @param room Room to poll from.
+     * @param lastId Last notification id.
+     * @return Notification.
+     */
+    /* package */ RequestGetOne pollChannel(String channelName, String room, int lastId) {
+
+        String url = String.format(Constants.CHANNELS_POLL_URL, getInstance(), channelName);
+        RequestGetOne request = new RequestGetOne(Notification.class, url, this);
+
+        if (room != null) {
+            request.addUrlParam(Constants.URL_PARAM_ROOM, room);
+        }
+
+        if (lastId != 0) {
+            request.addUrlParam(Constants.URL_PARAM_LAST_ID, String.valueOf(lastId));
+        }
+
+        return request;
     }
 }

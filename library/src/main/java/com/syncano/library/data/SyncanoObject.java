@@ -31,7 +31,7 @@ public abstract class SyncanoObject extends Entity {
     private DataObjectPermissions otherPermissions;
 
     @SyncanoField(name = FIELD_CHANNEL)
-    private Channel channel;
+    private String channel;
 
     @SyncanoField(name = FIELD_CHANNEL_ROOM)
     private String channelRoom;
@@ -90,11 +90,11 @@ public abstract class SyncanoObject extends Entity {
         this.otherPermissions = otherPermissions;
     }
 
-    public Channel getChannel() {
+    public String getChannel() {
         return channel;
     }
 
-    public void setChannel(Channel channel) {
+    public void setChannel(String channel) {
         this.channel = channel;
     }
 

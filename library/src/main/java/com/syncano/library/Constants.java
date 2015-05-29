@@ -16,6 +16,7 @@ public class Constants {
     public final static String URL_PARAM_PAGE_DIRECTION = "direction";
     public final static String URL_PARAM_PAGE_LAST_PK = "last_pk";
     public final static String URL_PARAM_ROOM = "room";
+    public final static String URL_PARAM_LAST_ID = "last_id";
 
     public final static String POST_PARAM_USER = "user";
     public final static String POST_PARAM_ROOM = "room";
@@ -56,4 +57,5 @@ public class Constants {
     public static final String CHANNELS_DETAIL_URL = "/v1/instances/%s/channels/%s/";
     public static final String CHANNELS_HISTORY_URL = "/v1/instances/%s/channels/%s/history/";
     public static final String CHANNELS_PUBLISH_URL = "/v1/instances/%s/channels/%s/publish/";
+    public static final String CHANNELS_POLL_URL = "/v1/instances/%s/channels/%s/poll/";
 }

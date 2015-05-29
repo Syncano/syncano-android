@@ -158,4 +158,15 @@ public class Response <T> {
     public void setData(T data) {
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        return "Response{" +
+                "resultCode=" + resultCode +
+                ", httpResultCode=" + httpResultCode +
+                ", error='" + error + '\'' +
+                ", httpReasonPhrase='" + httpReasonPhrase + '\'' +
+                ", data=" + data +
+                '}';
+    }
 }
