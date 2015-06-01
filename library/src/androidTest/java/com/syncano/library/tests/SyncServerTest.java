@@ -7,6 +7,7 @@ import android.util.Log;
 import com.google.gson.JsonObject;
 import com.syncano.library.Config;
 import com.syncano.library.SyncServer;
+import com.syncano.library.SyncServerListener;
 import com.syncano.library.Syncano;
 import com.syncano.library.TestSyncanoClass;
 import com.syncano.library.api.Response;
@@ -78,7 +79,7 @@ public class SyncServerTest extends ApplicationTestCase<Application> {
 
     public void testSyncServer() throws InterruptedException {
 
-        syncServer.setSyncServerListener(new SyncServer.SyncServerListener() {
+        syncServer.setSyncServerListener(new SyncServerListener() {
             @Override
             public void onMessage(Notification notification) {
                 Log.d(TAG, "onMessage: id= " + notification.getId());

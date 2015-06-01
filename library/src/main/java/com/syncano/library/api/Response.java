@@ -62,6 +62,11 @@ public class Response <T> {
     public final static int HTTP_CODE_BAD_GATEWAY = 502;
 
     /**
+     * Syncano request timeout.
+     */
+    public final static int HTTP_CODE_GATEWAY_TIMEOUT = 504;
+
+    /**
      * Status code when response is ok.
      */
     public final static int CODE_SUCCESS = 0;

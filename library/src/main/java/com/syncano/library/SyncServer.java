@@ -8,9 +8,6 @@ import android.util.Log;
 import com.syncano.library.api.Response;
 import com.syncano.library.data.Notification;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 /**
  * Class responsible for real time communication.
  */
@@ -24,13 +21,12 @@ public class SyncServer {
     private Syncano syncano;
     private Handler handler;
     private SyncServerListener syncServerListener;
+    private PollRequestLoop pollRequestLoop;
     private String channel;
     private String room;
     private int lastId;
 
-    private boolean isRunning;
     private boolean hasError;
-    protected ExecutorService requestExecutor = Executors.newFixedThreadPool(1);
 
     public SyncServer(Syncano syncano, SyncServerListener syncServerListener) {
         this.syncano = syncano;
@@ -59,8 +55,12 @@ public class SyncServer {
         this.lastId = lastId;
 
         if (BuildConfig.DEBUG) Log.d(TAG, "start channel: " + channel + " room: " + room + " lastId: " + lastId);
-        isRunning = true;
-        requestExecutor.execute(pollRequestLoop);
+
+        if (pollRequestLoop == null) {
+            pollRequestLoop = new PollRequestLoop();
+            pollRequestLoop.setIsRunning(true);
+            new Thread(pollRequestLoop).start();
+        }
     }
 
     /**
@@ -70,8 +70,11 @@ public class SyncServer {
      */
     public void stop() {
         if (BuildConfig.DEBUG) Log.d(TAG, "stop");
-        isRunning = false;
-        requestExecutor.shutdown();
+
+        if (pollRequestLoop != null) {
+            pollRequestLoop.setIsRunning(false);
+            pollRequestLoop = null;
+        }
     }
 
     /**
@@ -91,7 +94,13 @@ public class SyncServer {
         this.syncServerListener = syncServerListener;
     }
 
-    private Runnable pollRequestLoop = new Runnable() {
+    private class PollRequestLoop implements Runnable {
+
+        private boolean isRunning;
+
+        public void setIsRunning(boolean isRunning) {
+            this.isRunning = isRunning;
+        }
 
         @Override
         public void run() {
@@ -141,6 +150,11 @@ public class SyncServer {
 
     private void handleError(Response<Notification> response) {
 
+        if (response.getHttpResultCode() == Response.HTTP_CODE_GATEWAY_TIMEOUT) {
+            // If timeout, start new poll in pollRequestLoop.
+            return;
+        }
+
         if (syncServerListener != null) {
             Message message = handler.obtainMessage(MSG_ERROR, response);
             handler.sendMessage(message);
@@ -164,10 +178,5 @@ public class SyncServer {
                     break;
             }
         }
-    }
-
-    public interface SyncServerListener {
-        void onMessage(Notification notification);
-        void onError(Response<Notification> response);
     }
 }
