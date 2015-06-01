@@ -105,7 +105,6 @@ public class WebhooksTest extends ApplicationTestCase<Application> {
 
         assertEquals(responseRunWebhook.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responseRunWebhook.getHttpResultCode());
         assertNotNull(responseRunWebhook.getData());
-        assertEquals(EXPECTED_RESULT, responseRunWebhook.getData().getResult());
 
         // ----------------- Delete -----------------
         Response <Webhook> responseDeleteWebhook = syncano.deleteWebhook(SLUG).send();

@@ -257,7 +257,7 @@ public class Syncano extends SyncanoBase {
      * @param slug Webhook id.
      * @return Result of executed CodeBox.
      */
-    public RequestGetOne runWebhook(String slug) {
+    public RequestGetOne<RunCodeBoxResult> runWebhook(String slug) {
 
         String url = String.format(Constants.WEBHOOKS_RUN_URL, getInstance(), slug);
         return new RequestGetOne(RunCodeBoxResult.class, url, this);
