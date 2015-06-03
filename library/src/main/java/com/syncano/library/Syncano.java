@@ -6,6 +6,7 @@ import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.RequestGetOne;
 import com.syncano.library.api.RequestPatch;
 import com.syncano.library.api.RequestPost;
+import com.syncano.library.choice.SocialAuthBackend;
 import com.syncano.library.data.AbstractUser;
 import com.syncano.library.data.Channel;
 import com.syncano.library.data.CodeBox;
@@ -476,6 +477,38 @@ public class Syncano extends SyncanoBase {
         jsonParams.addProperty(User.FIELD_PASSWORD, password);
 
         return new RequestPost(type, url, this, jsonParams);
+    }
+
+    /**
+     * Authenticate a social user.
+     * @param social Social network authentication backend.
+     * @param authToken Authentication token.
+     * @return
+     */
+    public RequestPost authSocialUser(SocialAuthBackend social, String authToken) {
+
+        String url = String.format(Constants.USER_SOCIAL_AUTH, getInstance(), social.toString());
+
+        RequestPost<User> requestPost = new RequestPost(User.class, url, this, null);
+        requestPost.setHttpHeader("Authorization", "Token " + authToken);
+
+        return requestPost;
+    }
+
+    /**
+     * Authenticate a social user.
+     * @param social Social network authentication backend.
+     * @param authToken Authentication token.
+     * @return
+     */
+    public <T extends AbstractUser> RequestPost authSocialCustomUser(Class<T> type,SocialAuthBackend social, String authToken) {
+
+        String url = String.format(Constants.USER_SOCIAL_AUTH, getInstance(), social.toString());
+
+        RequestPost<T> requestPost = new RequestPost(type, url, this, null);
+        requestPost.setHttpHeader("Authorization", "Token " + authToken);
+
+        return requestPost;
     }
 
     // ==================== Groups ==================== //

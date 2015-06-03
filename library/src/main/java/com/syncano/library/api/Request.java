@@ -17,6 +17,7 @@ public abstract class Request<T> {
 
     protected Gson gson;
     private List<NameValuePair> urlParams = new ArrayList<>();
+    private List<NameValuePair> httpHeaders = new ArrayList<>();
     private String url;
     private Syncano syncano;
 
@@ -89,6 +90,24 @@ public abstract class Request<T> {
         }
 
         return postData.toString();
+    }
+
+
+    /**
+     * Add additional header like social authentication token.
+     * @param name Header name.
+     * @param value Header value.
+     */
+    public void setHttpHeader(String name, String value) {
+        httpHeaders.add(new BasicNameValuePair(name, value));
+    }
+
+    /**
+     * Get additional headers for request.
+     * @return Headers.
+     */
+    public List<NameValuePair> getHttpHeaders() {
+        return httpHeaders;
     }
 
     public String getUrl() {

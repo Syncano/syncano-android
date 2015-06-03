@@ -92,7 +92,13 @@ public abstract class SyncanoBase {
         SyncanoHttpClient http = new SyncanoHttpClient();
         http.setTimeout(0);
 
-        return http.send(syncanoRequest, apiKey, userKey);
+        syncanoRequest.setHttpHeader("X-API-KEY", apiKey);
+
+        if (userKey != null && !userKey.isEmpty()) {
+            syncanoRequest.setHttpHeader("X-USER-KEY", userKey);
+        }
+
+        return http.send(syncanoRequest);
     }
 
     /**

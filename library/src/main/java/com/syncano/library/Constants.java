@@ -22,6 +22,9 @@ public class Constants {
     public final static String POST_PARAM_ROOM = "room";
     public final static String POST_PARAM_PAYLOAD = "payload";
 
+    public static final String SOCIAL_AUTH_FACEBOOK = "facebook";
+    public static final String SOCIAL_AUTH_GOOGLE_OAUTH2 = "google-oauth2";
+
     // ==================== Objects ==================== //
     public static final String OBJECTS_LIST_URL = "/v1/instances/%s/classes/%s/objects/";
     public static final String OBJECTS_DETAIL_URL = "/v1/instances/%s/classes/%s/objects/%d/";
@@ -45,6 +48,7 @@ public class Constants {
     public static final String USERS_LIST_URL = "/v1/instances/%s/users/";
     public static final String USERS_DETAIL_URL = "/v1/instances/%s/users/%d/";
     public static final String USER_AUTH = "/v1/instances/%s/user/auth/";
+    public static final String USER_SOCIAL_AUTH = "/v1/instances/%s/user/auth/%s/";
 
     // ==================== Groups ==================== //
     public static final String GROUPS_LIST_URL = "/v1/instances/%s/groups/";

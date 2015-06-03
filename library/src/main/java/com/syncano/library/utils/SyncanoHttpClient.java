@@ -5,6 +5,7 @@ import android.util.Log;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
@@ -18,6 +19,7 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpConnectionParams;
@@ -42,6 +44,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.SSLContext;
@@ -96,7 +100,7 @@ public class SyncanoHttpClient {
 	 * 
 	 * @return Response with data
 	 */
-	public Response send(Request <?> syncanoRequest, String apiKey, String userKey) {
+	public Response send(Request <?> syncanoRequest) {
 		HttpUriRequest request;
         String urlParameters = syncanoRequest.getUrlParams();
 
@@ -116,10 +120,9 @@ public class SyncanoHttpClient {
         request = getHttpUriRequest(syncanoRequest.getRequestMethod(), url, parameters);
 		request.setHeader("Content-Type", "application/json");
 		request.setHeader("Accept-Encoding", "gzip");
-        request.setHeader("X-API-KEY", apiKey);
 
-        if (userKey != null && !userKey.isEmpty()) {
-            request.setHeader("X-USER-KEY", userKey);
+        for (NameValuePair header : syncanoRequest.getHttpHeaders()) {
+            request.setHeader(header.getName(), header.getValue());
         }
 
 		httpclient = getHttpClient();
