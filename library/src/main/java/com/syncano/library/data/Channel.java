@@ -9,6 +9,7 @@ import java.util.Date;
 public class Channel {
 
     public static final String FIELD_NAME = "name";
+    public static final String FIELD_DESCRIPTION = "description";
     public static final String FIELD_TYPE = "type";
     public static final String FIELD_GROUP = "group";
     public static final String FIELD_GROUP_PERMISSIONS = "group_permissions";
@@ -19,6 +20,9 @@ public class Channel {
 
     @SyncanoField(name = FIELD_NAME, required = true)
     private String name;
+
+    @SyncanoField(name = FIELD_DESCRIPTION)
+    private String description;
 
     @SyncanoField(name = FIELD_TYPE, required = true)
     private ChannelType type;
@@ -54,6 +58,14 @@ public class Channel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public ChannelType getType() {
