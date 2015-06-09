@@ -33,6 +33,16 @@ public class Syncano extends SyncanoBase {
     }
 
     /**
+     * Create Syncano object.
+     * @param customServerUrl If not set, production URL will be used.
+     * @param apiKey Api key.
+     * @param instance Syncano instance related with apiKey.
+     */
+    public Syncano(String customServerUrl, String apiKey, String instance) {
+        super(customServerUrl, apiKey, instance);
+    }
+
+    /**
      * Create static Syncano instance.
      * Use getSharedInstance() to get its reference.
      * @param apiKey Api key.

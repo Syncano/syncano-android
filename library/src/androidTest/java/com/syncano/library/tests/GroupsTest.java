@@ -1,17 +1,11 @@
 package com.syncano.library.tests;
 
-import android.app.Application;
-import android.test.ApplicationTestCase;
-
-import com.syncano.library.Config;
-import com.syncano.library.Syncano;
-import com.syncano.library.TestSyncanoClass;
+import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.Where;
 import com.syncano.library.data.Group;
 import com.syncano.library.data.GroupMembership;
-import com.syncano.library.data.Profile;
 import com.syncano.library.data.User;
 
 import java.util.List;
@@ -20,11 +14,9 @@ import java.util.List;
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
-public class GroupsTest extends ApplicationTestCase<Application> {
+public class GroupsTest extends SyncanoApplicationTestCase {
 
     private static final String TAG = GroupsTest.class.getSimpleName();
-
-    private Syncano syncano;
 
     private static final String USER_NAME = "testuser";
     private static final String PASSWORD = "password";
@@ -34,14 +26,9 @@ public class GroupsTest extends ApplicationTestCase<Application> {
 
     private User user;
 
-    public GroupsTest() {
-        super(Application.class);
-    }
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        syncano = new Syncano(Config.API_KEY, Config.INSTANCE_NAME);
 
         // ----------------- Get Or Create Test User -----------------
         Response<User> responseUserAuth = syncano.authUser(USER_NAME, PASSWORD).send();

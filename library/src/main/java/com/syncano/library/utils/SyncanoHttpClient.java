@@ -100,7 +100,7 @@ public class SyncanoHttpClient {
 	 * 
 	 * @return Response with data
 	 */
-	public Response send(Request <?> syncanoRequest) {
+	public Response send(String serverUrl, Request <?> syncanoRequest) {
 		HttpUriRequest request;
         String urlParameters = syncanoRequest.getUrlParams();
 
@@ -110,7 +110,7 @@ public class SyncanoHttpClient {
 
         String parameters = syncanoRequest.prepareParams();
 
-        String url = Constants.SERVER_URL + syncanoRequest.getUrl() + urlParameters;
+        String url = serverUrl + syncanoRequest.getUrl() + urlParameters;
 
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "Request: " + syncanoRequest.getRequestMethod() + "  " + url);

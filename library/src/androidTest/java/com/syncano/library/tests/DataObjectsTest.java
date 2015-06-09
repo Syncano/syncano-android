@@ -1,10 +1,7 @@
 package com.syncano.library.tests;
 
-import android.app.Application;
-import android.test.ApplicationTestCase;
-
-import com.syncano.library.Config;
 import com.syncano.library.Syncano;
+import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.TestSyncanoClass;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
@@ -18,21 +15,13 @@ import java.util.List;
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
-public class DataObjectsTest extends ApplicationTestCase<Application> {
+public class DataObjectsTest extends SyncanoApplicationTestCase {
 
     private static final String TAG = DataObjectsTest.class.getSimpleName();
-
-    private Syncano syncano;
-
-    public DataObjectsTest() {
-        super(Application.class);
-    }
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
-        syncano = new Syncano(Config.API_KEY, Config.INSTANCE_NAME);
 
         // Make sure class exists.
         String className = Syncano.getSyncanoClassName(TestSyncanoClass.class);
@@ -43,11 +32,6 @@ public class DataObjectsTest extends ApplicationTestCase<Application> {
             Response<SyncanoClass> responseCreateClass = syncano.createSyncanoClass(syncanoClass).send();
             assertEquals(responseCreateClass.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responseCreateClass.getHttpResultCode());
         }
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
     public void testDataObjects() throws InterruptedException {

@@ -1,22 +1,14 @@
 package com.syncano.library.tests;
 
-import android.app.Application;
-import android.test.ApplicationTestCase;
-
-import com.syncano.library.Config;
 import com.syncano.library.Constants;
-import com.syncano.library.Syncano;
+import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.TestSyncanoClass;
 import com.syncano.library.TestUserClass;
 import com.syncano.library.TestUserProfileClass;
 import com.syncano.library.api.Response;
-import com.syncano.library.choice.RuntimeName;
-import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Profile;
-import com.syncano.library.data.RunCodeBoxResult;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.User;
-import com.syncano.library.data.Webhook;
 
 import java.util.List;
 
@@ -24,24 +16,19 @@ import java.util.List;
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
-public class UsersTest extends ApplicationTestCase<Application> {
+public class UsersTest extends SyncanoApplicationTestCase {
 
     private static final String TAG = UsersTest.class.getSimpleName();
 
-    private Syncano syncano;
 
     private static final String USER_NAME = "testuser";
     private static final String PASSWORD = "password";
     private static final String NEW_PASSWORD = "new_password";
 
-    public UsersTest() {
-        super(Application.class);
-    }
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        syncano = new Syncano(Config.API_KEY, Config.INSTANCE_NAME);
 
         Response<User> responseUserAuth = syncano.authUser(USER_NAME, PASSWORD).send();
 
@@ -60,12 +47,6 @@ public class UsersTest extends ApplicationTestCase<Application> {
             syncano.deleteUser(responseUserNewAuth.getData().getId()).send();
         }
     }
-
-    @Override
-    protected void tearDown() throws Exception {
-       super.tearDown();
-    }
-
 
     public void testUsers() throws InterruptedException {
 

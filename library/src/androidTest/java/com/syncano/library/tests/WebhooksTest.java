@@ -1,10 +1,6 @@
 package com.syncano.library.tests;
 
-import android.app.Application;
-import android.test.ApplicationTestCase;
-
-import com.syncano.library.Config;
-import com.syncano.library.Syncano;
+import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.RuntimeName;
 import com.syncano.library.data.CodeBox;
@@ -17,24 +13,18 @@ import java.util.List;
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
-public class WebhooksTest extends ApplicationTestCase<Application> {
+public class WebhooksTest extends SyncanoApplicationTestCase {
 
     private static final String TAG = WebhooksTest.class.getSimpleName();
 
-    private Syncano syncano;
     private CodeBox codeBox;
 
     private static final String SLUG = "slug01";
     private static final String EXPECTED_RESULT = "this is message from our Codebox";
 
-    public WebhooksTest() {
-        super(Application.class);
-    }
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        syncano = new Syncano(Config.API_KEY, Config.INSTANCE_NAME);
 
         String codeBoxName = "CodeBox Test";
         RuntimeName runtime = RuntimeName.NODEJS;

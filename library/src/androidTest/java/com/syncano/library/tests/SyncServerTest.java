@@ -1,34 +1,29 @@
 package com.syncano.library.tests;
 
-import android.app.Application;
-import android.test.ApplicationTestCase;
 import android.util.Log;
 
 import com.google.gson.JsonObject;
-import com.syncano.library.Config;
 import com.syncano.library.SyncServer;
 import com.syncano.library.SyncServerListener;
 import com.syncano.library.Syncano;
+import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.TestSyncanoClass;
 import com.syncano.library.api.Response;
-import com.syncano.library.choice.ChannelType;
 import com.syncano.library.data.Channel;
 import com.syncano.library.data.Notification;
 import com.syncano.library.data.SyncanoClass;
 
-import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
-public class SyncServerTest extends ApplicationTestCase<Application> {
+public class SyncServerTest extends SyncanoApplicationTestCase {
 
     private static final String TAG = SyncServerTest.class.getSimpleName();
     private final static int WAITING_MILLIS = 120000;
 
-    private Syncano syncano;
     private SyncServer syncServer;
     private Channel channel;
     private CountDownLatch lock;
@@ -36,14 +31,10 @@ public class SyncServerTest extends ApplicationTestCase<Application> {
     private static final String CHANNEL_NAME = "channel_one";
     private static final String ROOM_NAME = "room_one";
 
-    public SyncServerTest() {
-        super(Application.class);
-    }
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        syncano = new Syncano(Config.API_KEY, Config.INSTANCE_NAME);
+
         syncServer = new SyncServer(syncano, null);
 
         // ----------------- Delete Channel -----------------

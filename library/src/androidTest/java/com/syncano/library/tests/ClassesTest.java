@@ -1,15 +1,10 @@
 package com.syncano.library.tests;
 
-import android.app.Application;
-import android.test.ApplicationTestCase;
-
-import com.syncano.library.Config;
 import com.syncano.library.Syncano;
+import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.TestSyncanoClass;
 import com.syncano.library.api.Response;
-import com.syncano.library.choice.RuntimeName;
 import com.syncano.library.data.CodeBox;
-import com.syncano.library.data.RunCodeBoxResult;
 import com.syncano.library.data.SyncanoClass;
 
 import java.util.List;
@@ -18,26 +13,14 @@ import java.util.List;
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
-public class ClassesTest extends ApplicationTestCase<Application> {
+public class ClassesTest extends SyncanoApplicationTestCase {
 
     private static final String TAG = ClassesTest.class.getSimpleName();
 
-    private Syncano syncano;
-
-    public ClassesTest() {
-        super(Application.class);
-    }
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
-        syncano = new Syncano(Config.API_KEY, Config.INSTANCE_NAME);
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
     }
 
     public void testClasses() throws InterruptedException {

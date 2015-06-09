@@ -19,6 +19,7 @@ public abstract class SyncanoBase {
 
     private static final String TAG = SyncanoBase.class.getSimpleName();
 
+    protected String customServerUrl;
     protected String apiKey;
     protected String userKey;
     protected String instance;
@@ -30,6 +31,11 @@ public abstract class SyncanoBase {
         this.apiKey = apiKey;
         this.instance = instance;
         gson = GsonHelper.createGson();
+    }
+
+    protected SyncanoBase(String customServerUrl, String apiKey, String instance) {
+        this(apiKey, instance);
+        this.customServerUrl = customServerUrl;
     }
 
     public String getApiKey() {
@@ -98,7 +104,11 @@ public abstract class SyncanoBase {
             syncanoRequest.setHttpHeader("X-USER-KEY", userKey);
         }
 
-        return http.send(syncanoRequest);
+        if (customServerUrl != null && !customServerUrl.isEmpty()) {
+            return http.send(customServerUrl, syncanoRequest);
+        } else {
+            return http.send(Constants.PRODUCTION_SERVER_URL, syncanoRequest);
+        }
     }
 
     /**
