@@ -108,17 +108,17 @@ public class SyncServer {
             while (isRunning) {
                 if (BuildConfig.DEBUG) Log.d(TAG, "pollRequest channel: " + channel + " room: " + room + " lastId: " + lastId);
                 Response<Notification> responsePollFromChannel = syncano.pollChannel(channel, room, lastId).send();
+                if (BuildConfig.DEBUG) Log.d(TAG, "response: " + responsePollFromChannel);
 
                 // If still running, handle response.
                 if (isRunning) {
-                    if (responsePollFromChannel.getHttpResultCode() == Response.HTTP_CODE_SUCCESS) {
-                        if (BuildConfig.DEBUG) Log.d(TAG, "success response: " + responsePollFromChannel);
-
+                    if (responsePollFromChannel.getHttpResultCode() == Response.HTTP_CODE_NO_CONTENT) {
+                        // No content - long polling timeout
+                        hasError = false;
+                    } if (responsePollFromChannel.getHttpResultCode() == Response.HTTP_CODE_SUCCESS) {
                         handleSuccess(responsePollFromChannel);
                         hasError = false;
                     } else {
-                        if (BuildConfig.DEBUG) Log.d(TAG, "error response: " + responsePollFromChannel);
-
                         // Handle error only once
                         if (hasError == false) {
                             handleError(responsePollFromChannel);
@@ -134,7 +134,7 @@ public class SyncServer {
                 }
             }
         }
-    };
+    }
 
     private void handleSuccess(Response<Notification> response) {
 
