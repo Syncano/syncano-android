@@ -5,13 +5,13 @@ import com.syncano.library.annotation.SyncanoField;
 
 public class Webhook {
 
-    public static final String FIELD_SLUG = "slug";
+    public static final String FIELD_NAME = "name";
     public static final String FIELD_CODEBOX = "codebox";
     public static final String FIELD_PUBLIC_LINK = "public_link";
     public static final String FIELD_PUBLIC = "public";
 
-    @SyncanoField(name = FIELD_SLUG, readOnly = true, required = true)
-    private String slug;
+    @SyncanoField(name = FIELD_NAME, readOnly = true, required = true)
+    private String name;
 
     @SyncanoField(name = FIELD_CODEBOX, required = true)
     private int codebox;
@@ -25,17 +25,17 @@ public class Webhook {
     public Webhook() {
     }
 
-    public Webhook(String slug, int codebox) {
-        this.slug = slug;
+    public Webhook(String name, int codebox) {
+        this.name = name;
         this.codebox = codebox;
     }
 
-    public String getSlug() {
-        return slug;
+    public String getName() {
+        return name;
     }
 
-    public void setSlug(String slug) {
-        this.slug = slug;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getCodebox() {

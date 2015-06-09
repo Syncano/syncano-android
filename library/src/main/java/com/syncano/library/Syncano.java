@@ -218,12 +218,12 @@ public class Syncano extends SyncanoBase {
 
     /**
      * Get details of previously created Webhook.
-     * @param slug Webhook id.
+     * @param name Webhook id.
      * @return Existing Webhook.
      */
-    public RequestGetOne getWebhook(String slug) {
+    public RequestGetOne getWebhook(String name) {
 
-        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), slug);
+        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), name);
         return new RequestGetOne(Webhook.class, url, this);
     }
 
@@ -239,38 +239,38 @@ public class Syncano extends SyncanoBase {
 
     /**
      * Update a Webhook.
-     * @param webhook Webhook to update. It need to have slug.
+     * @param webhook Webhook to update. It need to have name.
      * @return Updated Webhook.
      */
     public RequestPatch updateWebhook(Webhook webhook) {
 
-        if (webhook.getSlug() == null || webhook.getSlug().isEmpty()) {
-            throw new RuntimeException("Trying to update Webhook without slug!");
+        if (webhook.getName() == null || webhook.getName().isEmpty()) {
+            throw new RuntimeException("Trying to update Webhook without name!");
         }
 
-        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), webhook.getSlug());
+        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), webhook.getName());
         return new RequestPatch(Webhook.class, url, this, webhook);
     }
 
     /**
      * Delete a Webhook.
-     * @param slug Webhook id.
+     * @param name Webhook id.
      * @return null
      */
-    public RequestDelete deleteWebhook(String slug) {
+    public RequestDelete deleteWebhook(String name) {
 
-        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), slug);
+        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), name);
         return new RequestDelete(Webhook.class, url, this);
     }
 
     /**
      * Run a Webhook synchronous. It should contain result of associated CodeBox.
-     * @param slug Webhook id.
+     * @param name Webhook id.
      * @return Result of executed CodeBox.
      */
-    public RequestGetOne<RunCodeBoxResult> runWebhook(String slug) {
+    public RequestGetOne<RunCodeBoxResult> runWebhook(String name) {
 
-        String url = String.format(Constants.WEBHOOKS_RUN_URL, getInstance(), slug);
+        String url = String.format(Constants.WEBHOOKS_RUN_URL, getInstance(), name);
         return new RequestGetOne(RunCodeBoxResult.class, url, this);
     }
 
@@ -666,13 +666,13 @@ public class Syncano extends SyncanoBase {
 
     /**
      * Update a Channel.
-     * @param channel Channel to update. It need to have name (slug).
+     * @param channel Channel to update. It need to have name.
      * @return Updated Channel.
      */
     public RequestPatch updateChannel(Channel channel) {
 
         if (channel.getName() == null || channel.getName().isEmpty()) {
-            throw new RuntimeException("Trying to update Channel without name (slug)!");
+            throw new RuntimeException("Trying to update Channel without name!");
         }
 
         String url = String.format(Constants.CHANNELS_DETAIL_URL, getInstance(), channel.getName());
