@@ -116,7 +116,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
 
         // ----------------- Update Profile Class -----------------
         profileClass.setSchema(TestUserProfileClass.getSchema());
-        Response <TestUserProfileClass> responseUpdateProfileClass = syncano.updateSyncanoClass(profileClass).send();
+        Response <SyncanoClass> responseUpdateProfileClass = syncano.updateSyncanoClass(profileClass).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdateProfileClass.getHttpResultCode());
         assertNotNull(responseUpdateProfileClass.getData());
