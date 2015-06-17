@@ -25,13 +25,13 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
 
     public void testCodeBoxes() throws InterruptedException {
 
-        String codeBoxName = "CodeBox Test";
+        String codeBoxLabel = "CodeBox Test";
         String codeBoxNewName = "CodeBox Test New";
         RuntimeName runtime = RuntimeName.NODEJS;
         String source = "var msg = '" + EXPECTED_RESULT + "'; console.log(msg);";
 
         final CodeBox newCodeBox = new CodeBox();
-        newCodeBox.setName(codeBoxName);
+        newCodeBox.setLabel(codeBoxLabel);
         newCodeBox.setRuntimeName(runtime);
         newCodeBox.setSource(source);
 
@@ -40,7 +40,7 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
         // ----------------- Create -----------------
         Response <CodeBox> responseCreateCodeBox = syncano.createCodeBox(newCodeBox).send();
 
-        assertEquals(Response.HTTP_CODE_CREATED, responseCreateCodeBox.getHttpResultCode());
+        assertEquals(responseCreateCodeBox.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responseCreateCodeBox.getHttpResultCode());
         assertNotNull(responseCreateCodeBox.getData());
         codeBox = responseCreateCodeBox.getData();
 
@@ -49,17 +49,17 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetCodeBox.getHttpResultCode());
         assertNotNull(responseGetCodeBox.getData());
-        assertEquals(codeBox.getName(), responseGetCodeBox.getData().getName());
+        assertEquals(codeBox.getLabel(), responseGetCodeBox.getData().getLabel());
         assertEquals(codeBox.getRuntimeName(), responseGetCodeBox.getData().getRuntimeName());
         assertEquals(codeBox.getSource(), responseGetCodeBox.getData().getSource());
 
         // ----------------- Update -----------------
-        codeBox.setName(codeBoxNewName);
+        codeBox.setLabel(codeBoxNewName);
         Response <CodeBox> responseUpdateCodeBox = syncano.updateCodeBox(codeBox).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdateCodeBox.getHttpResultCode());
         assertNotNull(responseUpdateCodeBox.getData());
-        assertEquals(codeBox.getName(), responseUpdateCodeBox.getData().getName());
+        assertEquals(codeBox.getLabel(), responseUpdateCodeBox.getData().getLabel());
         assertEquals(codeBox.getRuntimeName(), responseUpdateCodeBox.getData().getRuntimeName());
         assertEquals(codeBox.getSource(), responseUpdateCodeBox.getData().getSource());
 
@@ -70,7 +70,7 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
         assertTrue("List should contain at least one item.", responseGetCodeBoxes.getData().size() > 0);
 
         // ----------------- Run -----------------
-        Response <RunCodeBoxResult> responseRunCodeBox = syncano.runCodeBox(codeBox.getId()).send();
+        Response <RunCodeBoxResult> responseRunCodeBox = syncano.runCodeBox(codeBox.getId(), null).send();
 
         assertEquals(responseRunCodeBox.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responseRunCodeBox.getHttpResultCode());
         assertNotNull(responseRunCodeBox.getData());

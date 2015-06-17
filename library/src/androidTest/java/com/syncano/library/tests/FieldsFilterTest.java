@@ -48,19 +48,19 @@ public class FieldsFilterTest extends SyncanoApplicationTestCase {
 
     public void testGetOneFilter() {
         RequestGet requestGet = syncano.getCodeBox(codeBox.getId());
-        FieldsFilter filter = new FieldsFilter(FieldsFilter.FilterType.INCLUDE_FIELDS, Arrays.asList(CodeBox.FIELD_ID, CodeBox.FIELD_NAME));
+        FieldsFilter filter = new FieldsFilter(FieldsFilter.FilterType.INCLUDE_FIELDS, Arrays.asList(CodeBox.FIELD_ID, CodeBox.FIELD_LABEL));
         requestGet.setFieldsFilter(filter);
         Response <CodeBox> responseGetCodeBox = requestGet.send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetCodeBox.getHttpResultCode());
         assertNotNull(responseGetCodeBox.getData());
-        assertNotNull(responseGetCodeBox.getData().getName());
+        assertNotNull(responseGetCodeBox.getData().getLabel());
         assertNull(responseGetCodeBox.getData().getSource());
     }
 
     public void testGetManyFilter() {
         RequestGetList requestGetList = syncano.getCodeBoxes();
-        FieldsFilter filter = new FieldsFilter(FieldsFilter.FilterType.INCLUDE_FIELDS, Arrays.asList(CodeBox.FIELD_ID, CodeBox.FIELD_NAME));
+        FieldsFilter filter = new FieldsFilter(FieldsFilter.FilterType.INCLUDE_FIELDS, Arrays.asList(CodeBox.FIELD_ID, CodeBox.FIELD_LABEL));
         requestGetList.setFieldsFilter(filter);
         Response <List<CodeBox>> responseGetCodeBoxes = requestGetList.send();
 

@@ -7,14 +7,14 @@ import org.json.JSONObject;
 
 public class CodeBox extends Entity {
 
-    public static final String FIELD_NAME = "name";
+    public static final String FIELD_LABEL = "label";
     public static final String FIELD_DESCRIPTION = "description";
     public static final String FIELD_SOURCE = "source";
     public static final String FIELD_RUNTIME_NAME = "runtime_name";
     public static final String FIELD_CONFIG = "config";
 
-    @SyncanoField(name = FIELD_NAME, required = true)
-    private String name;
+    @SyncanoField(name = FIELD_LABEL, required = true)
+    private String label;
 
     @SyncanoField(name = FIELD_DESCRIPTION)
     private String description;
@@ -31,18 +31,18 @@ public class CodeBox extends Entity {
     public CodeBox() {
     }
 
-    public CodeBox(String name, String source, RuntimeName runtimeName) {
-        this.name = name;
+    public CodeBox(String label, String source, RuntimeName runtimeName) {
+        this.label = label;
         this.source = source;
         this.runtimeName = runtimeName;
     }
 
-    public String getName() {
-        return name;
+    public String getLabel() {
+        return label;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public String getDescription() {
