@@ -195,12 +195,13 @@ public class Syncano extends SyncanoBase {
      * Run CodeBox asynchronous. Result of this request is not result of the CodeBox.
      * Result will be stored in associated Trace.
      * @param id CodeBox id.
+     * @param payload Codebox params.
      * @return Result with link do Trace.
      */
-    public RequestPost runCodeBox(int id) {
+    public RequestPost runCodeBox(int id, JsonObject payload) {
 
         String url = String.format(Constants.CODEBOXES_RUN_URL, getInstance(), id);
-        return new RequestPost(CodeBox.class, url, this, null);
+        return new RequestPost(CodeBox.class, url, this, payload);
     }
 
     // ==================== Webhooks ==================== //

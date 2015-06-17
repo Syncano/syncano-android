@@ -77,7 +77,7 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
         assertTrue("List should contain at least one item.", responseGetCodeBoxes.getData().size() > 0);
 
         // ----------------- Delete -----------------
-        Response <TestSyncanoClass> responseDeleteObject = syncano.deleteObject(TestSyncanoClass.class, testObject.getId()).send();
+        Response responseDeleteObject = syncano.deleteObject(TestSyncanoClass.class, testObject.getId()).send();
 
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteObject.getHttpResultCode());
     }
@@ -175,7 +175,7 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
 
         // Clean after test
         for (TestSyncanoClass objectToDelete : objects) {
-            Response <TestSyncanoClass> responseDeleteObject = syncano.deleteObject(TestSyncanoClass.class, objectToDelete.getId()).send();
+            Response responseDeleteObject = syncano.deleteObject(TestSyncanoClass.class, objectToDelete.getId()).send();
             assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteObject.getHttpResultCode());
         }
     }

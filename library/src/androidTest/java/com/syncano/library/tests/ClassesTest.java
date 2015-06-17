@@ -58,7 +58,7 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         assertTrue("List should contain at least one item.", responseGetClasses.getData().size() > 0);
 
         // ----------------- Delete -----------------
-        Response <CodeBox> responseDeleteClass = syncano.deleteSyncanoClass(className).send();
+        Response responseDeleteClass = syncano.deleteSyncanoClass(className).send();
 
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteClass.getHttpResultCode());
     }
