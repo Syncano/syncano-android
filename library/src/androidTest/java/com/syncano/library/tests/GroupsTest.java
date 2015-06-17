@@ -21,7 +21,7 @@ public class GroupsTest extends SyncanoApplicationTestCase {
     private static final String USER_NAME = "testuser";
     private static final String PASSWORD = "password";
 
-    private static final String GROUP_NAME = "group";
+    private static final String GROUP_LABEL = "group";
     private static final String NEW_GROUP_NAME = "new_group";
 
     private User user;
@@ -44,7 +44,7 @@ public class GroupsTest extends SyncanoApplicationTestCase {
 
         // ----------------- Remove All Groups -----------------
         Where where = new Where();
-        where.eq(Group.FIELD_NAME, GROUP_NAME);
+        where.eq(Group.FIELD_LABEL, GROUP_LABEL);
 
         RequestGetList<Group> requestGetGroups = syncano.getGroups();
         requestGetGroups.setWhereFilter(where);
@@ -73,7 +73,7 @@ public class GroupsTest extends SyncanoApplicationTestCase {
 
     public void testGroups() throws InterruptedException {
 
-        final Group newGroup = new Group(GROUP_NAME);
+        final Group newGroup = new Group(GROUP_LABEL);
         Group group;
 
         // ----------------- Create -----------------
@@ -88,7 +88,7 @@ public class GroupsTest extends SyncanoApplicationTestCase {
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetGroup.getHttpResultCode());
         assertNotNull(responseGetGroup.getData());
-        assertEquals(group.getName(), responseGetGroup.getData().getName());
+        assertEquals(group.getLabel(), responseGetGroup.getData().getLabel());
 
         // ----------------- Get List -----------------
         Response<List<Group>> responseGetGroups = syncano.getGroups().send();
@@ -97,12 +97,12 @@ public class GroupsTest extends SyncanoApplicationTestCase {
         assertTrue("List should contain at least one item.", responseGetGroups.getData().size() > 0);
 
         // ----------------- Update -----------------
-        group.setName(NEW_GROUP_NAME);
+        group.setLabel(NEW_GROUP_NAME);
         Response<Group> responseUpdateGroup= syncano.updateGroup(group).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdateGroup.getHttpResultCode());
         assertNotNull(responseUpdateGroup.getData());
-        assertEquals(group.getName(), responseUpdateGroup.getData().getName());
+        assertEquals(group.getLabel(), responseUpdateGroup.getData().getLabel());
 
         // ----------------- Delete -----------------
         Response<Group> responseDeleteGroup = syncano.deleteGroup(group.getId()).send();
@@ -115,7 +115,7 @@ public class GroupsTest extends SyncanoApplicationTestCase {
         GroupMembership groupMembership;
 
         // ----------------- Create Temporary Group -----------------
-        Response<Group> responseCreateGroup = syncano.createGroup(new Group(GROUP_NAME)).send();
+        Response<Group> responseCreateGroup = syncano.createGroup(new Group(GROUP_LABEL)).send();
         assertEquals(Response.HTTP_CODE_CREATED, responseCreateGroup.getHttpResultCode());
         Group group = responseCreateGroup.getData();
 

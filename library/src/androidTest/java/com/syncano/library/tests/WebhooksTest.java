@@ -26,11 +26,11 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        String codeBoxName = "CodeBox Test";
+        String codeBoxLabel = "CodeBox Test";
         RuntimeName runtime = RuntimeName.NODEJS;
         String source = "var msg = '" + EXPECTED_RESULT + "'; console.log(msg);";
 
-        final CodeBox newCodeBox = new CodeBox(codeBoxName, source, runtime);
+        final CodeBox newCodeBox = new CodeBox(codeBoxLabel, source, runtime);
 
         // ----------------- Create CodeBox -----------------
         Response<CodeBox> responseCodeBoxCreate = syncano.createCodeBox(newCodeBox).send();

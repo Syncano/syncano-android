@@ -4,14 +4,14 @@ import com.syncano.library.annotation.SyncanoField;
 
 public class Group {
     public static final String FIELD_ID = "id";
-    public static final String FIELD_NAME = "name";
+    public static final String FIELD_LABEL = "label";
     public static final String FIELD_DESCRIPTION = "description";
 
     @SyncanoField(name = FIELD_ID, readOnly = true)
     private int id;
 
-    @SyncanoField(name = FIELD_NAME, required = true)
-    private String name;
+    @SyncanoField(name = FIELD_LABEL, required = true)
+    private String label;
 
     @SyncanoField(name = FIELD_DESCRIPTION)
     private String description;
@@ -19,16 +19,16 @@ public class Group {
     public Group() {
     }
 
-    public Group(String name) {
-        this.name = name;
+    public Group(String label) {
+        this.label = label;
     }
 
-    public String getName() {
-        return name;
+    public String getLabel() {
+        return label;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     public int getId() {

@@ -195,7 +195,7 @@ public class Syncano extends SyncanoBase {
      * Run CodeBox asynchronous. Result of this request is not result of the CodeBox.
      * Result will be stored in associated Trace.
      * @param id CodeBox id.
-     * @param payload Codebox params.
+     * @param payload CodeBox params.
      * @return Result with link do Trace.
      */
     public RequestPost runCodeBox(int id, JsonObject payload) {
