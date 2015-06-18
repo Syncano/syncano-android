@@ -22,7 +22,7 @@ public abstract class SyncanoObject extends Entity {
     private DataObjectPermissions ownerPermissions;
 
     @SyncanoField(name = FIELD_GROUP)
-    private Group group;
+    private Integer group;
 
     @SyncanoField(name = FIELD_GROUP_PERMISSIONS)
     private DataObjectPermissions groupPermissions;
@@ -66,11 +66,11 @@ public abstract class SyncanoObject extends Entity {
         this.ownerPermissions = ownerPermissions;
     }
 
-    public Group getGroup() {
+    public Integer getGroup() {
         return group;
     }
 
-    public void setGroup(Group group) {
+    public void setGroup(Integer group) {
         this.group = group;
     }
 
