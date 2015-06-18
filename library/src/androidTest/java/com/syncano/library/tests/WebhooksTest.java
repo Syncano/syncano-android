@@ -91,7 +91,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
         assertTrue("List should contain at least one item.", responseGetWebhooks.getData().size() > 0);
 
         // ----------------- Run -----------------
-        Response<Trace> responseRunWebhook = syncano.runWebhook(NAME).send();
+        Response<Trace> responseRunWebhook = syncano.runWebhook(NAME, null).send();
 
         assertEquals(responseRunWebhook.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responseRunWebhook.getHttpResultCode());
         assertNotNull(responseRunWebhook.getData());
