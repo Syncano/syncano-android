@@ -47,7 +47,7 @@ public class SyncanoClass {
     private int revision;
 
     @SyncanoField(name = FIELD_GROUP)
-    private String group;
+    private Integer group;
 
     @SyncanoField(name = FIELD_GROUP_PERMISSIONS)
     private SyncanoClassPermissions groupPermissions;
@@ -130,11 +130,11 @@ public class SyncanoClass {
         this.revision = revision;
     }
 
-    public String getGroup() {
+    public Integer getGroup() {
         return group;
     }
 
-    public void setGroup(String group) {
+    public void setGroup(Integer group) {
         this.group = group;
     }
 
