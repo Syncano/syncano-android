@@ -4,7 +4,7 @@ import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.RuntimeName;
 import com.syncano.library.data.CodeBox;
-import com.syncano.library.data.RunCodeBoxResult;
+import com.syncano.library.data.Trace;
 
 import java.util.List;
 
@@ -70,7 +70,7 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
         assertTrue("List should contain at least one item.", responseGetCodeBoxes.getData().size() > 0);
 
         // ----------------- Run -----------------
-        Response <RunCodeBoxResult> responseRunCodeBox = syncano.runCodeBox(codeBox.getId(), null).send();
+        Response <Trace> responseRunCodeBox = syncano.runCodeBox(codeBox.getId(), null).send();
 
         assertEquals(responseRunCodeBox.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responseRunCodeBox.getHttpResultCode());
         assertNotNull(responseRunCodeBox.getData());

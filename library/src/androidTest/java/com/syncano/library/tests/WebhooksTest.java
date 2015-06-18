@@ -4,7 +4,7 @@ import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.RuntimeName;
 import com.syncano.library.data.CodeBox;
-import com.syncano.library.data.RunCodeBoxResult;
+import com.syncano.library.data.Trace;
 import com.syncano.library.data.Webhook;
 
 import java.util.List;
@@ -91,7 +91,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
         assertTrue("List should contain at least one item.", responseGetWebhooks.getData().size() > 0);
 
         // ----------------- Run -----------------
-        Response <RunCodeBoxResult> responseRunWebhook = syncano.runWebhook(NAME).send();
+        Response<Trace> responseRunWebhook = syncano.runWebhook(NAME).send();
 
         assertEquals(responseRunWebhook.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responseRunWebhook.getHttpResultCode());
         assertNotNull(responseRunWebhook.getData());

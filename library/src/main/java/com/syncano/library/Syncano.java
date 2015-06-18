@@ -13,7 +13,7 @@ import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Group;
 import com.syncano.library.data.GroupMembership;
 import com.syncano.library.data.Notification;
-import com.syncano.library.data.RunCodeBoxResult;
+import com.syncano.library.data.Trace;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.User;
@@ -269,10 +269,10 @@ public class Syncano extends SyncanoBase {
      * @param name Webhook id.
      * @return Result of executed CodeBox.
      */
-    public RequestGetOne<RunCodeBoxResult> runWebhook(String name) {
+    public RequestGetOne<Trace> runWebhook(String name) {
 
         String url = String.format(Constants.WEBHOOKS_RUN_URL, getInstance(), name);
-        return new RequestGetOne(RunCodeBoxResult.class, url, this);
+        return new RequestGetOne(Trace.class, url, this);
     }
 
     // ==================== Classes ==================== //
