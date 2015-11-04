@@ -158,12 +158,33 @@ public class UsersTest extends SyncanoApplicationTestCase {
         assertEquals(testUserProfile.valueOne, responseGetUser.getData().getProfile().valueOne);
         assertEquals(testUserProfile.valueTwo, responseGetUser.getData().getProfile().valueTwo);
 
+        // ----------------- Get List -----------------
+        Response <List<TestUserClass>> responseGetUsers = syncano.getCustomUsers(TestUserClass.class).send();
+
+        assertNotNull(responseGetUsers.getData());
+        assertTrue("List should contain at least one item.", responseGetUsers.getData().size() > 0);
+
         // ----------------- User Auth -----------------
         Response<TestUserClass> responseUserAuth = syncano.authCustomUser(TestUserClass.class, USER_NAME, PASSWORD).send();
 
         assertEquals(responseUserAuth.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responseUserAuth.getHttpResultCode());
         assertNotNull(responseUserAuth.getData());
         assertNotNull(responseUserAuth.getData().getUserKey());
+
+        // ----------------- Update -----------------
+        user.setPassword(NEW_PASSWORD);
+        Response <TestUserClass> responseUpdateUser = syncano.updateCustomUser(user).send();
+
+        assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdateUser.getHttpResultCode());
+        assertNotNull(responseUpdateUser.getData());
+        assertEquals(user.getUserName(), responseUpdateUser.getData().getUserName());
+
+        // ----------------- User Auth new password -----------------
+        Response<TestUserClass> responseUserAuthNewPass = syncano.authCustomUser(TestUserClass.class, USER_NAME, NEW_PASSWORD).send();
+
+        assertEquals(responseUserAuthNewPass.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responseUserAuthNewPass.getHttpResultCode());
+        assertNotNull(responseUserAuthNewPass.getData());
+        assertNotNull(responseUserAuthNewPass.getData().getUserKey());
 
         // ----------------- Delete -----------------
         Response <TestUserClass> responseDeleteUser = syncano.deleteUser(TestUserClass.class, user.getId()).send();
