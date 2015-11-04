@@ -1,11 +1,15 @@
 package com.syncano.library.tests;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.TestSyncanoClass;
 import com.syncano.library.api.Response;
 import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.SyncanoClass;
+
+import org.json.JSONArray;
 
 import java.util.List;
 
@@ -14,9 +18,6 @@ import java.util.List;
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
 public class ClassesTest extends SyncanoApplicationTestCase {
-
-    private static final String TAG = ClassesTest.class.getSimpleName();
-
 
     @Override
     protected void setUp() throws Exception {
@@ -34,6 +35,7 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         }
 
         SyncanoClass syncanoClass = new SyncanoClass(className, TestSyncanoClass.getSchema());
+        syncanoClass.setDescription("First description");
 
         // ----------------- Create -----------------
 
@@ -43,16 +45,24 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         syncanoClass = responseCreateClass.getData();
 
         // ----------------- Get One -----------------
-        Response <SyncanoClass> responseGetClass = syncano.getSyncanoClass(syncanoClass.getName()).send();
+        Response<SyncanoClass> responseGetClass = syncano.getSyncanoClass(syncanoClass.getName()).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetClass.getHttpResultCode());
         assertNotNull(responseGetClass.getData());
         assertEquals(className, responseGetClass.getData().getName());
         assertEquals(TestSyncanoClass.getSchema(), responseGetClass.getData().getSchema());
 
+        // ----------------- Update -----------------
+        String description = "Second description";
+        syncanoClass.setDescription(description);
+        Response<SyncanoClass> responseUpdateClass = syncano.updateSyncanoClass(syncanoClass).send();
+        assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdateClass.getHttpResultCode());
+        assertNotNull(responseUpdateClass.getData());
+        assertEquals(responseUpdateClass.getData().getDescription(), description);
+
 
         // ----------------- Get List -----------------
-        Response <List<SyncanoClass>> responseGetClasses = syncano.getSyncanoClasses().send();
+        Response<List<SyncanoClass>> responseGetClasses = syncano.getSyncanoClasses().send();
 
         assertNotNull(responseGetClasses.getData());
         assertTrue("List should contain at least one item.", responseGetClasses.getData().size() > 0);
