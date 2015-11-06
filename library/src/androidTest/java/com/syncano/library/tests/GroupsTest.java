@@ -128,12 +128,12 @@ public class GroupsTest extends SyncanoApplicationTestCase {
         assertNotNull(groupMembership.getUser());
 
         // ----------------- Get Group Membership -----------------
-        Response<GroupMembership> responseGetGroupMembership = syncano.getGroupMembership(group.getId(), groupMembership.getId()).send();
+        Response<GroupMembership> responseGetGroupMembership = syncano.getGroupMembership(group.getId(), user.getId()).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetGroupMembership.getHttpResultCode());
         assertNotNull(responseGetGroupMembership.getData());
         assertNotNull(responseGetGroupMembership.getData().getUser());
-        assertEquals(groupMembership.getId(), responseGetGroupMembership.getData().getId());
+        assertEquals(user.getId(), responseGetGroupMembership.getData().getUser().getId());
 
         // ----------------- Get Group Membership List -----------------
         Response<List<GroupMembership>> responseGetGroupMemberships = syncano.getGroupMemberships(group.getId()).send();
@@ -142,7 +142,7 @@ public class GroupsTest extends SyncanoApplicationTestCase {
         assertTrue("List should contain at least one item.", responseGetGroupMemberships.getData().size() > 0);
 
         // ----------------- Delete Group Membership -----------------
-        Response<GroupMembership> responseDeleteUserFromGroup = syncano.deleteUserFromGroup(group.getId(), groupMembership.getId()).send();
+        Response<GroupMembership> responseDeleteUserFromGroup = syncano.deleteUserFromGroup(group.getId(), user.getId()).send();
 
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteUserFromGroup.getHttpResultCode());
 

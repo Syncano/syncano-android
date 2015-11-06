@@ -585,12 +585,12 @@ public class Syncano extends SyncanoBase {
     /**
      * Get details of previously created Membership.
      * @param groupId Id of existing Group.
-     * @param membershipId Membership id.
+     * @param userId Membership id.
      * @return
      */
-    public RequestGetOne getGroupMembership(int groupId, int membershipId) {
+    public RequestGetOne getGroupMembership(int groupId, int userId) {
 
-        String url = String.format(Constants.GROUPS_USERS_DETAIL_URL, getInstance(), groupId, membershipId);
+        String url = String.format(Constants.GROUPS_USERS_DETAIL_URL, getInstance(), groupId, userId);
         return new RequestGetOne(GroupMembership.class, url, this);
     }
 
@@ -602,7 +602,7 @@ public class Syncano extends SyncanoBase {
     public RequestGetList getGroupMemberships(int groupId) {
 
         String url = String.format(Constants.GROUPS_USERS_LIST_URL, getInstance(), groupId);
-        return new RequestGetList(User.class, url, this);
+        return new RequestGetList(GroupMembership.class, url, this);
     }
 
     /**
@@ -623,12 +623,12 @@ public class Syncano extends SyncanoBase {
     /**
      * Delete a Group mambership.
      * @param groupId Id of existing Group.
-     * @param membershipId Membership id.
+     * @param userId Membership id.
      * @return
      */
-    public RequestDelete deleteUserFromGroup(int groupId, int membershipId) {
+    public RequestDelete deleteUserFromGroup(int groupId, int userId) {
 
-        String url = String.format(Constants.GROUPS_USERS_DETAIL_URL, getInstance(), groupId, membershipId);
+        String url = String.format(Constants.GROUPS_USERS_DETAIL_URL, getInstance(), groupId, userId);
         return new RequestDelete(GroupMembership.class, url, this);
     }
 
