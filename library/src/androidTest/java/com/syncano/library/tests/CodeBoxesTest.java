@@ -14,8 +14,6 @@ import java.util.List;
  */
 public class CodeBoxesTest extends SyncanoApplicationTestCase {
 
-    private static final String TAG = CodeBoxesTest.class.getSimpleName();
-
     private static final String EXPECTED_RESULT = "this is message from our Codebox";
 
     @Override
@@ -38,14 +36,14 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
         CodeBox codeBox;
 
         // ----------------- Create -----------------
-        Response <CodeBox> responseCreateCodeBox = syncano.createCodeBox(newCodeBox).send();
+        Response<CodeBox> responseCreateCodeBox = syncano.createCodeBox(newCodeBox).send();
 
         assertEquals(responseCreateCodeBox.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responseCreateCodeBox.getHttpResultCode());
         assertNotNull(responseCreateCodeBox.getData());
         codeBox = responseCreateCodeBox.getData();
 
         // ----------------- Get One -----------------
-        Response <CodeBox> responseGetCodeBox = syncano.getCodeBox(codeBox.getId()).send();
+        Response<CodeBox> responseGetCodeBox = syncano.getCodeBox(codeBox.getId()).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetCodeBox.getHttpResultCode());
         assertNotNull(responseGetCodeBox.getData());
@@ -55,7 +53,7 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
 
         // ----------------- Update -----------------
         codeBox.setLabel(codeBoxNewName);
-        Response <CodeBox> responseUpdateCodeBox = syncano.updateCodeBox(codeBox).send();
+        Response<CodeBox> responseUpdateCodeBox = syncano.updateCodeBox(codeBox).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdateCodeBox.getHttpResultCode());
         assertNotNull(responseUpdateCodeBox.getData());
@@ -64,24 +62,24 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
         assertEquals(codeBox.getSource(), responseUpdateCodeBox.getData().getSource());
 
         // ----------------- Get List -----------------
-        Response <List<CodeBox>> responseGetCodeBoxes = syncano.getCodeBoxes().send();
+        Response<List<CodeBox>> responseGetCodeBoxes = syncano.getCodeBoxes().send();
 
         assertNotNull(responseGetCodeBoxes.getData());
         assertTrue("List should contain at least one item.", responseGetCodeBoxes.getData().size() > 0);
 
         // ----------------- Run -----------------
-        Response <Trace> responseRunCodeBox = syncano.runCodeBox(codeBox.getId(), null).send();
+        Response<Trace> responseRunCodeBox = syncano.runCodeBox(codeBox.getId()).send();
 
         assertEquals(responseRunCodeBox.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responseRunCodeBox.getHttpResultCode());
         assertNotNull(responseRunCodeBox.getData());
 
         // ----------------- Delete -----------------
-        Response <CodeBox> responseDeleteCodeBox = syncano.deleteCodeBox(codeBox.getId()).send();
+        Response<CodeBox> responseDeleteCodeBox = syncano.deleteCodeBox(codeBox.getId()).send();
 
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteCodeBox.getHttpResultCode());
 
         // ----------------- Get One -----------------
-        Response <CodeBox> responseGetOneCodeBox = syncano.getCodeBox(codeBox.getId()).send();
+        Response<CodeBox> responseGetOneCodeBox = syncano.getCodeBox(codeBox.getId()).send();
 
         // After delete, CodeBox should not be found.
         assertEquals(Response.HTTP_CODE_NOT_FOUND, responseGetOneCodeBox.getHttpResultCode());

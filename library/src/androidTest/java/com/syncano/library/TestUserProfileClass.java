@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.annotation.SyncanoField;
-import com.syncano.library.data.Profile;
 import com.syncano.library.data.SyncanoObject;
 
 @SyncanoClass(name = Constants.USER_PROFILE_CLASS_NAME)

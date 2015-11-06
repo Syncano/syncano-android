@@ -16,7 +16,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class AsyncQueueTest extends SyncanoApplicationTestCase {
 
-    private static final String TAG = AsyncQueueTest.class.getSimpleName();
     private static final int TIMEOUT_MILLIS = 20 * 1000;
     private static final int TEST_REQUESTS = 10;
 
@@ -28,7 +27,6 @@ public class AsyncQueueTest extends SyncanoApplicationTestCase {
     }
 
     public void testAsyncTest() throws InterruptedException {
-
 
         lock = new CountDownLatch(TEST_REQUESTS);
 
