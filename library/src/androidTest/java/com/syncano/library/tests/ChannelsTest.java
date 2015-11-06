@@ -73,7 +73,7 @@ public class ChannelsTest extends SyncanoApplicationTestCase {
         JsonObject payload = new JsonObject();
         payload.addProperty(KEY, VALUE);
 
-        final Notification newNotification = new Notification(null, payload);
+        final Notification newNotification = new Notification(payload);
         Response<Notification> responsePublish = syncano.publishOnChannel(CHANNEL_NAME, newNotification).send();
 
         assertEquals(responsePublish.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responsePublish.getHttpResultCode());
@@ -82,7 +82,7 @@ public class ChannelsTest extends SyncanoApplicationTestCase {
         assertTrue(responsePublish.getData().getPayload().has(KEY));
 
         // ----------------- Get Notification History -----------------
-        Response<List<Notification>> responseGetChannelsHistory = syncano.getChannelsHistory(channel.getName(), null).send();
+        Response<List<Notification>> responseGetChannelsHistory = syncano.getChannelsHistory(channel.getName()).send();
 
         assertNotNull(responseGetChannelsHistory.getData());
         assertTrue(responseGetChannelsHistory.getData().size() == 1);

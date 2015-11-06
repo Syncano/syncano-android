@@ -691,6 +691,14 @@ public class Syncano extends SyncanoBase {
         return new RequestDelete(Channel.class, url, this);
     }
 
+    /**
+     * Get a list of Notifications.
+     * @param channelName Channel id.
+     * @return Notification list.
+     */
+    public RequestGetList getChannelsHistory(String channelName) {
+        return getChannelsHistory(channelName, null);
+    }
 
     /**
      * Get a list of Notifications.

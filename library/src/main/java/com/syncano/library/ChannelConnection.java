@@ -11,16 +11,16 @@ import com.syncano.library.data.Notification;
 /**
  * Class responsible for real time communication.
  */
-public class SyncServer {
+public class ChannelConnection {
 
-    private static final String TAG = SyncServer.class.getSimpleName();
+    private static final String TAG = ChannelConnection.class.getSimpleName();
     private static final int ERROR_DELAY = 1000;
     private static final int MSG_SUCCESS = 1;
     private static final int MSG_ERROR = 2;
 
     private Syncano syncano;
     private Handler handler;
-    private SyncServerListener syncServerListener;
+    private ChannelConnectionListener channelConnectionListener;
     private PollRequestLoop pollRequestLoop;
     private String channel;
     private String room;
@@ -28,16 +28,30 @@ public class SyncServer {
 
     private boolean hasError;
 
-    public SyncServer(Syncano syncano, SyncServerListener syncServerListener) {
+    public ChannelConnection(Syncano syncano) {
+        this(syncano, null);
+    }
+
+    public ChannelConnection(Syncano syncano, ChannelConnectionListener channelConnectionListener) {
         this.syncano = syncano;
-        this.syncServerListener = syncServerListener;
+        this.channelConnectionListener = channelConnectionListener;
         handler = new ListenerHandler(Looper.getMainLooper());
     }
 
     /**
      * Start poll request loop.
+     *
      * @param channel Channel to listen to.
-     * @param room Room to listen to.
+     */
+    public void start(String channel) {
+        start(channel, null, 0);
+    }
+
+    /**
+     * Start poll request loop.
+     *
+     * @param channel Channel to listen to.
+     * @param room    Room to listen to.
      */
     public void start(String channel, String room) {
         start(channel, room, 0);
@@ -45,16 +59,18 @@ public class SyncServer {
 
     /**
      * Start poll request loop.
+     *
      * @param channel Channel to listen to.
-     * @param room Room to listen to.
-     * @param lastId Last notification id.
+     * @param room    Room to listen to.
+     * @param lastId  Last notification id.
      */
     public void start(String channel, String room, int lastId) {
         this.channel = channel;
         this.room = room;
         this.lastId = lastId;
 
-        if (BuildConfig.DEBUG) Log.d(TAG, "start channel: " + channel + " room: " + room + " lastId: " + lastId);
+        if (BuildConfig.DEBUG)
+            Log.d(TAG, "start channel: " + channel + " room: " + room + " lastId: " + lastId);
 
         if (pollRequestLoop == null) {
             pollRequestLoop = new PollRequestLoop();
@@ -78,20 +94,22 @@ public class SyncServer {
     }
 
     /**
-     * Get SyncServerListener.
-     * @return SyncServerListener.
+     * Get ChannelConnectionListener.
+     *
+     * @return ChannelConnectionListener.
      */
-    public SyncServerListener getSyncServerListener() {
-        return syncServerListener;
+    public ChannelConnectionListener getChannelConnectionListener() {
+        return channelConnectionListener;
     }
 
     /**
-     * Set SyncServerListener. Method might be used for changing listener for new one
+     * Set ChannelConnectionListener. Method might be used for changing listener for new one
      * or for setting it if null was set in constructor.
-     * @param syncServerListener New SyncServerListener.
+     *
+     * @param channelConnectionListener New ChannelConnectionListener.
      */
-    public void setSyncServerListener(SyncServerListener syncServerListener) {
-        this.syncServerListener = syncServerListener;
+    public void setChannelConnectionListener(ChannelConnectionListener channelConnectionListener) {
+        this.channelConnectionListener = channelConnectionListener;
     }
 
     private class PollRequestLoop implements Runnable {
@@ -106,7 +124,8 @@ public class SyncServer {
         public void run() {
 
             while (isRunning) {
-                if (BuildConfig.DEBUG) Log.d(TAG, "pollRequest channel: " + channel + " room: " + room + " lastId: " + lastId);
+                if (BuildConfig.DEBUG)
+                    Log.d(TAG, "poll request channel: " + channel + " room: " + room + " lastId: " + lastId);
                 Response<Notification> responsePollFromChannel = syncano.pollChannel(channel, room, lastId).send();
                 if (BuildConfig.DEBUG) Log.d(TAG, "response: " + responsePollFromChannel);
 
@@ -115,7 +134,8 @@ public class SyncServer {
                     if (responsePollFromChannel.getHttpResultCode() == Response.HTTP_CODE_NO_CONTENT) {
                         // No content - long polling timeout
                         hasError = false;
-                    } if (responsePollFromChannel.getHttpResultCode() == Response.HTTP_CODE_SUCCESS) {
+                    }
+                    if (responsePollFromChannel.getHttpResultCode() == Response.HTTP_CODE_SUCCESS) {
                         handleSuccess(responsePollFromChannel);
                         hasError = false;
                     } else {
@@ -141,7 +161,7 @@ public class SyncServer {
         if (response.getData() != null) {
             lastId = response.getData().getId();
 
-            if (syncServerListener != null) {
+            if (channelConnectionListener != null) {
                 Message message = handler.obtainMessage(MSG_SUCCESS, response.getData());
                 handler.sendMessage(message);
             }
@@ -155,7 +175,7 @@ public class SyncServer {
             return;
         }
 
-        if (syncServerListener != null) {
+        if (channelConnectionListener != null) {
             Message message = handler.obtainMessage(MSG_ERROR, response);
             handler.sendMessage(message);
         }
@@ -171,10 +191,10 @@ public class SyncServer {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_SUCCESS:
-                    syncServerListener.onMessage((Notification) msg.obj);
+                    channelConnectionListener.onNotification((Notification) msg.obj);
                     break;
                 case MSG_ERROR:
-                    syncServerListener.onError((Response<Notification>) msg.obj);
+                    channelConnectionListener.onError((Response<Notification>) msg.obj);
                     break;
             }
         }

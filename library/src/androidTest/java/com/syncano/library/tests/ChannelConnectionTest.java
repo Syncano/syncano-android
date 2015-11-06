@@ -3,8 +3,8 @@ package com.syncano.library.tests;
 import android.util.Log;
 
 import com.google.gson.JsonObject;
-import com.syncano.library.SyncServer;
-import com.syncano.library.SyncServerListener;
+import com.syncano.library.ChannelConnection;
+import com.syncano.library.ChannelConnectionListener;
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.TestSyncanoClass;
@@ -15,27 +15,23 @@ import com.syncano.library.data.SyncanoClass;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
-public class SyncServerTest extends SyncanoApplicationTestCase {
+public class ChannelConnectionTest extends SyncanoApplicationTestCase {
 
-    private static final String TAG = SyncServerTest.class.getSimpleName();
-    private final static int WAITING_MILLIS = 120000;
+    private static final String TAG = ChannelConnectionTest.class.getSimpleName();
 
-    private SyncServer syncServer;
     private Channel channel;
     private CountDownLatch lock;
 
     private static final String CHANNEL_NAME = "channel_one";
-    private static final String ROOM_NAME = "room_one";
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-
-        syncServer = new SyncServer(syncano, null);
 
         // ----------------- Delete Channel -----------------
         // Make sure slug is not taken.
@@ -44,7 +40,7 @@ public class SyncServerTest extends SyncanoApplicationTestCase {
         // ----------------- Create Channel -----------------
         final Channel newChannel = new Channel(CHANNEL_NAME);
         newChannel.setCustomPublish(true); // Required to pass publish test
-        Response <Channel> responseCreateChannel = syncano.createChannel(newChannel).send();
+        Response<Channel> responseCreateChannel = syncano.createChannel(newChannel).send();
 
         assertEquals(Response.HTTP_CODE_CREATED, responseCreateChannel.getHttpResultCode());
         assertNotNull(responseCreateChannel.getData());
@@ -64,16 +60,18 @@ public class SyncServerTest extends SyncanoApplicationTestCase {
     @Override
     protected void tearDown() throws Exception {
         // ----------------- Delete Channel -----------------
-        Response <Channel> responseDeleteChannel = syncano.deleteChannel(channel.getName()).send();
+        Response<Channel> responseDeleteChannel = syncano.deleteChannel(channel.getName()).send();
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteChannel.getHttpResultCode());
     }
 
-    public void testSyncServer() throws InterruptedException {
-
-        syncServer.setSyncServerListener(new SyncServerListener() {
+    public void testChannelConnection() throws InterruptedException {
+        final AtomicInteger notificationsReceived = new AtomicInteger(0);
+        ChannelConnection channelConnection = new ChannelConnection(syncano);
+        channelConnection.setChannelConnectionListener(new ChannelConnectionListener() {
             @Override
-            public void onMessage(Notification notification) {
-                Log.d(TAG, "onMessage: id= " + notification.getId());
+            public void onNotification(Notification notification) {
+                Log.d(TAG, "onNotification: id= " + notification.getId());
+                notificationsReceived.incrementAndGet();
                 lock.countDown();
             }
 
@@ -84,36 +82,27 @@ public class SyncServerTest extends SyncanoApplicationTestCase {
             }
         });
 
-        int pushCount = 10;
-        lock = new CountDownLatch(pushCount);
-        syncServer.start(channel.getName(), ROOM_NAME);
-        Thread.sleep(100); //Wait for thread to start.
+        int notificationsToSend = 10;
+        lock = new CountDownLatch(notificationsToSend);
+        channelConnection.start(channel.getName());
+        Thread.sleep(1000); //Wait for connection to start.
 
-        // ----------------- Publish Notification -----------------
+        // ----------------- Publish Notifications -----------------
 
-        for (int i = 0; i < pushCount; i++) {
+        for (int i = 0; i < notificationsToSend; i++) {
             JsonObject payload = new JsonObject();
             payload.addProperty("my_property", "my_value");
 
-            final Notification newNotification = new Notification(ROOM_NAME, payload);
-            Response <Notification> responsePublish = syncano.publishOnChannel(channel.getName(), newNotification).send();
+            final Notification newNotification = new Notification(payload);
+            Response<Notification> responsePublish = syncano.publishOnChannel(channel.getName(), newNotification).send();
 
             assertEquals(responsePublish.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responsePublish.getHttpResultCode());
             assertNotNull(responsePublish.getData());
         }
 
-        /*for (int i = 0; i < messageCount; i++) {
-            final TestSyncanoClass testObjectOne = new TestSyncanoClass();
-            testObjectOne.setChannel(channel.getName());
-            testObjectOne.setChannelRoom(ROOM_NAME);
+        lock.await(120, TimeUnit.SECONDS);
+        channelConnection.stop();
 
-            Response <TestSyncanoClass> responseCreateObjectOne = syncano.createObject(testObjectOne).send();
-
-            assertEquals(responseCreateObjectOne.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responseCreateObjectOne.getHttpResultCode());
-            assertNotNull(responseCreateObjectOne.getData());
-        }*/
-
-        lock.await(WAITING_MILLIS, TimeUnit.MILLISECONDS);
-        syncServer.stop();
+        assertEquals(notificationsToSend, notificationsReceived.get());
     }
 }

@@ -40,6 +40,10 @@ public class Notification {
     public Notification() {
     }
 
+    public Notification(JsonObject payload) {
+        this(null, payload);
+    }
+
     public Notification(String room, JsonObject payload) {
         this.room = room;
         this.payload = payload;
