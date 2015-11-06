@@ -13,6 +13,7 @@ test:
     # run tests  against the emulator.
     - ./gradlew connectedCheck
     # copy the build outputs to artifacts
-    - cp -r /home/ubuntu/syncano-android/library/build/outputs $CIRCLE_ARTIFACTS
+    - cp -r /home/ubuntu/syncano-android/library/build/outputs/reports $CIRCLE_ARTIFACTS
+    - adb logcat -d >> $CIRCLE_ARTIFACTS/logcat.txt
     # copy the test results to the test results directory.
     - cp -r /home/ubuntu/syncano-android/library/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
