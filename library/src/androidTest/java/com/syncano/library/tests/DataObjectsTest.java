@@ -17,8 +17,6 @@ import java.util.List;
  */
 public class DataObjectsTest extends SyncanoApplicationTestCase {
 
-    private static final String TAG = DataObjectsTest.class.getSimpleName();
-
     @Override
     protected void setUp() throws Exception {
         super.setUp();
@@ -47,14 +45,14 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
         final TestSyncanoClass testObject;
 
         // ----------------- Create -----------------
-        Response <TestSyncanoClass> responseCreateObject = syncano.createObject(newTestObject).send();
+        Response<TestSyncanoClass> responseCreateObject = syncano.createObject(newTestObject).send();
 
         assertEquals(responseCreateObject.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responseCreateObject.getHttpResultCode());
         assertNotNull(responseCreateObject.getData());
         testObject = responseCreateObject.getData();
 
         // ----------------- Get One -----------------
-        Response <TestSyncanoClass> responseGetUser = syncano.getObject(TestSyncanoClass.class, testObject.getId()).send();
+        Response<TestSyncanoClass> responseGetUser = syncano.getObject(TestSyncanoClass.class, testObject.getId()).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetUser.getHttpResultCode());
         assertNotNull(responseGetUser.getData());
@@ -63,7 +61,7 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
 
         // ----------------- Update -----------------
         testObject.valueOne = newValueOne;
-        Response <TestSyncanoClass> responseUpdateUser = syncano.updateObject(testObject).send();
+        Response<TestSyncanoClass> responseUpdateUser = syncano.updateObject(testObject).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdateUser.getHttpResultCode());
         assertNotNull(responseUpdateUser.getData());
@@ -71,7 +69,7 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
         assertEquals(testObject.valueOne, responseUpdateUser.getData().valueOne);
 
         // ----------------- Get List -----------------
-        Response <List<TestSyncanoClass>> responseGetCodeBoxes = syncano.getObjects(TestSyncanoClass.class).send();
+        Response<List<TestSyncanoClass>> responseGetCodeBoxes = syncano.getObjects(TestSyncanoClass.class).send();
 
         assertNotNull(responseGetCodeBoxes.getData());
         assertTrue("List should contain at least one item.", responseGetCodeBoxes.getData().size() > 0);
@@ -91,7 +89,7 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
 
         RequestGetList<TestSyncanoClass> requestGetList = syncano.getObjects(TestSyncanoClass.class);
         requestGetList.setWhereFilter(where);
-        Response<List<TestSyncanoClass>> response= requestGetList.send();
+        Response<List<TestSyncanoClass>> response = requestGetList.send();
 
         assertEquals(response.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
         assertNotNull(response.getData());
@@ -108,7 +106,7 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
 
         RequestGetList<TestSyncanoClass> requestGetList = syncano.getObjects(TestSyncanoClass.class);
         requestGetList.setOrderBy(TestSyncanoClass.FIELD_ID, true);
-        Response<List<TestSyncanoClass>> response= requestGetList.send();
+        Response<List<TestSyncanoClass>> response = requestGetList.send();
 
         assertEquals(response.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
         assertNotNull(response.getData());
@@ -128,7 +126,7 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
 
         RequestGetList<TestSyncanoClass> requestGetList = syncano.getObjects(TestSyncanoClass.class);
         requestGetList.setLimit(limitItems);
-        Response<List<TestSyncanoClass>> response= requestGetList.send();
+        Response<List<TestSyncanoClass>> response = requestGetList.send();
 
         assertEquals(response.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
         assertNotNull(response.getData());
@@ -148,7 +146,7 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
         // Create test objects
         for (int i = 0; i < testObjectCount; i++) {
             TestSyncanoClass testObject = new TestSyncanoClass("valueOne: " + i, "valueTwo: " + i);
-            Response <TestSyncanoClass> responseCreateObject = syncano.createObject(testObject).send();
+            Response<TestSyncanoClass> responseCreateObject = syncano.createObject(testObject).send();
             assertEquals(Response.HTTP_CODE_CREATED, responseCreateObject.getHttpResultCode());
             objects.add(responseCreateObject.getData());
         }
@@ -168,7 +166,7 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
         RequestGetList<TestSyncanoClass> requestPrevious = syncano.getObjects(TestSyncanoClass.class);
         requestPrevious.setLimit(limitItems);
         requestPrevious.setLastPk(idInMiddle, true);
-        Response<List<TestSyncanoClass>> responsePrevious= requestPrevious.send();
+        Response<List<TestSyncanoClass>> responsePrevious = requestPrevious.send();
 
         assertEquals(responsePrevious.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responsePrevious.getHttpResultCode());
         assertTrue(responsePrevious.getData().get(0).getId() < idInMiddle);

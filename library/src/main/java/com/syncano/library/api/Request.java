@@ -29,13 +29,11 @@ public abstract class Request<T> {
 
     /**
      * Http request method: POST, GET, PUT, PATCH, UPDATE, DELETE
-     * @return
      */
     public abstract String getRequestMethod();
 
     /**
      * Prepare json parameters for request.
-     * @return
      */
     public String prepareParams() {
         return null;
@@ -43,7 +41,6 @@ public abstract class Request<T> {
 
     /**
      * Prepare URL params.
-     * @return
      */
     public void prepareUrlParams() {
     }
@@ -51,7 +48,8 @@ public abstract class Request<T> {
     /**
      * Add custom params to url.
      * Used most for get queries.
-     * @param key Parameter key.
+     *
+     * @param key   Parameter key.
      * @param value Parameter value.
      */
     public void addUrlParam(String key, String value) {
@@ -60,8 +58,6 @@ public abstract class Request<T> {
 
     /**
      * Get url params for requests.
-     * @return
-     * @throws UnsupportedEncodingException
      */
     public String getUrlParams() {
 
@@ -95,7 +91,8 @@ public abstract class Request<T> {
 
     /**
      * Add additional header like social authentication token.
-     * @param name Header name.
+     *
+     * @param name  Header name.
      * @param value Header value.
      */
     public void setHttpHeader(String name, String value) {
@@ -104,6 +101,7 @@ public abstract class Request<T> {
 
     /**
      * Get additional headers for request.
+     *
      * @return Headers.
      */
     public List<NameValuePair> getHttpHeaders() {

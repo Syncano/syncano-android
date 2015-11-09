@@ -19,7 +19,6 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpConnectionParams;
@@ -44,8 +43,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.SSLContext;
@@ -53,7 +50,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 public class SyncanoHttpClient {
-	private final static String LOG_TAG = SyncanoHttpClient.class.getSimpleName();
+    private final static String LOG_TAG = SyncanoHttpClient.class.getSimpleName();
 
     public static final String METHOD_GET = "GET";
     public static final String METHOD_POST = "POST";
@@ -63,45 +60,54 @@ public class SyncanoHttpClient {
 
     private static final String TAG = SyncanoHttpClient.class.getSimpleName();
 
-	/** Timeout value */
-	private final static int NOT_SET = -1;
+    /**
+     * Timeout value
+     */
+    private final static int NOT_SET = -1;
 
-    /** Recommended timeout value */
+    /**
+     * Recommended timeout value
+     */
 
     private static final int TIMEOUT = 30000;
 
-    /** Default socket timeout */
-	private static final int SOCKET_TIMEOUT = 60000;
+    /**
+     * Default socket timeout
+     */
+    private static final int SOCKET_TIMEOUT = 60000;
 
-    /** Connection timeout value */
-	private int timeout = NOT_SET;
+    /**
+     * Connection timeout value
+     */
+    private int timeout = NOT_SET;
 
-    /** Http client used to connect to API */
-	private DefaultHttpClient httpclient;
+    /**
+     * Http client used to connect to API
+     */
+    private DefaultHttpClient httpclient;
 
-	/**
-	 * Default constructor
-	 */
-	public SyncanoHttpClient() {
-	}
+    /**
+     * Default constructor
+     */
+    public SyncanoHttpClient() {
+    }
 
-	/**
-	 * Sets new timeout value
-	 * 
-	 * @param millis
-	 *            timeout value in milliseconds
-	 */
-	public void setTimeout(int millis) {
-		timeout = millis;
-	}
+    /**
+     * Sets new timeout value
+     *
+     * @param millis timeout value in milliseconds
+     */
+    public void setTimeout(int millis) {
+        timeout = millis;
+    }
 
-	/**
-	 * Method to send post data contained in postData field
-	 * 
-	 * @return Response with data
-	 */
-	public Response send(String serverUrl, Request <?> syncanoRequest) {
-		HttpUriRequest request;
+    /**
+     * Method to send post data contained in postData field
+     *
+     * @return Response with data
+     */
+    public <T> Response<T> send(String serverUrl, Request<T> syncanoRequest) {
+        HttpUriRequest request;
         String urlParameters = syncanoRequest.getUrlParams();
 
         if (urlParameters == null) {
@@ -118,36 +124,36 @@ public class SyncanoHttpClient {
         }
 
         request = getHttpUriRequest(syncanoRequest.getRequestMethod(), url, parameters);
-		request.setHeader("Content-Type", "application/json");
-		request.setHeader("Accept-Encoding", "gzip");
+        request.setHeader("Content-Type", "application/json");
+        request.setHeader("Accept-Encoding", "gzip");
 
         for (NameValuePair header : syncanoRequest.getHttpHeaders()) {
             request.setHeader(header.getName(), header.getValue());
         }
 
-		httpclient = getHttpClient();
-		httpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, Constants.USER_AGENT);
-		HttpParams httpParameters = httpclient.getParams();
-		if (timeout != NOT_SET) {
-			// Set the timeout in milliseconds until a connection is established.
-			// The default value is zero, that means the timeout is not used.
-			HttpConnectionParams.setConnectionTimeout(httpParameters, timeout * 1000);
-			// Set the default socket timeout (SO_TIMEOUT)
-			// in milliseconds which is the timeout for waiting for data.
-			HttpConnectionParams.setSoTimeout(httpParameters, timeout * 1000);
-		}
+        httpclient = getHttpClient();
+        httpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, Constants.USER_AGENT);
+        HttpParams httpParameters = httpclient.getParams();
+        if (timeout != NOT_SET) {
+            // Set the timeout in milliseconds until a connection is established.
+            // The default value is zero, that means the timeout is not used.
+            HttpConnectionParams.setConnectionTimeout(httpParameters, timeout * 1000);
+            // Set the default socket timeout (SO_TIMEOUT)
+            // in milliseconds which is the timeout for waiting for data.
+            HttpConnectionParams.setSoTimeout(httpParameters, timeout * 1000);
+        }
 
-        Response syncanoResponse = new Response();
-		HttpResponse response = null;
+        Response<T> syncanoResponse = new Response<T>();
+        HttpResponse response = null;
 
-		try {
-			response = httpclient.execute(request);
-		} catch (ClientProtocolException e) {
-			Log.w(LOG_TAG, "ClientProtocolException");
+        try {
+            response = httpclient.execute(request);
+        } catch (ClientProtocolException e) {
+            Log.w(LOG_TAG, "ClientProtocolException");
             syncanoResponse.setResultCode(Response.CODE_CLIENT_PROTOCOL_EXCEPTION);
             syncanoResponse.setError(e.toString());
             return syncanoResponse;
-		} catch (IOException e) {
+        } catch (IOException e) {
             Log.w(LOG_TAG, "IOException");
             syncanoResponse.setResultCode(Response.CODE_ILLEGAL_IO_EXCEPTION);
             syncanoResponse.setError(e.toString());
@@ -155,7 +161,7 @@ public class SyncanoHttpClient {
         }
 
         InputStream is = null;
-		try {
+        try {
 
             syncanoResponse.setHttpResultCode(response.getStatusLine().getStatusCode());
             syncanoResponse.setHttpReasonPhrase(response.getStatusLine().getReasonPhrase());
@@ -186,20 +192,20 @@ public class SyncanoHttpClient {
                 syncanoResponse.setResultCode(Response.CODE_HTTP_ERROR);
                 syncanoResponse.setError("Http error.");
             }
-		} catch (IllegalStateException e) {
-			Log.w(LOG_TAG, "IllegalStateException");
+        } catch (IllegalStateException e) {
+            Log.w(LOG_TAG, "IllegalStateException");
             syncanoResponse.setResultCode(Response.CODE_ILLEGAL_STATE_EXCEPTION);
             syncanoResponse.setError(e.toString());
             return syncanoResponse;
-		} catch (IOException e) {
+        } catch (IOException e) {
             Log.w(LOG_TAG, "IOException");
             syncanoResponse.setResultCode(Response.CODE_ILLEGAL_IO_EXCEPTION);
             syncanoResponse.setError(e.toString());
             return syncanoResponse;
         }
 
-		return syncanoResponse;
-	}
+        return syncanoResponse;
+    }
 
     private HttpUriRequest getHttpUriRequest(String requestMethod, String url, String parameters) {
 
@@ -243,9 +249,7 @@ public class SyncanoHttpClient {
      * Copies whole InputStream to byte array
      *
      * @param is InputStream to copy
-     *
      * @return byte[] containing copied InputStream
-     *
      */
     private static byte[] readToByteArray(InputStream is) throws IOException {
         if (is == null)
@@ -253,69 +257,69 @@ public class SyncanoHttpClient {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte buffer[] = new byte[1024];
-        for (int s; (s = is.read(buffer)) != -1;) {
+        for (int s; (s = is.read(buffer)) != -1; ) {
             baos.write(buffer, 0, s);
         }
         return baos.toByteArray();
     }
 
-	/**
-	 * Method to get new http client with socket factory which allows to connect only to selected domains
+    /**
+     * Method to get new http client with socket factory which allows to connect only to selected domains
      *
-	 * @return new http client
-	 */
-	private static DefaultHttpClient getHttpClient() {
-		try {
-			HttpParams params = new BasicHttpParams();
-			HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-			HttpProtocolParams.setContentCharset(params, "utf-8");
-			HttpConnectionParams.setConnectionTimeout(params, TIMEOUT);
-			HttpConnectionParams.setSoTimeout(params, SOCKET_TIMEOUT);
-			params.setBooleanParameter("http.protocol.expect-continue", false);
+     * @return new http client
+     */
+    private static DefaultHttpClient getHttpClient() {
+        try {
+            HttpParams params = new BasicHttpParams();
+            HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+            HttpProtocolParams.setContentCharset(params, "utf-8");
+            HttpConnectionParams.setConnectionTimeout(params, TIMEOUT);
+            HttpConnectionParams.setSoTimeout(params, SOCKET_TIMEOUT);
+            params.setBooleanParameter("http.protocol.expect-continue", false);
 
-			SchemeRegistry registry = new SchemeRegistry();
-			registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-			registry.register(new Scheme("https", newSslSocketFactory(), 443));
+            SchemeRegistry registry = new SchemeRegistry();
+            registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
+            registry.register(new Scheme("https", newSslSocketFactory(), 443));
 
-			ThreadSafeClientConnManager manager = new ThreadSafeClientConnManager(params, registry);
-			return new DefaultHttpClient(manager, params);
-		} catch (Exception e) {
-			return new DefaultHttpClient();
-		}
-	}
+            ThreadSafeClientConnManager manager = new ThreadSafeClientConnManager(params, registry);
+            return new DefaultHttpClient(manager, params);
+        } catch (Exception e) {
+            return new DefaultHttpClient();
+        }
+    }
 
-	/**
-	 * Method returns trusted socket factory with hostname verifying
-	 *
-	 * @return new trusted ssl factory
-	 */
-	private static SSLSocketFactory newSslSocketFactory() {
-		try {
+    /**
+     * Method returns trusted socket factory with hostname verifying
+     *
+     * @return new trusted ssl factory
+     */
+    private static SSLSocketFactory newSslSocketFactory() {
+        try {
             KeyStore trusted = KeyStore.getInstance(KeyStore.getDefaultType());
             trusted.load(null, null);  //TODO Temporary solution. It has to be changed to verify Syncano's certificate instead of accepting the cert without verifying.
 
-			SSLSocketFactory sf = new MySSLSocketFactory(trusted);
-			sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+            SSLSocketFactory sf = new MySSLSocketFactory(trusted);
+            sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
 //			sf.setHostnameVerifier(SSLSocketFactory.STRICT_HOSTNAME_VERIFIER);
-			return sf;
-		} catch (Exception e) {
-			throw new AssertionError(e);
-		}
-	}
+            return sf;
+        } catch (Exception e) {
+            throw new AssertionError(e);
+        }
+    }
 
-	/**
-	 * Method to close connection with server
-	 */
-	public void close() {
-		if (httpclient != null) {
-			try {
-				httpclient.getConnectionManager().shutdown();
-			} catch (Exception e) {
-				Log.e(LOG_TAG, "Error while shutting down http client: " + e.toString());
-			}
-		}
+    /**
+     * Method to close connection with server
+     */
+    public void close() {
+        if (httpclient != null) {
+            try {
+                httpclient.getConnectionManager().shutdown();
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Error while shutting down http client: " + e.toString());
+            }
+        }
 
-	}
+    }
 
     //TODO Temporary solution. It has to be changed to verify Syncano's certificate instead of accepting the cert without verifying.
     public static class MySSLSocketFactory extends SSLSocketFactory {
@@ -336,7 +340,7 @@ public class SyncanoHttpClient {
                 }
             };
 
-            sslContext.init(null, new TrustManager[] { tm }, null);
+            sslContext.init(null, new TrustManager[]{tm}, null);
         }
 
         @Override

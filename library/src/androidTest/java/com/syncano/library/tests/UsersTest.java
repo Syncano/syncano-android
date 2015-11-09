@@ -2,7 +2,6 @@ package com.syncano.library.tests;
 
 import com.syncano.library.Constants;
 import com.syncano.library.SyncanoApplicationTestCase;
-import com.syncano.library.TestSyncanoClass;
 import com.syncano.library.TestUserClass;
 import com.syncano.library.TestUserProfileClass;
 import com.syncano.library.api.Response;
@@ -18,9 +17,6 @@ import java.util.List;
  */
 public class UsersTest extends SyncanoApplicationTestCase {
 
-    private static final String TAG = UsersTest.class.getSimpleName();
-
-
     private static final String USER_NAME = "testuser";
     private static final String PASSWORD = "password";
     private static final String NEW_PASSWORD = "new_password";
@@ -32,8 +28,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
 
         Response<User> responseUserAuth = syncano.authUser(USER_NAME, PASSWORD).send();
 
-        if (responseUserAuth.isOk() && responseUserAuth.getData() != null)
-        {
+        if (responseUserAuth.isOk() && responseUserAuth.getData() != null) {
             // Make sure there is no test user
             syncano.deleteUser(responseUserAuth.getData().getId()).send();
         }
@@ -41,8 +36,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
         // If test failed after password change
         Response<User> responseUserNewAuth = syncano.authUser(USER_NAME, NEW_PASSWORD).send();
 
-        if (responseUserNewAuth.isOk() && responseUserNewAuth.getData() != null)
-        {
+        if (responseUserNewAuth.isOk() && responseUserNewAuth.getData() != null) {
             // Make sure there is no test user
             syncano.deleteUser(responseUserNewAuth.getData().getId()).send();
         }
@@ -54,7 +48,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
         User user;
 
         // ----------------- Create -----------------
-        Response <User> responseCreateUser = syncano.createUser(newUser).send();
+        Response<User> responseCreateUser = syncano.createUser(newUser).send();
 
         assertEquals(Response.HTTP_CODE_CREATED, responseCreateUser.getHttpResultCode());
         assertNotNull(responseCreateUser.getData());
@@ -62,27 +56,27 @@ public class UsersTest extends SyncanoApplicationTestCase {
 
         // ----------------- Get Profile -----------------
         assertNotNull(user.getProfile());
-        Response <Profile> responseGetProfile = syncano.getObject(Profile.class, user.getProfile().getId()).send();
+        Response<Profile> responseGetProfile = syncano.getObject(Profile.class, user.getProfile().getId()).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetProfile.getHttpResultCode());
         assertNotNull(responseGetProfile.getData());
 
         // ----------------- Get One -----------------
-        Response <User> responseGetUser = syncano.getUser(user.getId()).send();
+        Response<User> responseGetUser = syncano.getUser(user.getId()).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetUser.getHttpResultCode());
         assertNotNull(responseGetUser.getData());
         assertEquals(user.getUserName(), responseGetUser.getData().getUserName());
 
         // ----------------- Get List -----------------
-        Response <List<User>> responseGetUsers = syncano.getUsers().send();
+        Response<List<User>> responseGetUsers = syncano.getUsers().send();
 
         assertNotNull(responseGetUsers.getData());
         assertTrue("List should contain at least one item.", responseGetUsers.getData().size() > 0);
 
         // ----------------- Update -----------------
         user.setPassword(NEW_PASSWORD);
-        Response <User> responseUpdateUser = syncano.updateUser(user).send();
+        Response<User> responseUpdateUser = syncano.updateUser(user).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdateUser.getHttpResultCode());
         assertNotNull(responseUpdateUser.getData());
@@ -100,7 +94,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
         syncano.setUserKey(responseUserAuth.getData().getUserKey());
 
         // ----------------- Delete -----------------
-        Response <User> responseDeleteUser = syncano.deleteUser(user.getId()).send();
+        Response<User> responseDeleteUser = syncano.deleteUser(user.getId()).send();
 
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteUser.getHttpResultCode());
     }
@@ -108,7 +102,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
     public void testCustomUsers() throws InterruptedException {
 
         // ----------------- Get Profile Class -----------------
-        Response <SyncanoClass> responseGetProfileClass = syncano.getSyncanoClass(Constants.USER_PROFILE_CLASS_NAME).send();
+        Response<SyncanoClass> responseGetProfileClass = syncano.getSyncanoClass(Constants.USER_PROFILE_CLASS_NAME).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetProfileClass.getHttpResultCode());
         assertNotNull(responseGetProfileClass.getData());
@@ -116,7 +110,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
 
         // ----------------- Update Profile Class -----------------
         profileClass.setSchema(TestUserProfileClass.getSchema());
-        Response <SyncanoClass> responseUpdateProfileClass = syncano.updateSyncanoClass(profileClass).send();
+        Response<SyncanoClass> responseUpdateProfileClass = syncano.updateSyncanoClass(profileClass).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdateProfileClass.getHttpResultCode());
         assertNotNull(responseUpdateProfileClass.getData());
@@ -127,7 +121,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
         TestUserProfileClass testUserProfile;
 
         // ----------------- Create -----------------
-        Response <TestUserClass> responseCreateUser = syncano.createCustomUser(newUser).send();
+        Response<TestUserClass> responseCreateUser = syncano.createCustomUser(newUser).send();
 
         assertEquals(Response.HTTP_CODE_CREATED, responseCreateUser.getHttpResultCode());
         assertNotNull(responseCreateUser.getData());
@@ -136,7 +130,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
 
         // ----------------- Get Profile -----------------
         assertNotNull(user.getProfile());
-        Response <TestUserProfileClass> responseGetProfile = syncano.getObject(TestUserProfileClass.class, user.getProfile().getId()).send();
+        Response<TestUserProfileClass> responseGetProfile = syncano.getObject(TestUserProfileClass.class, user.getProfile().getId()).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetProfile.getHttpResultCode());
         assertNotNull(responseGetProfile.getData());
@@ -144,13 +138,16 @@ public class UsersTest extends SyncanoApplicationTestCase {
         // ----------------- Update Profile -----------------
         testUserProfile.valueOne = "one";
         testUserProfile.valueTwo = "two";
-        Response <TestSyncanoClass> responseUpdateProfile = syncano.updateObject(testUserProfile).send();
+        Response<TestUserProfileClass> responseUpdateProfile = syncano.updateObject(testUserProfile).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdateProfile.getHttpResultCode());
-        assertNotNull(responseUpdateProfile.getData());
+        TestUserProfileClass returnedUserProfile = responseUpdateProfile.getData();
+        assertNotNull(returnedUserProfile);
+        assertEquals(returnedUserProfile.valueOne, testUserProfile.valueOne);
+        assertEquals(returnedUserProfile.valueTwo, testUserProfile.valueTwo);
 
         // ----------------- Get One -----------------
-        Response <TestUserClass> responseGetUser = syncano.getCustomUser(TestUserClass.class, user.getId()).send();
+        Response<TestUserClass> responseGetUser = syncano.getCustomUser(TestUserClass.class, user.getId()).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetUser.getHttpResultCode());
         assertNotNull(responseGetUser.getData());
@@ -159,7 +156,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
         assertEquals(testUserProfile.valueTwo, responseGetUser.getData().getProfile().valueTwo);
 
         // ----------------- Get List -----------------
-        Response <List<TestUserClass>> responseGetUsers = syncano.getCustomUsers(TestUserClass.class).send();
+        Response<List<TestUserClass>> responseGetUsers = syncano.getCustomUsers(TestUserClass.class).send();
 
         assertNotNull(responseGetUsers.getData());
         assertTrue("List should contain at least one item.", responseGetUsers.getData().size() > 0);
@@ -173,7 +170,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
 
         // ----------------- Update -----------------
         user.setPassword(NEW_PASSWORD);
-        Response <TestUserClass> responseUpdateUser = syncano.updateCustomUser(user).send();
+        Response<TestUserClass> responseUpdateUser = syncano.updateCustomUser(user).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdateUser.getHttpResultCode());
         assertNotNull(responseUpdateUser.getData());
@@ -187,7 +184,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
         assertNotNull(responseUserAuthNewPass.getData().getUserKey());
 
         // ----------------- Delete -----------------
-        Response <TestUserClass> responseDeleteUser = syncano.deleteUser(TestUserClass.class, user.getId()).send();
+        Response<TestUserClass> responseDeleteUser = syncano.deleteUser(TestUserClass.class, user.getId()).send();
 
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteUser.getHttpResultCode());
     }

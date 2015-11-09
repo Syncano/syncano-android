@@ -17,8 +17,6 @@ import java.util.List;
  */
 public class FieldsFilterTest extends SyncanoApplicationTestCase {
 
-    private static final String TAG = FieldsFilterTest.class.getSimpleName();
-
     private CodeBox codeBox;
 
     @Override
@@ -47,10 +45,10 @@ public class FieldsFilterTest extends SyncanoApplicationTestCase {
     }
 
     public void testGetOneFilter() {
-        RequestGet requestGet = syncano.getCodeBox(codeBox.getId());
+        RequestGet<CodeBox> requestGet = syncano.getCodeBox(codeBox.getId());
         FieldsFilter filter = new FieldsFilter(FieldsFilter.FilterType.INCLUDE_FIELDS, Arrays.asList(CodeBox.FIELD_ID, CodeBox.FIELD_LABEL));
         requestGet.setFieldsFilter(filter);
-        Response <CodeBox> responseGetCodeBox = requestGet.send();
+        Response<CodeBox> responseGetCodeBox = requestGet.send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetCodeBox.getHttpResultCode());
         assertNotNull(responseGetCodeBox.getData());
@@ -59,10 +57,10 @@ public class FieldsFilterTest extends SyncanoApplicationTestCase {
     }
 
     public void testGetManyFilter() {
-        RequestGetList requestGetList = syncano.getCodeBoxes();
+        RequestGetList<CodeBox> requestGetList = syncano.getCodeBoxes();
         FieldsFilter filter = new FieldsFilter(FieldsFilter.FilterType.INCLUDE_FIELDS, Arrays.asList(CodeBox.FIELD_ID, CodeBox.FIELD_LABEL));
         requestGetList.setFieldsFilter(filter);
-        Response <List<CodeBox>> responseGetCodeBoxes = requestGetList.send();
+        Response<List<CodeBox>> responseGetCodeBoxes = requestGetList.send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetCodeBoxes.getHttpResultCode());
         assertNotNull(responseGetCodeBoxes.getData());

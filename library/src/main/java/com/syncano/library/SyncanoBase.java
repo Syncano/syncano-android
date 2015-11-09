@@ -17,8 +17,6 @@ import java.util.concurrent.Executors;
 
 public abstract class SyncanoBase {
 
-    private static final String TAG = SyncanoBase.class.getSimpleName();
-
     protected String customServerUrl;
     protected String apiKey;
     protected String userKey;
@@ -48,6 +46,7 @@ public abstract class SyncanoBase {
 
     /**
      * User authentication key used for all requests.
+     *
      * @return User authentication key.
      */
     public String getUserKey() {
@@ -57,6 +56,7 @@ public abstract class SyncanoBase {
     /**
      * Setting user key here will cause adding it automatically to every request just before it's sent. To get
      * authorization key, use authUser method on Syncano object.
+     *
      * @param userKey After authUser, it's available under user.getUserKey().
      */
     public void setUserKey(String userKey) {
@@ -90,10 +90,11 @@ public abstract class SyncanoBase {
 
     /**
      * Send synchronous http request.
+     *
      * @param syncanoRequest Request with url, method and parameters.
      * @return Response for request.
      */
-    public Response request(Request<?> syncanoRequest) {
+    public <T> Response<T> request(Request<T> syncanoRequest) {
 
         SyncanoHttpClient http = new SyncanoHttpClient();
         http.setTimeout(0);
@@ -115,8 +116,9 @@ public abstract class SyncanoBase {
      * Send asynchronous http request. There asynchronous requests may
      * be executed same time (three Threads). If there is more requests, they
      * are waiting in queue.
+     *
      * @param syncanoRequest Request with url, method and parameters.
-     * @param callback Callback to notify when request receives response.
+     * @param callback       Callback to notify when request receives response.
      */
     public <T> void requestAsync(final Request<T> syncanoRequest, final SyncanoCallback<T> callback) {
         final Handler handler = new Handler(Looper.getMainLooper());

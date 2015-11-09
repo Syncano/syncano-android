@@ -68,9 +68,9 @@ public class Syncano extends SyncanoBase {
      * @param <T>    Result type.
      * @return New DataObject.
      */
-    public <T extends SyncanoObject> RequestPost createObject(T object) {
+    public <T extends SyncanoObject> RequestPost<T> createObject(T object) {
 
-        Class<?> type = object.getClass();
+        Class<T> type = (Class<T>) object.getClass();
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_LIST_URL, getInstance(), className);
         return new RequestPost<>(type, url, this, object);
@@ -84,7 +84,7 @@ public class Syncano extends SyncanoBase {
      * @param <T>  Result type.
      * @return Existing DataObject.
      */
-    public <T extends SyncanoObject> RequestGetOne getObject(Class<T> type, int id) {
+    public <T extends SyncanoObject> RequestGetOne<T> getObject(Class<T> type, int id) {
 
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstance(), className, id);
@@ -98,7 +98,7 @@ public class Syncano extends SyncanoBase {
      * @param <T>  Result type.
      * @return List of DataObjects.
      */
-    public <T extends SyncanoObject> RequestGetList getObjects(Class<T> type) {
+    public <T extends SyncanoObject> RequestGetList<T> getObjects(Class<T> type) {
 
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_LIST_URL, getInstance(), className);
@@ -112,13 +112,13 @@ public class Syncano extends SyncanoBase {
      * @param <T>    Result type.
      * @return Updated DataObject.
      */
-    public <T extends SyncanoObject> RequestPatch updateObject(T object) {
+    public <T extends SyncanoObject> RequestPatch<T> updateObject(T object) {
 
         if (object.getId() == 0) {
             throw new RuntimeException("Trying to update object without id!");
         }
 
-        Class<?> type = object.getClass();
+        Class<T> type = (Class<T>) object.getClass();
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstance(), className, object.getId());
         return new RequestPatch<>(type, url, this, object);
@@ -404,8 +404,8 @@ public class Syncano extends SyncanoBase {
      * @param user User to create.
      * @return created User
      */
-    public <T extends AbstractUser> RequestPost createCustomUser(T user) {
-        Class<?> type = user.getClass();
+    public <T extends AbstractUser> RequestPost<T> createCustomUser(T user) {
+        Class<T> type = (Class<T>) user.getClass();
         String url = String.format(Constants.USERS_LIST_URL, getInstance());
         return new RequestPost<>(type, url, this, user);
     }
@@ -428,7 +428,7 @@ public class Syncano extends SyncanoBase {
      * @param id Id of existing User.
      * @return requested user
      */
-    public <T extends AbstractUser> RequestGetOne getCustomUser(Class<T> type, int id) {
+    public <T extends AbstractUser> RequestGetOne<T> getCustomUser(Class<T> type, int id) {
 
         String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), id);
         return new RequestGetOne<>(type, url, this);
@@ -450,7 +450,7 @@ public class Syncano extends SyncanoBase {
      *
      * @return requested users
      */
-    public <T extends AbstractUser> RequestGetList getCustomUsers(Class<T> type) {
+    public <T extends AbstractUser> RequestGetList<T> getCustomUsers(Class<T> type) {
 
         String url = String.format(Constants.USERS_LIST_URL, getInstance());
         return new RequestGetList<>(type, url, this);
@@ -478,13 +478,13 @@ public class Syncano extends SyncanoBase {
      * @param user User to update. It need to have id.
      * @return updated user
      */
-    public <T extends AbstractUser> RequestPatch updateCustomUser(T user) {
+    public <T extends AbstractUser> RequestPatch<T> updateCustomUser(T user) {
 
         if (user.getId() == 0) {
             throw new RuntimeException("Trying to update User without id!");
         }
 
-        Class<?> type = user.getClass();
+        Class<T> type = (Class<T>) user.getClass();
         String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), user.getId());
         return new RequestPatch<>(type, url, this, user);
     }
@@ -507,7 +507,7 @@ public class Syncano extends SyncanoBase {
      * @param id Id of existing User.
      * @return Information about success or error
      */
-    public <T extends AbstractUser> RequestDelete deleteUser(Class<T> type, int id) {
+    public <T extends AbstractUser> RequestDelete<T> deleteUser(Class<T> type, int id) {
 
         String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), id);
         return new RequestDelete<>(type, url, this);
@@ -538,7 +538,7 @@ public class Syncano extends SyncanoBase {
      * @param password User password.
      * @return user
      */
-    public <T extends AbstractUser> RequestPost authCustomUser(Class<T> type, String username, String password) {
+    public <T extends AbstractUser> RequestPost<T> authCustomUser(Class<T> type, String username, String password) {
 
         String url = String.format(Constants.USER_AUTH, getInstance());
 
