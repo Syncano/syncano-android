@@ -300,6 +300,17 @@ public class Syncano extends SyncanoBase {
      * @param name Webhook id.
      * @return Result of executed CodeBox.
      */
+    public RequestPost<Trace> runWebhook(String name) {
+
+        return runWebhook(name, null);
+    }
+
+    /**
+     * Run a Webhook synchronous. It should contain result of associated CodeBox.
+     *
+     * @param name Webhook id.
+     * @return Result of executed CodeBox.
+     */
     public RequestPost<Trace> runWebhook(String name, JsonObject params) {
 
         String url = String.format(Constants.WEBHOOKS_RUN_URL, getInstance(), name);
