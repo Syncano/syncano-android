@@ -132,7 +132,7 @@ public class Syncano extends SyncanoBase {
      * @param <T>  Result type.
      * @return null
      */
-    public <T extends SyncanoObject> RequestDelete deleteObject(Class<T> type, int id) {
+    public <T extends SyncanoObject> RequestDelete<T> deleteObject(Class<T> type, int id) {
 
         String className = getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstance(), className, id);

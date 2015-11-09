@@ -81,8 +81,8 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
     }
 
     public void testWhereFilter() {
-        TestSyncanoClass objectOne = (TestSyncanoClass) syncano.createObject(new TestSyncanoClass("User", "One")).send().getData();
-        TestSyncanoClass objectTwo = (TestSyncanoClass) syncano.createObject(new TestSyncanoClass("User", "Two")).send().getData();
+        TestSyncanoClass objectOne = syncano.createObject(new TestSyncanoClass("User", "One")).send().getData();
+        TestSyncanoClass objectTwo = syncano.createObject(new TestSyncanoClass("User", "Two")).send().getData();
 
         Where where = new Where();
         where.eq(TestSyncanoClass.FIELD_ID, objectOne.getId()).neq(TestSyncanoClass.FIELD_ID, objectTwo.getId());
@@ -101,8 +101,8 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
     }
 
     public void testOrderBy() {
-        TestSyncanoClass objectOne = (TestSyncanoClass) syncano.createObject(new TestSyncanoClass("User", "One")).send().getData();
-        TestSyncanoClass objectTwo = (TestSyncanoClass) syncano.createObject(new TestSyncanoClass("User", "Two")).send().getData();
+        TestSyncanoClass objectOne = syncano.createObject(new TestSyncanoClass("User", "One")).send().getData();
+        TestSyncanoClass objectTwo = syncano.createObject(new TestSyncanoClass("User", "Two")).send().getData();
 
         RequestGetList<TestSyncanoClass> requestGetList = syncano.getObjects(TestSyncanoClass.class);
         requestGetList.setOrderBy(TestSyncanoClass.FIELD_ID, true);
@@ -119,8 +119,8 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
     }
 
     public void testPageSize() {
-        TestSyncanoClass objectOne = (TestSyncanoClass) syncano.createObject(new TestSyncanoClass("User", "One")).send().getData();
-        TestSyncanoClass objectTwo = (TestSyncanoClass) syncano.createObject(new TestSyncanoClass("User", "Two")).send().getData();
+        TestSyncanoClass objectOne = syncano.createObject(new TestSyncanoClass("User", "One")).send().getData();
+        TestSyncanoClass objectTwo = syncano.createObject(new TestSyncanoClass("User", "Two")).send().getData();
 
         int limitItems = 1;
 
