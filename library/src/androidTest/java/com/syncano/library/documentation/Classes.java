@@ -12,7 +12,7 @@ public class Classes extends SyncanoApplicationTestCase {
 
         String className = "testsyncanoclass";
         JsonArray schema = TestSyncanoClass.getSchema();
-        syncano.deleteSyncanoClass(className);
+        syncano.deleteSyncanoClass(className).send();
 
         // ---------- Creating a Class
         SyncanoClass syncanoClass = new SyncanoClass(className, schema);
