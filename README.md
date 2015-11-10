@@ -3,16 +3,16 @@
 ## Overview
 ---
 
-Syncano's Android library is written in Java and provides communication with Syncano ([www.syncano.io](http://www.syncano.io/)) via HTTPS RESTful interface.
+Syncano's Android library is written in Java and provides communication with Syncano ([www.syncano.io](http://www.syncano.io/?utm_source=github&utm_medium=readme&utm_campaign=syncano-android)) via HTTPS RESTful interface.
 
 The full source code can be found on [Github](https://github.com/Syncano/syncano-android) - feel free to browse or contribute.
 
 ## Android QuickStart Guide
 ---
 
-You can find quick start on installing and using Syncano's Android library in our [documentation](http://docs.syncano.com/docs/android).
+You can find quick start on installing and using Syncano's Android library in our [documentation](http://docs.syncano.com/docs/android/?utm_source=github&utm_medium=readme&utm_campaign=syncano-android).
 
-For more detailed information on how to use Syncano and its features - our [Developer Manual](http://docs.syncano.com/docs/getting-started-with-syncano) should be very helpful.
+For more detailed information on how to use Syncano and its features - our [Developer Manual](http://docs.syncano.com/docs/getting-started-with-syncano/?utm_source=github&utm_medium=readme&utm_campaign=syncano-android) should be very helpful.
 
 In case you need help working with the library - email us at libraries@syncano.com - we will be happy to help!
 
