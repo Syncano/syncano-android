@@ -11,9 +11,10 @@ test:
     # wait for it to have booted
     - circle-android wait-for-boot
     # run tests  against the emulator.
-    - ./gradlew connectedCheck
+    - gradle connectedCheck
     # copy the build outputs to artifacts
-    - cp -r /home/ubuntu/syncano-android/library/build/outputs/reports $CIRCLE_ARTIFACTS
-    - adb logcat -d >> $CIRCLE_ARTIFACTS/logcat.txt
+    - cp -r /home/ubuntu/syncano-android/library/build/reports ARTIFACTS
+    - adb logcat -d >> ARTIFACTS/logcat.txt
     # copy the test results to the test results directory.
-    - cp -r /home/ubuntu/syncano-android/library/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
+    - cp -r /home/ubuntu/syncano-android/library/build/outputs/androidTest-results/* TEST_REPORTS
+    
