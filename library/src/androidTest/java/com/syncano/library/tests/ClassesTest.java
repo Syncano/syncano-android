@@ -19,11 +19,6 @@ import java.util.List;
  */
 public class ClassesTest extends SyncanoApplicationTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
     public void testClasses() throws InterruptedException {
 
         String className = Syncano.getSyncanoClassName(TestSyncanoClass.class);
