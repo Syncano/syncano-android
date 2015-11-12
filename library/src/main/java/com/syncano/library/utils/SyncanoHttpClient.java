@@ -116,7 +116,12 @@ public class SyncanoHttpClient {
 
         String parameters = syncanoRequest.prepareParams();
 
-        String url = serverUrl + syncanoRequest.getUrl() + urlParameters;
+        String url;
+        if (syncanoRequest.getCompleteCustomUrl() != null) {
+            url = syncanoRequest.getCompleteCustomUrl() + urlParameters;
+        } else {
+            url = serverUrl + syncanoRequest.getUrl() + urlParameters;
+        }
 
         if (BuildConfig.DEBUG) {
             Log.d(TAG, "Request: " + syncanoRequest.getRequestMethod() + "  " + url);

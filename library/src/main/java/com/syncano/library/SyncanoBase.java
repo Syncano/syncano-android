@@ -99,7 +99,9 @@ public abstract class SyncanoBase {
         SyncanoHttpClient http = new SyncanoHttpClient();
         http.setTimeout(0);
 
-        syncanoRequest.setHttpHeader("X-API-KEY", apiKey);
+        if (apiKey != null && !apiKey.isEmpty()) {
+            syncanoRequest.setHttpHeader("X-API-KEY", apiKey);
+        }
 
         if (userKey != null && !userKey.isEmpty()) {
             syncanoRequest.setHttpHeader("X-USER-KEY", userKey);

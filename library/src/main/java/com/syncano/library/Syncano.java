@@ -25,6 +25,22 @@ public class Syncano extends SyncanoBase {
 
     /**
      * Create Syncano object.
+     */
+    public Syncano() {
+        super(null, null);
+    }
+
+    /**
+     * Create Syncano object.
+     *
+     * @param instance Syncano instance related with apiKey.
+     */
+    public Syncano(String instance) {
+        super(null, instance);
+    }
+
+    /**
+     * Create Syncano object.
      *
      * @param apiKey   Api key.
      * @param instance Syncano instance related with apiKey.
@@ -311,10 +327,20 @@ public class Syncano extends SyncanoBase {
      * @param name Webhook id.
      * @return Result of executed CodeBox.
      */
-    public RequestPost<Trace> runWebhook(String name, JsonObject params) {
+    public RequestPost<Trace> runWebhook(String name, JsonObject payload) {
 
         String url = String.format(Constants.WEBHOOKS_RUN_URL, getInstance(), name);
-        return new RequestPost<>(Trace.class, url, this, params);
+        return new RequestPost<>(Trace.class, url, this, payload);
+    }
+
+    public RequestPost<Trace> runWebhookUrl(String url) {
+        return runWebhookUrl(url, null);
+    }
+
+    public RequestPost<Trace> runWebhookUrl(String url, JsonObject payload) {
+        RequestPost<Trace> request = new RequestPost<>(Trace.class, null, this, payload);
+        request.setCompleteCustomUrl(url);
+        return request;
     }
 
     // ==================== Classes ==================== //

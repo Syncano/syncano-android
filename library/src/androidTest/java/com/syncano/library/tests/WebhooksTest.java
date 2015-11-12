@@ -1,5 +1,7 @@
 package com.syncano.library.tests;
 
+import com.syncano.library.Config;
+import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.RuntimeName;
@@ -51,7 +53,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
 
     public void testWebhooks() throws InterruptedException {
 
-        final Webhook newWebhook = new Webhook(NAME, codeBox.getId());
+        Webhook newWebhook = new Webhook(NAME, codeBox.getId());
         Webhook webhook;
 
         // ----------------- Create -----------------
@@ -87,6 +89,12 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
 
         assertNotNull(responseGetWebhooks.getData());
         assertTrue("List should contain at least one item.", responseGetWebhooks.getData().size() > 0);
+
+        // ----------------- Run without key-----------------
+        Syncano noKeySyncano = new Syncano(Config.INSTANCE_NAME);
+        Response<Trace> responseRunNoKey = noKeySyncano.runWebhook(NAME).send();
+
+        assertEquals(responseRunNoKey.getHttpReasonPhrase(), Response.HTTP_CODE_FORBIDDEN, responseRunNoKey.getHttpResultCode());
 
         // ----------------- Run -----------------
         Response<Trace> responseRunWebhook = syncano.runWebhook(NAME).send();

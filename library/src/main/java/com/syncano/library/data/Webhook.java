@@ -9,6 +9,8 @@ public class Webhook {
     public static final String FIELD_CODEBOX = "codebox";
     public static final String FIELD_PUBLIC_LINK = "public_link";
     public static final String FIELD_PUBLIC = "public";
+    public static final String FIELD_DESCRIPTION = "description";
+    public static final String FIELD_LINKS = "links";
 
     @SyncanoField(name = FIELD_NAME, readOnly = true, required = true)
     private String name;
@@ -21,6 +23,12 @@ public class Webhook {
 
     @SyncanoField(name = FIELD_PUBLIC)
     private boolean isPublic;
+
+    @SyncanoField(name = FIELD_DESCRIPTION)
+    private String description;
+
+    @SyncanoField(name = FIELD_LINKS, readOnly = true)
+    private WebHookLinks links;
 
     public Webhook() {
     }
@@ -60,5 +68,36 @@ public class Webhook {
 
     public void setIsPublic(boolean isPublic) {
         this.isPublic = isPublic;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public WebHookLinks getLinks() {
+        return links;
+    }
+
+    public void setLinks(WebHookLinks links) {
+        this.links = links;
+    }
+
+    public static class WebHookLinks {
+        @SyncanoField(name = "reset-link")
+        public String resetLink;
+        @SyncanoField(name = "codebox")
+        public String codebox;
+        @SyncanoField(name = "run")
+        public String run;
+        @SyncanoField(name = "public-link")
+        public String publicLink;
+        @SyncanoField(name = "self")
+        public String self;
+        @SyncanoField(name = "traces")
+        public String traces;
     }
 }

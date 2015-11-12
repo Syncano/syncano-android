@@ -19,6 +19,7 @@ public abstract class Request<T> {
     private List<NameValuePair> urlParams = new ArrayList<>();
     private List<NameValuePair> httpHeaders = new ArrayList<>();
     private String url;
+    private String completeCustomUrl;
     private Syncano syncano;
 
     protected Request(String url, Syncano syncano) {
@@ -120,5 +121,13 @@ public abstract class Request<T> {
 
     public void sendAsync(SyncanoCallback<T> callback) {
         syncano.requestAsync(this, callback);
+    }
+
+    public String getCompleteCustomUrl() {
+        return completeCustomUrl;
+    }
+
+    public void setCompleteCustomUrl(String completeCustomUrl) {
+        this.completeCustomUrl = completeCustomUrl;
     }
 }
