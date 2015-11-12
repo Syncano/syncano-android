@@ -1,7 +1,5 @@
 package com.syncano.library.data;
 
-
-import com.google.gson.JsonObject;
 import com.syncano.library.annotation.SyncanoField;
 
 import java.util.Date;
@@ -13,6 +11,8 @@ public class Trace {
     public static final String FIELD_DURATION = "duration";
     public static final String FIELD_RESULT = "result";
     public static final String FIELD_EXECUTED_AT = "executed_at";
+    public static final String FIELD_STDERR = "stderr";
+    public static final String FIELD_STDOUT = "stdout";
 
     @SyncanoField(name = FIELD_ID, readOnly = true)
     private int id;
@@ -24,7 +24,7 @@ public class Trace {
     private int duration;
 
     @SyncanoField(name = FIELD_RESULT, readOnly = true)
-    private JsonObject result;
+    private TraceResult result;
 
     @SyncanoField(name = FIELD_EXECUTED_AT, readOnly = true)
     private Date executedAt;
@@ -53,11 +53,11 @@ public class Trace {
         this.duration = duration;
     }
 
-    public JsonObject getResult() {
+    public TraceResult getResult() {
         return result;
     }
 
-    public void setResult(JsonObject result) {
+    public void setResult(TraceResult result) {
         this.result = result;
     }
 
@@ -67,5 +67,12 @@ public class Trace {
 
     public void setExecutedAt(Date executedAt) {
         this.executedAt = executedAt;
+    }
+
+    public static class TraceResult {
+        @SyncanoField(name = FIELD_STDERR, readOnly = true)
+        public String stderr;
+        @SyncanoField(name = FIELD_STDOUT, readOnly = true)
+        public String stdout;
     }
 }

@@ -25,6 +25,7 @@ public class GsonHelper {
         gsonBuilder.registerTypeAdapter(Date.class, new DateSerializer());
         gsonBuilder.registerTypeAdapter(Date.class, new DateDeserializer());
         gsonBuilder.addSerializationExclusionStrategy(new SyncanoSerializationStrategy());
+        gsonBuilder.addDeserializationExclusionStrategy(new SyncanoDeserializationStrategy());
         gsonBuilder.setFieldNamingStrategy(new SyncanoFieldNamingStrategy());
         return gsonBuilder.create();
     }
@@ -50,10 +51,27 @@ public class GsonHelper {
 
             // Don't serialize read only fields (like "id" or "created_at").
             // We want only to receive it, not send.
-            if (syncanoField == null || (syncanoField.readOnly() == true && syncanoField.required() == false )) {
+            if (syncanoField == null || (syncanoField.readOnly() && !syncanoField.required())) {
                 return true;
             }
 
+            return false;
+        }
+
+        @Override
+        public boolean shouldSkipClass(Class<?> clazz) {
+            return false;
+        }
+    }
+
+    private static class SyncanoDeserializationStrategy implements ExclusionStrategy {
+
+        @Override
+        public boolean shouldSkipField(FieldAttributes f) {
+            SyncanoField syncanoField = f.getAnnotation(SyncanoField.class);
+            if (syncanoField == null) {
+                return true;
+            }
             return false;
         }
 

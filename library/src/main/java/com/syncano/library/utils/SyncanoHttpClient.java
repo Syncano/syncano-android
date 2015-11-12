@@ -170,27 +170,34 @@ public class SyncanoHttpClient {
                 Log.d(LOG_TAG, "HTTP Response: " + response.getStatusLine().getStatusCode() + "  " + response.getStatusLine().getReasonPhrase());
             }
 
-            if (response.getStatusLine().getStatusCode() >= 200 && response.getStatusLine().getStatusCode() < 400) {
-                // For some requests it may be null (for example: DELETE).
-                if (response.getEntity() != null) {
-                    is = response.getEntity().getContent();
-                    Header contentEncoding = response.getFirstHeader("Content-Encoding");
-                    if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
-                        is = new GZIPInputStream(is);
-                    }
+            // download response data
+            String json = null;
+            if (response.getEntity() != null) {
+                is = response.getEntity().getContent();
+                Header contentEncoding = response.getFirstHeader("Content-Encoding");
+                if (contentEncoding != null && contentEncoding.getValue().equalsIgnoreCase("gzip")) {
+                    is = new GZIPInputStream(is);
+                }
 
-                    byte[] data = readToByteArray(is);
-                    if (data != null) {
-                        String json = new String(data);
-                        if (BuildConfig.DEBUG) {
-                            Log.d(TAG, "Received: " + json);
-                        }
-                        syncanoResponse.setData(syncanoRequest.parseResult(json));
+                byte[] data = readToByteArray(is);
+                if (data != null) {
+                    json = new String(data);
+                    if (BuildConfig.DEBUG) {
+                        Log.d(TAG, "Received: " + json);
                     }
                 }
+            }
+
+            // when request succeeded parse data, otherwise set error flags
+            if (response.getStatusLine().getStatusCode() >= 200 && response.getStatusLine().getStatusCode() < 400) {
+                // For some requests it may be null (for example: DELETE).
+                syncanoResponse.setData(syncanoRequest.parseResult(json));
             } else {
                 syncanoResponse.setResultCode(Response.CODE_HTTP_ERROR);
                 syncanoResponse.setError("Http error.");
+                if (json != null) {
+                    syncanoResponse.setError(json);
+                }
             }
         } catch (IllegalStateException e) {
             Log.w(LOG_TAG, "IllegalStateException");

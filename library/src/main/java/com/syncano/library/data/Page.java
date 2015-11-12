@@ -1,18 +1,18 @@
 package com.syncano.library.data;
 
-import com.google.gson.annotations.Expose;
+import com.syncano.library.annotation.SyncanoField;
 
 import java.util.List;
 
 public class Page<T> {
 
-    @Expose(deserialize = true, serialize = false)
+    @SyncanoField(name = "prev", readOnly = true)
     private String prev;
 
-    @Expose(deserialize = true, serialize = false)
+    @SyncanoField(name = "objects", readOnly = true)
     private List<T> objects;
 
-    @Expose(deserialize = true, serialize = false)
+    @SyncanoField(name = "next", readOnly = true)
     private String next;
 
     public String getPrev() {

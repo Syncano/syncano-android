@@ -50,7 +50,9 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         this.syncano = super.syncano;
-        syncano.deleteSyncanoClass("book").send();
+        Response<com.syncano.library.data.SyncanoClass> respDelete = syncano.deleteSyncanoClass("book").send();
+        assertEquals(Response.HTTP_CODE_NO_CONTENT, respDelete.getHttpResultCode());
+
         com.syncano.library.data.SyncanoClass syncanoClass = new com.syncano.library.data.SyncanoClass("book", getBookSchema());
         Response<com.syncano.library.data.SyncanoClass> response = syncano.createSyncanoClass(syncanoClass).send();
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
@@ -218,13 +220,13 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
     private static JsonArray getBookSchema() {
         JsonObject fieldOne = new JsonObject();
         fieldOne.addProperty("type", "string");
-        fieldOne.addProperty("name", "subtitle");
+        fieldOne.addProperty("name", Book.FIELD_SUBTITLE);
         fieldOne.addProperty("order_index", true);
         fieldOne.addProperty("filter_index", true);
 
         JsonObject fieldTwo = new JsonObject();
         fieldTwo.addProperty("type", "string");
-        fieldTwo.addProperty("name", "title");
+        fieldTwo.addProperty("name", Book.FIELD_TITLE);
         fieldTwo.addProperty("order_index", true);
         fieldTwo.addProperty("filter_index", true);
 
