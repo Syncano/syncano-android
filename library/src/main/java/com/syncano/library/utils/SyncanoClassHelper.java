@@ -45,11 +45,19 @@ public class SyncanoClassHelper {
 
             JsonObject fieldDescription = new JsonObject();
             String typeName = findType(field, fieldAnnotation);
-            if (typeName != null) {
-                fieldDescription.addProperty(Constants.FIELD_TYPE, typeName);
-            } else {
+            if (typeName == null) {
                 continue;
             }
+
+            if (typeName.equals(Constants.FIELD_TYPE_REFERENCE)) {
+                String target = fieldAnnotation.target();
+                if (target == null || target.isEmpty()) {
+                    throw new RuntimeException("Field type " + typeName + " has to be declared together with " + Constants.FIELD_TARGET);
+                } else {
+                    fieldDescription.addProperty(Constants.FIELD_TARGET, target);
+                }
+            }
+            fieldDescription.addProperty(Constants.FIELD_TYPE, typeName);
             fieldDescription.addProperty(Constants.FIELD_NAME, fieldAnnotation.name());
             if (fieldAnnotation.filterIndex()) {
                 fieldDescription.addProperty(Constants.FIELD_FILTER_INDEX, true);
@@ -70,7 +78,9 @@ public class SyncanoClassHelper {
         }
 
         Class<?> type = field.getType();
-        if (type.equals(int.class) || type.equals(Integer.class)) {
+        if (type.equals(int.class) || type.equals(Integer.class)
+                || type.equals(byte.class) || type.equals(Byte.class)
+                || type.equals(short.class) || type.equals(Short.class)) {
             return Constants.FIELD_TYPE_INTEGER;
         } else if (type.equals(String.class)) {
             return Constants.FIELD_TYPE_STRING;

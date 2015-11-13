@@ -12,6 +12,8 @@ public @interface SyncanoField {
 
     String type() default "";
 
+    String target() default "";
+
     boolean readOnly() default false;
 
     boolean required() default false;

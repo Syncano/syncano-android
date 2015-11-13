@@ -34,6 +34,8 @@ public class Constants {
     public static final String FIELD_NAME = "name";
     public static final String FIELD_ORDER_INDEX = "order_index";
     public static final String FIELD_FILTER_INDEX = "filter_index";
+    public static final String FIELD_TARGET = "target";
+    public static final String FIELD_TARGET_SELF = "self";
 
     public static final String FIELD_TYPE_STRING = "string";
     public static final String FIELD_TYPE_TEXT = "text";
