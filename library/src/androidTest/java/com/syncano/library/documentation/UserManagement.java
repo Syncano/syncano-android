@@ -4,11 +4,12 @@ import com.google.gson.JsonArray;
 import com.syncano.library.Constants;
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
-import com.syncano.library.TestUserProfileClass;
+import com.syncano.library.TestUserProfileObject;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.SocialAuthBackend;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.User;
+import com.syncano.library.utils.SyncanoClassHelper;
 
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class UserManagement extends SyncanoApplicationTestCase {
     }
 
     public void testUpdateUserClass() {
-        JsonArray schema = TestUserProfileClass.getSchema();
+        JsonArray schema = SyncanoClassHelper.getSyncanoClassSchema(TestUserProfileObject.class);
 
         // ---------- You can make same kind of changes to user_profile class
         Response<SyncanoClass> responseGetProfileClass = syncano.getSyncanoClass(Constants.USER_PROFILE_CLASS_NAME).send();

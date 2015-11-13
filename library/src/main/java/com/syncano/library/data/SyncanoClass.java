@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.choice.SyncanoClassPermissions;
+import com.syncano.library.utils.SyncanoClassHelper;
 
 import java.util.Date;
 
@@ -64,6 +65,11 @@ public class SyncanoClass {
     public SyncanoClass(String name, JsonArray schema) {
         this.name = name;
         this.schema = schema;
+    }
+
+    public SyncanoClass(Class<? extends SyncanoObject> clazz) {
+        this.name = SyncanoClassHelper.getSyncanoClassName(clazz);
+        this.schema = SyncanoClassHelper.getSyncanoClassSchema(clazz);
     }
 
     public String getName() {

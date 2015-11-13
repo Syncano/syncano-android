@@ -2,10 +2,14 @@ package com.syncano.library;
 
 public class Constants {
 
-    /** Server url. */
+    /**
+     * Server url.
+     */
     public static final String PRODUCTION_SERVER_URL = "https://api.syncano.io";
 
-    /** User agent name */
+    /**
+     * User agent name
+     */
     public final static String USER_AGENT = "syncano-android-" + BuildConfig.VERSION_NAME;
 
     public final static String URL_PARAM_QUERY = "query";
@@ -24,6 +28,21 @@ public class Constants {
 
     public static final String SOCIAL_AUTH_FACEBOOK = "facebook";
     public static final String SOCIAL_AUTH_GOOGLE_OAUTH2 = "google-oauth2";
+
+    // ==================== Classes ==================== //
+    public static final String FIELD_TYPE = "type";
+    public static final String FIELD_NAME = "name";
+    public static final String FIELD_ORDER_INDEX = "order_index";
+    public static final String FIELD_FILTER_INDEX = "filter_index";
+
+    public static final String FIELD_TYPE_STRING = "string";
+    public static final String FIELD_TYPE_TEXT = "text";
+    public static final String FIELD_TYPE_INTEGER = "integer";
+    public static final String FIELD_TYPE_FLOAT = "float";
+    public static final String FIELD_TYPE_BOOLEAN = "boolean";
+    public static final String FIELD_TYPE_DATETIME = "datetime";
+    public static final String FIELD_TYPE_FILE = "file";
+    public static final String FIELD_TYPE_REFERENCE = "reference";
 
     // ==================== Objects ==================== //
     public static final String OBJECTS_LIST_URL = "/v1/instances/%s/classes/%s/objects/";

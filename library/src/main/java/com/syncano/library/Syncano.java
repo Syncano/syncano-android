@@ -18,6 +18,7 @@ import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.User;
 import com.syncano.library.data.Webhook;
+import com.syncano.library.utils.SyncanoClassHelper;
 
 public class Syncano extends SyncanoBase {
 
@@ -87,7 +88,7 @@ public class Syncano extends SyncanoBase {
     public <T extends SyncanoObject> RequestPost<T> createObject(T object) {
 
         Class<T> type = (Class<T>) object.getClass();
-        String className = getSyncanoClassName(type);
+        String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_LIST_URL, getInstance(), className);
         return new RequestPost<>(type, url, this, object);
     }
@@ -102,7 +103,7 @@ public class Syncano extends SyncanoBase {
      */
     public <T extends SyncanoObject> RequestGetOne<T> getObject(Class<T> type, int id) {
 
-        String className = getSyncanoClassName(type);
+        String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstance(), className, id);
         return new RequestGetOne<>(type, url, this);
     }
@@ -116,7 +117,7 @@ public class Syncano extends SyncanoBase {
      */
     public <T extends SyncanoObject> RequestGetList<T> getObjects(Class<T> type) {
 
-        String className = getSyncanoClassName(type);
+        String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_LIST_URL, getInstance(), className);
         return new RequestGetList<>(type, url, this);
     }
@@ -135,7 +136,7 @@ public class Syncano extends SyncanoBase {
         }
 
         Class<T> type = (Class<T>) object.getClass();
-        String className = getSyncanoClassName(type);
+        String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstance(), className, object.getId());
         return new RequestPatch<>(type, url, this, object);
     }
@@ -150,7 +151,7 @@ public class Syncano extends SyncanoBase {
      */
     public <T extends SyncanoObject> RequestDelete<T> deleteObject(Class<T> type, int id) {
 
-        String className = getSyncanoClassName(type);
+        String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstance(), className, id);
         return new RequestDelete<>(type, url, this);
     }

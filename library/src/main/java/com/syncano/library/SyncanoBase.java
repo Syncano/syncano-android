@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Looper;
 
 import com.google.gson.Gson;
-import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.api.Request;
 import com.syncano.library.api.Response;
 import com.syncano.library.callbacks.SyncanoCallback;
@@ -69,23 +68,6 @@ public abstract class SyncanoBase {
 
     public void setInstance(String instance) {
         this.instance = instance;
-    }
-
-    /**
-     * DataObjects endpoints are using class names in path.
-     * Class must be marked with SyncanoClass annotation.
-     *
-     * @param clazz Class to extract class name.
-     * @return Class name from SyncanoClass annotation.
-     */
-    public static String getSyncanoClassName(Class<?> clazz) {
-        SyncanoClass syncanoClass = clazz.getAnnotation(SyncanoClass.class);
-
-        if (syncanoClass == null) {
-            throw new RuntimeException("Class " + clazz.getSimpleName() + " is not marked with SyncanoClass annotation.");
-        }
-
-        return syncanoClass.name();
     }
 
     /**

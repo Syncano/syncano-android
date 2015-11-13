@@ -2,8 +2,6 @@ package com.syncano.library.documentation;
 
 import android.util.Log;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.api.FieldsFilter;
@@ -18,6 +16,8 @@ import java.util.List;
 import com.syncano.library.data.Trace;
 import com.syncano.library.data.CodeBox;
 
+import com.syncano.library.utils.SyncanoClassHelper;
+
 // ---------- Adding your class
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.annotation.SyncanoField;
@@ -29,10 +29,10 @@ class Book extends SyncanoObject {
     public static final String FIELD_TITLE = "title";
     public static final String FIELD_SUBTITLE = "subtitle";
 
-    @SyncanoField(name = FIELD_TITLE)
+    @SyncanoField(name = FIELD_TITLE, filterIndex = true, orderIndex = true)
     public String title;
 
-    @SyncanoField(name = FIELD_SUBTITLE)
+    @SyncanoField(name = FIELD_SUBTITLE, filterIndex = true, orderIndex = true)
     public String subtitle;
 }
 // -----------------------------
@@ -50,10 +50,10 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         this.syncano = super.syncano;
-        Response<com.syncano.library.data.SyncanoClass> respDelete = syncano.deleteSyncanoClass("book").send();
+        Response<com.syncano.library.data.SyncanoClass> respDelete = syncano.deleteSyncanoClass(SyncanoClassHelper.getSyncanoClassName(Book.class)).send();
         assertEquals(Response.HTTP_CODE_NO_CONTENT, respDelete.getHttpResultCode());
 
-        com.syncano.library.data.SyncanoClass syncanoClass = new com.syncano.library.data.SyncanoClass("book", getBookSchema());
+        com.syncano.library.data.SyncanoClass syncanoClass = new com.syncano.library.data.SyncanoClass(Book.class);
         Response<com.syncano.library.data.SyncanoClass> response = syncano.createSyncanoClass(syncanoClass).send();
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
     }
@@ -215,25 +215,5 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         responseGetBooks.getHttpResultCode(); // Http result code
         responseGetBooks.getHttpReasonPhrase(); // Http error message
         // -----------------------------
-    }
-
-    private static JsonArray getBookSchema() {
-        JsonObject fieldOne = new JsonObject();
-        fieldOne.addProperty("type", "string");
-        fieldOne.addProperty("name", Book.FIELD_SUBTITLE);
-        fieldOne.addProperty("order_index", true);
-        fieldOne.addProperty("filter_index", true);
-
-        JsonObject fieldTwo = new JsonObject();
-        fieldTwo.addProperty("type", "string");
-        fieldTwo.addProperty("name", Book.FIELD_TITLE);
-        fieldTwo.addProperty("order_index", true);
-        fieldTwo.addProperty("filter_index", true);
-
-        JsonArray array = new JsonArray();
-        array.add(fieldOne);
-        array.add(fieldTwo);
-
-        return array;
     }
 }

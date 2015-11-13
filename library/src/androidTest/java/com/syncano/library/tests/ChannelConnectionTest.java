@@ -5,9 +5,8 @@ import android.util.Log;
 import com.google.gson.JsonObject;
 import com.syncano.library.ChannelConnection;
 import com.syncano.library.ChannelConnectionListener;
-import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
-import com.syncano.library.TestSyncanoClass;
+import com.syncano.library.TestSyncanoObject;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.ChannelPermissions;
 import com.syncano.library.choice.ChannelType;
@@ -15,6 +14,7 @@ import com.syncano.library.choice.NotificationAction;
 import com.syncano.library.data.Channel;
 import com.syncano.library.data.Notification;
 import com.syncano.library.data.SyncanoClass;
+import com.syncano.library.utils.SyncanoClassHelper;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -42,11 +42,11 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
         syncano.deleteChannel(CHANNEL_NAME).send();
 
         // Make sure class exists.
-        String className = Syncano.getSyncanoClassName(TestSyncanoClass.class);
+        String className = SyncanoClassHelper.getSyncanoClassName(TestSyncanoObject.class);
         Response<SyncanoClass> responseGetSyncanoClass = syncano.getSyncanoClass(className).send();
 
         if (responseGetSyncanoClass.getHttpResultCode() == Response.HTTP_CODE_NOT_FOUND) {
-            SyncanoClass syncanoClass = new SyncanoClass(className, TestSyncanoClass.getSchema());
+            SyncanoClass syncanoClass = new SyncanoClass(TestSyncanoObject.class);
             Response<SyncanoClass> responseCreateClass = syncano.createSyncanoClass(syncanoClass).send();
             assertEquals(responseCreateClass.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responseCreateClass.getHttpResultCode());
         }
@@ -172,27 +172,27 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
         // ----------------- Publish changes -----------------
 
         // create
-        TestSyncanoClass testObject = new TestSyncanoClass();
+        TestSyncanoObject testObject = new TestSyncanoObject();
         testObject.valueOne = "val1";
         testObject.setChannel(CHANNEL_NAME);
         testObject.setChannelRoom(room);
-        Response<TestSyncanoClass> responseCreate = syncano.createObject(testObject).send();
+        Response<TestSyncanoObject> responseCreate = syncano.createObject(testObject).send();
         assertEquals(responseCreate.getHttpResultCode(), Response.HTTP_CODE_CREATED);
-        TestSyncanoClass returnedObject = responseCreate.getData();
+        TestSyncanoObject returnedObject = responseCreate.getData();
         assertNotNull(returnedObject);
         assertEquals(returnedObject.valueOne, testObject.valueOne);
 
         // update
         testObject.setId(returnedObject.getId());
         testObject.valueOne = "other val1";
-        Response<TestSyncanoClass> responseUpdate = syncano.updateObject(testObject).send();
+        Response<TestSyncanoObject> responseUpdate = syncano.updateObject(testObject).send();
         assertEquals(responseUpdate.getHttpResultCode(), Response.HTTP_CODE_SUCCESS);
         returnedObject = responseUpdate.getData();
         assertNotNull(returnedObject);
         assertEquals(returnedObject.valueOne, testObject.valueOne);
 
         // delete
-        Response<TestSyncanoClass> responseDelete = syncano.deleteObject(TestSyncanoClass.class, returnedObject.getId()).send();
+        Response<TestSyncanoObject> responseDelete = syncano.deleteObject(TestSyncanoObject.class, returnedObject.getId()).send();
         assertEquals(responseDelete.getHttpResultCode(), Response.HTTP_CODE_NO_CONTENT);
 
 
@@ -201,9 +201,8 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
         channelConnection.stop();
 
         assertTrue(createReceived.get());
-        // TODO remove comment after fix on Syncano side
-        //assertTrue(updateReceived.get());
-        //assertTrue(removeReceived.get());
+        assertTrue(updateReceived.get());
+        assertTrue(removeReceived.get());
     }
 
     public void testDataChanges() throws InterruptedException {

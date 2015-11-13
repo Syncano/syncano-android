@@ -1,15 +1,11 @@
 package com.syncano.library.tests;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
-import com.syncano.library.TestSyncanoClass;
+import com.syncano.library.TestSyncanoObject;
 import com.syncano.library.api.Response;
-import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.SyncanoClass;
-
-import org.json.JSONArray;
+import com.syncano.library.utils.SyncanoClassHelper;
 
 import java.util.List;
 
@@ -21,15 +17,12 @@ public class ClassesTest extends SyncanoApplicationTestCase {
 
     public void testClasses() throws InterruptedException {
 
-        String className = Syncano.getSyncanoClassName(TestSyncanoClass.class);
+        String className = SyncanoClassHelper.getSyncanoClassName(TestSyncanoObject.class);
+        syncano.deleteSyncanoClass(className).send();
 
-        Response<SyncanoClass> responseGetSyncanoClass = syncano.getSyncanoClass(className).send();
+        JsonArray schema = SyncanoClassHelper.getSyncanoClassSchema(TestSyncanoObject.class);
 
-        if (responseGetSyncanoClass.isOk()) {
-            syncano.deleteSyncanoClass(className).send();
-        }
-
-        SyncanoClass syncanoClass = new SyncanoClass(className, TestSyncanoClass.getSchema());
+        SyncanoClass syncanoClass = new SyncanoClass(TestSyncanoObject.class);
         syncanoClass.setDescription("First description");
 
         // ----------------- Create -----------------
@@ -45,7 +38,7 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetClass.getHttpResultCode());
         assertNotNull(responseGetClass.getData());
         assertEquals(className, responseGetClass.getData().getName());
-        assertEquals(TestSyncanoClass.getSchema(), responseGetClass.getData().getSchema());
+        assertEquals(schema, responseGetClass.getData().getSchema());
 
         // ----------------- Update -----------------
         String description = "Second description";
@@ -66,5 +59,9 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         Response responseDeleteClass = syncano.deleteSyncanoClass(className).send();
 
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteClass.getHttpResultCode());
+    }
+
+    public void testDataTypes() {
+
     }
 }
