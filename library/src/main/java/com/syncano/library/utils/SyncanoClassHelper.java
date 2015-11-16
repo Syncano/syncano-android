@@ -84,7 +84,7 @@ public class SyncanoClassHelper {
             return Constants.FIELD_TYPE_INTEGER;
         } else if (type.equals(String.class)) {
             return Constants.FIELD_TYPE_STRING;
-        } else if (type.equals(Date.class)) {
+        } else if (type.equals(Date.class) || type.equals(NanosDate.class)) {
             return Constants.FIELD_TYPE_DATETIME;
         } else if (type.equals(boolean.class) || type.equals(Boolean.class)) {
             return Constants.FIELD_TYPE_BOOLEAN;

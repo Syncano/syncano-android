@@ -8,6 +8,7 @@ import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
+import com.syncano.library.utils.NanosDate;
 import com.syncano.library.utils.SyncanoClassHelper;
 
 import java.util.Date;
@@ -82,6 +83,7 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         assertEquals(obj1.byteVal, serverObj1.byteVal);
         assertEquals(obj1.shortVal, serverObj1.shortVal);
         assertEquals(obj1.date, serverObj1.date);
+        assertEquals(obj1.nanosDate, serverObj1.nanosDate);
         assertEquals(obj1.stringVal, serverObj1.stringVal);
         assertEquals(obj1.text, serverObj1.text);
         assertEquals(obj1.reference, serverObj1.reference);
@@ -95,6 +97,7 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         o.byteVal = (byte) rnd.nextInt();
         o.shortVal = (short) rnd.nextInt();
         o.date = new Date();
+        o.nanosDate = new NanosDate(o.date.getTime(), rnd.nextInt(999));
         o.stringVal = generateString(rnd.nextInt(128));
         o.text = generateString(rnd.nextInt(32000));
         o.yesOrNo = rnd.nextBoolean();
@@ -121,6 +124,8 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         public short shortVal;
         @SyncanoField(name = "date")
         public Date date;
+        @SyncanoField(name = "nanosdate")
+        public NanosDate nanosDate;
         @SyncanoField(name = "string")
         public String stringVal;
         @SyncanoField(name = "text", type = Constants.FIELD_TYPE_TEXT)

@@ -22,6 +22,8 @@ public class GsonHelper {
 
     public static Gson createGson() {
         GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(NanosDate.class, new DateSerializer());
+        gsonBuilder.registerTypeAdapter(NanosDate.class, new DateDeserializer());
         gsonBuilder.registerTypeAdapter(Date.class, new DateSerializer());
         gsonBuilder.registerTypeAdapter(Date.class, new DateDeserializer());
         gsonBuilder.addSerializationExclusionStrategy(new SyncanoSerializationStrategy());
@@ -38,7 +40,13 @@ public class GsonHelper {
 
     private static class DateDeserializer implements JsonDeserializer<Date> {
         public Date deserialize(JsonElement json, Type type, JsonDeserializationContext jdc) throws JsonParseException {
-            return DateTool.parseString(json.getAsJsonPrimitive().getAsString());
+            String dateString;
+            if (json.isJsonPrimitive()) {
+                dateString = json.getAsJsonPrimitive().getAsString();
+            } else {
+                dateString = json.getAsJsonObject().get("value").getAsString();
+            }
+            return DateTool.parseString(dateString);
         }
     }
 
