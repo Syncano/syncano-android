@@ -420,8 +420,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestPost<User> createUser(User user) {
 
-        String url = String.format(Constants.USERS_LIST_URL, getInstance());
-        return new RequestPost<>(User.class, url, this, user);
+        return createCustomUser(user);
     }
 
     /**
@@ -445,8 +444,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestGetOne<User> getUser(int id) {
 
-        String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), id);
-        return new RequestGetOne<>(User.class, url, this);
+        return getCustomUser(User.class, id);
     }
 
     /**
@@ -468,8 +466,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestGetList<User> getUsers() {
 
-        String url = String.format(Constants.USERS_LIST_URL, getInstance());
-        return new RequestGetList<>(User.class, url, this);
+        return getCustomUsers(User.class);
     }
 
     /**
@@ -491,12 +488,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestPatch<User> updateUser(User user) {
 
-        if (user.getId() == 0) {
-            throw new RuntimeException("Trying to update User without id!");
-        }
-
-        String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), user.getId());
-        return new RequestPatch<>(User.class, url, this, user);
+        return updateCustomUser(user);
     }
 
     /**
@@ -524,8 +516,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestDelete<User> deleteUser(int id) {
 
-        String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), id);
-        return new RequestDelete<>(User.class, url, this);
+        return deleteCustomUser(User.class, id);
     }
 
     /**
@@ -534,7 +525,7 @@ public class Syncano extends SyncanoBase {
      * @param id Id of existing User.
      * @return Information about success or error
      */
-    public <T extends AbstractUser> RequestDelete<T> deleteUser(Class<T> type, int id) {
+    public <T extends AbstractUser> RequestDelete<T> deleteCustomUser(Class<T> type, int id) {
 
         String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), id);
         return new RequestDelete<>(type, url, this);
@@ -549,13 +540,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestPost<User> authUser(String username, String password) {
 
-        String url = String.format(Constants.USER_AUTH, getInstance());
-
-        JsonObject jsonParams = new JsonObject();
-        jsonParams.addProperty(User.FIELD_USER_NAME, username);
-        jsonParams.addProperty(User.FIELD_PASSWORD, password);
-
-        return new RequestPost<>(User.class, url, this, jsonParams);
+        return authCustomUser(User.class, username, password);
     }
 
     /**
@@ -585,12 +570,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestPost<User> authSocialUser(SocialAuthBackend social, String authToken) {
 
-        String url = String.format(Constants.USER_SOCIAL_AUTH, getInstance(), social.toString());
-
-        RequestPost<User> requestPost = new RequestPost<>(User.class, url, this, null);
-        requestPost.setHttpHeader("Authorization", "Token " + authToken);
-
-        return requestPost;
+        return authSocialCustomUser(User.class, social, authToken);
     }
 
     /**
@@ -600,14 +580,14 @@ public class Syncano extends SyncanoBase {
      * @param authToken Authentication token.
      * @return user
      */
-    public <T extends AbstractUser> RequestPost authSocialCustomUser(Class<T> type, SocialAuthBackend social, String authToken) {
+    public <T extends AbstractUser> RequestPost<T> authSocialCustomUser(Class<T> type, SocialAuthBackend social, String authToken) {
 
         String url = String.format(Constants.USER_SOCIAL_AUTH, getInstance(), social.toString());
 
-        RequestPost<T> requestPost = new RequestPost<>(type, url, this, null);
-        requestPost.setHttpHeader("Authorization", "Token " + authToken);
+        JsonObject jsonParams = new JsonObject();
+        jsonParams.addProperty(Constants.POST_PARAM_SOCIAL_TOKEN, authToken);
 
-        return requestPost;
+        return new RequestPost<>(type, url, this, jsonParams);
     }
 
     // ==================== Groups ==================== //

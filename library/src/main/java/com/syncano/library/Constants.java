@@ -23,6 +23,7 @@ public class Constants {
     public final static String URL_PARAM_LAST_ID = "last_id";
 
     public final static String POST_PARAM_USER = "user";
+    public final static String POST_PARAM_SOCIAL_TOKEN = "access_token";
     public final static String POST_PARAM_ROOM = "room";
     public final static String POST_PARAM_PAYLOAD = "payload";
 

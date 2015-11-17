@@ -1,11 +1,14 @@
 package com.syncano.library.tests;
 
 import com.google.gson.JsonArray;
+import com.syncano.library.Config;
 import com.syncano.library.Constants;
+import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.TestUser;
 import com.syncano.library.TestUserProfileObject;
 import com.syncano.library.api.Response;
+import com.syncano.library.choice.SocialAuthBackend;
 import com.syncano.library.data.Profile;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.User;
@@ -188,8 +191,34 @@ public class UsersTest extends SyncanoApplicationTestCase {
         assertNotNull(responseUserAuthNewPass.getData().getUserKey());
 
         // ----------------- Delete -----------------
-        Response<TestUser> responseDeleteUser = syncano.deleteUser(TestUser.class, user.getId()).send();
+        Response<TestUser> responseDeleteUser = syncano.deleteCustomUser(TestUser.class, user.getId()).send();
 
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteUser.getHttpResultCode());
+    }
+
+    public void testWithUserApiKeyAndSocial() {
+        Syncano syncano = new Syncano(Config.API_KEY_USERS, Config.INSTANCE_NAME);
+
+        User newUser = new User(USER_NAME, PASSWORD);
+        Response<User> response = syncano.createUser(newUser).send();
+
+        assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
+        assertNotNull(response.getData());
+
+        Response<User> responseLogin = syncano.authUser(USER_NAME, PASSWORD).send();
+        assertEquals(Response.HTTP_CODE_SUCCESS, responseLogin.getHttpResultCode());
+
+        syncano.setUserKey(responseLogin.getData().getUserKey());
+        // TODO check access
+
+        if (Config.FACEBOOK_TOKEN != null && !Config.FACEBOOK_TOKEN.isEmpty()) {
+            Response<User> responseFb = syncano.authSocialUser(SocialAuthBackend.FACEBOOK, Config.FACEBOOK_TOKEN).send();
+            assertEquals(Response.HTTP_CODE_SUCCESS, responseFb.getHttpResultCode());
+        }
+
+        if (Config.GOOGLE_TOKEN != null && !Config.GOOGLE_TOKEN.isEmpty()) {
+            Response<User> responseGoo = syncano.authSocialUser(SocialAuthBackend.GOOGLE_OAUTH2, Config.GOOGLE_TOKEN).send();
+            assertEquals(Response.HTTP_CODE_SUCCESS, responseGoo.getHttpResultCode());
+        }
     }
 }

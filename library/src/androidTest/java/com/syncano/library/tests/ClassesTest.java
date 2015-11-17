@@ -84,7 +84,9 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         assertEquals(obj1.shortVal, serverObj1.shortVal);
         assertEquals(obj1.date, serverObj1.date);
         assertEquals(obj1.nanosDate, serverObj1.nanosDate);
+        assertEquals(obj1.stringVal.length(), serverObj1.stringVal.length());
         assertEquals(obj1.stringVal, serverObj1.stringVal);
+        assertEquals(obj1.text.length(), serverObj1.text.length());
         assertEquals(obj1.text, serverObj1.text);
         assertEquals(obj1.reference, serverObj1.reference);
         assertEquals(obj1.yesOrNo, serverObj1.yesOrNo);
