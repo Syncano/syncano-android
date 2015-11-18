@@ -3,7 +3,6 @@ package com.syncano.library.tests;
 import com.google.gson.JsonArray;
 import com.syncano.library.Config;
 import com.syncano.library.Constants;
-import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.TestUser;
 import com.syncano.library.TestUserProfileObject;
@@ -196,21 +195,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteUser.getHttpResultCode());
     }
 
-    public void testWithUserApiKeyAndSocial() {
-        Syncano syncano = new Syncano(Config.API_KEY_USERS, Config.INSTANCE_NAME);
-
-        User newUser = new User(USER_NAME, PASSWORD);
-        Response<User> response = syncano.createUser(newUser).send();
-
-        assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
-        assertNotNull(response.getData());
-
-        Response<User> responseLogin = syncano.authUser(USER_NAME, PASSWORD).send();
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseLogin.getHttpResultCode());
-
-        syncano.setUserKey(responseLogin.getData().getUserKey());
-        // TODO check access
-
+    public void testSocial() {
         if (Config.FACEBOOK_TOKEN != null && !Config.FACEBOOK_TOKEN.isEmpty()) {
             Response<User> responseFb = syncano.authSocialUser(SocialAuthBackend.FACEBOOK, Config.FACEBOOK_TOKEN).send();
             assertEquals(Response.HTTP_CODE_SUCCESS, responseFb.getHttpResultCode());

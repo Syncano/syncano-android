@@ -401,12 +401,23 @@ public class Syncano extends SyncanoBase {
      * Delete a Class.
      *
      * @param name Class to delete.
-     * @return null
+     * @return RequestDelete<SyncanoClass>
      */
     public RequestDelete<SyncanoClass> deleteSyncanoClass(String name) {
 
         String url = String.format(Constants.CLASSES_DETAIL_URL, getInstance(), name);
         return new RequestDelete<>(SyncanoClass.class, url, this);
+    }
+
+    /**
+     * Delete a Class.
+     *
+     * @param clazz Class to delete.
+     * @return RequestDelete<SyncanoClass>
+     */
+    public RequestDelete<SyncanoClass> deleteSyncanoClass(Class<? extends SyncanoObject> clazz) {
+
+        return deleteSyncanoClass(SyncanoClassHelper.getSyncanoClassName(clazz));
     }
 
     // ==================== Users ==================== //
