@@ -5,6 +5,7 @@ import com.syncano.library.Syncano;
 import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.utils.GsonHelper;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -36,9 +37,10 @@ public abstract class Request<T> {
     /**
      * Prepare json parameters for request.
      */
-    public String prepareParams() {
+    public HttpEntity prepareParams() {
         return null;
     }
+
 
     /**
      * Prepare URL params.
@@ -129,5 +131,9 @@ public abstract class Request<T> {
 
     public void setCompleteCustomUrl(String completeCustomUrl) {
         this.completeCustomUrl = completeCustomUrl;
+    }
+
+    public String getContentType() {
+        return "application/json";
     }
 }

@@ -3,6 +3,7 @@ package com.syncano.library.utils;
 import android.util.Log;
 
 import org.apache.http.Header;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
 import org.apache.http.NameValuePair;
@@ -114,7 +115,8 @@ public class SyncanoHttpClient {
             urlParameters = "";
         }
 
-        String parameters = syncanoRequest.prepareParams();
+        HttpEntity parameters = syncanoRequest.prepareParams();
+
 
         String url;
         if (syncanoRequest.getCompleteCustomUrl() != null) {
@@ -129,7 +131,7 @@ public class SyncanoHttpClient {
         }
 
         request = getHttpUriRequest(syncanoRequest.getRequestMethod(), url, parameters);
-        request.setHeader("Content-Type", "application/json");
+        request.setHeader("Content-Type", syncanoRequest.getContentType());
         request.setHeader("Accept-Encoding", "gzip");
 
         for (NameValuePair header : syncanoRequest.getHttpHeaders()) {
@@ -219,17 +221,7 @@ public class SyncanoHttpClient {
         return syncanoResponse;
     }
 
-    private HttpUriRequest getHttpUriRequest(String requestMethod, String url, String parameters) {
-
-        StringEntity postData = null;
-        if (parameters != null) {
-            try {
-                postData = new StringEntity(parameters, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                Log.e(LOG_TAG, "Unsupported encoding: " + e.toString());
-            }
-        }
-
+    private HttpUriRequest getHttpUriRequest(String requestMethod, String url, HttpEntity postData) {
         if (METHOD_GET.equals(requestMethod)) {
             return new HttpGet(url);
         } else if (METHOD_POST.equals(requestMethod)) {

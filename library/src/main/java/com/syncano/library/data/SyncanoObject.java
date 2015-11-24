@@ -37,10 +37,10 @@ public abstract class SyncanoObject extends Entity {
     private String channelRoom;
 
     @SyncanoField(name = FIELD_REVISION)
-    private int revision;
+    private Integer revision;
 
     @SyncanoField(name = FIELD_EXPECTED_REVISION)
-    private int expectedRevision;
+    private Integer expectedRevision;
 
     public String getChannelRoom() {
         return channelRoom;
