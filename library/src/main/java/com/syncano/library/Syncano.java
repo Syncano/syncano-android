@@ -549,9 +549,9 @@ public class Syncano extends SyncanoBase {
      * @param password User password.
      * @return user
      */
-    public RequestPost<User> authUser(String username, String password) {
+    public RequestPost<User> loginUser(String username, String password) {
 
-        return authCustomUser(User.class, username, password);
+        return loginUser(User.class, username, password);
     }
 
     /**
@@ -561,7 +561,7 @@ public class Syncano extends SyncanoBase {
      * @param password User password.
      * @return user
      */
-    public <T extends AbstractUser> RequestPost<T> authCustomUser(Class<T> type, String username, String password) {
+    public <T extends AbstractUser> RequestPost<T> loginUser(Class<T> type, String username, String password) {
 
         String url = String.format(Constants.USER_AUTH, getInstance());
 

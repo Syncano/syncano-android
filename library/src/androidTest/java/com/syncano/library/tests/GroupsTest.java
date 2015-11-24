@@ -31,7 +31,7 @@ public class GroupsTest extends SyncanoApplicationTestCase {
         super.setUp();
 
         // ----------------- Get Or Create Test User -----------------
-        Response<User> responseUserAuth = syncano.authUser(USER_NAME, PASSWORD).send();
+        Response<User> responseUserAuth = syncano.loginUser(USER_NAME, PASSWORD).send();
         if (responseUserAuth.isOk() && responseUserAuth.getData() != null) {
             user = responseUserAuth.getData();
         } else {

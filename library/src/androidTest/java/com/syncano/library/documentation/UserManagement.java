@@ -77,7 +77,7 @@ public class UserManagement extends SyncanoApplicationTestCase {
 
     public void testUserAuthentication() {
         // ---------- User authentication
-        Response<User> response = syncano.authUser(userName, password).send();
+        Response<User> response = syncano.loginUser(userName, password).send();
 
         // This is how user key should be used.
         // All next requests will be used using apiKey and userKey.

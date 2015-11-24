@@ -54,9 +54,9 @@ public abstract class SyncanoBase {
 
     /**
      * Setting user key here will cause adding it automatically to every request just before it's sent. To get
-     * authorization key, use authUser method on Syncano object.
+     * authorization key, use loginUser method on Syncano object.
      *
-     * @param userKey After authUser, it's available under user.getUserKey().
+     * @param userKey After loginUser, it's available under user.getUserKey().
      */
     public void setUserKey(String userKey) {
         this.userKey = userKey;

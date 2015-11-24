@@ -30,7 +30,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
     protected void setUp() throws Exception {
         super.setUp();
 
-        Response<User> responseUserAuth = syncano.authUser(USER_NAME, PASSWORD).send();
+        Response<User> responseUserAuth = syncano.loginUser(USER_NAME, PASSWORD).send();
 
         if (responseUserAuth.isOk() && responseUserAuth.getData() != null) {
             // Make sure there is no test user
@@ -38,7 +38,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
         }
 
         // If test failed after password change
-        Response<User> responseUserNewAuth = syncano.authUser(USER_NAME, NEW_PASSWORD).send();
+        Response<User> responseUserNewAuth = syncano.loginUser(USER_NAME, NEW_PASSWORD).send();
 
         if (responseUserNewAuth.isOk() && responseUserNewAuth.getData() != null) {
             // Make sure there is no test user
@@ -87,7 +87,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
         assertEquals(user.getUserName(), responseUpdateUser.getData().getUserName());
 
         // ----------------- User Auth -----------------
-        Response<User> responseUserAuth = syncano.authUser(USER_NAME, NEW_PASSWORD).send();
+        Response<User> responseUserAuth = syncano.loginUser(USER_NAME, NEW_PASSWORD).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseUserAuth.getHttpResultCode());
         assertNotNull(responseUserAuth.getData());
@@ -168,7 +168,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
         assertTrue("List should contain at least one item.", responseGetUsers.getData().size() > 0);
 
         // ----------------- User Auth -----------------
-        Response<TestUser> responseUserAuth = syncano.authCustomUser(TestUser.class, USER_NAME, PASSWORD).send();
+        Response<TestUser> responseUserAuth = syncano.loginUser(TestUser.class, USER_NAME, PASSWORD).send();
 
         assertEquals(responseUserAuth.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responseUserAuth.getHttpResultCode());
         assertNotNull(responseUserAuth.getData());
@@ -183,7 +183,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
         assertEquals(user.getUserName(), responseUpdateUser.getData().getUserName());
 
         // ----------------- User Auth new password -----------------
-        Response<TestUser> responseUserAuthNewPass = syncano.authCustomUser(TestUser.class, USER_NAME, NEW_PASSWORD).send();
+        Response<TestUser> responseUserAuthNewPass = syncano.loginUser(TestUser.class, USER_NAME, NEW_PASSWORD).send();
 
         assertEquals(responseUserAuthNewPass.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responseUserAuthNewPass.getHttpResultCode());
         assertNotNull(responseUserAuthNewPass.getData());

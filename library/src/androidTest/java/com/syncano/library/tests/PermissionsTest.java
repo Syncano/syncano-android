@@ -61,7 +61,7 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
         User user = response.getData();
         assertNotNull(user);
 
-        Response<User> responseLogin = userSyncano.authUser(USER_NAME, PASSWORD).send();
+        Response<User> responseLogin = userSyncano.loginUser(USER_NAME, PASSWORD).send();
         assertEquals(Response.HTTP_CODE_SUCCESS, responseLogin.getHttpResultCode());
 
         // remember user key
@@ -139,7 +139,7 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
         User user = response.getData();
         assertNotNull(user);
 
-        Response<User> responseLogin = userSyncano.authUser(USER_NAME, PASSWORD).send();
+        Response<User> responseLogin = userSyncano.loginUser(USER_NAME, PASSWORD).send();
         assertEquals(Response.HTTP_CODE_SUCCESS, responseLogin.getHttpResultCode());
 
         // remember user key
@@ -169,7 +169,7 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
 
         // give permission
         som.setOwner(user.getId());
-        Response<Something> respUpdateObj = userSyncano.updateObject(som).send();
+        Response<Something> respUpdateObj = syncano.updateObject(som).send();
         assertEquals(Response.HTTP_CODE_SUCCESS, respUpdateObj.getHttpResultCode());
 
         // get objects
@@ -177,7 +177,7 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_SUCCESS, respGetObjWithPerm.getHttpResultCode());
         List<Something> soms2 = respGetObjWithPerm.getData();
         assertNotNull(soms2);
-        assertTrue(soms2.size() == 0);
+        assertTrue(soms2.size() > 0);
     }
 
     @com.syncano.library.annotation.SyncanoClass(name = "just_something")
