@@ -17,6 +17,7 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.syncano.library.annotation.SyncanoField;
+import com.syncano.library.data.SyncanoFile;
 
 public class GsonHelper {
 
@@ -26,6 +27,7 @@ public class GsonHelper {
         gsonBuilder.registerTypeAdapter(NanosDate.class, new DateDeserializer());
         gsonBuilder.registerTypeAdapter(Date.class, new DateSerializer());
         gsonBuilder.registerTypeAdapter(Date.class, new DateDeserializer());
+        gsonBuilder.registerTypeAdapter(SyncanoFile.class, new FileDeserializer());
         gsonBuilder.addSerializationExclusionStrategy(new SyncanoSerializationStrategy());
         gsonBuilder.addDeserializationExclusionStrategy(new SyncanoDeserializationStrategy());
         gsonBuilder.setFieldNamingStrategy(new SyncanoFieldNamingStrategy());
@@ -50,6 +52,13 @@ public class GsonHelper {
         }
     }
 
+    private static class FileDeserializer implements JsonDeserializer<SyncanoFile> {
+        public SyncanoFile deserialize(JsonElement json, Type type, JsonDeserializationContext jdc) throws JsonParseException {
+            String link = json.getAsJsonObject().get("value").getAsString();
+            return new SyncanoFile(link);
+        }
+    }
+
     private static class SyncanoSerializationStrategy implements ExclusionStrategy {
 
         @Override
@@ -59,7 +68,9 @@ public class GsonHelper {
 
             // Don't serialize read only fields (like "id" or "created_at").
             // We want only to receive it, not send.
-            if (syncanoField == null || (syncanoField.readOnly() && !syncanoField.required())) {
+            // don't serialize more complicated data structures as SyncanoFile
+            if (syncanoField == null || (syncanoField.readOnly() && !syncanoField.required()) ||
+                    f.getDeclaredClass().isAssignableFrom(SyncanoFile.class)) {
                 return true;
             }
 

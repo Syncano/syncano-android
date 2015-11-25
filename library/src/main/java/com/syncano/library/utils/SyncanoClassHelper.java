@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.syncano.library.Constants;
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.annotation.SyncanoField;
+import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
 
 import java.lang.reflect.Field;
@@ -71,7 +72,7 @@ public class SyncanoClassHelper {
         return schemaArray;
     }
 
-    private static String findType(Field field, SyncanoField fieldAnnotation) {
+    public static String findType(Field field, SyncanoField fieldAnnotation) {
         String typeName = fieldAnnotation.type();
         if (typeName != null && !typeName.isEmpty()) {
             return typeName;
@@ -91,6 +92,8 @@ public class SyncanoClassHelper {
         } else if (type.equals(float.class) || type.equals(Float.class)
                 || type.equals(double.class) || type.equals(Double.class)) {
             return Constants.FIELD_TYPE_FLOAT;
+        } else if (type.equals(SyncanoFile.class)) {
+            return Constants.FIELD_TYPE_FILE;
         }
         if (fieldAnnotation.readOnly()) {
             return null;
