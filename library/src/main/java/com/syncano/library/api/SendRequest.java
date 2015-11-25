@@ -82,12 +82,13 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
                 continue;
             }
 
+            field.setAccessible(true);
             SyncanoFile synFile = (SyncanoFile) field.get(data);
             if (synFile == null) {
                 continue;
             }
 
-            String fieldName = field.getName();
+            String fieldName = fieldAnnotation.name();
             File file = synFile.getFile();
             byte[] byteData = synFile.getData();
             String fileName;

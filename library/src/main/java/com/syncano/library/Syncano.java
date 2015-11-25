@@ -359,6 +359,16 @@ public class Syncano extends SyncanoBase {
     }
 
     /**
+     * Create a class.
+     *
+     * @param clazz Class to create.
+     * @return Created class.
+     */
+    public RequestPost<SyncanoClass> createSyncanoClass(Class<? extends SyncanoObject> clazz) {
+        return createSyncanoClass(new SyncanoClass(clazz));
+    }
+
+    /**
      * Get an information on a selected Class.
      *
      * @param name Class name.
