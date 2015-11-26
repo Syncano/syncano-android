@@ -34,20 +34,20 @@ public class Syncano extends SyncanoBase {
     /**
      * Create Syncano object.
      *
-     * @param instance Syncano instance related with apiKey.
+     * @param instanceName Syncano instanceName related with apiKey.
      */
-    public Syncano(String instance) {
-        super(null, instance);
+    public Syncano(String instanceName) {
+        super(null, instanceName);
     }
 
     /**
      * Create Syncano object.
      *
-     * @param apiKey   Api key.
-     * @param instance Syncano instance related with apiKey.
+     * @param apiKey       Api key.
+     * @param instanceName Syncano instanceName related with apiKey.
      */
-    public Syncano(String apiKey, String instance) {
-        super(apiKey, instance);
+    public Syncano(String apiKey, String instanceName) {
+        super(apiKey, instanceName);
     }
 
     /**
@@ -55,25 +55,41 @@ public class Syncano extends SyncanoBase {
      *
      * @param customServerUrl If not set, production URL will be used.
      * @param apiKey          Api key.
-     * @param instance        Syncano instance related with apiKey.
+     * @param instanceName    Syncano instanceName related with apiKey.
      */
-    public Syncano(String customServerUrl, String apiKey, String instance) {
-        super(customServerUrl, apiKey, instance);
+    public Syncano(String customServerUrl, String apiKey, String instanceName) {
+        super(customServerUrl, apiKey, instanceName);
     }
 
     /**
      * Create static Syncano instance.
-     * Use getSharedInstance() to get its reference.
+     * Use getInstance() to get its reference.
      *
-     * @param apiKey   Api key.
-     * @param instance Syncano instance related with apiKey.
+     * @param customServerUrl If not set, production URL will be used.
+     * @param apiKey          Api key.
+     * @param instanceName    Syncano instanceName related with apiKey.
      */
-    public static void initSharedInstance(String apiKey, String instance) {
-        sharedInstance = new Syncano(apiKey, instance);
+    public static void init(String customServerUrl, String apiKey, String instanceName) {
+        sharedInstance = new Syncano(customServerUrl, apiKey, instanceName);
     }
 
-    public static Syncano getSharedInstance() {
+    /**
+     * Create static Syncano instance.
+     * Use getInstance() to get its reference.
+     *
+     * @param apiKey       Api key.
+     * @param instanceName Syncano instanceName related with apiKey.
+     */
+    public static void init(String apiKey, String instanceName) {
+        init(null, apiKey, instanceName);
+    }
+
+    public static Syncano getInstance() {
         return sharedInstance;
+    }
+
+    public static void setInstance(Syncano syncano) {
+        sharedInstance = syncano;
     }
 
     // ==================== Objects ==================== //
@@ -89,7 +105,7 @@ public class Syncano extends SyncanoBase {
 
         Class<T> type = (Class<T>) object.getClass();
         String className = SyncanoClassHelper.getSyncanoClassName(type);
-        String url = String.format(Constants.OBJECTS_LIST_URL, getInstance(), className);
+        String url = String.format(Constants.OBJECTS_LIST_URL, getInstanceName(), className);
         return new RequestPost<>(type, url, this, object);
     }
 
@@ -104,7 +120,7 @@ public class Syncano extends SyncanoBase {
     public <T extends SyncanoObject> RequestGetOne<T> getObject(Class<T> type, int id) {
 
         String className = SyncanoClassHelper.getSyncanoClassName(type);
-        String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstance(), className, id);
+        String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstanceName(), className, id);
         return new RequestGetOne<>(type, url, this);
     }
 
@@ -118,7 +134,7 @@ public class Syncano extends SyncanoBase {
     public <T extends SyncanoObject> RequestGetList<T> getObjects(Class<T> type) {
 
         String className = SyncanoClassHelper.getSyncanoClassName(type);
-        String url = String.format(Constants.OBJECTS_LIST_URL, getInstance(), className);
+        String url = String.format(Constants.OBJECTS_LIST_URL, getInstanceName(), className);
         return new RequestGetList<>(type, url, this);
     }
 
@@ -137,7 +153,7 @@ public class Syncano extends SyncanoBase {
 
         Class<T> type = (Class<T>) object.getClass();
         String className = SyncanoClassHelper.getSyncanoClassName(type);
-        String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstance(), className, object.getId());
+        String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstanceName(), className, object.getId());
         return new RequestPatch<>(type, url, this, object);
     }
 
@@ -152,7 +168,7 @@ public class Syncano extends SyncanoBase {
     public <T extends SyncanoObject> RequestDelete<T> deleteObject(Class<T> type, int id) {
 
         String className = SyncanoClassHelper.getSyncanoClassName(type);
-        String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstance(), className, id);
+        String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstanceName(), className, id);
         return new RequestDelete<>(type, url, this);
     }
 
@@ -166,7 +182,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestPost<CodeBox> createCodeBox(CodeBox codeBox) {
 
-        String url = String.format(Constants.CODEBOXES_LIST_URL, getInstance());
+        String url = String.format(Constants.CODEBOXES_LIST_URL, getInstanceName());
         return new RequestPost<>(CodeBox.class, url, this, codeBox);
     }
 
@@ -178,7 +194,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestGetOne<CodeBox> getCodeBox(int id) {
 
-        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getInstance(), id);
+        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getInstanceName(), id);
         return new RequestGetOne<>(CodeBox.class, url, this);
     }
 
@@ -189,7 +205,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestGetList<CodeBox> getCodeBoxes() {
 
-        String url = String.format(Constants.CODEBOXES_LIST_URL, getInstance());
+        String url = String.format(Constants.CODEBOXES_LIST_URL, getInstanceName());
         return new RequestGetList<>(CodeBox.class, url, this);
     }
 
@@ -205,7 +221,7 @@ public class Syncano extends SyncanoBase {
             throw new RuntimeException("Trying to update object without id!");
         }
 
-        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getInstance(), codeBox.getId());
+        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getInstanceName(), codeBox.getId());
         return new RequestPatch<>(CodeBox.class, url, this, codeBox);
     }
 
@@ -217,7 +233,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestDelete<CodeBox> deleteCodeBox(int id) {
 
-        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getInstance(), id);
+        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getInstanceName(), id);
         return new RequestDelete<>(CodeBox.class, url, this);
     }
 
@@ -242,7 +258,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestPost<Trace> runCodeBox(int id, JsonObject params) {
 
-        String url = String.format(Constants.CODEBOXES_RUN_URL, getInstance(), id);
+        String url = String.format(Constants.CODEBOXES_RUN_URL, getInstanceName(), id);
         return new RequestPost<>(Trace.class, url, this, params);
     }
 
@@ -256,7 +272,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestPost<Webhook> createWebhook(Webhook webhook) {
 
-        String url = String.format(Constants.WEBHOOKS_LIST_URL, getInstance());
+        String url = String.format(Constants.WEBHOOKS_LIST_URL, getInstanceName());
         return new RequestPost<>(Webhook.class, url, this, webhook);
     }
 
@@ -268,7 +284,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestGetOne<Webhook> getWebhook(String name) {
 
-        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), name);
+        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstanceName(), name);
         return new RequestGetOne<>(Webhook.class, url, this);
     }
 
@@ -279,7 +295,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestGetList<Webhook> getWebhooks() {
 
-        String url = String.format(Constants.WEBHOOKS_LIST_URL, getInstance());
+        String url = String.format(Constants.WEBHOOKS_LIST_URL, getInstanceName());
         return new RequestGetList<>(Webhook.class, url, this);
     }
 
@@ -295,7 +311,7 @@ public class Syncano extends SyncanoBase {
             throw new RuntimeException("Trying to update Webhook without name!");
         }
 
-        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), webhook.getName());
+        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstanceName(), webhook.getName());
         return new RequestPatch<>(Webhook.class, url, this, webhook);
     }
 
@@ -307,7 +323,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestDelete<Webhook> deleteWebhook(String name) {
 
-        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstance(), name);
+        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getInstanceName(), name);
         return new RequestDelete<>(Webhook.class, url, this);
     }
 
@@ -330,7 +346,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestPost<Trace> runWebhook(String name, JsonObject payload) {
 
-        String url = String.format(Constants.WEBHOOKS_RUN_URL, getInstance(), name);
+        String url = String.format(Constants.WEBHOOKS_RUN_URL, getInstanceName(), name);
         return new RequestPost<>(Trace.class, url, this, payload);
     }
 
@@ -354,7 +370,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestPost<SyncanoClass> createSyncanoClass(SyncanoClass clazz) {
 
-        String url = String.format(Constants.CLASSES_LIST_URL, getInstance());
+        String url = String.format(Constants.CLASSES_LIST_URL, getInstanceName());
         return new RequestPost<>(SyncanoClass.class, url, this, clazz);
     }
 
@@ -376,7 +392,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestGetOne<SyncanoClass> getSyncanoClass(String name) {
 
-        String url = String.format(Constants.CLASSES_DETAIL_URL, getInstance(), name);
+        String url = String.format(Constants.CLASSES_DETAIL_URL, getInstanceName(), name);
         return new RequestGetOne<>(SyncanoClass.class, url, this);
     }
 
@@ -387,7 +403,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestGetList<SyncanoClass> getSyncanoClasses() {
 
-        String url = String.format(Constants.CLASSES_LIST_URL, getInstance());
+        String url = String.format(Constants.CLASSES_LIST_URL, getInstanceName());
         return new RequestGetList<>(SyncanoClass.class, url, this);
     }
 
@@ -403,7 +419,7 @@ public class Syncano extends SyncanoBase {
             throw new RuntimeException("Trying to update Class without name!");
         }
 
-        String url = String.format(Constants.CLASSES_DETAIL_URL, getInstance(), clazz.getName());
+        String url = String.format(Constants.CLASSES_DETAIL_URL, getInstanceName(), clazz.getName());
         return new RequestPatch<>(SyncanoClass.class, url, this, clazz);
     }
 
@@ -415,7 +431,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestDelete<SyncanoClass> deleteSyncanoClass(String name) {
 
-        String url = String.format(Constants.CLASSES_DETAIL_URL, getInstance(), name);
+        String url = String.format(Constants.CLASSES_DETAIL_URL, getInstanceName(), name);
         return new RequestDelete<>(SyncanoClass.class, url, this);
     }
 
@@ -453,7 +469,7 @@ public class Syncano extends SyncanoBase {
      */
     public <T extends AbstractUser> RequestPost<T> createCustomUser(T user) {
         Class<T> type = (Class<T>) user.getClass();
-        String url = String.format(Constants.USERS_LIST_URL, getInstance());
+        String url = String.format(Constants.USERS_LIST_URL, getInstanceName());
         return new RequestPost<>(type, url, this, user);
     }
 
@@ -476,7 +492,7 @@ public class Syncano extends SyncanoBase {
      */
     public <T extends AbstractUser> RequestGetOne<T> getCustomUser(Class<T> type, int id) {
 
-        String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), id);
+        String url = String.format(Constants.USERS_DETAIL_URL, getInstanceName(), id);
         return new RequestGetOne<>(type, url, this);
     }
 
@@ -497,7 +513,7 @@ public class Syncano extends SyncanoBase {
      */
     public <T extends AbstractUser> RequestGetList<T> getCustomUsers(Class<T> type) {
 
-        String url = String.format(Constants.USERS_LIST_URL, getInstance());
+        String url = String.format(Constants.USERS_LIST_URL, getInstanceName());
         return new RequestGetList<>(type, url, this);
     }
 
@@ -525,7 +541,7 @@ public class Syncano extends SyncanoBase {
         }
 
         Class<T> type = (Class<T>) user.getClass();
-        String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), user.getId());
+        String url = String.format(Constants.USERS_DETAIL_URL, getInstanceName(), user.getId());
         return new RequestPatch<>(type, url, this, user);
     }
 
@@ -548,7 +564,7 @@ public class Syncano extends SyncanoBase {
      */
     public <T extends AbstractUser> RequestDelete<T> deleteCustomUser(Class<T> type, int id) {
 
-        String url = String.format(Constants.USERS_DETAIL_URL, getInstance(), id);
+        String url = String.format(Constants.USERS_DETAIL_URL, getInstanceName(), id);
         return new RequestDelete<>(type, url, this);
     }
 
@@ -573,7 +589,7 @@ public class Syncano extends SyncanoBase {
      */
     public <T extends AbstractUser> RequestPost<T> loginUser(Class<T> type, String username, String password) {
 
-        String url = String.format(Constants.USER_AUTH, getInstance());
+        String url = String.format(Constants.USER_AUTH, getInstanceName());
 
         JsonObject jsonParams = new JsonObject();
         jsonParams.addProperty(User.FIELD_USER_NAME, username);
@@ -603,7 +619,7 @@ public class Syncano extends SyncanoBase {
      */
     public <T extends AbstractUser> RequestPost<T> authSocialCustomUser(Class<T> type, SocialAuthBackend social, String authToken) {
 
-        String url = String.format(Constants.USER_SOCIAL_AUTH, getInstance(), social.toString());
+        String url = String.format(Constants.USER_SOCIAL_AUTH, getInstanceName(), social.toString());
 
         JsonObject jsonParams = new JsonObject();
         jsonParams.addProperty(Constants.POST_PARAM_SOCIAL_TOKEN, authToken);
@@ -621,7 +637,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestPost<Group> createGroup(Group group) {
 
-        String url = String.format(Constants.GROUPS_LIST_URL, getInstance());
+        String url = String.format(Constants.GROUPS_LIST_URL, getInstanceName());
         return new RequestPost<>(Group.class, url, this, group);
     }
 
@@ -633,7 +649,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestGetOne<Group> getGroup(int id) {
 
-        String url = String.format(Constants.GROUPS_DETAIL_URL, getInstance(), id);
+        String url = String.format(Constants.GROUPS_DETAIL_URL, getInstanceName(), id);
         return new RequestGetOne<>(Group.class, url, this);
     }
 
@@ -644,7 +660,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestGetList<Group> getGroups() {
 
-        String url = String.format(Constants.GROUPS_LIST_URL, getInstance());
+        String url = String.format(Constants.GROUPS_LIST_URL, getInstanceName());
         return new RequestGetList<>(Group.class, url, this);
     }
 
@@ -660,7 +676,7 @@ public class Syncano extends SyncanoBase {
             throw new RuntimeException("Trying to update Group without id!");
         }
 
-        String url = String.format(Constants.GROUPS_DETAIL_URL, getInstance(), group.getId());
+        String url = String.format(Constants.GROUPS_DETAIL_URL, getInstanceName(), group.getId());
         return new RequestPatch<>(Group.class, url, this, group);
     }
 
@@ -672,7 +688,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestDelete<Group> deleteGroup(int id) {
 
-        String url = String.format(Constants.GROUPS_DETAIL_URL, getInstance(), id);
+        String url = String.format(Constants.GROUPS_DETAIL_URL, getInstanceName(), id);
         return new RequestDelete<>(Group.class, url, this);
     }
 
@@ -685,7 +701,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestGetOne<GroupMembership> getGroupMembership(int groupId, int userId) {
 
-        String url = String.format(Constants.GROUPS_USERS_DETAIL_URL, getInstance(), groupId, userId);
+        String url = String.format(Constants.GROUPS_USERS_DETAIL_URL, getInstanceName(), groupId, userId);
         return new RequestGetOne<>(GroupMembership.class, url, this);
     }
 
@@ -697,7 +713,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestGetList<GroupMembership> getGroupMemberships(int groupId) {
 
-        String url = String.format(Constants.GROUPS_USERS_LIST_URL, getInstance(), groupId);
+        String url = String.format(Constants.GROUPS_USERS_LIST_URL, getInstanceName(), groupId);
         return new RequestGetList<>(GroupMembership.class, url, this);
     }
 
@@ -709,7 +725,7 @@ public class Syncano extends SyncanoBase {
      * @return Object representing Membership.
      */
     public RequestPost<GroupMembership> addUserToGroup(int groupId, int userId) {
-        String url = String.format(Constants.GROUPS_USERS_LIST_URL, getInstance(), groupId);
+        String url = String.format(Constants.GROUPS_USERS_LIST_URL, getInstanceName(), groupId);
 
         JsonObject jsonParams = new JsonObject();
         jsonParams.addProperty(Constants.POST_PARAM_USER, userId);
@@ -726,7 +742,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestDelete<GroupMembership> deleteUserFromGroup(int groupId, int userId) {
 
-        String url = String.format(Constants.GROUPS_USERS_DETAIL_URL, getInstance(), groupId, userId);
+        String url = String.format(Constants.GROUPS_USERS_DETAIL_URL, getInstanceName(), groupId, userId);
         return new RequestDelete<>(GroupMembership.class, url, this);
     }
 
@@ -740,7 +756,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestPost<Channel> createChannel(Channel channel) {
 
-        String url = String.format(Constants.CHANNELS_LIST_URL, getInstance());
+        String url = String.format(Constants.CHANNELS_LIST_URL, getInstanceName());
         return new RequestPost<>(Channel.class, url, this, channel);
     }
 
@@ -752,7 +768,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestGetOne<Channel> getChannel(String channelName) {
 
-        String url = String.format(Constants.CHANNELS_DETAIL_URL, getInstance(), channelName);
+        String url = String.format(Constants.CHANNELS_DETAIL_URL, getInstanceName(), channelName);
         return new RequestGetOne<>(Channel.class, url, this);
     }
 
@@ -762,7 +778,7 @@ public class Syncano extends SyncanoBase {
      * @return List of existing Channels.
      */
     public RequestGetList<Channel> getChannels() {
-        String url = String.format(Constants.CHANNELS_LIST_URL, getInstance());
+        String url = String.format(Constants.CHANNELS_LIST_URL, getInstanceName());
         return new RequestGetList<>(Channel.class, url, this);
     }
 
@@ -778,7 +794,7 @@ public class Syncano extends SyncanoBase {
             throw new RuntimeException("Trying to update Channel without name!");
         }
 
-        String url = String.format(Constants.CHANNELS_DETAIL_URL, getInstance(), channel.getName());
+        String url = String.format(Constants.CHANNELS_DETAIL_URL, getInstanceName(), channel.getName());
         return new RequestPatch<>(Channel.class, url, this, channel);
     }
 
@@ -790,7 +806,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestDelete<Channel> deleteChannel(String channelName) {
 
-        String url = String.format(Constants.CHANNELS_DETAIL_URL, getInstance(), channelName);
+        String url = String.format(Constants.CHANNELS_DETAIL_URL, getInstanceName(), channelName);
         return new RequestDelete<>(Channel.class, url, this);
     }
 
@@ -813,7 +829,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestGetList<Notification> getChannelsHistory(String channelName, String room) {
 
-        String url = String.format(Constants.CHANNELS_HISTORY_URL, getInstance(), channelName);
+        String url = String.format(Constants.CHANNELS_HISTORY_URL, getInstanceName(), channelName);
         RequestGetList<Notification> request = new RequestGetList<>(Notification.class, url, this);
 
         if (room != null) {
@@ -835,7 +851,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestPost<Notification> publishOnChannel(String channelName, Notification notification) {
 
-        String url = String.format(Constants.CHANNELS_PUBLISH_URL, getInstance(), channelName);
+        String url = String.format(Constants.CHANNELS_PUBLISH_URL, getInstanceName(), channelName);
 
         return new RequestPost<>(Notification.class, url, this, notification);
     }
@@ -852,7 +868,7 @@ public class Syncano extends SyncanoBase {
      */
     /* package */ RequestGetOne<Notification> pollChannel(String channelName, String room, int lastId) {
 
-        String url = String.format(Constants.CHANNELS_POLL_URL, getInstance(), channelName);
+        String url = String.format(Constants.CHANNELS_POLL_URL, getInstanceName(), channelName);
         RequestGetOne<Notification> request = new RequestGetOne<>(Notification.class, url, this);
 
         if (room != null) {

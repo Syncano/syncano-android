@@ -19,19 +19,19 @@ public abstract class SyncanoBase {
     protected String customServerUrl;
     protected String apiKey;
     protected String userKey;
-    protected String instance;
+    protected String instanceName;
 
     protected Gson gson;
     protected ExecutorService requestExecutor = Executors.newFixedThreadPool(3);
 
-    protected SyncanoBase(String apiKey, String instance) {
+    protected SyncanoBase(String apiKey, String instanceName) {
         this.apiKey = apiKey;
-        this.instance = instance;
+        this.instanceName = instanceName;
         gson = GsonHelper.createGson();
     }
 
-    protected SyncanoBase(String customServerUrl, String apiKey, String instance) {
-        this(apiKey, instance);
+    protected SyncanoBase(String customServerUrl, String apiKey, String instanceName) {
+        this(apiKey, instanceName);
         this.customServerUrl = customServerUrl;
     }
 
@@ -62,12 +62,12 @@ public abstract class SyncanoBase {
         this.userKey = userKey;
     }
 
-    public String getInstance() {
-        return instance;
+    public String getInstanceName() {
+        return instanceName;
     }
 
-    public void setInstance(String instance) {
-        this.instance = instance;
+    public void setInstanceName(String instance) {
+        this.instanceName = instance;
     }
 
     /**

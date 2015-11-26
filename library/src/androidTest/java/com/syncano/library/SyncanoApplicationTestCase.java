@@ -18,7 +18,8 @@ public class SyncanoApplicationTestCase extends ApplicationTestCase<Application>
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        syncano = new Syncano(Config.STAGING_SERVER_URL, Config.API_KEY, Config.INSTANCE_NAME);
+        Syncano.init(Config.STAGING_SERVER_URL, Config.API_KEY, Config.INSTANCE_NAME);
+        syncano = Syncano.getInstance();
     }
 
     @Override
