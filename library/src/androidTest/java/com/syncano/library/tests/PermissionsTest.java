@@ -56,7 +56,7 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
     public void testGroupPermissionsOnClass() {
         // register user
         User newUser = new User(USER_NAME, PASSWORD);
-        Response<User> response = userSyncano.createUser(newUser).send();
+        Response<User> response = userSyncano.registerUser(newUser).send();
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
         User user = response.getData();
         assertNotNull(user);
@@ -134,7 +134,7 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
     public void testUserPermissionOnObject() {
         // register user
         User newUser = new User(USER_NAME, PASSWORD);
-        Response<User> response = userSyncano.createUser(newUser).send();
+        Response<User> response = userSyncano.registerUser(newUser).send();
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
         User user = response.getData();
         assertNotNull(user);

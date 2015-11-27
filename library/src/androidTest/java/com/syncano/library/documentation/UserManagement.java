@@ -22,7 +22,7 @@ public class UserManagement extends SyncanoApplicationTestCase {
         super.setUp();
         deleteTestUser(syncano, userName);
         User newUser = new User(userName, password);
-        Response<User> response = syncano.createUser(newUser).send();
+        Response<User> response = syncano.registerUser(newUser).send();
 
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
     }
@@ -50,7 +50,7 @@ public class UserManagement extends SyncanoApplicationTestCase {
 
         // ---------- For adding new user in code
         User newUser = new User(userName, password);
-        Response<User> response = syncano.createUser(newUser).send();
+        Response<User> response = syncano.registerUser(newUser).send();
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
@@ -105,7 +105,7 @@ public class UserManagement extends SyncanoApplicationTestCase {
         String socialNetworkAuthToken = "";
 
         // ---------- Social Login
-        Response<User> response = syncano.authSocialUser(SocialAuthBackend.FACEBOOK, socialNetworkAuthToken).send();
+        Response<User> response = syncano.loginSocialUser(SocialAuthBackend.FACEBOOK, socialNetworkAuthToken).send();
 
         // -----------------------------
     }

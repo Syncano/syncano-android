@@ -35,7 +35,7 @@ public class GroupsTest extends SyncanoApplicationTestCase {
         if (responseUserAuth.isOk() && responseUserAuth.getData() != null) {
             user = responseUserAuth.getData();
         } else {
-            Response<User> responseCreateUser = syncano.createUser(new User(USER_NAME, PASSWORD)).send();
+            Response<User> responseCreateUser = syncano.registerUser(new User(USER_NAME, PASSWORD)).send();
 
             assertEquals(Response.HTTP_CODE_CREATED, responseCreateUser.getHttpResultCode());
             assertNotNull(responseCreateUser.getData());

@@ -52,7 +52,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
         User user;
 
         // ----------------- Create -----------------
-        Response<User> responseCreateUser = syncano.createUser(newUser).send();
+        Response<User> responseCreateUser = syncano.registerUser(newUser).send();
 
         assertEquals(Response.HTTP_CODE_CREATED, responseCreateUser.getHttpResultCode());
         assertNotNull(responseCreateUser.getData());
@@ -127,7 +127,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
         TestUserProfileObject testUserProfile;
 
         // ----------------- Create -----------------
-        Response<TestUser> responseCreateUser = syncano.createCustomUser(newUser).send();
+        Response<TestUser> responseCreateUser = syncano.registerCustomUser(newUser).send();
 
         assertEquals(Response.HTTP_CODE_CREATED, responseCreateUser.getHttpResultCode());
         assertNotNull(responseCreateUser.getData());
@@ -153,7 +153,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
         assertEquals(returnedUserProfile.valueTwo, testUserProfile.valueTwo);
 
         // ----------------- Get One -----------------
-        Response<TestUser> responseGetUser = syncano.getCustomUser(TestUser.class, user.getId()).send();
+        Response<TestUser> responseGetUser = syncano.getUser(TestUser.class, user.getId()).send();
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetUser.getHttpResultCode());
         assertNotNull(responseGetUser.getData());
@@ -162,7 +162,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
         assertEquals(testUserProfile.valueTwo, responseGetUser.getData().getProfile().valueTwo);
 
         // ----------------- Get List -----------------
-        Response<List<TestUser>> responseGetUsers = syncano.getCustomUsers(TestUser.class).send();
+        Response<List<TestUser>> responseGetUsers = syncano.getUsers(TestUser.class).send();
 
         assertNotNull(responseGetUsers.getData());
         assertTrue("List should contain at least one item.", responseGetUsers.getData().size() > 0);
@@ -190,19 +190,19 @@ public class UsersTest extends SyncanoApplicationTestCase {
         assertNotNull(responseUserAuthNewPass.getData().getUserKey());
 
         // ----------------- Delete -----------------
-        Response<TestUser> responseDeleteUser = syncano.deleteCustomUser(TestUser.class, user.getId()).send();
+        Response<TestUser> responseDeleteUser = syncano.deleteUser(TestUser.class, user.getId()).send();
 
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteUser.getHttpResultCode());
     }
 
     public void testSocial() {
         if (Config.FACEBOOK_TOKEN != null && !Config.FACEBOOK_TOKEN.isEmpty()) {
-            Response<User> responseFb = syncano.authSocialUser(SocialAuthBackend.FACEBOOK, Config.FACEBOOK_TOKEN).send();
+            Response<User> responseFb = syncano.loginSocialUser(SocialAuthBackend.FACEBOOK, Config.FACEBOOK_TOKEN).send();
             assertEquals(Response.HTTP_CODE_SUCCESS, responseFb.getHttpResultCode());
         }
 
         if (Config.GOOGLE_TOKEN != null && !Config.GOOGLE_TOKEN.isEmpty()) {
-            Response<User> responseGoo = syncano.authSocialUser(SocialAuthBackend.GOOGLE_OAUTH2, Config.GOOGLE_TOKEN).send();
+            Response<User> responseGoo = syncano.loginSocialUser(SocialAuthBackend.GOOGLE_OAUTH2, Config.GOOGLE_TOKEN).send();
             assertEquals(Response.HTTP_CODE_SUCCESS, responseGoo.getHttpResultCode());
         }
     }

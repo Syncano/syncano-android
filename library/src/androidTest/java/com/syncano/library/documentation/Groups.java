@@ -62,7 +62,7 @@ public class Groups extends SyncanoApplicationTestCase {
 
     public void testAddUserToGroup() {
         UserManagement.deleteTestUser(syncano, USER_NAME);
-        Response<User> createResponse = syncano.createUser(new User(USER_NAME, USER_PASS)).send();
+        Response<User> createResponse = syncano.registerUser(new User(USER_NAME, USER_PASS)).send();
         assertEquals(Response.HTTP_CODE_CREATED, createResponse.getHttpResultCode());
         User user = createResponse.getData();
 

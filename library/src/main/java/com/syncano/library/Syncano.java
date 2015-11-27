@@ -172,6 +172,18 @@ public class Syncano extends SyncanoBase {
         return new RequestDelete<>(type, url, this);
     }
 
+    /**
+     * Delete a Data Object.
+     *
+     * @param object Object to delete.
+     * @param <T>    Result type.
+     * @return null
+     */
+    public <T extends SyncanoObject> RequestDelete<T> deleteObject(T object) {
+
+        return deleteObject((Class<T>) object.getClass(), object.getId());
+    }
+
     // ==================== CodeBoxes ==================== //
 
     /**
@@ -455,9 +467,9 @@ public class Syncano extends SyncanoBase {
      * @param user User to create.
      * @return created User
      */
-    public RequestPost<User> createUser(User user) {
+    public RequestPost<User> registerUser(User user) {
 
-        return createCustomUser(user);
+        return registerCustomUser(user);
     }
 
     /**
@@ -467,7 +479,7 @@ public class Syncano extends SyncanoBase {
      * @param user User to create.
      * @return created User
      */
-    public <T extends AbstractUser> RequestPost<T> createCustomUser(T user) {
+    public <T extends AbstractUser> RequestPost<T> registerCustomUser(T user) {
         Class<T> type = (Class<T>) user.getClass();
         String url = String.format(Constants.USERS_LIST_URL, getInstanceName());
         return new RequestPost<>(type, url, this, user);
@@ -481,7 +493,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestGetOne<User> getUser(int id) {
 
-        return getCustomUser(User.class, id);
+        return getUser(User.class, id);
     }
 
     /**
@@ -490,7 +502,7 @@ public class Syncano extends SyncanoBase {
      * @param id Id of existing User.
      * @return requested user
      */
-    public <T extends AbstractUser> RequestGetOne<T> getCustomUser(Class<T> type, int id) {
+    public <T extends AbstractUser> RequestGetOne<T> getUser(Class<T> type, int id) {
 
         String url = String.format(Constants.USERS_DETAIL_URL, getInstanceName(), id);
         return new RequestGetOne<>(type, url, this);
@@ -503,7 +515,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestGetList<User> getUsers() {
 
-        return getCustomUsers(User.class);
+        return getUsers(User.class);
     }
 
     /**
@@ -511,7 +523,7 @@ public class Syncano extends SyncanoBase {
      *
      * @return requested users
      */
-    public <T extends AbstractUser> RequestGetList<T> getCustomUsers(Class<T> type) {
+    public <T extends AbstractUser> RequestGetList<T> getUsers(Class<T> type) {
 
         String url = String.format(Constants.USERS_LIST_URL, getInstanceName());
         return new RequestGetList<>(type, url, this);
@@ -553,7 +565,7 @@ public class Syncano extends SyncanoBase {
      */
     public RequestDelete<User> deleteUser(int id) {
 
-        return deleteCustomUser(User.class, id);
+        return deleteUser(User.class, id);
     }
 
     /**
@@ -562,7 +574,7 @@ public class Syncano extends SyncanoBase {
      * @param id Id of existing User.
      * @return Information about success or error
      */
-    public <T extends AbstractUser> RequestDelete<T> deleteCustomUser(Class<T> type, int id) {
+    public <T extends AbstractUser> RequestDelete<T> deleteUser(Class<T> type, int id) {
 
         String url = String.format(Constants.USERS_DETAIL_URL, getInstanceName(), id);
         return new RequestDelete<>(type, url, this);
@@ -605,9 +617,9 @@ public class Syncano extends SyncanoBase {
      * @param authToken Authentication token.
      * @return user
      */
-    public RequestPost<User> authSocialUser(SocialAuthBackend social, String authToken) {
+    public RequestPost<User> loginSocialUser(SocialAuthBackend social, String authToken) {
 
-        return authSocialCustomUser(User.class, social, authToken);
+        return loginSocialUser(User.class, social, authToken);
     }
 
     /**
@@ -617,7 +629,7 @@ public class Syncano extends SyncanoBase {
      * @param authToken Authentication token.
      * @return user
      */
-    public <T extends AbstractUser> RequestPost<T> authSocialCustomUser(Class<T> type, SocialAuthBackend social, String authToken) {
+    public <T extends AbstractUser> RequestPost<T> loginSocialUser(Class<T> type, SocialAuthBackend social, String authToken) {
 
         String url = String.format(Constants.USER_SOCIAL_AUTH, getInstanceName(), social.toString());
 

@@ -5,6 +5,7 @@ import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
+import com.syncano.library.data.User;
 
 import java.util.List;
 
@@ -17,6 +18,12 @@ public class SimpleTest extends SyncanoApplicationTestCase {
 
         Response<SyncanoClass> respClass = syncano.createSyncanoClass(Item.class).send();
         assertEquals(Response.HTTP_CODE_CREATED, respClass.getHttpResultCode());
+
+        Response<List<User>> usersResp = syncano.getUsers().send();
+        assertEquals(Response.HTTP_CODE_SUCCESS, usersResp.getHttpResultCode());
+        for (User u : usersResp.getData()) {
+            syncano.deleteUser(u.getId()).send();
+        }
     }
 
     @Override
@@ -26,7 +33,7 @@ public class SimpleTest extends SyncanoApplicationTestCase {
     }
 
     public void testSimple() {
-        Response<Item> resp1 = (new Item()).save();
+        Response<Item> resp1 = (new Item()).on(syncano).save();
         assertEquals(Response.HTTP_CODE_CREATED, resp1.getHttpResultCode());
 
         Response<Item> resp2 = (new Item()).save();
@@ -45,6 +52,17 @@ public class SimpleTest extends SyncanoApplicationTestCase {
 
         Response<Item> respDelete = toUpdate.delete();
         assertEquals(Response.HTTP_CODE_NO_CONTENT, respDelete.getHttpResultCode());
+    }
+
+    public void testUsers() {
+        User user = new User();
+        user.setUserName("userabc");
+        user.setPassword("userabc");
+        Response<User> regResp = user.register();
+        assertEquals(Response.HTTP_CODE_CREATED, regResp.getHttpResultCode());
+
+        Response<User> respLogin = user.login();
+        assertEquals(Response.HTTP_CODE_SUCCESS, respLogin.getHttpResultCode());
     }
 
     @com.syncano.library.annotation.SyncanoClass(name = "item")

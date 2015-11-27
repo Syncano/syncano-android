@@ -1,9 +1,14 @@
 package com.syncano.library.data;
 
+import com.syncano.library.Syncano;
 import com.syncano.library.annotation.SyncanoField;
+import com.syncano.library.api.Response;
+import com.syncano.library.callbacks.SyncanoCallback;
+import com.syncano.library.choice.SocialAuthBackend;
 
 /**
  * Override this class with ProfileType to create your custom User.
+ *
  * @param <ProfileType> Type of user profile.
  */
 public abstract class AbstractUser<ProfileType> {
@@ -13,6 +18,8 @@ public abstract class AbstractUser<ProfileType> {
     public static final String FIELD_PASSWORD = "password";
     public static final String FIELD_USER_KEY = "user_key";
     public static final String FIELD_PROFILE = "profile";
+
+    private Syncano syncano;
 
     @SyncanoField(name = FIELD_ID, readOnly = true)
     private int id;
@@ -75,5 +82,33 @@ public abstract class AbstractUser<ProfileType> {
 
     public void setProfile(ProfileType profile) {
         this.profile = profile;
+    }
+
+    private Syncano getSyncano() {
+        if (syncano == null) {
+            return Syncano.getInstance();
+        }
+        return syncano;
+    }
+
+    public <T extends AbstractUser<ProfileType>> T on(Syncano syncano) {
+        this.syncano = syncano;
+        return (T) this;
+    }
+
+    public <T extends AbstractUser> Response<T> register() {
+        return getSyncano().registerCustomUser((T) this).send();
+    }
+
+    public <T extends AbstractUser> void register(SyncanoCallback<T> callback) {
+        getSyncano().registerCustomUser((T) this).sendAsync(callback);
+    }
+
+    public <T extends AbstractUser> Response<T> login() {
+        return getSyncano().loginUser((Class<T>) getClass(), getUserName(), getPassword()).send();
+    }
+
+    public <T extends AbstractUser> void login(SyncanoCallback<T> callback) {
+        getSyncano().loginUser((Class<T>) getClass(), getUserName(), getPassword()).sendAsync(callback);
     }
 }

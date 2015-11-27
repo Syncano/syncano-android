@@ -46,6 +46,8 @@ public abstract class SyncanoObject extends Entity {
     @SyncanoField(name = FIELD_EXPECTED_REVISION)
     private Integer expectedRevision;
 
+    private Syncano syncano;
+
     public String getChannelRoom() {
         return channelRoom;
     }
@@ -119,7 +121,15 @@ public abstract class SyncanoObject extends Entity {
     }
 
     private Syncano getSyncano() {
-        return Syncano.getInstance();
+        if (syncano == null) {
+            return Syncano.getInstance();
+        }
+        return syncano;
+    }
+
+    public <T extends SyncanoObject> T on(Syncano syncano) {
+        this.syncano = syncano;
+        return (T) this;
     }
 
     public <T extends SyncanoObject> Response<T> save() {
@@ -138,7 +148,11 @@ public abstract class SyncanoObject extends Entity {
     }
 
     public <T extends SyncanoObject> Response<T> delete() {
-        return (Response<T>) getSyncano().deleteObject(this.getClass(), this.getId()).send();
+        return getSyncano().deleteObject((T) this).send();
+    }
+
+    public <T extends SyncanoObject> void delete(SyncanoCallback<T> callback) {
+        getSyncano().deleteObject((T) this).sendAsync(callback);
     }
 
     public static <T extends SyncanoObject> ObjectPlease<T> please(Class<T> clazz) {
