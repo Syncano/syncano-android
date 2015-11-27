@@ -1,7 +1,11 @@
 package com.syncano.library.data;
 
+import com.syncano.library.Syncano;
 import com.syncano.library.annotation.SyncanoField;
+import com.syncano.library.api.Response;
+import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.choice.DataObjectPermissions;
+import com.syncano.library.simple.ObjectPlease;
 
 public abstract class SyncanoObject extends Entity {
 
@@ -112,5 +116,32 @@ public abstract class SyncanoObject extends Entity {
 
     public void setExpectedRevision(int expectedRevision) {
         this.expectedRevision = expectedRevision;
+    }
+
+    private Syncano getSyncano() {
+        return Syncano.getInstance();
+    }
+
+    public <T extends SyncanoObject> Response<T> save() {
+        if (getId() == null) {
+            return getSyncano().createObject((T) this).send();
+        }
+        return getSyncano().updateObject((T) this).send();
+    }
+
+    public <T extends SyncanoObject> void save(SyncanoCallback<T> callback) {
+        if (getId() == null) {
+            getSyncano().createObject((T) this).sendAsync(callback);
+        } else {
+            getSyncano().updateObject((T) this).sendAsync(callback);
+        }
+    }
+
+    public <T extends SyncanoObject> Response<T> delete() {
+        return (Response<T>) getSyncano().deleteObject(this.getClass(), this.getId()).send();
+    }
+
+    public static <T extends SyncanoObject> ObjectPlease<T> please(Class<T> clazz) {
+        return new ObjectPlease<T>(clazz);
     }
 }

@@ -11,7 +11,7 @@ public abstract class Entity {
     public static final String FIELD_UPDATED_AT = "updated_at";
 
     @SyncanoField(name = FIELD_ID, readOnly = true)
-    private int id;
+    private Integer id;
 
     @SyncanoField(name = FIELD_CREATED_AT, readOnly = true)
     private Date createdAt;
@@ -19,7 +19,7 @@ public abstract class Entity {
     @SyncanoField(name = FIELD_UPDATED_AT, readOnly = true)
     private Date updatedAt;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

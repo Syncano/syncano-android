@@ -5,10 +5,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.syncano.library.data.SyncanoObject;
+import com.syncano.library.simple.ObjectPlease;
 import com.syncano.library.utils.DateTool;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Where {
@@ -23,9 +26,22 @@ public class Where {
     private static final String FILTER_IN = "_in";
 
     private Map<String, JsonObject> query;
+    private ObjectPlease please;
 
     public Where() {
         query = new HashMap<>();
+    }
+
+    public Where(ObjectPlease please) {
+        this();
+        this.please = please;
+    }
+
+    public <T extends SyncanoObject> Response<List<T>> get() {
+        if (please == null) {
+            throw new RuntimeException("Can be called only from SyncanoObject.please(class).where().get()");
+        }
+        return please.get();
     }
 
     /**
