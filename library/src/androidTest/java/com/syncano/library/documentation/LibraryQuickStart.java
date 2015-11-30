@@ -186,6 +186,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
 
     public void testAdditionalFeatures() {
         CodeBox codeBox = new CodeBox();
+        codeBox.setId(0);
 
         // ---------- CodeBoxes
         Response<Trace> responseRunCodeBox = syncano.runCodeBox(codeBox.getId()).send();
