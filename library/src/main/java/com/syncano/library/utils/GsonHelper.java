@@ -9,6 +9,7 @@ import com.google.gson.FieldAttributes;
 import com.google.gson.FieldNamingStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -22,6 +23,10 @@ import com.syncano.library.data.SyncanoFile;
 public class GsonHelper {
 
     public static Gson createGson() {
+        return createGson(null);
+    }
+
+    public static <T> Gson createGson(final T object) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(NanosDate.class, new DateSerializer());
         gsonBuilder.registerTypeAdapter(NanosDate.class, new DateDeserializer());
@@ -31,6 +36,16 @@ public class GsonHelper {
         gsonBuilder.addSerializationExclusionStrategy(new SyncanoSerializationStrategy());
         gsonBuilder.addDeserializationExclusionStrategy(new SyncanoDeserializationStrategy());
         gsonBuilder.setFieldNamingStrategy(new SyncanoFieldNamingStrategy());
+
+        // it makes possible to fill existing object instead of creating new one
+        if (object != null) {
+            gsonBuilder.registerTypeAdapter(object.getClass(), new InstanceCreator<T>() {
+                @Override
+                public T createInstance(Type type) {
+                    return object;
+                }
+            });
+        }
         return gsonBuilder.create();
     }
 
