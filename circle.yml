@@ -1,3 +1,6 @@
+machine:
+  environment:
+    ADB_INSTALL_TIMEOUT: 8
 dependencies:
   pre:
     - sed -i -e "s/YOUR_API_KEY/${YOUR_API_KEY}/g" /home/ubuntu/syncano-android/library/src/androidTest/java/com/syncano/library/Config.java
