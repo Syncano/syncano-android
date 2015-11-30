@@ -1,6 +1,3 @@
-machine:
-  environment:
-    ADB_INSTALL_TIMEOUT: 8
 dependencies:
   pre:
     - sed -i -e "s/YOUR_API_KEY/${YOUR_API_KEY}/g" /home/ubuntu/syncano-android/library/src/androidTest/java/com/syncano/library/Config.java
@@ -14,7 +11,7 @@ test:
     # wait for it to have booted
     - circle-android wait-for-boot
     # run tests  against the emulator.
-    - ./gradlew connectedCheck
+    - ADB_INSTALL_TIMEOUT=10 ./gradlew connectedCheck
     # copy the build outputs to artifacts
     - cp -r /home/ubuntu/syncano-android/library/build/reports $CIRCLE_ARTIFACTS
     - adb logcat -d >> $CIRCLE_ARTIFACTS/logcat.txt

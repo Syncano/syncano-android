@@ -1,5 +1,7 @@
 apply plugin: 'com.android.library'
 
+com.android.ddmlib.DdmPreferences.setTimeOut(600000)
+
 android {
     compileSdkVersion 21
     buildToolsVersion "21.1.2"
@@ -21,6 +23,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    adbOptions {
+        timeOutInMs 600000
+    }
 }
 
 dependencies {
@@ -37,7 +43,7 @@ android.libraryVariants.all { variant ->
 
     // Create a jar by extracting it from the assembled .aar
     // This ensures that products distributed via .aar and .jar exactly the same bits
-    task (taskName, type: Copy) {
+    task(taskName, type: Copy) {
         String archiveName = "${project.name}-${variant.name}"
         String outputDir = "${buildDir.getPath()}/outputs"
 
@@ -45,7 +51,7 @@ android.libraryVariants.all { variant ->
         from(zipTree("${outputDir}/aar/${archiveName}.aar"))
         into("${outputDir}/jar/")
         include('classes.jar')
-        rename ('classes.jar', "${archiveName}-${variant.mergedFlavor.versionName}.jar")
+        rename('classes.jar', "${archiveName}-${variant.mergedFlavor.versionName}.jar")
     }
 
     makeJar.dependsOn tasks[taskName]
