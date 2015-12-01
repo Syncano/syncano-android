@@ -64,9 +64,6 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
         Response<User> responseLogin = userSyncano.loginUser(USER_NAME, PASSWORD).send();
         assertEquals(Response.HTTP_CODE_SUCCESS, responseLogin.getHttpResultCode());
 
-        // remember user key
-        userSyncano.setUserKey(responseLogin.getData().getUserKey());
-
         // create new group
         Group newGroup = new Group();
         newGroup.setLabel(GROUP_NAME);
@@ -141,9 +138,6 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
 
         Response<User> responseLogin = userSyncano.loginUser(USER_NAME, PASSWORD).send();
         assertEquals(Response.HTTP_CODE_SUCCESS, responseLogin.getHttpResultCode());
-
-        // remember user key
-        userSyncano.setUserKey(responseLogin.getData().getUserKey());
 
         // create new class
         SyncanoClass newClazz = new SyncanoClass(Something.class);

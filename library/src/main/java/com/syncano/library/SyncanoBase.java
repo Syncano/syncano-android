@@ -89,11 +89,16 @@ public abstract class SyncanoBase {
             syncanoRequest.setHttpHeader("X-USER-KEY", userKey);
         }
 
+        Response<T> response;
         if (customServerUrl != null && !customServerUrl.isEmpty()) {
-            return http.send(customServerUrl, syncanoRequest);
+            response = http.send(customServerUrl, syncanoRequest);
         } else {
-            return http.send(Constants.PRODUCTION_SERVER_URL, syncanoRequest);
+            response = http.send(Constants.PRODUCTION_SERVER_URL, syncanoRequest);
         }
+        if (syncanoRequest.getRunAfter() != null) {
+            syncanoRequest.getRunAfter().run(response);
+        }
+        return response;
     }
 
     /**

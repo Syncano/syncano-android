@@ -22,6 +22,7 @@ public abstract class Request<T> {
     private String url;
     private String completeCustomUrl;
     private Syncano syncano;
+    private RunAfter<T> runAfter;
 
     protected Request(String url, Syncano syncano) {
         this.url = url;
@@ -135,5 +136,17 @@ public abstract class Request<T> {
 
     public String getContentType() {
         return "application/json";
+    }
+
+    public RunAfter<T> getRunAfter() {
+        return runAfter;
+    }
+
+    public void setRunAfter(RunAfter<T> runAfter) {
+        this.runAfter = runAfter;
+    }
+
+    public interface RunAfter<T> {
+        void run(Response<T> response);
     }
 }

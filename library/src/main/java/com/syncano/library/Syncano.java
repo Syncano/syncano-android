@@ -1,11 +1,13 @@
 package com.syncano.library;
 
 import com.google.gson.JsonObject;
+import com.syncano.library.api.Request;
 import com.syncano.library.api.RequestDelete;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.RequestGetOne;
 import com.syncano.library.api.RequestPatch;
 import com.syncano.library.api.RequestPost;
+import com.syncano.library.api.Response;
 import com.syncano.library.choice.SocialAuthBackend;
 import com.syncano.library.data.AbstractUser;
 import com.syncano.library.data.Channel;
@@ -607,7 +609,9 @@ public class Syncano extends SyncanoBase {
         jsonParams.addProperty(User.FIELD_USER_NAME, username);
         jsonParams.addProperty(User.FIELD_PASSWORD, password);
 
-        return new RequestPost<>(type, url, this, jsonParams);
+        RequestPost<T> request = new RequestPost<>(type, url, this, jsonParams);
+        saveUserApikeyIfSuccess(request);
+        return request;
     }
 
     /**
@@ -636,7 +640,23 @@ public class Syncano extends SyncanoBase {
         JsonObject jsonParams = new JsonObject();
         jsonParams.addProperty(Constants.POST_PARAM_SOCIAL_TOKEN, authToken);
 
-        return new RequestPost<>(type, url, this, jsonParams);
+        RequestPost<T> request = new RequestPost<>(type, url, this, jsonParams);
+        saveUserApikeyIfSuccess(request);
+        return request;
+    }
+
+    private <T extends AbstractUser> void saveUserApikeyIfSuccess(Request<T> request) {
+        request.setRunAfter(new Request.RunAfter<T>() {
+            @Override
+            public void run(Response<T> response) {
+                if (response.getHttpResultCode() != Response.HTTP_CODE_SUCCESS ||
+                        response.getData() == null) {
+                    return;
+                }
+                AbstractUser user = response.getData();
+                Syncano.this.setUserKey(user.getUserKey());
+            }
+        });
     }
 
     // ==================== Groups ==================== //
