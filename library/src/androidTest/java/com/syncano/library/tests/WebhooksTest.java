@@ -1,6 +1,6 @@
 package com.syncano.library.tests;
 
-import com.syncano.library.Config;
+import com.syncano.library.BuildConfig;
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.api.Response;
@@ -91,7 +91,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
         assertTrue("List should contain at least one item.", responseGetWebhooks.getData().size() > 0);
 
         // ----------------- Run without key-----------------
-        Syncano noKeySyncano = new Syncano(Config.INSTANCE_NAME);
+        Syncano noKeySyncano = new Syncano(BuildConfig.INSTANCE_NAME);
         Response<Trace> responseRunNoKey = noKeySyncano.runWebhook(NAME).send();
 
         assertEquals(responseRunNoKey.getHttpReasonPhrase(), Response.HTTP_CODE_FORBIDDEN, responseRunNoKey.getHttpResultCode());

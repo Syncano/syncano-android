@@ -1,6 +1,6 @@
 package com.syncano.library.tests;
 
-import com.syncano.library.Config;
+import com.syncano.library.BuildConfig;
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoField;
@@ -50,7 +50,7 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
         //delete class
         syncano.deleteSyncanoClass(Something.class).send();
 
-        userSyncano = new Syncano(Config.API_KEY_USERS, Config.INSTANCE_NAME);
+        userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME);
     }
 
     public void testGroupPermissionsOnClass() {

@@ -2,13 +2,6 @@ machine:
   environment:
     ADB_INSTALL_TIMEOUT: 600
 
-dependencies:
-  pre:
-    - cd library/src/androidTest/java/com/syncano/library
-    - sed -i backup -e s/"API_KEY[ ]*=[ ]*\".*\""/"API_KEY=\"${YOUR_API_KEY}\""/g Config.java
-    - sed -i backup -e s/"INSTANCE_NAME[ ]*=[ ]*\".*\""/"INSTANCE_NAME=\"${YOUR_INSTANCE_NAME}\""/g Config.java
-    - sed -i backup -e s/"API_KEY_USERS[ ]*=[ ]*\".*\""/"API_KEY_USERS=\"${YOUR_API_KEY_USERS}\""/g Config.java
-
 test:
   override:
     # start the emulator
@@ -18,7 +11,7 @@ test:
     # wait for it to have booted
     - circle-android wait-for-boot
     # run tests  against the emulator.
-    - ./gradlew connectedCheck
+    - ./gradlew connectedCheck -Pinstance_name="\"${YOUR_INSTANCE_NAME}\"" -Papi_key="\"${YOUR_API_KEY}\"" -Papi_key_users="\"${YOUR_API_KEY_USERS}\""
     # copy the build outputs to artifacts
     - cp -r library/build/reports $CIRCLE_ARTIFACTS
     - adb logcat -d >> $CIRCLE_ARTIFACTS/logcat.txt

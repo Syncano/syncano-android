@@ -1,7 +1,7 @@
 package com.syncano.library.tests;
 
 import com.google.gson.JsonArray;
-import com.syncano.library.Config;
+import com.syncano.library.BuildConfig;
 import com.syncano.library.Constants;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.TestUser;
@@ -192,13 +192,13 @@ public class UsersTest extends SyncanoApplicationTestCase {
     }
 
     public void testSocial() {
-        if (Config.FACEBOOK_TOKEN != null && !Config.FACEBOOK_TOKEN.isEmpty()) {
-            Response<User> responseFb = syncano.loginSocialUser(SocialAuthBackend.FACEBOOK, Config.FACEBOOK_TOKEN).send();
+        if (BuildConfig.FACEBOOK_TOKEN != null && !BuildConfig.FACEBOOK_TOKEN.isEmpty()) {
+            Response<User> responseFb = syncano.loginSocialUser(SocialAuthBackend.FACEBOOK, BuildConfig.FACEBOOK_TOKEN).send();
             assertEquals(Response.HTTP_CODE_SUCCESS, responseFb.getHttpResultCode());
         }
 
-        if (Config.GOOGLE_TOKEN != null && !Config.GOOGLE_TOKEN.isEmpty()) {
-            Response<User> responseGoo = syncano.loginSocialUser(SocialAuthBackend.GOOGLE_OAUTH2, Config.GOOGLE_TOKEN).send();
+        if (BuildConfig.GOOGLE_TOKEN != null && !BuildConfig.GOOGLE_TOKEN.isEmpty()) {
+            Response<User> responseGoo = syncano.loginSocialUser(SocialAuthBackend.GOOGLE_OAUTH2, BuildConfig.GOOGLE_TOKEN).send();
             assertEquals(Response.HTTP_CODE_SUCCESS, responseGoo.getHttpResultCode());
         }
     }
