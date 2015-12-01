@@ -4,8 +4,7 @@ machine:
 
 dependencies:
   pre:
-    - pwd
-    - cd library/src/anroidTest/java/com/syncanolibrary
+    - cd library/src/anroidTest/java/com/syncano/library
     - sed -i backup -e s/"API_KEY[ ]*=[ ]*\".*\""/"API_KEY=\"${YOUR_API_KEY}\""/g Config.java
     - sed -i backup -e s/"INSTANCE_NAME[ ]*=[ ]*\".*\""/"INSTANCE_NAME=\"${YOUR_INSTANCE_NAME}\""/g Config.java
     - sed -i backup -e s/"API_KEY_USERS[ ]*=[ ]*\".*\""/"API_KEY_USERS=\"${YOUR_API_KEY_USERS}\""/g Config.java
@@ -21,7 +20,7 @@ test:
     # run tests  against the emulator.
     - ./gradlew connectedCheck
     # copy the build outputs to artifacts
-    - cp -r /home/ubuntu/syncano-android/library/build/reports $CIRCLE_ARTIFACTS
+    - cp -r library/build/reports $CIRCLE_ARTIFACTS
     - adb logcat -d >> $CIRCLE_ARTIFACTS/logcat.txt
     # copy the test results to the test results directory.
-    - cp -r /home/ubuntu/syncano-android/library/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
+    - cp -r library/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
