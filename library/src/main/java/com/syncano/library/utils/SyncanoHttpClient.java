@@ -17,7 +17,6 @@ import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
@@ -34,7 +33,6 @@ import com.syncano.library.api.Response;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
@@ -109,20 +107,13 @@ public class SyncanoHttpClient {
      */
     public <T> Response<T> send(String serverUrl, Request<T> syncanoRequest) {
         HttpUriRequest request;
-        String urlParameters = syncanoRequest.getUrlParams();
-
-        if (urlParameters == null) {
-            urlParameters = "";
-        }
-
         HttpEntity parameters = syncanoRequest.prepareParams();
-
 
         String url;
         if (syncanoRequest.getCompleteCustomUrl() != null) {
-            url = syncanoRequest.getCompleteCustomUrl() + urlParameters;
+            url = syncanoRequest.getCompleteCustomUrl() + syncanoRequest.getUrlParams();
         } else {
-            url = serverUrl + syncanoRequest.getUrl() + urlParameters;
+            url = serverUrl + syncanoRequest.getUrl() + syncanoRequest.getUrlParams();
         }
 
         if (BuildConfig.DEBUG) {
