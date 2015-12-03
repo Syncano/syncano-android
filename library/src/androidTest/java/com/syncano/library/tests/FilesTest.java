@@ -49,7 +49,7 @@ public class FilesTest extends SyncanoApplicationTestCase {
         assertNotNull(respBytes.getData().file.getLink());
 
         TheObject fileAsset = new TheObject();
-        fileAsset.file = new SyncanoFile(new File(getContext().getExternalFilesDir(null), "blue.png"));
+        fileAsset.file = new SyncanoFile(new File(getContext().getFilesDir(), "blue.png"));
         Response<TheObject> respAsset = syncano.createObject(fileAsset).send();
         assertEquals(Response.HTTP_CODE_CREATED, respAsset.getHttpResultCode());
         assertNotNull(respAsset.getData());
@@ -58,8 +58,8 @@ public class FilesTest extends SyncanoApplicationTestCase {
         assertTrue(respAsset.getData().file2 == null);
 
         TheObject fileDouble = new TheObject();
-        fileDouble.file = new SyncanoFile(new File(getContext().getExternalFilesDir(null), "blue.png"));
-        fileDouble.file2 = new SyncanoFile(new File(getContext().getExternalFilesDir(null), "red.png"));
+        fileDouble.file = new SyncanoFile(new File(getContext().getFilesDir(), "blue.png"));
+        fileDouble.file2 = new SyncanoFile(new File(getContext().getFilesDir(), "red.png"));
         Response<TheObject> respDouble = syncano.createObject(fileDouble).send();
         assertEquals(Response.HTTP_CODE_CREATED, respDouble.getHttpResultCode());
         assertNotNull(respDouble.getData());
@@ -94,7 +94,7 @@ public class FilesTest extends SyncanoApplicationTestCase {
             OutputStream out = null;
             try {
                 in = assetManager.open(filename);
-                File outFile = new File(getContext().getExternalFilesDir(null), filename);
+                File outFile = new File(getContext().getFilesDir(), filename);
                 out = new FileOutputStream(outFile);
                 copyFile(in, out);
             } catch (IOException e) {
