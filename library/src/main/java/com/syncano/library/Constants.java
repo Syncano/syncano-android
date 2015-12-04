@@ -47,6 +47,7 @@ public class Constants {
     public static final String FIELD_TYPE_FILE = "file";
     public static final String FIELD_TYPE_REFERENCE = "reference";
 
+    public static final String BATCH_URL = "/v1/instances/%s/batch/";
     // ==================== Objects ==================== //
     public static final String OBJECTS_LIST_URL = "/v1/instances/%s/classes/%s/objects/";
     public static final String OBJECTS_DETAIL_URL = "/v1/instances/%s/classes/%s/objects/%d/";

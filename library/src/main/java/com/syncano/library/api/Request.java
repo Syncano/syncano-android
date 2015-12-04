@@ -1,6 +1,7 @@
 package com.syncano.library.api;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.syncano.library.Syncano;
 import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.utils.GsonHelper;
@@ -36,12 +37,18 @@ public abstract class Request<T> {
     public abstract String getRequestMethod();
 
     /**
-     * Prepare json parameters for request.
+     * Prepare parameters for request.
      */
     public HttpEntity prepareParams() {
         return null;
     }
 
+    /**
+     * Prepare json parameters for request.
+     */
+    public JsonElement prepareJsonParams() {
+        return null;
+    }
 
     /**
      * Prepare URL params.
@@ -67,7 +74,7 @@ public abstract class Request<T> {
 
         prepareUrlParams();
         if (urlParams == null || urlParams.isEmpty()) {
-            return null;
+            return "";
         }
 
         StringBuilder postData = new StringBuilder();

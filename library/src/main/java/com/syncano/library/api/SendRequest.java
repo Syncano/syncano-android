@@ -154,6 +154,13 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
         }
     }
 
+    public JsonElement prepareJsonParams() {
+        if (data == null) {
+            return null;
+        }
+        return gson.toJsonTree(data);
+    }
+
     @Override
     public String getContentType() {
         if (data == null || !(data instanceof SyncanoObject)) {
