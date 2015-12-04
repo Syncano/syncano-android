@@ -25,6 +25,10 @@ public abstract class Request<T> {
     private Syncano syncano;
     private RunAfter<T> runAfter;
 
+    protected Request(String url) {
+        this(url, null);
+    }
+
     protected Request(String url, Syncano syncano) {
         this.url = url;
         this.syncano = syncano;
@@ -126,10 +130,16 @@ public abstract class Request<T> {
     public abstract T parseResult(String json);
 
     public Response<T> send() {
+        if (syncano == null) {
+            throw new RuntimeException("Request initiated without Syncano instance so can't call send()");
+        }
         return syncano.request(this);
     }
 
     public void sendAsync(SyncanoCallback<T> callback) {
+        if (syncano == null) {
+            throw new RuntimeException("Request initiated without Syncano instance so can't call sendAsync()");
+        }
         syncano.requestAsync(this, callback);
     }
 

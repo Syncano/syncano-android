@@ -54,6 +54,8 @@ public class SimpleTest extends SyncanoApplicationTestCase {
         assertEquals(toUpdate.text, respUpdate.getData().text);
 
         // ----------------- Get list of objects -----------------
+        // TODO RequestBuilder.get(Item.class).on...
+        // TODO syncano.get(Item.class).sort...
         Response<List<Item>> respList = SyncanoObject.please(Item.class).on(syncano).sortBy("text").limit(2).
                 where().lte("number", 12).gt("number", 10).get();
         assertEquals(Response.HTTP_CODE_SUCCESS, respList.getHttpResultCode());

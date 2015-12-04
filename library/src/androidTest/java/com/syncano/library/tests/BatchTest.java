@@ -35,6 +35,18 @@ public class BatchTest extends SyncanoApplicationTestCase {
         assertNotNull(book1);
     }
 
+    public void testBatchPretty() {
+        //TODO use shared syncano instance
+        BatchBuilder bb = new BatchBuilder(syncano);
+        bb.add(RequestBuilder.createObject(new Book("John", "John's life")));
+        bb.add(RequestBuilder.createObject(new Book("Anne Ann", "Live well without head")));
+        Response<List<BatchAnswer>> r = bb.send();
+        List<BatchAnswer> answers = r.getData();
+        assertNotNull(answers);
+        Book book1 = answers.get(0).getDataAs(Book.class);
+        assertNotNull(book1);
+    }
+
     @SyncanoClass(name = "Book")
     public static class Book extends SyncanoObject {
 

@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.syncano.library.Constants;
 import com.syncano.library.Syncano;
+import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.data.BatchAnswer;
 
 import java.util.ArrayList;
@@ -59,5 +60,7 @@ public class BatchBuilder {
         return buildRequest().send();
     }
 
-
+    public void sendAsync(SyncanoCallback<List<BatchAnswer>> callback) {
+        buildRequest().sendAsync(callback);
+    }
 }

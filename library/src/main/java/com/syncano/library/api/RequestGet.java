@@ -3,12 +3,6 @@ package com.syncano.library.api;
 import com.syncano.library.Syncano;
 import com.syncano.library.utils.SyncanoHttpClient;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class RequestGet<T> extends Request<T> {
 
     private FieldsFilter fieldsFilter;

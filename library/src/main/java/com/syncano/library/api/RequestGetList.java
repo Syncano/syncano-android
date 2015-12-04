@@ -6,10 +6,6 @@ import com.syncano.library.Constants;
 import com.syncano.library.Syncano;
 import com.syncano.library.data.PageInternal;
 
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,6 +67,7 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
 
     /**
      * Filter your objects using query parameter.
+     *
      * @param where Filtering query.
      */
     public void setWhereFilter(Where where) {
@@ -79,8 +76,9 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
 
     /**
      * You can order objects using this method. Field must be marked as "order_index" in class schema.
+     *
      * @param fieldName Field to order by.
-     * @param reverse If true, change from ascending to descending.
+     * @param reverse   If true, change from ascending to descending.
      */
     public void setOrderBy(String fieldName, boolean reverse) {
         orderBy = reverse ? "-" + fieldName : fieldName;
@@ -88,6 +86,7 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
 
     /**
      * Set limit of how many items do you want to get.
+     *
      * @param limit Maximum amount of items.
      */
     public void setLimit(int limit) {
@@ -99,7 +98,8 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
      * If revert is false, "next page" will be requested.
      * When reverted, direction will be changed and objects with
      * smaller id will be get. It's equivalent of "previous page".
-     * @param lastPk Id to start from paging.
+     *
+     * @param lastPk          Id to start from paging.
      * @param revertDirection If true, page direction will be changed.
      */
     public void setLastPk(int lastPk, boolean revertDirection) {
