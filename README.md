@@ -33,12 +33,12 @@ $ ./gradlew makeJar
 
 Output will be generated in:
 ```
-/library/build/outputs/jar/library-release-x.jar
+library/build/outputs/jar/library-release-x.jar
 ```
 
 ##JAR DISTRIBUTION
-If you want to use JAR in our project, you also weed to add gson library.
-Version **gson-2.3.1** is recommended.
+If you want to use JAR in our project, you also need to add gson library.
+Version **gson-2.5** is recommended.
 
 ## TESTS
 To run tests call from command line:
@@ -46,18 +46,11 @@ To run tests call from command line:
 $ ./gradlew connectedAndroidTest
 ```
 
-Remember to provide correct Api Key and Instance Name in:
+To run tests, remember to provide correct Api Key and Instance Name in:
 ```
-/library/src/androidTest/java/com/syncano/library/Config.java
+library/gradle.properties
 ```
-
-## TESTS COVERAGE
-To generate test coverage call "createDebugCoverageReport" from command line:
+or pass them in gradlew command:
 ```bash
-$ ./gradlew createDebugCoverageReport
-```
-
-Coverage report will be located in:
-```
-/library/build/outputs/reports/coverage/
+$ ./gradlew connectedCheck -Pinstance_name="\"your_instance_name\"" -Papi_key="\"your_api_key\"" -Papi_key_users="\"your_api_key_for_registering users\""
 ```
