@@ -119,13 +119,7 @@ public class GsonHelper {
 
         @Override
         public String translateName(Field f) {
-            SyncanoField syncanoField = f.getAnnotation(SyncanoField.class);
-
-            if (syncanoField != null) {
-                return syncanoField.name();
-            } else {
-                return f.getName();
-            }
+            return SyncanoClassHelper.getFieldName(f);
         }
     }
 }

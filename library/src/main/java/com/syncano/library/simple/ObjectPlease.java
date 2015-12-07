@@ -4,6 +4,7 @@ import com.syncano.library.Syncano;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.Where;
+import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.data.SyncanoObject;
 
 import java.util.List;
@@ -27,8 +28,18 @@ public class ObjectPlease<T extends SyncanoObject> {
         return request.send();
     }
 
+    public void getAsync(SyncanoCallback<List<T>> callback) {
+        RequestGetList<T> request = syncano.getObjects(clazz);
+        decorateRequest(request);
+        request.sendAsync(callback);
+    }
+
     public Response<T> get(int id) {
         return syncano.getObject(clazz, id).send();
+    }
+
+    public void getAsync(int id, SyncanoCallback<T> callback) {
+        syncano.getObject(clazz, id).sendAsync(callback);
     }
 
     private void decorateRequest(RequestGetList<T> request) {

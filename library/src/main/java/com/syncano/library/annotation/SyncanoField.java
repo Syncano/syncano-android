@@ -1,5 +1,7 @@
 package com.syncano.library.annotation;
 
+import com.syncano.library.choice.FieldType;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -10,7 +12,7 @@ import java.lang.annotation.Target;
 public @interface SyncanoField {
     String name();
 
-    String type() default "";
+    FieldType type() default FieldType.NOT_SET;
 
     String target() default "";
 

@@ -38,15 +38,6 @@ public class Constants {
     public static final String FIELD_TARGET = "target";
     public static final String FIELD_TARGET_SELF = "self";
 
-    public static final String FIELD_TYPE_STRING = "string";
-    public static final String FIELD_TYPE_TEXT = "text";
-    public static final String FIELD_TYPE_INTEGER = "integer";
-    public static final String FIELD_TYPE_FLOAT = "float";
-    public static final String FIELD_TYPE_BOOLEAN = "boolean";
-    public static final String FIELD_TYPE_DATETIME = "datetime";
-    public static final String FIELD_TYPE_FILE = "file";
-    public static final String FIELD_TYPE_REFERENCE = "reference";
-
     public static final String BATCH_URL = "/v1/instances/%s/batch/";
     // ==================== Objects ==================== //
     public static final String OBJECTS_LIST_URL = "/v1/instances/%s/classes/%s/objects/";

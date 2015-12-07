@@ -6,6 +6,7 @@ import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.TestSyncanoObject;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
+import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.utils.NanosDate;
@@ -130,9 +131,9 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         public NanosDate nanosDate;
         @SyncanoField(name = "string")
         public String stringVal;
-        @SyncanoField(name = "text", type = Constants.FIELD_TYPE_TEXT)
+        @SyncanoField(name = "text", type = FieldType.TEXT)
         public String text;
-        @SyncanoField(name = "reference", type = Constants.FIELD_TYPE_REFERENCE, target = Constants.FIELD_TARGET_SELF)
+        @SyncanoField(name = "reference", type = FieldType.REFERENCE, target = Constants.FIELD_TARGET_SELF)
         public Integer reference;
         @SyncanoField(name = "yesorno")
         public boolean yesOrNo;

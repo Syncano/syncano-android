@@ -1,15 +1,13 @@
 package com.syncano.library.documentation;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoField;
-import com.syncano.library.api.RequestGetList;
+import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.api.Response;
-import com.syncano.library.api.Where;
-import com.syncano.library.data.SyncanoClass;
+import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
 
+import java.io.File;
 import java.util.List;
 
 public class DataObjects extends SyncanoApplicationTestCase {
@@ -17,13 +15,8 @@ public class DataObjects extends SyncanoApplicationTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        String className = "Book";
-        syncano.deleteSyncanoClass(className).send();
-
-        SyncanoClass clazz = new SyncanoClass(className, Book.getSchema());
-        Response<SyncanoClass> classResponse = syncano.createSyncanoClass(clazz).send();
-
-        assertEquals(Response.HTTP_CODE_CREATED, classResponse.getHttpResultCode());
+        copyAssets();
+        createClass(Book.class);
 
         Book newBook = new Book();
         newBook.author = "Ernest Hemingway";
@@ -40,7 +33,7 @@ public class DataObjects extends SyncanoApplicationTestCase {
         newBook.author = "Ernest Hemingway";
         newBook.title = "The Old Man and the Sea";
 
-        Response<Book> responseCreateObject = syncano.createObject(newBook).send();
+        Response<Book> responseCreateObject = newBook.save();
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_CREATED, responseCreateObject.getHttpResultCode());
@@ -48,20 +41,36 @@ public class DataObjects extends SyncanoApplicationTestCase {
         assertNotNull(createdBook);
         int serverId = createdBook.getId();
 
+        // ---------- Creating a Data Object with file
+        Book bookWithCover = new Book();
+        bookWithCover.author = "Ernest Hemingway";
+        bookWithCover.title = "The Old Man and the Sea";
+        bookWithCover.cover = new SyncanoFile(new File(getContext().getFilesDir(), "blue.png"));
+
+        Response<Book> responseCreateObjectWithFile = bookWithCover.save();
+        // -----------------------------
+
+        assertEquals(Response.HTTP_CODE_CREATED, responseCreateObjectWithFile.getHttpResultCode());
+        Book createdBookWithCover = responseCreateObjectWithFile.getData();
+        assertNotNull(createdBookWithCover);
+        assertNotNull(createdBookWithCover.cover);
+        assertNotNull(createdBookWithCover.cover.getLink());
+
         // ---------- Updating a Data Object
         Book book = new Book();
-        book.setId(serverId);
+        book.setId(serverId); // object to update has to have id set
         book.author = "Ernest Hemingway";
         book.title = "The Old Man and the Sea";
 
-        Response<Book> responseUpdate = syncano.updateObject(book).send();
+        Response<Book> responseUpdate = book.save();
 
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdate.getHttpResultCode());
 
         // ---------- Deleting a Data Object
-        Response<Book> responseDelete = syncano.deleteObject(Book.class, serverId).send();
+        book.setId(serverId); // object to delete has to have id set
+        Response<Book> responseDelete = book.delete();
 
         // -----------------------------
 
@@ -79,8 +88,9 @@ public class DataObjects extends SyncanoApplicationTestCase {
         int serverId = exampleBook.getId();
 
         // ---------- Getting Data Object details
-        Response<Book> response = syncano.getObject(Book.class, serverId).send();
-        Book book = response.getData();
+        Book book = new Book();
+        book.setId(serverId);
+        Response<Book> response = book.fetch();
 
         // -----------------------------
 
@@ -88,13 +98,8 @@ public class DataObjects extends SyncanoApplicationTestCase {
         assertNotNull(book);
 
         // ---------- Listing Data Objects
-        Where where = new Where();
-        where.neq(Book.FIELD_ID, 5);
-
-        RequestGetList<Book> requestGetList = syncano.getObjects(Book.class);
-        requestGetList.setWhereFilter(where);
-        requestGetList.setOrderBy(Book.FIELD_CREATED_AT, false);
-        Response<List<Book>> responseList = requestGetList.send();
+        Response<List<Book>> responseList = SyncanoObject.please(Book.class)
+                .sortByReversed(Book.FIELD_CREATED_AT).where().neq(Book.FIELD_ID, 5).get();
 
         // -----------------------------
 
@@ -103,7 +108,7 @@ public class DataObjects extends SyncanoApplicationTestCase {
 
     }
 
-    @com.syncano.library.annotation.SyncanoClass(name = "Book")
+    @SyncanoClass(name = "Book")
     private static class Book extends SyncanoObject {
         @SyncanoField(name = "author")
         public String author;
@@ -111,27 +116,7 @@ public class DataObjects extends SyncanoApplicationTestCase {
         @SyncanoField(name = "title")
         public String title;
 
-        public static JsonArray getSchema() {
-        /*
-        [
-            {"type": "string","name": "author"},
-            {"type": "string","name": "title"}
-        ]
-         */
-
-            JsonObject fieldOne = new JsonObject();
-            fieldOne.addProperty("type", "string");
-            fieldOne.addProperty("name", "author");
-
-            JsonObject fieldTwo = new JsonObject();
-            fieldTwo.addProperty("type", "string");
-            fieldTwo.addProperty("name", "title");
-
-            JsonArray array = new JsonArray();
-            array.add(fieldOne);
-            array.add(fieldTwo);
-
-            return array;
-        }
+        @SyncanoField(name = "cover")
+        public SyncanoFile cover;
     }
 }

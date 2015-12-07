@@ -2,9 +2,9 @@ package com.syncano.library.api;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.syncano.library.Constants;
 import com.syncano.library.Syncano;
 import com.syncano.library.annotation.SyncanoField;
+import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.utils.SyncanoClassHelper;
@@ -77,8 +77,8 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
             if (fieldAnnotation == null) {
                 continue;
             }
-            String typeName = SyncanoClassHelper.findType(field, fieldAnnotation);
-            if (typeName == null || !Constants.FIELD_TYPE_FILE.equals(typeName)) {
+            FieldType type = SyncanoClassHelper.findType(field, fieldAnnotation);
+            if (type == null || !FieldType.FILE.equals(type)) {
                 continue;
             }
 
@@ -88,7 +88,7 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
                 continue;
             }
 
-            String fieldName = fieldAnnotation.name();
+            String fieldName = SyncanoClassHelper.getFieldName(field);
             File file = synFile.getFile();
             byte[] byteData = synFile.getData();
             String fileName;

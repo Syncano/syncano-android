@@ -21,9 +21,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
- */
 public class ChannelConnectionTest extends SyncanoApplicationTestCase {
 
     private static final String TAG = ChannelConnectionTest.class.getSimpleName();

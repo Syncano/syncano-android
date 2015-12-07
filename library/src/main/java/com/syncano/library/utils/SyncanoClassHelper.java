@@ -2,9 +2,11 @@ package com.syncano.library.utils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.annotations.SerializedName;
 import com.syncano.library.Constants;
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.annotation.SyncanoField;
+import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
 
@@ -45,21 +47,29 @@ public class SyncanoClassHelper {
             }
 
             JsonObject fieldDescription = new JsonObject();
-            String typeName = findType(field, fieldAnnotation);
-            if (typeName == null) {
+            FieldType type = findType(field, fieldAnnotation);
+            if (type == null) {
                 continue;
             }
 
-            if (typeName.equals(Constants.FIELD_TYPE_REFERENCE)) {
+            if (type.equals(FieldType.REFERENCE)) {
                 String target = fieldAnnotation.target();
                 if (target == null || target.isEmpty()) {
-                    throw new RuntimeException("Field type " + typeName + " has to be declared together with " + Constants.FIELD_TARGET);
+                    throw new RuntimeException("Field type " + type + " has to be declared together with " + Constants.FIELD_TARGET);
                 } else {
                     fieldDescription.addProperty(Constants.FIELD_TARGET, target);
                 }
             }
+            String typeName;
+            try {
+                SerializedName nameAnn = type.getClass().getDeclaredField(type.name()).getAnnotation(SerializedName.class);
+                typeName = nameAnn.value();
+            } catch (Exception e) {
+                e.printStackTrace();
+                continue;
+            }
             fieldDescription.addProperty(Constants.FIELD_TYPE, typeName);
-            fieldDescription.addProperty(Constants.FIELD_NAME, fieldAnnotation.name());
+            fieldDescription.addProperty(Constants.FIELD_NAME, getFieldName(field));
             if (fieldAnnotation.filterIndex()) {
                 fieldDescription.addProperty(Constants.FIELD_FILTER_INDEX, true);
             }
@@ -72,32 +82,47 @@ public class SyncanoClassHelper {
         return schemaArray;
     }
 
-    public static String findType(Field field, SyncanoField fieldAnnotation) {
-        String typeName = fieldAnnotation.type();
-        if (typeName != null && !typeName.isEmpty()) {
-            return typeName;
+    public static String getFieldName(Field f) {
+        SyncanoField syncanoField = f.getAnnotation(SyncanoField.class);
+
+        String name;
+        if (syncanoField != null) {
+            name = syncanoField.name();
+        } else {
+            name = f.getName();
+        }
+        if (!name.equals(name.toLowerCase())) {
+            throw new RuntimeException("Can't use capital letters in field names");
+        }
+        return name;
+    }
+
+    public static FieldType findType(Field field, SyncanoField fieldAnnotation) {
+        FieldType type = fieldAnnotation.type();
+        if (type != null && !FieldType.NOT_SET.equals(type)) {
+            return type;
         }
 
-        Class<?> type = field.getType();
-        if (type.equals(int.class) || type.equals(Integer.class)
-                || type.equals(byte.class) || type.equals(Byte.class)
-                || type.equals(short.class) || type.equals(Short.class)) {
-            return Constants.FIELD_TYPE_INTEGER;
-        } else if (type.equals(String.class)) {
-            return Constants.FIELD_TYPE_STRING;
-        } else if (type.equals(Date.class) || type.equals(NanosDate.class)) {
-            return Constants.FIELD_TYPE_DATETIME;
-        } else if (type.equals(boolean.class) || type.equals(Boolean.class)) {
-            return Constants.FIELD_TYPE_BOOLEAN;
-        } else if (type.equals(float.class) || type.equals(Float.class)
-                || type.equals(double.class) || type.equals(Double.class)) {
-            return Constants.FIELD_TYPE_FLOAT;
-        } else if (type.equals(SyncanoFile.class)) {
-            return Constants.FIELD_TYPE_FILE;
+        Class<?> clazz = field.getType();
+        if (clazz.equals(int.class) || clazz.equals(Integer.class)
+                || clazz.equals(byte.class) || clazz.equals(Byte.class)
+                || clazz.equals(short.class) || clazz.equals(Short.class)) {
+            return FieldType.INTEGER;
+        } else if (clazz.equals(String.class)) {
+            return FieldType.STRING;
+        } else if (clazz.equals(Date.class) || clazz.equals(NanosDate.class)) {
+            return FieldType.DATETIME;
+        } else if (clazz.equals(boolean.class) || clazz.equals(Boolean.class)) {
+            return FieldType.BOOLEAN;
+        } else if (clazz.equals(float.class) || clazz.equals(Float.class)
+                || clazz.equals(double.class) || clazz.equals(Double.class)) {
+            return FieldType.FLOAT;
+        } else if (clazz.equals(SyncanoFile.class)) {
+            return FieldType.FILE;
         }
         if (fieldAnnotation.readOnly()) {
             return null;
         }
-        throw new RuntimeException("Field type " + type.getSimpleName() + " is not supported.");
+        throw new RuntimeException("Field type " + clazz.getSimpleName() + " is not supported.");
     }
 }

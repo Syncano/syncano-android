@@ -1,16 +1,19 @@
 package com.syncano.library.documentation;
 
-import com.google.gson.JsonArray;
 import com.syncano.library.Constants;
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
-import com.syncano.library.TestUserProfileObject;
+import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.SocialAuthBackend;
+import com.syncano.library.data.AbstractUser;
+import com.syncano.library.data.Profile;
 import com.syncano.library.data.SyncanoClass;
+import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.User;
 import com.syncano.library.utils.SyncanoClassHelper;
 
+import java.io.File;
 import java.util.List;
 
 public class UserManagement extends SyncanoApplicationTestCase {
@@ -50,29 +53,35 @@ public class UserManagement extends SyncanoApplicationTestCase {
 
         // ---------- For adding new user in code
         User newUser = new User(userName, password);
-        Response<User> response = syncano.registerUser(newUser).send();
+        Response<User> response = newUser.register();
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
     }
 
     public void testUpdateUserClass() {
-        JsonArray schema = SyncanoClassHelper.getSyncanoClassSchema(TestUserProfileObject.class);
-
         // ---------- You can make same kind of changes to user_profile class
         Response<SyncanoClass> responseGetProfileClass = syncano.getSyncanoClass(Constants.USER_PROFILE_CLASS_NAME).send();
-
         SyncanoClass profileClass = responseGetProfileClass.getData();
-        profileClass.setSchema(schema);
+        profileClass.setSchema(SyncanoClassHelper.getSyncanoClassSchema(MyUserProfile.class));
         Response<SyncanoClass> response = syncano.updateSyncanoClass(profileClass).send();
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
 
+        deleteTestUser(syncano, userName);
+        MyUser newUser = new MyUser(userName, password);
+        Response<MyUser> responseRegister = newUser.register();
+        assertEquals(Response.HTTP_CODE_CREATED, responseRegister.getHttpResultCode());
+        MyUser user = responseRegister.getData();
 
         // ---------- Now a user has an extra avatar field in their user profile, which the user can update with an avatar picture
-        // Not supported in Android library
+        MyUserProfile profile = user.getProfile();
+        profile.avatar = new SyncanoFile(new File(getContext().getFilesDir(), "blue.png"));
+        Response<MyUserProfile> responseAvatar = profile.save();
         // -----------------------------
+
+        assertEquals(Response.HTTP_CODE_SUCCESS, responseAvatar.getHttpResultCode());
     }
 
     public void testUserAuthentication() {
@@ -93,7 +102,7 @@ public class UserManagement extends SyncanoApplicationTestCase {
 
 
         // ---------- How to reset the User Key
-        // No example
+        syncano.setUserKey(null);
 
         // -----------------------------
     }
@@ -105,5 +114,17 @@ public class UserManagement extends SyncanoApplicationTestCase {
         Response<User> response = syncano.loginSocialUser(SocialAuthBackend.FACEBOOK, socialNetworkAuthToken).send();
 
         // -----------------------------
+    }
+
+    @com.syncano.library.annotation.SyncanoClass(name = Constants.USER_PROFILE_CLASS_NAME)
+    private static class MyUserProfile extends Profile {
+        @SyncanoField(name = "avatar")
+        public SyncanoFile avatar;
+    }
+
+    private static class MyUser extends AbstractUser<MyUserProfile> {
+        public MyUser(String login, String pass) {
+            super(login, pass);
+        }
     }
 }

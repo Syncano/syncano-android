@@ -1,16 +1,15 @@
 package com.syncano.library.documentation;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.syncano.library.ChannelConnection;
 import com.syncano.library.ChannelConnectionListener;
 import com.syncano.library.SyncanoApplicationTestCase;
+import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.ChannelPermissions;
 import com.syncano.library.choice.ChannelType;
 import com.syncano.library.data.Channel;
 import com.syncano.library.data.Notification;
-import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 
 import java.util.List;
@@ -28,13 +27,6 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
 
     private void deleteChannel(String name) {
         syncano.deleteChannel(name).send();
-    }
-
-    private void createClass(SyncanoClass clazz) {
-        syncano.deleteSyncanoClass(clazz.getName()).send();
-        Response<com.syncano.library.data.SyncanoClass> responseCreateClass = syncano.createSyncanoClass(clazz).send();
-        assertEquals(responseCreateClass.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responseCreateClass.getHttpResultCode());
-        assertNotNull(responseCreateClass.getData());
     }
 
     public void testCreateChannel() {
@@ -76,8 +68,7 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
     }
 
     public void testCreateObject() {
-        SyncanoClass syncanoClass = new SyncanoClass("Book", new JsonArray());
-        createClass(syncanoClass);
+        createClass(Book.class);
         createChannel("channel_name", ChannelType.DEFAULT, false);
 
         // ---------- Creating a Data Object
@@ -258,7 +249,7 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
     }
 
-    @com.syncano.library.annotation.SyncanoClass(name = "Book")
+    @SyncanoClass(name = "Book")
     private static class Book extends SyncanoObject {
     }
 

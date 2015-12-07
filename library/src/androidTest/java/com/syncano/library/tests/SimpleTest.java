@@ -14,12 +14,7 @@ public class SimpleTest extends SyncanoApplicationTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        // ----------------- Delete class -----------------
-        syncano.deleteSyncanoClass(Item.class).send();
-
-        // ----------------- Create class -----------------
-        Response<SyncanoClass> respClass = syncano.createSyncanoClass(Item.class).send();
-        assertEquals(Response.HTTP_CODE_CREATED, respClass.getHttpResultCode());
+        createClass(Item.class);
 
         // ----------------- Delete users -----------------
         Response<List<User>> usersResp = syncano.getUsers().send();
@@ -31,9 +26,8 @@ public class SimpleTest extends SyncanoApplicationTestCase {
 
     @Override
     protected void tearDown() throws Exception {
-        // ----------------- Delete class -----------------
-        syncano.deleteSyncanoClass(Item.class).send();
         super.tearDown();
+        removeClass(Item.class);
     }
 
     public void testSimple() {
@@ -92,7 +86,6 @@ public class SimpleTest extends SyncanoApplicationTestCase {
         public Item(int id) {
             setId(id);
         }
-
 
         @SyncanoField(name = "text", orderIndex = true)
         public String text = "example value";

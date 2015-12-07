@@ -1,15 +1,13 @@
 package com.syncano.library.documentation;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
+import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.DataObjectPermissions;
 import com.syncano.library.data.Group;
 import com.syncano.library.data.GroupMembership;
-import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.User;
 
@@ -31,11 +29,7 @@ public class Groups extends SyncanoApplicationTestCase {
         group = response.getData();
         assertNotNull(group);
 
-        String className = "Book";
-        syncano.deleteSyncanoClass(className).send();
-        SyncanoClass clazz = new SyncanoClass(className, Book.getSchema());
-        Response<SyncanoClass> classResponse = syncano.createSyncanoClass(clazz).send();
-        assertEquals(Response.HTTP_CODE_CREATED, classResponse.getHttpResultCode());
+        createClass(Book.class);
     }
 
     public static void deleteGroup(Syncano syncano, String label) {
@@ -87,35 +81,12 @@ public class Groups extends SyncanoApplicationTestCase {
     }
 
 
-    @com.syncano.library.annotation.SyncanoClass(name = "Book")
+    @SyncanoClass(name = "Book")
     private static class Book extends SyncanoObject {
         @SyncanoField(name = "author")
         public String author;
 
         @SyncanoField(name = "title")
         public String title;
-
-        public static JsonArray getSchema() {
-        /*
-        [
-            {"type": "string","name": "author"},
-            {"type": "string","name": "title"}
-        ]
-         */
-
-            JsonObject fieldOne = new JsonObject();
-            fieldOne.addProperty("type", "string");
-            fieldOne.addProperty("name", "author");
-
-            JsonObject fieldTwo = new JsonObject();
-            fieldTwo.addProperty("type", "string");
-            fieldTwo.addProperty("name", "title");
-
-            JsonArray array = new JsonArray();
-            array.add(fieldOne);
-            array.add(fieldTwo);
-
-            return array;
-        }
     }
 }

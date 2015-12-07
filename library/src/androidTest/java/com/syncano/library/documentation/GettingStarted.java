@@ -8,7 +8,8 @@ public class GettingStarted extends SyncanoApplicationTestCase {
     public void testMakeInstance() {
 
         // ---------- Connecting from a Library
-        Syncano syncano = new Syncano("api_key", "instance_name");
+        Syncano.init("api_key", "instance_name");
+        Syncano syncano = Syncano.getInstance();
         // -----------------------------
     }
 }

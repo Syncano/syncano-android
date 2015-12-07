@@ -7,7 +7,6 @@ import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.api.FieldsFilter;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
-import com.syncano.library.api.Where;
 import com.syncano.library.callbacks.SyncanoCallback;
 
 import java.util.Arrays;
@@ -74,6 +73,8 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         if (responseGetBooks.getResultCode() == Response.CODE_SUCCESS) {
             List<Book> books = responseGetBooks.getData();
         }
+        // other way
+        Response<List<Book>> responseGetBooks2 = SyncanoObject.please(Book.class).get();
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetBooks.getHttpResultCode());
@@ -92,6 +93,8 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         };
 
         syncano.getObjects(Book.class).sendAsync(callback);
+        // other way
+        SyncanoObject.please(Book.class).getAsync(callback);
         // -----------------------------
     }
 
@@ -101,6 +104,8 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         // ---------- Get a single Data Object
         Response<Book> responseGetBook = syncano.getObject(Book.class, id).send();
         Book book = responseGetBook.getData();
+        // other way
+        book = SyncanoObject.please(Book.class).get(id).getData();
         // -----------------------------
     }
 
@@ -110,7 +115,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         newBook.title = "New Title";
         newBook.subtitle = "New Subtitle";
 
-        Response<Book> responseCreateObject = syncano.createObject(newBook).send();
+        Response<Book> responseCreateObject = newBook.save();
 
         if (responseCreateObject.getResultCode() == Response.CODE_SUCCESS) {
             // Book with filled id, createdAt, updatedAt and revision.
@@ -131,20 +136,15 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         book.title = "New Title";
         book.subtitle = "New Subtitle";
 
-        Response<Book> responseUpdate = syncano.updateObject(book).send();
+        Response<Book> responseUpdate = book.save();
         Book updatedBook = responseUpdate.getData(); // book with updated fields (like updatedAt).
         // -----------------------------
 
         assertNotNull(updatedBook);
 
         // ---------- Where and OrderBy
-        Where where = new Where();
-        where.gte(Book.FIELD_ID, 10).lte(Book.FIELD_ID, 15);
-
-        RequestGetList<Book> requestGetList = syncano.getObjects(Book.class);
-        requestGetList.setWhereFilter(where);
-        requestGetList.setOrderBy(Book.FIELD_TITLE, false);
-        Response<List<Book>> response = requestGetList.send();
+        Response<List<Book>> response = SyncanoObject.please(Book.class).sortBy(Book.FIELD_TITLE)
+                .where().gte(Book.FIELD_ID, 10).lte(Book.FIELD_ID, 15).get();
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
