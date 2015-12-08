@@ -22,7 +22,7 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
         // ---------- Filtering Data Objects
 
         Response<List<Book>> responseList = SyncanoObject.please(Book.class)
-                .where().gt("release_year", 1995).get();
+                .where().gt("release_year", 1990).get();
 
         // -----------------------------
 
