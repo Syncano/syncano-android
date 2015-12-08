@@ -20,7 +20,7 @@ public class Classes extends SyncanoApplicationTestCase {
 
         public static final String FIELD_TITLE = "book_title";
         public static final String FIELD_PAGES = "total_pages";
-        public static final String FIELD_NON_FINCTION = "non-fiction";
+        public static final String FIELD_NON_FICTION = "non-fiction";
         public static final String FIELD_AUTHOR = "author";
         public static final String AUTHOR_CLASS = "Author";
 
@@ -28,7 +28,7 @@ public class Classes extends SyncanoApplicationTestCase {
         public String title;
         @SyncanoField(name = FIELD_PAGES)
         public Integer pages;
-        @SyncanoField(name = FIELD_NON_FINCTION)
+        @SyncanoField(name = FIELD_NON_FICTION)
         public Boolean nonFiction;
         @SyncanoField(name = FIELD_AUTHOR, type = FieldType.REFERENCE, target = AUTHOR_CLASS)
         public Integer author;
