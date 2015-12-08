@@ -68,6 +68,16 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseOrderedReversed.getHttpResultCode());
         assertNotNull(responseOrderedReversed.getData());
+        
+        // ---------- Ordering with Filtering Data Objects
+
+        Response<List<Book>> responseOrderedFiltered = SyncanoObject.please(Book.class)
+                .sortBy("release_year").where().gt("release_year", 1990).get();
+
+        // -----------------------------
+
+        assertEquals(Response.HTTP_CODE_SUCCESS, responseOrderedFiltered.getHttpResultCode());
+        assertNotNull(responseOrderedFiltered.getData());
     }
 
 
