@@ -22,7 +22,7 @@ public class DataObjects extends SyncanoApplicationTestCase {
         newBook.author = "Ernest Hemingway";
         newBook.title = "The Old Man and the Sea";
 
-        Response<Book> responseCreateObject = syncano.createObject(newBook).send();
+        Response<Book> responseCreateObject = newBook.save();
         assertEquals(Response.HTTP_CODE_CREATED, responseCreateObject.getHttpResultCode());
     }
 
