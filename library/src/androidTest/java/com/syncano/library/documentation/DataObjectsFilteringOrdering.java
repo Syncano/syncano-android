@@ -23,6 +23,11 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
 
         Response<List<Book>> responseList = SyncanoObject.please(Book.class)
                 .where().gt("release_year", 1990).get();
+                
+        // ---------- Complex Filtering Data Objects
+
+        Response<List<Book>> responseList = SyncanoObject.please(Book.class)
+                .where().gt("release_year", 1990).lte("release_year", 2000).get();
 
         // -----------------------------
 
