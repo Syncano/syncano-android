@@ -68,13 +68,13 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
 
     public void testGetObjects() {
         // ---------- Download the most recent Objects Synchronous
-        Response<List<Book>> responseGetBooks = syncano.getObjects(Book.class).send();
+        Response<List<Book>> responseGetBooks = SyncanoObject.please(Book.class).get();
+        //or other way
+        Response<List<Book>> responseGetBooks2 = syncano.getObjects(Book.class).send();
 
         if (responseGetBooks.getResultCode() == Response.CODE_SUCCESS) {
             List<Book> books = responseGetBooks.getData();
         }
-        // other way
-        Response<List<Book>> responseGetBooks2 = SyncanoObject.please(Book.class).get();
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseGetBooks.getHttpResultCode());
@@ -92,9 +92,9 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
             }
         };
 
-        syncano.getObjects(Book.class).sendAsync(callback);
-        // other way
         SyncanoObject.please(Book.class).getAsync(callback);
+        // other way
+        syncano.getObjects(Book.class).sendAsync(callback);
         // -----------------------------
     }
 
@@ -103,9 +103,9 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
 
         // ---------- Get a single Data Object
         Response<Book> responseGetBook = syncano.getObject(Book.class, id).send();
-        Book book = responseGetBook.getData();
+        Book book = SyncanoObject.please(Book.class).get(id).getData();
         // other way
-        book = SyncanoObject.please(Book.class).get(id).getData();
+        book = responseGetBook.getData();
         // -----------------------------
     }
 
