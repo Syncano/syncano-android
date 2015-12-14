@@ -8,6 +8,7 @@ import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.utils.SyncanoClassHelper;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class QueryTest extends SyncanoApplicationTestCase {
@@ -26,16 +27,40 @@ public class QueryTest extends SyncanoApplicationTestCase {
     }
 
     public void testStringQuery() {
-        Article article = new Article();
-        article.titleName = OBJECT_TITLE_NAME;
-        Response<Article> resp2 = article.save();
-        article = resp2.getData();
-        assertTrue(resp2.isSuccess());
+        List<Article> articleList = createTestsArticles();
         runTestWhereStartWith();
         runTestWhereEndWith();
         runTestWhereEqualTo();
         runTestWhereContains();
-        article.delete();
+        runTestWhereConnectedQuery();
+        removeTestsArticles(articleList);
+    }
+
+    private List<Article> createTestsArticles() {
+        List<Article> articleList = new ArrayList<>();
+        Article article1 = new Article();
+        article1.titleName = OBJECT_TITLE_NAME;
+        article1.releaseYear = 1993;
+        Article article2 = new Article();
+        article2.releaseYear = 1994;
+        Article article3 = new Article();
+        article3.releaseYear = 1995;
+        Response<Article> responseCreateArticle1 = article1.save();
+        Response<Article> responseCreateArticle2 = article2.save();
+        Response<Article> responseCreateArticle3 = article3.save();
+        assertTrue(responseCreateArticle1.isSuccess());
+        assertTrue(responseCreateArticle2.isSuccess());
+        assertTrue(responseCreateArticle3.isSuccess());
+        articleList.add(responseCreateArticle1.getData());
+        articleList.add(responseCreateArticle2.getData());
+        articleList.add(responseCreateArticle3.getData());
+        return articleList;
+    }
+
+    private void removeTestsArticles(List<Article> articleList) {
+        for (Article article : articleList) {
+            article.delete();
+        }
     }
 
     private void runTestWhereStartWith() {
@@ -47,6 +72,13 @@ public class QueryTest extends SyncanoApplicationTestCase {
         response = SyncanoObject.please(Article.class).where().startWith(Article.COLUMN_TITLE, "ExAmPle", Case.INSENSITIVE).get();
         assertTrue(response.isSuccess());
         assertFalse(response.getData().isEmpty());
+    }
+
+    private void runTestWhereConnectedQuery() {
+        Response<List<Article>> response;
+        response = SyncanoObject.please(Article.class).where().gt(Article.COLUMN_RELEASE_YEAR, 1993).lt(Article.COLUMN_RELEASE_YEAR, 1995).get();
+        assertTrue(response.isSuccess());
+        assertEquals(1, response.getData().size());
     }
 
     private void runTestWhereContains() {
@@ -104,7 +136,7 @@ public class QueryTest extends SyncanoApplicationTestCase {
         public String titleName;
         @SyncanoField(name = COLUMN_TEXT)
         public String content;
-        @SyncanoField(name = COLUMN_RELEASE_YEAR)
+        @SyncanoField(name = COLUMN_RELEASE_YEAR, filterIndex = true)
         public int releaseYear;
 
         public Article() {
