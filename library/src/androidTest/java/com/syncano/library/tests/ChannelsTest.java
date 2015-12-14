@@ -9,9 +9,6 @@ import com.syncano.library.data.Notification;
 
 import java.util.List;
 
-/**
- * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
- */
 public class ChannelsTest extends SyncanoApplicationTestCase {
 
     private static final String CHANNEL_NAME = "channel_one";
@@ -40,8 +37,7 @@ public class ChannelsTest extends SyncanoApplicationTestCase {
 
         // ----------------- Create -----------------
         Response<Channel> responseCreateChannel = syncano.createChannel(newChannel).send();
-
-        assertEquals(Response.HTTP_CODE_CREATED, responseCreateChannel.getHttpResultCode());
+        assertTrue(responseCreateChannel.isSuccess());
         assertNotNull(responseCreateChannel.getData());
         channel = responseCreateChannel.getData();
         assertEquals(channel.getName(), CHANNEL_NAME);
@@ -49,7 +45,7 @@ public class ChannelsTest extends SyncanoApplicationTestCase {
         // ----------------- Get One -----------------
         Response<Channel> responseGetChannel = syncano.getChannel(channel.getName()).send();
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseGetChannel.getHttpResultCode());
+        assertTrue(responseGetChannel.isSuccess());
         assertNotNull(responseGetChannel.getData());
         assertEquals(CHANNEL_NAME, responseGetChannel.getData().getName());
         assertEquals(FIRST_DESCRIPTION, responseGetChannel.getData().getDescription());
@@ -64,7 +60,7 @@ public class ChannelsTest extends SyncanoApplicationTestCase {
         channel.setDescription(SECOND_DESCRIPTION);
         Response<Channel> responseUpdateChannel = syncano.updateChannel(channel).send();
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdateChannel.getHttpResultCode());
+        assertTrue(responseUpdateChannel.isSuccess());
         assertNotNull(responseUpdateChannel.getData());
         assertEquals(CHANNEL_NAME, responseUpdateChannel.getData().getName());
         assertEquals(SECOND_DESCRIPTION, responseUpdateChannel.getData().getDescription());
@@ -76,7 +72,7 @@ public class ChannelsTest extends SyncanoApplicationTestCase {
         final Notification newNotification = new Notification(payload);
         Response<Notification> responsePublish = syncano.publishOnChannel(CHANNEL_NAME, newNotification).send();
 
-        assertEquals(responsePublish.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responsePublish.getHttpResultCode());
+        assertTrue(responsePublish.isSuccess());
         assertNotNull(responsePublish.getData());
         assertNotNull(responsePublish.getData().getPayload());
         assertTrue(responsePublish.getData().getPayload().has(KEY));
@@ -93,7 +89,7 @@ public class ChannelsTest extends SyncanoApplicationTestCase {
         // ----------------- Delete -----------------
         Response<Channel> responseDeleteChannel = syncano.deleteChannel(channel.getName()).send();
 
-        assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteChannel.getHttpResultCode());
+        assertTrue(responseDeleteChannel.isSuccess());
     }
 
     public void testChannelWithRooms() {
@@ -106,7 +102,7 @@ public class ChannelsTest extends SyncanoApplicationTestCase {
         // ----------------- Create -----------------
         Response<Channel> responseCreateChannel = syncano.createChannel(newChannel).send();
 
-        assertEquals(Response.HTTP_CODE_CREATED, responseCreateChannel.getHttpResultCode());
+        assertTrue(responseCreateChannel.isSuccess());
         assertNotNull(responseCreateChannel.getData());
         channel = responseCreateChannel.getData();
         assertEquals(channel.getName(), CHANNEL_NAME);
@@ -114,7 +110,7 @@ public class ChannelsTest extends SyncanoApplicationTestCase {
         // ----------------- Get One -----------------
         Response<Channel> responseGetChannel = syncano.getChannel(channel.getName()).send();
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseGetChannel.getHttpResultCode());
+        assertTrue(responseGetChannel.isSuccess());
         assertNotNull(responseGetChannel.getData());
         assertEquals(CHANNEL_NAME, responseGetChannel.getData().getName());
         assertEquals(FIRST_DESCRIPTION, responseGetChannel.getData().getDescription());
@@ -126,7 +122,7 @@ public class ChannelsTest extends SyncanoApplicationTestCase {
         final Notification newNotification = new Notification(ROOM, payload);
         Response<Notification> responsePublish = syncano.publishOnChannel(CHANNEL_NAME, newNotification).send();
 
-        assertEquals(responsePublish.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responsePublish.getHttpResultCode());
+        assertTrue(responsePublish.isSuccess());
         assertNotNull(responsePublish.getData());
         assertNotNull(responsePublish.getData().getPayload());
         assertTrue(responsePublish.getData().getPayload().has(KEY));
@@ -143,6 +139,6 @@ public class ChannelsTest extends SyncanoApplicationTestCase {
         // ----------------- Delete -----------------
         Response<Channel> responseDeleteChannel = syncano.deleteChannel(channel.getName()).send();
 
-        assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteChannel.getHttpResultCode());
+        assertTrue(responseDeleteChannel.isSuccess());
     }
 }

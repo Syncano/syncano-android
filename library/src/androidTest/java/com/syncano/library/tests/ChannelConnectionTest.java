@@ -13,8 +13,6 @@ import com.syncano.library.choice.ChannelType;
 import com.syncano.library.choice.NotificationAction;
 import com.syncano.library.data.Channel;
 import com.syncano.library.data.Notification;
-import com.syncano.library.data.SyncanoClass;
-import com.syncano.library.utils.SyncanoClassHelper;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -24,10 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ChannelConnectionTest extends SyncanoApplicationTestCase {
 
     private static final String TAG = ChannelConnectionTest.class.getSimpleName();
-
-    private Channel channel;
     private CountDownLatch lock;
-
     private static final String CHANNEL_NAME = "channel_one";
 
     @Override
@@ -36,26 +31,17 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
 
         // ----------------- Delete Channel -----------------
         // Make sure slug is not taken.
-        syncano.deleteChannel(CHANNEL_NAME).send();
+        Response<Channel> resp = syncano.deleteChannel(CHANNEL_NAME).send();
+        assertTrue(resp.isSuccess());
 
         // Make sure class exists.
-        String className = SyncanoClassHelper.getSyncanoClassName(TestSyncanoObject.class);
-        Response<SyncanoClass> responseGetSyncanoClass = syncano.getSyncanoClass(className).send();
-
-        if (responseGetSyncanoClass.getHttpResultCode() == Response.HTTP_CODE_NOT_FOUND) {
-            SyncanoClass syncanoClass = new SyncanoClass(TestSyncanoObject.class);
-            Response<SyncanoClass> responseCreateClass = syncano.createSyncanoClass(syncanoClass).send();
-            assertEquals(responseCreateClass.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responseCreateClass.getHttpResultCode());
-        }
+        createClass(TestSyncanoObject.class);
     }
 
     @Override
     protected void tearDown() throws Exception {
-        // ----------------- Delete Channel -----------------
-        if (channel != null) {
-            Response<Channel> responseDeleteChannel = syncano.deleteChannel(channel.getName()).send();
-            assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteChannel.getHttpResultCode());
-        }
+        Response<Channel> responseDeleteChannel = syncano.deleteChannel(CHANNEL_NAME).send();
+        assertTrue(responseDeleteChannel.isSuccess());
     }
 
     private void customPublishCheck(String room) throws InterruptedException {
@@ -69,8 +55,8 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
         }
         Response<Channel> responseCreateChannel = syncano.createChannel(newChannel).send();
 
-        assertEquals(Response.HTTP_CODE_CREATED, responseCreateChannel.getHttpResultCode());
-        channel = responseCreateChannel.getData();
+        assertTrue(responseCreateChannel.isSuccess());
+        Channel channel = responseCreateChannel.getData();
         assertNotNull(channel);
 
         // ----------------- Listen to notifications -----------------
@@ -106,8 +92,7 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
 
             final Notification newNotification = new Notification(room, payload);
             Response<Notification> responsePublish = syncano.publishOnChannel(channel.getName(), newNotification).send();
-
-            assertEquals(responsePublish.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responsePublish.getHttpResultCode());
+            assertTrue(responsePublish.isSuccess());
             assertNotNull(responsePublish.getData());
         }
 
@@ -129,8 +114,8 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
         newChannel.setOtherPermissions(ChannelPermissions.SUBSCRIBE);
         Response<Channel> responseCreateChannel = syncano.createChannel(newChannel).send();
 
-        assertEquals(Response.HTTP_CODE_CREATED, responseCreateChannel.getHttpResultCode());
-        channel = responseCreateChannel.getData();
+        assertTrue(responseCreateChannel.isSuccess());
+        Channel channel = responseCreateChannel.getData();
         assertNotNull(channel);
 
         // ----------------- Listen to notifications -----------------
@@ -174,7 +159,7 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
         testObject.setChannel(CHANNEL_NAME);
         testObject.setChannelRoom(room);
         Response<TestSyncanoObject> responseCreate = syncano.createObject(testObject).send();
-        assertEquals(responseCreate.getHttpResultCode(), Response.HTTP_CODE_CREATED);
+        assertTrue(responseCreate.isSuccess());
         TestSyncanoObject returnedObject = responseCreate.getData();
         assertNotNull(returnedObject);
         assertEquals(returnedObject.valueOne, testObject.valueOne);
@@ -183,14 +168,14 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
         testObject.setId(returnedObject.getId());
         testObject.valueOne = "other val1";
         Response<TestSyncanoObject> responseUpdate = syncano.updateObject(testObject).send();
-        assertEquals(responseUpdate.getHttpResultCode(), Response.HTTP_CODE_SUCCESS);
+        assertTrue(responseUpdate.isSuccess());
         returnedObject = responseUpdate.getData();
         assertNotNull(returnedObject);
         assertEquals(returnedObject.valueOne, testObject.valueOne);
 
         // delete
         Response<TestSyncanoObject> responseDelete = syncano.deleteObject(TestSyncanoObject.class, returnedObject.getId()).send();
-        assertEquals(responseDelete.getHttpResultCode(), Response.HTTP_CODE_NO_CONTENT);
+        assertTrue(responseDelete.isSuccess());
 
 
         // Wait for notifications

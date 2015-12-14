@@ -8,7 +8,7 @@ public class Group {
     public static final String FIELD_DESCRIPTION = "description";
 
     @SyncanoField(name = FIELD_ID, readOnly = true)
-    private int id;
+    private Integer id;
 
     @SyncanoField(name = FIELD_LABEL, required = true)
     private String label;
@@ -31,11 +31,11 @@ public class Group {
         this.label = label;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

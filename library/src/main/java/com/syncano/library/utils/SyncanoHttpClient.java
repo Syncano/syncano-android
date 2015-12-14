@@ -187,7 +187,7 @@ public class SyncanoHttpClient {
             }
 
             // when request succeeded parse data, otherwise set error flags
-            if (response.getStatusLine().getStatusCode() >= 200 && response.getStatusLine().getStatusCode() < 400) {
+            if (syncanoRequest.isCorrectHttpResponseCode(response.getStatusLine().getStatusCode())) {
                 // For some requests it may be null (for example: DELETE).
                 syncanoResponse.setData(syncanoRequest.parseResult(json));
             } else {

@@ -10,14 +10,7 @@ import com.syncano.library.data.User;
 
 import java.util.List;
 
-
-/**
- * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
- */
 public class GroupsTest extends SyncanoApplicationTestCase {
-
-    private static final String TAG = GroupsTest.class.getSimpleName();
-
     private static final String USER_NAME = "testuser";
     private static final String PASSWORD = "password";
 
@@ -32,12 +25,12 @@ public class GroupsTest extends SyncanoApplicationTestCase {
 
         // ----------------- Get Or Create Test User -----------------
         Response<User> responseUserAuth = syncano.loginUser(USER_NAME, PASSWORD).send();
-        if (responseUserAuth.isOk() && responseUserAuth.getData() != null) {
+        if (responseUserAuth.isSuccess() && responseUserAuth.getData() != null) {
             user = responseUserAuth.getData();
         } else {
             Response<User> responseCreateUser = syncano.registerUser(new User(USER_NAME, PASSWORD)).send();
 
-            assertEquals(Response.HTTP_CODE_CREATED, responseCreateUser.getHttpResultCode());
+            assertTrue(responseCreateUser.isSuccess());
             assertNotNull(responseCreateUser.getData());
             user = responseCreateUser.getData();
         }
@@ -48,25 +41,25 @@ public class GroupsTest extends SyncanoApplicationTestCase {
 
         RequestGetList<Group> requestGetGroups = syncano.getGroups();
         requestGetGroups.setWhereFilter(where);
-        Response<List<Group>> responseGetGroups= requestGetGroups.send();
+        Response<List<Group>> responseGetGroups = requestGetGroups.send();
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseGetGroups.getHttpResultCode());
+        assertTrue(responseGetGroups.isSuccess());
         assertNotNull(responseGetGroups.getData());
 
         for (Group item : responseGetGroups.getData()) {
             Response<Group> responseDeleteGroup = syncano.deleteGroup(item.getId()).send();
-            assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteGroup.getHttpResultCode());
+            assertTrue(responseDeleteGroup.isSuccess());
         }
     }
 
     @Override
     protected void tearDown() throws Exception {
-       super.tearDown();
+        super.tearDown();
 
         // ----------------- Delete Test User -----------------
         if (user != null) {
             Response<User> responseDeleteUser = syncano.deleteUser(user.getId()).send();
-            assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteUser.getHttpResultCode());
+            assertTrue(responseDeleteUser.isSuccess());
         }
     }
 
@@ -79,14 +72,14 @@ public class GroupsTest extends SyncanoApplicationTestCase {
         // ----------------- Create -----------------
         Response<Group> responseCreateGroup = syncano.createGroup(newGroup).send();
 
-        assertEquals(responseCreateGroup.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responseCreateGroup.getHttpResultCode());
+        assertTrue(responseCreateGroup.isSuccess());
         assertNotNull(responseCreateGroup.getData());
         group = responseCreateGroup.getData();
 
         // ----------------- Get One -----------------
         Response<Group> responseGetGroup = syncano.getGroup(group.getId()).send();
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseGetGroup.getHttpResultCode());
+        assertTrue(responseGetGroup.isSuccess());
         assertNotNull(responseGetGroup.getData());
         assertEquals(group.getLabel(), responseGetGroup.getData().getLabel());
 
@@ -98,16 +91,16 @@ public class GroupsTest extends SyncanoApplicationTestCase {
 
         // ----------------- Update -----------------
         group.setLabel(NEW_GROUP_NAME);
-        Response<Group> responseUpdateGroup= syncano.updateGroup(group).send();
+        Response<Group> responseUpdateGroup = syncano.updateGroup(group).send();
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdateGroup.getHttpResultCode());
+        assertTrue(responseUpdateGroup.isSuccess());
         assertNotNull(responseUpdateGroup.getData());
         assertEquals(group.getLabel(), responseUpdateGroup.getData().getLabel());
 
         // ----------------- Delete -----------------
         Response<Group> responseDeleteGroup = syncano.deleteGroup(group.getId()).send();
 
-        assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteGroup.getHttpResultCode());
+        assertTrue(responseDeleteGroup.isSuccess());
     }
 
     public void testGroupMembership() throws InterruptedException {
@@ -116,13 +109,13 @@ public class GroupsTest extends SyncanoApplicationTestCase {
 
         // ----------------- Create Temporary Group -----------------
         Response<Group> responseCreateGroup = syncano.createGroup(new Group(GROUP_LABEL)).send();
-        assertEquals(Response.HTTP_CODE_CREATED, responseCreateGroup.getHttpResultCode());
+        assertTrue(responseCreateGroup.isSuccess());
         Group group = responseCreateGroup.getData();
 
         // ----------------- Add User To Group -----------------
         Response<GroupMembership> responseAddUserToGroup = syncano.addUserToGroup(group.getId(), user.getId()).send();
 
-        assertEquals(Response.HTTP_CODE_CREATED, responseAddUserToGroup.getHttpResultCode());
+        assertTrue(responseAddUserToGroup.isSuccess());
         assertNotNull(responseAddUserToGroup.getData());
         groupMembership = responseAddUserToGroup.getData();
         assertNotNull(groupMembership.getUser());
@@ -130,7 +123,7 @@ public class GroupsTest extends SyncanoApplicationTestCase {
         // ----------------- Get Group Membership -----------------
         Response<GroupMembership> responseGetGroupMembership = syncano.getGroupMembership(group.getId(), user.getId()).send();
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseGetGroupMembership.getHttpResultCode());
+        assertTrue(responseGetGroupMembership.isSuccess());
         assertNotNull(responseGetGroupMembership.getData());
         assertNotNull(responseGetGroupMembership.getData().getUser());
         assertEquals(user.getId(), responseGetGroupMembership.getData().getUser().getId());
@@ -143,11 +136,10 @@ public class GroupsTest extends SyncanoApplicationTestCase {
 
         // ----------------- Delete Group Membership -----------------
         Response<GroupMembership> responseDeleteUserFromGroup = syncano.deleteUserFromGroup(group.getId(), user.getId()).send();
-
-        assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteUserFromGroup.getHttpResultCode());
+        assertTrue(responseDeleteUserFromGroup.isSuccess());
 
         // ----------------- Delete Temporary Group -----------------
         Response<Group> responseDeleteGroup = syncano.deleteGroup(group.getId()).send();
-        assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteGroup.getHttpResultCode());
+        assertTrue(responseDeleteGroup.isSuccess());
     }
 }

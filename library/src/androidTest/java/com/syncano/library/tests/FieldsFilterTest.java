@@ -11,10 +11,6 @@ import com.syncano.library.data.CodeBox;
 import java.util.Arrays;
 import java.util.List;
 
-
-/**
- * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
- */
 public class FieldsFilterTest extends SyncanoApplicationTestCase {
 
     private CodeBox codeBox;
@@ -32,7 +28,7 @@ public class FieldsFilterTest extends SyncanoApplicationTestCase {
         // ----------------- Create CodeBox -----------------
         Response<CodeBox> responseCodeBoxCreate = syncano.createCodeBox(newCodeBox).send();
 
-        assertEquals(Response.HTTP_CODE_CREATED, responseCodeBoxCreate.getHttpResultCode());
+        assertTrue(responseCodeBoxCreate.isSuccess());
         assertNotNull(responseCodeBoxCreate.getData());
         codeBox = responseCodeBoxCreate.getData();
     }
@@ -41,7 +37,7 @@ public class FieldsFilterTest extends SyncanoApplicationTestCase {
     protected void tearDown() throws Exception {
         // ----------------- Delete CodeBox -----------------
         Response<CodeBox> responseCodeBoxDelete = syncano.deleteCodeBox(codeBox.getId()).send();
-        assertTrue(responseCodeBoxDelete.isOk());
+        assertTrue(responseCodeBoxDelete.isSuccess());
     }
 
     public void testGetOneFilter() {
@@ -50,7 +46,7 @@ public class FieldsFilterTest extends SyncanoApplicationTestCase {
         requestGet.setFieldsFilter(filter);
         Response<CodeBox> responseGetCodeBox = requestGet.send();
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseGetCodeBox.getHttpResultCode());
+        assertTrue(responseGetCodeBox.isSuccess());
         assertNotNull(responseGetCodeBox.getData());
         assertNotNull(responseGetCodeBox.getData().getLabel());
         assertNull(responseGetCodeBox.getData().getSource());
@@ -62,7 +58,7 @@ public class FieldsFilterTest extends SyncanoApplicationTestCase {
         requestGetList.setFieldsFilter(filter);
         Response<List<CodeBox>> responseGetCodeBoxes = requestGetList.send();
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseGetCodeBoxes.getHttpResultCode());
+        assertTrue(responseGetCodeBoxes.isSuccess());
         assertNotNull(responseGetCodeBoxes.getData());
     }
 }

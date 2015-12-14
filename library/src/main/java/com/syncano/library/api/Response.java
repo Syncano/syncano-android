@@ -1,6 +1,6 @@
 package com.syncano.library.api;
 
-public class Response <T> {
+public class Response<T> {
 
     /**
      * Everything is ok!
@@ -117,14 +117,15 @@ public class Response <T> {
     private T data;
 
     /**
-     * Returns true if http result code is ok.
+     * Returns true if result is success.
+     *
      * @return
      */
-    public boolean isOk() {
-        return httpResultCode >= 200 && httpResultCode < 400;
+    public boolean isSuccess() {
+        return resultCode == CODE_SUCCESS;
     }
 
-    public Integer getResultCode() {
+    public int getResultCode() {
         return resultCode;
     }
 

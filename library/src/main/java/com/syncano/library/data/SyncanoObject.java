@@ -165,7 +165,9 @@ public abstract class SyncanoObject extends Entity {
         Syncano syncano = getSyncano();
         String className = SyncanoClassHelper.getSyncanoClassName(getClass());
         String url = String.format(Constants.OBJECTS_DETAIL_URL, syncano.getInstanceName(), className, getId());
-        return new RequestGetOne<>((T) this, url, syncano);
+        RequestGetOne<T> req = new RequestGetOne<>((T) this, url, syncano);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
     }
 
     public <T extends SyncanoObject> Response<T> fetch() {

@@ -23,28 +23,29 @@ public class PublicWebhooksTest extends SyncanoApplicationTestCase {
         String codeBoxLabel = "CodeBox Test";
         RuntimeName runtime = RuntimeName.NODEJS;
         String source = "var msg = '" + EXPECTED_RESULT + "'; console.log(msg);";
-
-        final CodeBox newCodeBox = new CodeBox(codeBoxLabel, source, runtime);
+        CodeBox newCodeBox = new CodeBox(codeBoxLabel, source, runtime);
 
         // ----------------- Create CodeBox -----------------
         Response<CodeBox> responseCodeBoxCreate = syncano.createCodeBox(newCodeBox).send();
 
-        assertEquals(responseCodeBoxCreate.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responseCodeBoxCreate.getHttpResultCode());
+        assertTrue(responseCodeBoxCreate.isSuccess());
         assertNotNull(responseCodeBoxCreate.getData());
         codeBox = responseCodeBoxCreate.getData();
 
         // ----------------- Delete Webhook -----------------
         // Make sure slug is not taken.
-        syncano.deleteWebhook(WEBHOOK_NAME).send();
+        Response<Webhook> delResp = syncano.deleteWebhook(WEBHOOK_NAME).send();
+        assertTrue(delResp.isSuccess());
     }
 
     @Override
     protected void tearDown() throws Exception {
         // ----------------- Delete CodeBox -----------------
         Response<CodeBox> responseCodeBoxDelete = syncano.deleteCodeBox(codeBox.getId()).send();
-        assertTrue(responseCodeBoxDelete.isOk());
+        assertTrue(responseCodeBoxDelete.isSuccess());
         // ----------------- Delete Webhook -----------------
-        syncano.deleteWebhook(WEBHOOK_NAME).send();
+        Response<Webhook> delResp = syncano.deleteWebhook(WEBHOOK_NAME).send();
+        assertTrue(delResp.isSuccess());
     }
 
     public void testPublicWebhook() {
@@ -54,7 +55,7 @@ public class PublicWebhooksTest extends SyncanoApplicationTestCase {
 
         Response<Webhook> responseCreateWebhooks = syncano.createWebhook(newWebhook).send();
 
-        assertEquals(Response.HTTP_CODE_CREATED, responseCreateWebhooks.getHttpResultCode());
+        assertTrue(responseCreateWebhooks.isSuccess());
         assertNotNull(responseCreateWebhooks.getData());
         Webhook webhook = responseCreateWebhooks.getData();
 
@@ -62,7 +63,7 @@ public class PublicWebhooksTest extends SyncanoApplicationTestCase {
         Syncano noKeySyncano = new Syncano();
         String url = Constants.PRODUCTION_SERVER_URL + webhook.getLinks().publicLink;
         Response<Trace> responseRunWebhook = noKeySyncano.runWebhookUrl(url).send();
-        assertEquals(responseRunWebhook.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responseRunWebhook.getHttpResultCode());
+        assertTrue(responseRunWebhook.isSuccess());
         assertTrue(responseRunWebhook.getData().getResult().stdout.contains(EXPECTED_RESULT));
     }
 

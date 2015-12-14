@@ -10,10 +10,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-
-/**
- * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
- */
 public class AsyncQueueTest extends SyncanoApplicationTestCase {
 
     private static final int TIMEOUT_MILLIS = 20 * 1000;
@@ -27,19 +23,19 @@ public class AsyncQueueTest extends SyncanoApplicationTestCase {
     }
 
     public void testAsyncTest() throws InterruptedException {
-
         lock = new CountDownLatch(TEST_REQUESTS);
 
         SyncanoCallback<List<CodeBox>> callback = new SyncanoCallback<List<CodeBox>>() {
             @Override
             public void success(Response<List<CodeBox>> response, List<CodeBox> result) {
-                assertEquals(response.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
+                assertTrue(response.isSuccess());
                 lock.countDown();
             }
 
             @Override
             public void failure(Response<List<CodeBox>> response) {
-                fail(response.getHttpReasonPhrase());
+                fail(response.getError() + " " + response.getHttpReasonPhrase());
+                lock.countDown();
             }
         };
 

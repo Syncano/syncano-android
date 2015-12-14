@@ -1,6 +1,5 @@
 package com.syncano.library.tests;
 
-import com.google.gson.JsonArray;
 import com.syncano.library.Constants;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.TestSyncanoObject;
@@ -16,18 +15,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-
-/**
- * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
- */
 public class ClassesTest extends SyncanoApplicationTestCase {
 
     public void testClasses() throws InterruptedException {
 
         String className = SyncanoClassHelper.getSyncanoClassName(TestSyncanoObject.class);
-        syncano.deleteSyncanoClass(className).send();
-
-        JsonArray schema = SyncanoClassHelper.getSyncanoClassSchema(TestSyncanoObject.class);
+        Response<SyncanoClass> respDelete = syncano.deleteSyncanoClass(className).send();
+        assertTrue(respDelete.isSuccess());
 
         SyncanoClass syncanoClass = new SyncanoClass(TestSyncanoObject.class);
         syncanoClass.setDescription("First description");
@@ -35,23 +29,22 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         // ----------------- Create -----------------
 
         Response<SyncanoClass> responseCreateClass = syncano.createSyncanoClass(syncanoClass).send();
-        assertEquals(responseCreateClass.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responseCreateClass.getHttpResultCode());
+        assertTrue(responseCreateClass.isSuccess());
         assertNotNull(responseCreateClass.getData());
         syncanoClass = responseCreateClass.getData();
 
         // ----------------- Get One -----------------
         Response<SyncanoClass> responseGetClass = syncano.getSyncanoClass(syncanoClass.getName()).send();
-
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseGetClass.getHttpResultCode());
+        assertTrue(responseGetClass.isSuccess());
         assertNotNull(responseGetClass.getData());
         assertEquals(className, responseGetClass.getData().getName());
-        assertEquals(schema, responseGetClass.getData().getSchema());
+        assertEquals(SyncanoClassHelper.getSyncanoClassSchema(TestSyncanoObject.class), responseGetClass.getData().getSchema());
 
         // ----------------- Update -----------------
         String description = "Second description";
         syncanoClass.setDescription(description);
         Response<SyncanoClass> responseUpdateClass = syncano.updateSyncanoClass(syncanoClass).send();
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdateClass.getHttpResultCode());
+        assertTrue(responseUpdateClass.isSuccess());
         assertNotNull(responseUpdateClass.getData());
         assertEquals(responseUpdateClass.getData().getDescription(), description);
 
@@ -65,17 +58,17 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         // ----------------- Delete -----------------
         Response responseDeleteClass = syncano.deleteSyncanoClass(className).send();
 
-        assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteClass.getHttpResultCode());
+        assertTrue(responseDeleteClass.isSuccess());
     }
 
     public void testDataTypes() {
-        syncano.deleteSyncanoClass(SyncanoClassHelper.getSyncanoClassName(MultiTypesObject.class)).send();
-        Response<SyncanoClass> respClass = syncano.createSyncanoClass(new SyncanoClass(MultiTypesObject.class)).send();
-        assertEquals(Response.HTTP_CODE_CREATED, respClass.getHttpResultCode());
+        syncano.deleteSyncanoClass(MultiTypesObject.class).send();
+        Response<SyncanoClass> respClass = syncano.createSyncanoClass(MultiTypesObject.class).send();
+        assertTrue(respClass.isSuccess());
 
         MultiTypesObject obj1 = generateMultiTypesObject();
         Response<MultiTypesObject> resp1 = syncano.createObject(obj1).send();
-        assertEquals(Response.HTTP_CODE_CREATED, resp1.getHttpResultCode());
+        assertTrue(resp1.isSuccess());
 
         MultiTypesObject serverObj1 = resp1.getData();
         assertNotNull(serverObj1);

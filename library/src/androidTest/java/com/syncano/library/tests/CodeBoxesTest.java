@@ -8,10 +8,6 @@ import com.syncano.library.data.Trace;
 
 import java.util.List;
 
-
-/**
- * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
- */
 public class CodeBoxesTest extends SyncanoApplicationTestCase {
 
     private static final String EXPECTED_RESULT = "this is message from our Codebox";
@@ -38,14 +34,14 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
         // ----------------- Create -----------------
         Response<CodeBox> responseCreateCodeBox = syncano.createCodeBox(newCodeBox).send();
 
-        assertEquals(responseCreateCodeBox.getHttpReasonPhrase(), Response.HTTP_CODE_CREATED, responseCreateCodeBox.getHttpResultCode());
+        assertTrue(responseCreateCodeBox.isSuccess());
         assertNotNull(responseCreateCodeBox.getData());
         codeBox = responseCreateCodeBox.getData();
 
         // ----------------- Get One -----------------
         Response<CodeBox> responseGetCodeBox = syncano.getCodeBox(codeBox.getId()).send();
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseGetCodeBox.getHttpResultCode());
+        assertTrue(responseGetCodeBox.isSuccess());
         assertNotNull(responseGetCodeBox.getData());
         assertEquals(codeBox.getLabel(), responseGetCodeBox.getData().getLabel());
         assertEquals(codeBox.getRuntimeName(), responseGetCodeBox.getData().getRuntimeName());
@@ -55,7 +51,7 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
         codeBox.setLabel(codeBoxNewName);
         Response<CodeBox> responseUpdateCodeBox = syncano.updateCodeBox(codeBox).send();
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdateCodeBox.getHttpResultCode());
+        assertTrue(responseUpdateCodeBox.isSuccess());
         assertNotNull(responseUpdateCodeBox.getData());
         assertEquals(codeBox.getLabel(), responseUpdateCodeBox.getData().getLabel());
         assertEquals(codeBox.getRuntimeName(), responseUpdateCodeBox.getData().getRuntimeName());
@@ -70,13 +66,13 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
         // ----------------- Run -----------------
         Response<Trace> responseRunCodeBox = syncano.runCodeBox(codeBox.getId()).send();
 
-        assertEquals(responseRunCodeBox.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responseRunCodeBox.getHttpResultCode());
+        assertTrue(responseRunCodeBox.isSuccess());
         assertNotNull(responseRunCodeBox.getData());
 
         // ----------------- Delete -----------------
         Response<CodeBox> responseDeleteCodeBox = syncano.deleteCodeBox(codeBox.getId()).send();
 
-        assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteCodeBox.getHttpResultCode());
+        assertTrue(responseDeleteCodeBox.isSuccess());
 
         // ----------------- Get One -----------------
         Response<CodeBox> responseGetOneCodeBox = syncano.getCodeBox(codeBox.getId()).send();

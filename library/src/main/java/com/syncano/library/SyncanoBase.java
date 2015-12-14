@@ -95,6 +95,7 @@ public abstract class SyncanoBase {
         } else {
             response = http.send(Constants.PRODUCTION_SERVER_URL, syncanoRequest);
         }
+
         if (syncanoRequest.getRunAfter() != null) {
             syncanoRequest.getRunAfter().run(response);
         }
@@ -121,7 +122,7 @@ public abstract class SyncanoBase {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
-                        if (response.isOk()) {
+                        if (response.isSuccess()) {
                             callback.success(response, response.getData());
                         } else {
                             callback.failure(response);

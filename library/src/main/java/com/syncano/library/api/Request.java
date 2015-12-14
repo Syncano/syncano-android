@@ -13,6 +13,7 @@ import org.apache.http.message.BasicNameValuePair;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public abstract class Request<T> {
@@ -24,6 +25,7 @@ public abstract class Request<T> {
     private String completeCustomUrl;
     private Syncano syncano;
     private RunAfter<T> runAfter;
+    private HashSet<Integer> correctHttpResponse = new HashSet<>();
 
     protected Request(String url) {
         this(url, null);
@@ -58,6 +60,14 @@ public abstract class Request<T> {
      * Prepare URL params.
      */
     public void prepareUrlParams() {
+    }
+
+    public void addCorrectHttpResponseCode(int code) {
+        correctHttpResponse.add(code);
+    }
+
+    public boolean isCorrectHttpResponseCode(int code) {
+        return correctHttpResponse.contains(code);
     }
 
     /**
@@ -102,7 +112,6 @@ public abstract class Request<T> {
 
         return postData.toString();
     }
-
 
     /**
      * Add additional header like social authentication token.

@@ -34,7 +34,7 @@ public class BatchTest extends SyncanoApplicationTestCase {
         Book book2New = new Book("Anne Ann", "Live well without head");
         bb.add(s.createObject(book2New));
         Response<List<BatchAnswer>> r = bb.send();
-        assertEquals(Response.HTTP_CODE_SUCCESS, r.getHttpResultCode());
+        assertTrue(r.isSuccess());
 
         List<BatchAnswer> answers = r.getData();
         assertNotNull(answers);
@@ -51,7 +51,7 @@ public class BatchTest extends SyncanoApplicationTestCase {
         bb2.add(s.updateObject(book1));
         bb2.add(s.deleteObject(book2));
         Response<List<BatchAnswer>> r2 = bb2.send();
-        assertEquals(Response.HTTP_CODE_SUCCESS, r2.getHttpResultCode());
+        assertTrue(r2.isSuccess());
 
         List<BatchAnswer> answers2 = r2.getData();
         assertNotNull(answers2);

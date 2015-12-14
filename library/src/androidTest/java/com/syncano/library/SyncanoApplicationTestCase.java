@@ -6,6 +6,7 @@ import android.test.ApplicationTestCase;
 import android.util.Log;
 
 import com.syncano.library.api.Response;
+import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 
 import java.io.File;
@@ -36,11 +37,12 @@ public class SyncanoApplicationTestCase extends ApplicationTestCase<Application>
     public void createClass(Class<? extends SyncanoObject> clazz) {
         removeClass(clazz);
         Response resp = syncano.createSyncanoClass(clazz).send();
-        assertEquals(Response.HTTP_CODE_CREATED, resp.getHttpResultCode());
+        assertTrue(resp.isSuccess());
     }
 
     public void removeClass(Class<? extends SyncanoObject> clazz) {
-        syncano.deleteSyncanoClass(clazz).send();
+        Response<SyncanoClass> resp = syncano.deleteSyncanoClass(clazz).send();
+        assertTrue(resp.isSuccess());
     }
 
     @Override
