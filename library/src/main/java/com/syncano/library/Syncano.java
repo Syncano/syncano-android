@@ -937,16 +937,16 @@ public class Syncano extends SyncanoBase {
     /* package */ RequestGetOne<Notification> pollChannel(String channelName, String room, int lastId) {
 
         String url = String.format(Constants.CHANNELS_POLL_URL, getInstanceName(), channelName);
-        RequestGetOne<Notification> request = new RequestGetOne<>(Notification.class, url, this);
+        RequestGetOne<Notification> req = new RequestGetOne<>(Notification.class, url, this);
 
         if (room != null) {
-            request.addUrlParam(Constants.URL_PARAM_ROOM, room);
+            req.addUrlParam(Constants.URL_PARAM_ROOM, room);
         }
-
         if (lastId != 0) {
-            request.addUrlParam(Constants.URL_PARAM_LAST_ID, String.valueOf(lastId));
+            req.addUrlParam(Constants.URL_PARAM_LAST_ID, String.valueOf(lastId));
         }
-
-        return request;
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
+        return req;
     }
 }

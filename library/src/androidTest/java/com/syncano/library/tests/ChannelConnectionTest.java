@@ -90,7 +90,7 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
             JsonObject payload = new JsonObject();
             payload.addProperty("my_property", "my_value");
 
-            final Notification newNotification = new Notification(room, payload);
+            Notification newNotification = new Notification(room, payload);
             Response<Notification> responsePublish = syncano.publishOnChannel(channel.getName(), newNotification).send();
             assertTrue(responsePublish.isSuccess());
             assertNotNull(responsePublish.getData());
