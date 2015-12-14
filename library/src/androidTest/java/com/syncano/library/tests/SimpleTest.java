@@ -86,18 +86,23 @@ public class SimpleTest extends SyncanoApplicationTestCase {
         assertTrue(respLogin.isSuccess());
     }
 
-    @com.syncano.library.annotation.SyncanoClass(name = "item")
+
+    @com.syncano.library.annotation.SyncanoClass(name = Item.TABLE_NAME)
     private static class Item extends SyncanoObject {
+        public final static String TABLE_NAME = "item";
+        public final static String COLUMN_TEXT = "text";
+        public final static String COLUMN_NUMBER = "number";
+
+        @SyncanoField(name = COLUMN_TEXT, orderIndex = true)
+        public String text = "example value";
+        @SyncanoField(name = COLUMN_NUMBER, filterIndex = true, orderIndex = true)
+        public int number = 12;
+
         public Item() {
         }
 
         public Item(int id) {
             setId(id);
         }
-
-        @SyncanoField(name = "text", orderIndex = true)
-        public String text = "example value";
-        @SyncanoField(name = "number", filterIndex = true, orderIndex = true)
-        public int number = 12;
     }
 }

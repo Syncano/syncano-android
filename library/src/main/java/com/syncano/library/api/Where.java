@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.syncano.library.choice.Case;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.simple.ObjectPlease;
 import com.syncano.library.utils.DateTool;
@@ -21,9 +22,16 @@ public class Where {
     private static final String FILTER_LT = "_lt";
     private static final String FILTER_LTE = "_lte";
     private static final String FILTER_EQ = "_eq";
+    private static final String FILTER_INS_EQ = "_ieq";
     private static final String FILTER_NEQ = "_neq";
     private static final String FILTER_EXISTS = "_exists";
     private static final String FILTER_IN = "_in";
+    private static final String FILTER_START_WITH = "_startswith";
+    private static final String FILTER_INS_START_WITH = "_istartswith";
+    private static final String FILTER_ENDS_WITH = "_endswith";
+    private static final String FILTER_INS_ENDS_WITH = "_iendswith";
+    private static final String FILTER_CONTAINS = "_contains";
+    private static final String FILTER_INS_CONTAINS = "_icontains";
 
     private Map<String, JsonObject> query;
     private ObjectPlease please;
@@ -187,7 +195,16 @@ public class Where {
      * Checking if value is equal than provided.
      */
     public Where eq(String fieldName, String value) {
-        addFilter(fieldName, FILTER_EQ, value);
+        return eq(fieldName, value, Case.SENSITIVE);
+    }
+
+    /**
+     * Equal to.
+     * Checking if value is equal than provided.
+     */
+    public Where eq(String fieldName, String value, Case caseSens) {
+        String filterName = caseSens.getValue() ? FILTER_EQ : FILTER_INS_EQ;
+        addFilter(fieldName, filterName, value);
         return this;
     }
 
@@ -237,6 +254,59 @@ public class Where {
      */
     public Where neq(String fieldName, Date value) {
         addFilter(fieldName, FILTER_NEQ, value);
+        return this;
+    }
+
+    /**
+     * Starts with.
+     * Checks if a string starts with the given query.
+     */
+    public Where startWith(String fieldName, String value) {
+        return startWith(fieldName, value, Case.SENSITIVE);
+    }
+
+    /**
+     * Starts with.
+     * Checks if a string starts with the given query.
+     */
+    public Where startWith(String fieldName, String value, Case caseSens) {
+        String filterName = caseSens.getValue() ? FILTER_START_WITH : FILTER_INS_START_WITH;
+        addFilter(fieldName, filterName, value);
+        return this;
+    }
+
+    /**
+     * Ends with.
+     * Checks if a string ends with the given query.
+     */
+    public Where endsWith(String fieldName, String value) {
+        return endsWith(fieldName, value, Case.SENSITIVE);
+    }
+
+    /**
+     * Ends with.
+     * Checks if a string ends with the given query.
+     */
+    public Where endsWith(String fieldName, String value, Case caseSens) {
+        String filterName = caseSens.getValue() ? FILTER_ENDS_WITH : FILTER_INS_ENDS_WITH;
+        addFilter(fieldName, filterName, value);
+        return this;
+    }
+
+    /**
+     * {@link #contains(String, String, Case)}
+     */
+    public Where contains(String fieldName, String value) {
+        return contains(fieldName, value, Case.SENSITIVE);
+    }
+
+    /**
+     * Contains.
+     * Checks if a string contains the given query.
+     */
+    public Where contains(String fieldName, String value, Case caseSens) {
+        String filterName = caseSens.getValue() ? FILTER_CONTAINS : FILTER_INS_CONTAINS;
+        addFilter(fieldName, filterName, value);
         return this;
     }
 
@@ -344,4 +414,5 @@ public class Where {
     public String buildQuery() {
         return new Gson().toJson(query);
     }
+
 }
