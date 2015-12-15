@@ -5,6 +5,7 @@ import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.Where;
 import com.syncano.library.callbacks.SyncanoCallback;
+import com.syncano.library.choice.SortOrder;
 import com.syncano.library.data.SyncanoObject;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public class ObjectPlease<T extends SyncanoObject> {
     private Syncano syncano;
     private Class<T> clazz;
     private String sortByField;
-    private boolean sortByReversed = false;
+    private SortOrder sortOrder;
     private int limit = -1;
     private Where<T> where;
 
@@ -44,7 +45,7 @@ public class ObjectPlease<T extends SyncanoObject> {
 
     private void decorateRequest(RequestGetList<T> request) {
         if (sortByField != null) {
-            request.setOrderBy(sortByField, sortByReversed);
+            request.setOrderBy(sortByField, sortOrder);
         }
         if (limit != -1) {
             request.setLimit(limit);
@@ -60,15 +61,21 @@ public class ObjectPlease<T extends SyncanoObject> {
     }
 
     public ObjectPlease<T> sortBy(String fieldName) {
-        sortByField = fieldName;
-        sortByReversed = false;
+        return sortBy(fieldName, SortOrder.ASCENDING);
+
+    }
+
+    public ObjectPlease<T> sortBy(String fieldName, SortOrder sortOrder) {
+        this.sortByField = fieldName;
+        this.sortOrder = sortOrder;
         return this;
     }
 
+    /**
+     * @deprecated Use {@link #sortBy(String, SortOrder)} instead.
+     */
     public ObjectPlease<T> sortByReversed(String fieldName) {
-        sortByField = fieldName;
-        sortByReversed = true;
-        return this;
+        return sortBy(fieldName, SortOrder.DESCENDING);
     }
 
     public ObjectPlease<T> limit(int limit) {

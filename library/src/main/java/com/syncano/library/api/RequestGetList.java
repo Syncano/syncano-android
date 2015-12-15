@@ -4,6 +4,7 @@ package com.syncano.library.api;
 import com.google.gson.JsonElement;
 import com.syncano.library.Constants;
 import com.syncano.library.Syncano;
+import com.syncano.library.choice.SortOrder;
 import com.syncano.library.data.PageInternal;
 
 import java.util.ArrayList;
@@ -78,11 +79,26 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
      * You can order objects using this method. Field must be marked as "order_index" in class schema.
      *
      * @param fieldName Field to order by.
-     * @param reverse   If true, change from ascending to descending.
+     * @param sortOrder {@link SortOrder#DESCENDING} data will be sorted descending
+     *                  {@link SortOrder#ASCENDING} data will be sorted ascending
+     * @see SortOrder
      */
-    public void setOrderBy(String fieldName, boolean reverse) {
-        orderBy = reverse ? "-" + fieldName : fieldName;
+    public void setOrderBy(String fieldName, SortOrder sortOrder) {
+        orderBy = (sortOrder == SortOrder.DESCENDING) ? "-" + fieldName : fieldName;
     }
+
+    /**
+     * You can order objects using this method. Field must be marked as "order_index" in class schema.
+     *
+     * @param fieldName  Field to order by.
+     * @param descending If true, change sort from ascending to descending.
+     * @deprecated Use {@link #setOrderBy(String, SortOrder)} instead.
+     */
+    public void setOrderBy(String fieldName, boolean descending) {
+        SortOrder sortOrder = descending ? SortOrder.DESCENDING : SortOrder.ASCENDING;
+        setOrderBy(fieldName, sortOrder);
+    }
+
 
     /**
      * Set limit of how many items do you want to get.
