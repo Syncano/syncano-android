@@ -47,6 +47,7 @@ public class Constants {
     public static final String CODEBOXES_LIST_URL = "/v1/instances/%s/codeboxes/";
     public static final String CODEBOXES_DETAIL_URL = "/v1/instances/%s/codeboxes/%d/";
     public static final String CODEBOXES_RUN_URL = "/v1/instances/%s/codeboxes/%d/run/";
+    public static final String TRACE_DETAIL_URL = "/v1/instances/%s/codeboxes/%d/traces/%d/";
 
     // ==================== Webhooks ==================== //
     public static final String WEBHOOKS_LIST_URL = "/v1/instances/%s/webhooks/";

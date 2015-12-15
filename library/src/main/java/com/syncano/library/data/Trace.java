@@ -1,6 +1,9 @@
 package com.syncano.library.data;
 
+import com.syncano.library.Syncano;
 import com.syncano.library.annotation.SyncanoField;
+import com.syncano.library.api.Response;
+import com.syncano.library.callbacks.SyncanoCallback;
 
 import java.util.Date;
 
@@ -29,12 +32,23 @@ public class Trace {
     @SyncanoField(name = FIELD_EXECUTED_AT, readOnly = true)
     private Date executedAt;
 
+    private Integer codeBoxId = null;
+    private Syncano syncano;
+
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public Integer getCodeBoxId() {
+        return codeBoxId;
+    }
+
+    public void setCodeBoxId(int id) {
+        this.codeBoxId = id;
     }
 
     public String getStatus() {
@@ -67,6 +81,26 @@ public class Trace {
 
     public void setExecutedAt(Date executedAt) {
         this.executedAt = executedAt;
+    }
+
+    private Syncano getSyncano() {
+        if (syncano == null) {
+            return Syncano.getInstance();
+        }
+        return syncano;
+    }
+
+    public Trace on(Syncano syncano) {
+        this.syncano = syncano;
+        return this;
+    }
+
+    public Response<Trace> fetch() {
+        return getSyncano().getTrace(this).send();
+    }
+
+    public void fetch(SyncanoCallback<Trace> callback) {
+        getSyncano().getTrace(this).sendAsync(callback);
     }
 
     public static class TraceResult {

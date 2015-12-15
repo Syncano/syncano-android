@@ -3,6 +3,7 @@ package com.syncano.library;
 import com.google.gson.JsonObject;
 import com.syncano.library.api.Request;
 import com.syncano.library.api.RequestDelete;
+import com.syncano.library.api.RequestGet;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.RequestGetOne;
 import com.syncano.library.api.RequestPatch;
@@ -124,6 +125,17 @@ public class Syncano extends SyncanoBase {
         String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstanceName(), className, id);
         RequestGetOne<T> req = new RequestGetOne<>(type, url, this);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
+    }
+
+    public <T extends SyncanoObject> RequestGetOne<T> getObject(T object) {
+        if (object.getId() == null) {
+            throw new RuntimeException("Can't fetch object without id");
+        }
+        String className = SyncanoClassHelper.getSyncanoClassName(object.getClass());
+        String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstanceName(), className, object.getId());
+        RequestGetOne<T> req = new RequestGetOne<>(object, url, this);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
     }
@@ -285,8 +297,39 @@ public class Syncano extends SyncanoBase {
     public RequestPost<Trace> runCodeBox(int id, JsonObject params) {
         String url = String.format(Constants.CODEBOXES_RUN_URL, getInstanceName(), id);
         RequestPost<Trace> req = new RequestPost<>(Trace.class, url, this, params);
+        addCodeboxIdAfterCall(req, id);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
+    }
+
+    public RequestGet<Trace> getTrace(int codeboxId, int traceId) {
+        String url = String.format(Constants.TRACE_DETAIL_URL, getInstanceName(), codeboxId, traceId);
+        RequestGet<Trace> req = new RequestGetOne<>(Trace.class, url, this);
+        addCodeboxIdAfterCall(req, codeboxId);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
+    }
+
+    public RequestGet<Trace> getTrace(Trace trace) {
+        if (trace.getCodeBoxId() == null) {
+            throw new RuntimeException("Fetching trace result without codebox id. If run from webhook, result is already known.");
+        }
+        String url = String.format(Constants.TRACE_DETAIL_URL, getInstanceName(), trace.getCodeBoxId(), trace.getId());
+        RequestGet<Trace> req = new RequestGetOne<>(trace, url, this);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
+    }
+
+    private void addCodeboxIdAfterCall(Request<Trace> req, final int codeboxId) {
+        req.setRunAfter(new Request.RunAfter<Trace>() {
+            @Override
+            public void run(Response<Trace> response) {
+                Trace trace = response.getData();
+                if (trace != null) {
+                    trace.setCodeBoxId(codeboxId);
+                }
+            }
+        });
     }
 
     // ==================== Webhooks ==================== //

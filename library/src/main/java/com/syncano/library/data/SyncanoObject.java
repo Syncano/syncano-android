@@ -1,14 +1,12 @@
 package com.syncano.library.data;
 
-import com.syncano.library.Constants;
 import com.syncano.library.Syncano;
 import com.syncano.library.annotation.SyncanoField;
-import com.syncano.library.api.RequestGetOne;
+import com.syncano.library.api.Request;
 import com.syncano.library.api.Response;
 import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.choice.DataObjectPermissions;
 import com.syncano.library.simple.ObjectPlease;
-import com.syncano.library.utils.SyncanoClassHelper;
 
 public abstract class SyncanoObject extends Entity {
 
@@ -158,26 +156,14 @@ public abstract class SyncanoObject extends Entity {
         getSyncano().deleteObject((T) this).sendAsync(callback);
     }
 
-    private <T extends SyncanoObject> RequestGetOne<T> prepareFetchRequest() {
-        if (getId() == null) {
-            throw new RuntimeException("Can't fetch object without id");
-        }
-        Syncano syncano = getSyncano();
-        String className = SyncanoClassHelper.getSyncanoClassName(getClass());
-        String url = String.format(Constants.OBJECTS_DETAIL_URL, syncano.getInstanceName(), className, getId());
-        RequestGetOne<T> req = new RequestGetOne<>((T) this, url, syncano);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
-    }
-
     public <T extends SyncanoObject> Response<T> fetch() {
-        RequestGetOne<T> request = prepareFetchRequest();
-        return request.send();
+        Request<T> req = (Request<T>) getSyncano().getObject(this);
+        return req.send();
     }
 
     public <T extends SyncanoObject> void fetch(SyncanoCallback<T> callback) {
-        RequestGetOne<T> request = prepareFetchRequest();
-        request.sendAsync(callback);
+        Request<T> req = (Request<T>) getSyncano().getObject(this);
+        req.sendAsync(callback);
     }
 
     public static <T extends SyncanoObject> ObjectPlease<T> please(Class<T> clazz) {

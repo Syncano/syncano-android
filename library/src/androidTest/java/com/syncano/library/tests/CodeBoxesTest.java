@@ -67,7 +67,21 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
         Response<Trace> responseRunCodeBox = syncano.runCodeBox(codeBox.getId()).send();
 
         assertTrue(responseRunCodeBox.isSuccess());
-        assertNotNull(responseRunCodeBox.getData());
+        Trace trace = responseRunCodeBox.getData();
+        assertNotNull(trace);
+
+        // ----------------- Result -----------------
+        Thread.sleep(1000); // wait until codebox finishes execution
+        // first method
+        Response<Trace> responseTrace = trace.fetch();
+        assertTrue(responseTrace.isSuccess());
+        assertTrue(trace.getResult().stdout.contains(EXPECTED_RESULT));
+        // second method
+        responseTrace = syncano.getTrace(codeBox.getId(), trace.getId()).send();
+        assertTrue(responseTrace.isSuccess());
+        Trace result = responseTrace.getData();
+        assertNotNull(result);
+        assertTrue(result.getResult().stdout.contains(EXPECTED_RESULT));
 
         // ----------------- Delete -----------------
         Response<CodeBox> responseDeleteCodeBox = syncano.deleteCodeBox(codeBox.getId()).send();
