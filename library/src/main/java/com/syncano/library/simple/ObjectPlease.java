@@ -15,7 +15,7 @@ public class ObjectPlease<T extends SyncanoObject> {
     private String sortByField;
     private boolean sortByReversed = false;
     private int limit = -1;
-    private Where where;
+    private Where<T> where;
 
     public ObjectPlease(Class<T> clazz) {
         this.clazz = clazz;
@@ -76,8 +76,8 @@ public class ObjectPlease<T extends SyncanoObject> {
         return this;
     }
 
-    public Where where() {
-        where = new Where(this);
+    public Where<T> where() {
+        where = new Where<>(this);
         return where;
     }
 

@@ -3,10 +3,8 @@ package com.syncano.library.tests;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
-import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.User;
-import com.syncano.library.utils.SyncanoClassHelper;
 
 import java.util.List;
 
@@ -16,12 +14,6 @@ public class SimpleTest extends SyncanoApplicationTestCase {
     protected void setUp() throws Exception {
         super.setUp();
         createClass(Item.class);
-
-        Response<SyncanoClass> respClass = syncano.getSyncanoClass(SyncanoClassHelper.getSyncanoClassName(Item.class)).send();
-        assertEquals(Response.HTTP_CODE_SUCCESS, respClass.getHttpResultCode());
-        SyncanoClass clazz = respClass.getData();
-        assertNotNull(clazz);
-        assertEquals(SyncanoClassHelper.getSyncanoClassSchema(Item.class), clazz.getSchema());
 
         // ----------------- Delete users -----------------
         Response<List<User>> usersResp = syncano.getUsers().send();

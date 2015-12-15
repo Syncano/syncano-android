@@ -100,16 +100,6 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         return o;
     }
 
-    private String generateString(int len) {
-        String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz       ";
-        Random rnd = new Random();
-        StringBuilder sb = new StringBuilder(len);
-        for (int i = 0; i < len; i++) {
-            sb.append(AB.charAt(rnd.nextInt(AB.length())));
-        }
-        return sb.toString();
-    }
-
     @com.syncano.library.annotation.SyncanoClass(name = "multi_typed_object")
     public static class MultiTypesObject extends SyncanoObject {
         @SyncanoField(name = "int")

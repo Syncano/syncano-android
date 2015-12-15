@@ -8,12 +8,14 @@ import android.util.Log;
 import com.syncano.library.api.Response;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
+import com.syncano.library.utils.SyncanoClassHelper;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Random;
 
 
 /**
@@ -38,6 +40,12 @@ public class SyncanoApplicationTestCase extends ApplicationTestCase<Application>
         removeClass(clazz);
         Response resp = syncano.createSyncanoClass(clazz).send();
         assertTrue(resp.isSuccess());
+
+        Response<SyncanoClass> respClass = syncano.getSyncanoClass(SyncanoClassHelper.getSyncanoClassName(clazz)).send();
+        assertTrue(respClass.isSuccess());
+        SyncanoClass downloadedClass = respClass.getData();
+        assertNotNull(downloadedClass);
+        assertEquals(SyncanoClassHelper.getSyncanoClassSchema(clazz), downloadedClass.getSchema());
     }
 
     public void removeClass(Class<? extends SyncanoObject> clazz) {
@@ -93,5 +101,15 @@ public class SyncanoApplicationTestCase extends ApplicationTestCase<Application>
         while ((read = in.read(buffer)) != -1) {
             out.write(buffer, 0, read);
         }
+    }
+
+    public String generateString(int len) {
+        String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz       ";
+        Random rnd = new Random();
+        StringBuilder sb = new StringBuilder(len);
+        for (int i = 0; i < len; i++) {
+            sb.append(AB.charAt(rnd.nextInt(AB.length())));
+        }
+        return sb.toString();
     }
 }

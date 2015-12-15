@@ -1,131 +1,130 @@
 package com.syncano.library.tests;
 
 import com.syncano.library.SyncanoApplicationTestCase;
+import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.Case;
-import com.syncano.library.data.SyncanoClass;
+import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.SyncanoObject;
-import com.syncano.library.utils.SyncanoClassHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class QueryTest extends SyncanoApplicationTestCase {
-    private static final String OBJECT_TITLE_NAME = "Example Title";
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         createClass(Article.class);
-
-        Response<SyncanoClass> respClass = syncano.getSyncanoClass(SyncanoClassHelper.getSyncanoClassName(Article.class)).send();
-        assertTrue(respClass.isSuccess());
-        SyncanoClass clazz = respClass.getData();
-        assertNotNull(clazz);
-        assertEquals(SyncanoClassHelper.getSyncanoClassSchema(Article.class), clazz.getSchema());
+        createTestsArticles();
     }
 
-    public void testStringQuery() {
-        List<Article> articleList = createTestsArticles();
-        runTestWhereStartWith();
-        runTestWhereEndWith();
-        runTestWhereEqualTo();
-        runTestWhereContains();
-        runTestWhereConnectedQuery();
-        removeTestsArticles(articleList);
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        removeClass(Article.class);
     }
 
-    private List<Article> createTestsArticles() {
-        List<Article> articleList = new ArrayList<>();
-        Article article1 = new Article();
-        article1.titleName = OBJECT_TITLE_NAME;
-        article1.releaseYear = 1993;
-        Article article2 = new Article();
-        article2.releaseYear = 1994;
-        Article article3 = new Article();
-        article3.releaseYear = 1995;
+    public void testStringQueries() {
+        runTestsOnColumn(Article.COLUMN_TITLE);
+    }
+
+    private void runTestsOnColumn(String column) {
+        runTestWhereStartWith(column);
+        runTestWhereEndWith(column);
+        runTestWhereEqualTo(column);
+        runTestWhereContains(column);
+        runTestWhereConnectedQuery(column);
+    }
+
+    private void createTestsArticles() {
+        Article article1 = new Article("Example Title");
+        Article article2 = new Article("ExAmPlE TiTlE");
+        Article article3 = new Article("other Title");
         Response<Article> responseCreateArticle1 = article1.save();
         Response<Article> responseCreateArticle2 = article2.save();
         Response<Article> responseCreateArticle3 = article3.save();
         assertTrue(responseCreateArticle1.isSuccess());
         assertTrue(responseCreateArticle2.isSuccess());
         assertTrue(responseCreateArticle3.isSuccess());
-        articleList.add(responseCreateArticle1.getData());
-        articleList.add(responseCreateArticle2.getData());
-        articleList.add(responseCreateArticle3.getData());
-        return articleList;
     }
 
-    private void removeTestsArticles(List<Article> articleList) {
-        for (Article article : articleList) {
-            article.delete();
-        }
-    }
-
-    private void runTestWhereStartWith() {
+    private void runTestWhereStartWith(String column) {
         Response<List<Article>> response;
-        response = SyncanoObject.please(Article.class).where().startWith(Article.COLUMN_TITLE, "ExAmPle").get();
+        response = SyncanoObject.please(Article.class).where().startsWith(column, "ExAmPlE").get();
         assertTrue(response.isSuccess());
-        assertTrue(response.getData().isEmpty());
+        assertEquals(1, response.getData().size());
 
-        response = SyncanoObject.please(Article.class).where().startWith(Article.COLUMN_TITLE, "ExAmPle", Case.INSENSITIVE).get();
+        response = SyncanoObject.please(Article.class).where().startsWith(column, "EXAMPLE", Case.INSENSITIVE).get();
         assertTrue(response.isSuccess());
-        assertFalse(response.getData().isEmpty());
+        assertEquals(2, response.getData().size());
+
+        response = SyncanoObject.please(Article.class).where().startsWith(column, "nothing", Case.INSENSITIVE).get();
+        assertTrue(response.isSuccess());
+        assertEquals(0, response.getData().size());
     }
 
-    private void runTestWhereConnectedQuery() {
+    private void runTestWhereConnectedQuery(String column) {
         Response<List<Article>> response;
-        response = SyncanoObject.please(Article.class).where().gt(Article.COLUMN_RELEASE_YEAR, 1993).lt(Article.COLUMN_RELEASE_YEAR, 1995).get();
+        response = SyncanoObject.please(Article.class).where().gt(Article.COLUMN_RELEASE_YEAR, 1993).lt(Article.COLUMN_RELEASE_YEAR, 1995)
+                .contains(column, "PlE Ti").get();
+        assertTrue(response.isSuccess());
+        assertEquals(0, response.getData().size());
+
+        response = SyncanoObject.please(Article.class).where().gt(Article.COLUMN_RELEASE_YEAR, 1993).lt(Article.COLUMN_RELEASE_YEAR, 2000)
+                .contains(column, "PlE Ti", Case.SENSITIVE).get();
         assertTrue(response.isSuccess());
         assertEquals(1, response.getData().size());
     }
 
-    private void runTestWhereContains() {
+    private void runTestWhereContains(String column) {
         Response<List<Article>> response;
-        response = SyncanoObject.please(Article.class).where().contains(Article.COLUMN_TITLE, "AmPle ti").get();
+        response = SyncanoObject.please(Article.class).where().contains(column, "ample Ti").get();
         assertTrue(response.isSuccess());
-        assertTrue(response.getData().isEmpty());
+        assertEquals(1, response.getData().size());
 
-        response = SyncanoObject.please(Article.class).where().contains(Article.COLUMN_TITLE, "AmPle ti", Case.INSENSITIVE).get();
+        response = SyncanoObject.please(Article.class).where().contains(column, "ample Ti", Case.INSENSITIVE).get();
         assertTrue(response.isSuccess());
-        assertFalse(response.getData().isEmpty());
+        assertEquals(2, response.getData().size());
     }
 
-    private void runTestWhereEqualTo() {
+    private void runTestWhereEqualTo(String column) {
         Response<List<Article>> response;
-        response = SyncanoObject.please(Article.class).where().eq(Article.COLUMN_TITLE, "example title").get();
+        response = SyncanoObject.please(Article.class).where().eq(column, "example title").get();
         assertTrue(response.isSuccess());
-        assertTrue(response.getData().isEmpty());
-        response = SyncanoObject.please(Article.class).where().eq(Article.COLUMN_TITLE, "example title", Case.SENSITIVE).get();
+        assertEquals(0, response.getData().size());
+        response = SyncanoObject.please(Article.class).where().eq(column, "example title", Case.SENSITIVE).get();
         assertTrue(response.isSuccess());
-        assertTrue(response.getData().isEmpty());
-        response = SyncanoObject.please(Article.class).where().eq(Article.COLUMN_TITLE, "ExAmPle", Case.INSENSITIVE).get();
+        assertEquals(0, response.getData().size());
+        response = SyncanoObject.please(Article.class).where().eq(column, "example title", Case.INSENSITIVE).get();
         assertTrue(response.isSuccess());
-        assertTrue(response.getData().isEmpty());
-        response = SyncanoObject.please(Article.class).where().eq(Article.COLUMN_TITLE, "example title", Case.INSENSITIVE).get();
+        assertEquals(2, response.getData().size());
+        response = SyncanoObject.please(Article.class).where().eq(column, "example", Case.INSENSITIVE).get();
         assertTrue(response.isSuccess());
-        assertFalse(response.getData().isEmpty());
-        response = SyncanoObject.please(Article.class).where().eq(Article.COLUMN_TITLE, "Example Title", Case.SENSITIVE).get();
+        assertEquals(0, response.getData().size());
+        response = SyncanoObject.please(Article.class).where().eq(column, "Example Title", Case.SENSITIVE).get();
         assertTrue(response.isSuccess());
-        assertFalse(response.getData().isEmpty());
+        assertEquals(1, response.getData().size());
     }
 
 
-    private void runTestWhereEndWith() {
+    private void runTestWhereEndWith(String column) {
         Response<List<Article>> response;
-        response = SyncanoObject.please(Article.class).where().endsWith(Article.COLUMN_TITLE, "wrong_text_to_end_title", Case.INSENSITIVE).get();
+        response = SyncanoObject.please(Article.class).where().endsWith(column, "wrong_text_to_end_title", Case.INSENSITIVE).get();
         assertTrue(response.isSuccess());
-        assertTrue(response.getData().isEmpty());
-        response = SyncanoObject.please(Article.class).where().endsWith(Article.COLUMN_TITLE, "Example", Case.INSENSITIVE).get();
+        assertEquals(0, response.getData().size());
+        response = SyncanoObject.please(Article.class).where().endsWith(column, "Example", Case.INSENSITIVE).get();
         assertTrue(response.isSuccess());
-        assertTrue(response.getData().isEmpty());
-        response = SyncanoObject.please(Article.class).where().endsWith(Article.COLUMN_TITLE, "Title").get();
+        assertEquals(0, response.getData().size());
+        response = SyncanoObject.please(Article.class).where().endsWith(column, "Title").get();
         assertTrue(response.isSuccess());
-        assertFalse(response.getData().isEmpty());
+        assertEquals(2, response.getData().size());
+        response = SyncanoObject.please(Article.class).where().endsWith(column, "Title", Case.INSENSITIVE).get();
+        assertTrue(response.isSuccess());
+        assertEquals(3, response.getData().size());
     }
 
-    @com.syncano.library.annotation.SyncanoClass(name = Article.TABLE_NAME)
+    @SyncanoClass(name = Article.TABLE_NAME)
     public static class Article extends SyncanoObject {
         public final static String TABLE_NAME = "article";
         public final static String COLUMN_TITLE = "title";
@@ -134,16 +133,17 @@ public class QueryTest extends SyncanoApplicationTestCase {
 
         @SyncanoField(name = COLUMN_TITLE, filterIndex = true, orderIndex = true)
         public String titleName;
-        @SyncanoField(name = COLUMN_TEXT)
+        @SyncanoField(name = COLUMN_TEXT, type = FieldType.TEXT)
         public String content;
         @SyncanoField(name = COLUMN_RELEASE_YEAR, filterIndex = true)
-        public int releaseYear;
+        public int releaseYear = 1996;
 
         public Article() {
         }
 
-        public Article(int id) {
-            setId(id);
+        public Article(String title) {
+            titleName = title;
+            content = title;
         }
     }
 }
