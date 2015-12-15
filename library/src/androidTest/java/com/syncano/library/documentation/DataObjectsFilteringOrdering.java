@@ -4,6 +4,7 @@ import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
+import com.syncano.library.choice.SortOrder;
 import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
 
@@ -62,7 +63,7 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
         // ---------- Reversed Ordering Data Objects
 
         Response<List<Book>> responseOrderedReversed = SyncanoObject.please(Book.class)
-                .sortBy("-release_year").get();
+                .sortBy("release_year", SortOrder.DESCENDING).get();
 
         // -----------------------------
 
