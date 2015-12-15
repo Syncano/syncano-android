@@ -2,6 +2,7 @@ package com.syncano.library.data;
 
 import com.syncano.library.Syncano;
 import com.syncano.library.annotation.SyncanoField;
+import com.syncano.library.api.CounterBuilder;
 import com.syncano.library.api.Request;
 import com.syncano.library.api.Response;
 import com.syncano.library.callbacks.SyncanoCallback;
@@ -48,6 +49,10 @@ public abstract class SyncanoObject extends Entity {
     private Integer expectedRevision;
 
     private Syncano syncano;
+
+    public static <T extends SyncanoObject> ObjectPlease<T> please(Class<T> clazz) {
+        return new ObjectPlease<>(clazz);
+    }
 
     public String getChannelRoom() {
         return channelRoom;
@@ -166,7 +171,13 @@ public abstract class SyncanoObject extends Entity {
         req.sendAsync(callback);
     }
 
-    public static <T extends SyncanoObject> ObjectPlease<T> please(Class<T> clazz) {
-        return new ObjectPlease<>(clazz);
+    public <T extends SyncanoObject> Response<T> changeFieldsCounters(CounterBuilder counterBuilder) {
+        Request<T> req = (Request<T>) getSyncano().changeCounterFieldsObject(this, counterBuilder);
+        return req.send();
+    }
+
+    public <T extends SyncanoObject> void changeFieldsCounters(CounterBuilder counterBuilder, SyncanoCallback<T> callback) {
+        Request<T> req = (Request<T>) getSyncano().changeCounterFieldsObject(this, counterBuilder);
+        req.sendAsync(callback);
     }
 }

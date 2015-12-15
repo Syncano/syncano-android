@@ -1,6 +1,7 @@
 package com.syncano.library;
 
 import com.google.gson.JsonObject;
+import com.syncano.library.api.CounterBuilder;
 import com.syncano.library.api.Request;
 import com.syncano.library.api.RequestDelete;
 import com.syncano.library.api.RequestGet;
@@ -16,9 +17,9 @@ import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Group;
 import com.syncano.library.data.GroupMembership;
 import com.syncano.library.data.Notification;
-import com.syncano.library.data.Trace;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
+import com.syncano.library.data.Trace;
 import com.syncano.library.data.User;
 import com.syncano.library.data.Webhook;
 import com.syncano.library.utils.SyncanoClassHelper;
@@ -175,12 +176,53 @@ public class Syncano extends SyncanoBase {
     }
 
     /**
+     * Change counter field in object.
+     * We could do it by updating it's value but to avoid conflicts
+     * for situations where multiple user change object at the same time
+     * it's much safer to user our increase/decrease api.
+     *
+     * @param object Object to update. It need to have id.
+     * @param <T>    Result type.
+     * @return Updated DataObject.
+     */
+    public <T extends SyncanoObject> RequestPatch<T> changeCounterFieldsObject(T object, CounterBuilder counterBuilder) {
+        if (object.getId() == null || object.getId() == 0) {
+            throw new RuntimeException("Trying to update object without id!");
+        }
+        Class<T> type = (Class<T>) object.getClass();
+        String className = SyncanoClassHelper.getSyncanoClassName(type);
+        String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstanceName(), className, object.getId());
+        RequestPatch<T> req = new RequestPatch<>(type, url, this, counterBuilder.buildQuery());
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
+    }
+
+    /**
+     * Change counter field in object.
+     * We could do it by updating it's value but to avoid conflicts
+     * for situations where multiple user change object at the same time
+     * it's much safer to user our increase/decrease api.
+     *
+     * @param type Type of the object.
+     * @param id   Object id.
+     * @param <T>  Result type.
+     * @return Updated DataObject.
+     */
+    public <T extends SyncanoObject> RequestPatch<T> changeCounterFieldsObject(Class<T> type, int id, CounterBuilder counterBuilder) {
+        String className = SyncanoClassHelper.getSyncanoClassName(type);
+        String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstanceName(), className, id);
+        RequestPatch<T> req = new RequestPatch<>(type, url, this, counterBuilder.buildQuery());
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
+    }
+
+
+    /**
      * Delete a Data Object.
      *
      * @param type Type of object to delete.
      * @param id   Object id.
      * @param <T>  Result type.
-     * @return null
      */
     public <T extends SyncanoObject> RequestDelete<T> deleteObject(Class<T> type, int id) {
         String className = SyncanoClassHelper.getSyncanoClassName(type);
@@ -196,7 +238,6 @@ public class Syncano extends SyncanoBase {
      *
      * @param object Object to delete.
      * @param <T>    Result type.
-     * @return null
      */
     public <T extends SyncanoObject> RequestDelete<T> deleteObject(T object) {
         if (object.getId() == null || object.getId() == 0) {
