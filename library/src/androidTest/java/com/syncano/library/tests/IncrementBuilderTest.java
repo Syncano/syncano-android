@@ -37,7 +37,7 @@ public class IncrementBuilderTest extends SyncanoApplicationTestCase {
 
         Response<List<KernelOS>> kernelOSResponse = syncano.getObjects(KernelOS.class).send();
         KernelOS kernelOS = kernelOSResponse.getData().get(0);
-        Response<KernelOS> response = kernelOS.increment(KernelOS.COLUMN_KERNEL_VERSION, 2).send();
+        Response<KernelOS> response = kernelOS.increment(KernelOS.COLUMN_KERNEL_VERSION, 2).save();
 
         expectedKernelVersion += 2;
         assertTrue(response.isSuccess());
@@ -45,20 +45,12 @@ public class IncrementBuilderTest extends SyncanoApplicationTestCase {
         assertEquals(kernelOS.kernelVersion, expectedKernelVersion);
         assertEquals(kernelOS.kernelRevision, expectedKernelRevision);
 
-        kernelOS.save();
-        kernelOS.fetch();
-        kernelOS.increment("", 1).save();
-
-        kernelOS.increment().decrement().send();
-
         IncrementBuilder a = new IncrementBuilder();
-        a.increment();
-        a.decrement();
-        syncano.addition(KernelOS.class, id, a).send();
-
+        a.increment(KernelOS.COLUMN_KERNEL_VERSION, 2);
+        syncano.addition(KernelOS.class, kernelOS.getId(), a).send();
 
         Response<KernelOS> response2 = kernelOS.increment(KernelOS.COLUMN_KERNEL_VERSION, 2)
-                .decrement(KernelOS.COLUMN_KERNEL_REVISION, 1).increment("", 2).send();
+                .decrement(KernelOS.COLUMN_KERNEL_REVISION, 1).increment("", 2).save();
 
         expectedKernelVersion += 2;
         expectedKernelRevision--;

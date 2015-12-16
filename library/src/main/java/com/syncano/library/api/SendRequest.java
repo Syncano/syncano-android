@@ -1,7 +1,5 @@
 package com.syncano.library.api;
 
-import com.syncano.library.utils.Log;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.syncano.library.Syncano;
@@ -10,6 +8,7 @@ import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.utils.GsonHelper;
+import com.syncano.library.utils.Log;
 import com.syncano.library.utils.SyncanoClassHelper;
 
 import org.apache.http.HttpEntity;
@@ -31,11 +30,11 @@ import java.util.Collections;
 import java.util.Map;
 
 public abstract class SendRequest<T> extends ResultRequest<T> {
-    private Object data;
-    private boolean updateGivenData = false;
     private final static String boundary = "*****" + Long.toString(System.currentTimeMillis()) + "*****";
     private final static String twoHyphens = "--";
     private final static String lineEnd = "\r\n";
+    private Object data;
+    private boolean updateGivenData = false;
 
     protected SendRequest(Class<T> resultType, String url, Syncano syncano, Object data) {
         super(resultType, url, syncano);
@@ -119,18 +118,25 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream os = new DataOutputStream(baos);
         JsonObject json = gson.toJsonTree(data).getAsJsonObject();
-        ((SyncanoObject)data.getIncrementBuilder()).build(json);
+        ((SyncanoObject) data).getIncrementBuilder().build(json);
 
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
             os.writeBytes(twoHyphens + boundary + lineEnd);
             os.writeBytes("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"" + lineEnd);
             os.writeBytes("Content-Type: text/plain" + lineEnd);
             os.writeBytes(lineEnd);
-            os.writeBytes(entry.getValue().getAsString());
+            os.writeBytes(getJsonElementAsString(entry.getValue()));
             os.writeBytes(lineEnd);
         }
 
         return new ByteArrayInputStream(baos.toByteArray());
+    }
+
+    private String getJsonElementAsString(JsonElement jsonElement) {
+        if (jsonElement.isJsonPrimitive())
+            return jsonElement.getAsString();
+        else
+            return jsonElement.toString();
     }
 
     private InputStream getItemStartInputStream(String name, String filename) throws IOException {

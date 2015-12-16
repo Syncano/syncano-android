@@ -209,10 +209,15 @@ public class Syncano extends SyncanoBase {
         if (object.getId() == null || object.getId() == 0) {
             throw new RuntimeException("Trying to update object without id!");
         }
+        if (incrementBuilder.isAdditionFields()) {
+            throw new RuntimeException("Cannot create increment query without specify fields to increment/decrement!");
+        }
         Class<T> type = (Class<T>) object.getClass();
         String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstanceName(), className, object.getId());
-        RequestPatch<T> req = new RequestPatch<>(type, url, this, incrementBuilder.buildQuery());
+        JsonObject additionQuery = new JsonObject();
+        incrementBuilder.build(additionQuery);
+        RequestPatch<T> req = new RequestPatch<>(type, url, this, additionQuery);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
     }
@@ -229,9 +234,14 @@ public class Syncano extends SyncanoBase {
      * @return Updated DataObject.
      */
     public <T extends SyncanoObject> RequestPatch<T> addition(Class<T> type, int id, IncrementBuilder incrementBuilder) {
+        if (incrementBuilder.isAdditionFields()) {
+            throw new RuntimeException("Cannot create increment query without specify fields to increment/decrement!");
+        }
         String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstanceName(), className, id);
-        RequestPatch<T> req = new RequestPatch<>(type, url, this, incrementBuilder.buildQuery());
+        JsonObject additionQuery = new JsonObject();
+        incrementBuilder.build(additionQuery);
+        RequestPatch<T> req = new RequestPatch<>(type, url, this, additionQuery);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
     }

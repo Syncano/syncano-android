@@ -127,6 +127,10 @@ public abstract class SyncanoObject extends Entity {
         this.expectedRevision = expectedRevision;
     }
 
+    public IncrementBuilder getIncrementBuilder() {
+        return incrementBuilder;
+    }
+
     public Syncano getSyncano() {
         if (syncano == null) {
             return Syncano.getInstance();
