@@ -4,6 +4,7 @@ import com.syncano.library.Syncano;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
 import com.syncano.library.callbacks.SyncanoCallback;
+import com.syncano.library.choice.TraceStatus;
 
 import java.util.Date;
 
@@ -21,7 +22,7 @@ public class Trace {
     private int id;
 
     @SyncanoField(name = FIELD_STATUS, readOnly = true)
-    private String status;
+    private TraceStatus status;
 
     @SyncanoField(name = FIELD_DURATION, readOnly = true)
     private int duration;
@@ -51,11 +52,11 @@ public class Trace {
         this.codeBoxId = id;
     }
 
-    public String getStatus() {
+    public TraceStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TraceStatus status) {
         this.status = status;
     }
 

@@ -319,6 +319,42 @@ public class Syncano extends SyncanoBase {
     }
 
     /**
+     * Run CodeBox asynchronous. Result of this request is not result of the CodeBox.
+     * Result will be stored in associated Trace.
+     *
+     * @param codeBox CodeBox to run.
+     * @return Result with link do Trace.
+     */
+    public RequestPost<Trace> runCodeBox(final CodeBox codeBox) {
+        return runCodeBox(codeBox, null);
+    }
+
+    /**
+     * Run CodeBox asynchronous. Result of this request is not result of the CodeBox.
+     * Result will be stored in associated Trace.
+     *
+     * @param codeBox CodeBox to run.
+     * @param params  CodeBox params.
+     * @return Result with link do Trace.
+     */
+    public RequestPost<Trace> runCodeBox(final CodeBox codeBox, JsonObject params) {
+        if (codeBox.getId() == null) {
+            throw new RuntimeException("Can't run codebox without giving it's id");
+        }
+        RequestPost<Trace> req = runCodeBox(codeBox.getId(), params);
+        req.setRunAfter(new Request.RunAfter<Trace>() {
+            @Override
+            public void run(Response<Trace> response) {
+                Trace trace = response.getData();
+                if (trace == null) return;
+                trace.setCodeBoxId(codeBox.getId());
+                codeBox.setTrace(trace);
+            }
+        });
+        return req;
+    }
+
+    /**
      * Get trace, result of asynchronous CodeBox execution.
      *
      * @param codeboxId CodeBox id.

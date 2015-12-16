@@ -1,8 +1,10 @@
 package com.syncano.library.tests;
 
+import com.google.gson.JsonObject;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.RuntimeName;
+import com.syncano.library.choice.TraceStatus;
 import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Trace;
 
@@ -12,6 +14,8 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
 
     private CodeBox codeBox;
     private static final String EXPECTED_RESULT = "This is message from our Codebox";
+    private static final String ARGUMENT_NAME = "argument";
+    private static final String ARGUMENT_VALUE = "GRrr";
 
     @Override
     protected void setUp() throws Exception {
@@ -19,7 +23,7 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
         String codeBoxLabel = "CodeBox Test";
 
         RuntimeName runtime = RuntimeName.NODEJS;
-        String source = "var msg = '" + EXPECTED_RESULT + "'; console.log(msg);";
+        String source = "var msg = '" + EXPECTED_RESULT + "'; console.log(msg); console.log(ARGS." + ARGUMENT_NAME + ");";
 
         CodeBox newCodeBox = new CodeBox();
         newCodeBox.setLabel(codeBoxLabel);
@@ -76,14 +80,17 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
         assertNotNull(trace);
 
         // ----------------- Result -----------------
-        Thread.sleep(2000); // wait until codebox finishes execution
+        long start = System.currentTimeMillis();
+        // wait until codebox finishes execution
+        while (System.currentTimeMillis() - start < 5000 && trace.getStatus() != TraceStatus.SUCCESS) {
+            assertTrue(trace.fetch().isSuccess());
+            Thread.sleep(100);
+        }
         // first method
-        Response<Trace> responseTrace = trace.fetch();
-        assertTrue(responseTrace.isSuccess());
         assertNotNull(trace.getOutput());
         assertTrue(trace.getOutput().contains(EXPECTED_RESULT));
         // second method
-        responseTrace = syncano.getTrace(codeBox.getId(), trace.getId()).send();
+        Response<Trace> responseTrace = syncano.getTrace(codeBox.getId(), trace.getId()).send();
         assertTrue(responseTrace.isSuccess());
         Trace result = responseTrace.getData();
         assertNotNull(result);
@@ -102,8 +109,32 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_NOT_FOUND, responseGetOneCodeBox.getHttpResultCode());
     }
 
-    public void testSimpleCodeBoxMethods() {
+    public void testSimpleCodeBoxMethods() throws InterruptedException {
         CodeBox cbx = new CodeBox(codeBox.getId());
-        
+        assertTrue(cbx.run().isSuccess());
+        Trace trace = cbx.getTrace();
+
+        long start = System.currentTimeMillis();
+        // wait until codebox finishes execution
+        while (System.currentTimeMillis() - start < 5000 && trace.getStatus() != TraceStatus.SUCCESS) {
+            assertTrue(trace.fetch().isSuccess());
+            Thread.sleep(100);
+        }
+        assertTrue(trace.getOutput().contains(EXPECTED_RESULT));
+
+
+        // run codebox with payload
+        JsonObject json = new JsonObject();
+        json.addProperty(ARGUMENT_NAME, ARGUMENT_VALUE);
+        cbx = new CodeBox(codeBox.getId());
+        assertTrue(cbx.run(json).isSuccess());
+        trace = cbx.getTrace();
+        start = System.currentTimeMillis();
+        // wait until codebox finishes execution
+        while (System.currentTimeMillis() - start < 5000 && trace.getStatus() != TraceStatus.SUCCESS) {
+            assertTrue(trace.fetch().isSuccess());
+            Thread.sleep(100);
+        }
+        assertTrue(trace.getOutput().contains(EXPECTED_RESULT));
     }
 }
