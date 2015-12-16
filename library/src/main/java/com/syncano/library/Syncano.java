@@ -281,7 +281,7 @@ public class Syncano extends SyncanoBase {
      * Delete previously created CodeBox.
      *
      * @param id CodeBox id.
-     * @return null
+     * @return Deleted CodeBox
      */
     public RequestDelete<CodeBox> deleteCodeBox(int id) {
         String url = String.format(Constants.CODEBOXES_DETAIL_URL, getInstanceName(), id);
@@ -318,6 +318,13 @@ public class Syncano extends SyncanoBase {
         return req;
     }
 
+    /**
+     * Get trace, result of asynchronous CodeBox execution.
+     *
+     * @param codeboxId CodeBox id.
+     * @param traceId   Trace id.
+     * @return Trace, it may be still pending, then try to get trace again.
+     */
     public RequestGet<Trace> getTrace(int codeboxId, int traceId) {
         String url = String.format(Constants.TRACE_DETAIL_URL, getInstanceName(), codeboxId, traceId);
         RequestGet<Trace> req = new RequestGetOne<>(Trace.class, url, this);
@@ -326,6 +333,12 @@ public class Syncano extends SyncanoBase {
         return req;
     }
 
+    /**
+     * Get trace, result of CodeBox execution. Refreshes values in given trace object.
+     *
+     * @param trace Trace that should be refreshed. It has to have id and codebox id set.
+     * @return Trace, it may be still pending, then try to get trace again.
+     */
     public RequestGet<Trace> getTrace(Trace trace) {
         if (trace.getCodeBoxId() == null) {
             throw new RuntimeException("Fetching trace result without codebox id. If run from webhook, result is already known.");
@@ -419,20 +432,21 @@ public class Syncano extends SyncanoBase {
     }
 
     /**
-     * Run a Webhook synchronous. It should contain result of associated CodeBox.
+     * Run a Webhook synchronous.
      *
      * @param name Webhook id.
-     * @return Result of executed CodeBox.
+     * @return Result of executed Webhook.
      */
     public RequestPost<Trace> runWebhook(String name) {
         return runWebhook(name, null);
     }
 
     /**
-     * Run a Webhook synchronous. It should contain result of associated CodeBox.
+     * Run a Webhook synchronous.
      *
-     * @param name Webhook id.
-     * @return Result of executed CodeBox.
+     * @param name    Webhook id.
+     * @param payload Params to pass to webhook.
+     * @return Result of executed Webhook.
      */
     public RequestPost<Trace> runWebhook(String name, JsonObject payload) {
         String url = String.format(Constants.WEBHOOKS_RUN_URL, getInstanceName(), name);
@@ -441,10 +455,54 @@ public class Syncano extends SyncanoBase {
         return req;
     }
 
+    /**
+     * Run a Webhook synchronous.
+     *
+     * @param webhook Webhook to run.
+     * @return Result of executed Webhook.
+     */
+    public RequestPost<Trace> runWebhook(Webhook webhook) {
+        return runWebhook(webhook, null);
+    }
+
+    /**
+     * Run a Webhook synchronous.
+     *
+     * @param webhook Webhook to run.
+     * @param payload Params to pass to webhook.
+     * @return Result of executed Webhook.
+     */
+    public RequestPost<Trace> runWebhook(final Webhook webhook, JsonObject payload) {
+        if (webhook.getName() == null) {
+            throw new RuntimeException("Can't run webhook without a name.");
+        }
+        RequestPost<Trace> req = runWebhook(webhook.getName(), payload);
+        req.setRunAfter(new Request.RunAfter<Trace>() {
+            @Override
+            public void run(Response<Trace> response) {
+                webhook.setTrace(response.getData());
+            }
+        });
+        return req;
+    }
+
+    /**
+     * Run a public Webhook synchronous.
+     *
+     * @param url Public webhook url.
+     * @return Result of executed Webhook.
+     */
     public RequestPost<Trace> runWebhookUrl(String url) {
         return runWebhookUrl(url, null);
     }
 
+    /**
+     * Run a public Webhook synchronous.
+     *
+     * @param url     Public webhook url.
+     * @param payload Params to pass to webhook.
+     * @return Result of executed Webhook.
+     */
     public RequestPost<Trace> runWebhookUrl(String url, JsonObject payload) {
         RequestPost<Trace> req = new RequestPost<>(Trace.class, null, this, payload);
         req.setCompleteCustomUrl(url);

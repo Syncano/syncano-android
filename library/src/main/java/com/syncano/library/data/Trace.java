@@ -103,7 +103,21 @@ public class Trace {
         getSyncano().getTrace(this).sendAsync(callback);
     }
 
-    public static class TraceResult {
+    public String getOutput() {
+        if (result != null) {
+            return result.stdout;
+        }
+        return null;
+    }
+
+    public String getErrorOutput() {
+        if (result != null) {
+            return result.stderr;
+        }
+        return null;
+    }
+
+    private static class TraceResult {
         @SyncanoField(name = FIELD_STDERR, readOnly = true)
         public String stderr;
         @SyncanoField(name = FIELD_STDOUT, readOnly = true)
