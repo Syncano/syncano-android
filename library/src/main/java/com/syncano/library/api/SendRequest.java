@@ -1,6 +1,6 @@
 package com.syncano.library.api;
 
-import android.util.Log;
+import com.syncano.library.utils.Log;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
