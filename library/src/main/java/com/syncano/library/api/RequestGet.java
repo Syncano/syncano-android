@@ -19,17 +19,22 @@ public abstract class RequestGet<T> extends Request<T> {
     @Override
     public void prepareUrlParams() {
         super.prepareUrlParams();
-
-        if (fieldsFilter != null && fieldsFilter.getFieldNames() != null && fieldsFilter.getFieldNames().size() > 0) {
-
-            StringBuilder filterFields = new StringBuilder();
-            for (String fieldName : fieldsFilter.getFieldNames()) {
-                if (filterFields.length() != 0) filterFields.append(',');
-                filterFields.append(fieldName);
-            }
-
-            addUrlParam(fieldsFilter.getFilterTypeString(), filterFields.toString());
+        if (isFieldsFilter()) {
+            addUrlParam(fieldsFilter.getFilterTypeString(), createFilterFieldParam());
         }
+    }
+
+    private String createFilterFieldParam() {
+        StringBuilder filterFields = new StringBuilder();
+        for (String fieldName : fieldsFilter.getFieldNames()) {
+            if (filterFields.length() != 0) filterFields.append(',');
+            filterFields.append(fieldName);
+        }
+        return filterFields.toString();
+    }
+
+    private boolean isFieldsFilter() {
+        return fieldsFilter != null && fieldsFilter.getFieldNames() != null && fieldsFilter.getFieldNames().size() > 0;
     }
 
     public void setFieldsFilter(FieldsFilter fieldsFilter) {
