@@ -3,7 +3,8 @@ package com.syncano.library;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
+
+import com.syncano.library.utils.Log;
 
 import com.syncano.library.api.Response;
 import com.syncano.library.data.Notification;

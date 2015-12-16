@@ -101,26 +101,33 @@ public class Syncano extends SyncanoBase {
     /**
      * Create object on Syncano.
      *
-     * @param object Object to create. It need to extend SyncanoObject.
-     * @param <T>    Result type.
-     * @return New DataObject.
+     * @param object Object to create. It has to extend SyncanoObject.
      */
     public <T extends SyncanoObject> RequestPost<T> createObject(T object) {
+        return createObject(object, false);
+    }
+
+    /**
+     * Create object on Syncano.
+     *
+     * @param object            Object to create. It has to extend SyncanoObject.
+     * @param updateGivenObject Should update fields in passed object, or only return the new created object
+     */
+    public <T extends SyncanoObject> RequestPost<T> createObject(T object, boolean updateGivenObject) {
         Class<T> type = (Class<T>) object.getClass();
         String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_LIST_URL, getInstanceName(), className);
         RequestPost<T> req = new RequestPost<>(type, url, this, object);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
+        req.updateGivenObject(updateGivenObject);
         return req;
     }
 
     /**
-     * Get details of a Data Object.
+     * Get a Data Object from Syncano.
      *
      * @param type Type of the object.
      * @param id   Object id.
-     * @param <T>  Result type.
-     * @return Existing DataObject.
      */
     public <T extends SyncanoObject> RequestGetOne<T> getObject(Class<T> type, int id) {
         String className = SyncanoClassHelper.getSyncanoClassName(type);
@@ -130,6 +137,11 @@ public class Syncano extends SyncanoBase {
         return req;
     }
 
+    /**
+     * Get a Data Object from Syncano.
+     *
+     * @param object Object to get. Has to have id. Other fields will be updated.
+     */
     public <T extends SyncanoObject> RequestGetOne<T> getObject(T object) {
         if (object.getId() == null) {
             throw new RuntimeException("Can't fetch object without id");
@@ -146,7 +158,6 @@ public class Syncano extends SyncanoBase {
      *
      * @param type Type for result List item.
      * @param <T>  Result type.
-     * @return List of DataObjects.
      */
     public <T extends SyncanoObject> RequestGetList<T> getObjects(Class<T> type) {
         String className = SyncanoClassHelper.getSyncanoClassName(type);
@@ -157,13 +168,21 @@ public class Syncano extends SyncanoBase {
     }
 
     /**
-     * Update Data Object.
+     * Update Data Object on Syncano.
      *
-     * @param object Object to update. It need to have id.
-     * @param <T>    Result type.
-     * @return Updated DataObject.
+     * @param object Object to update. It has to have id. Fields that are not null will be updated.
      */
     public <T extends SyncanoObject> RequestPatch<T> updateObject(T object) {
+        return updateObject(object, false);
+    }
+
+    /**
+     * Update Data Object on Syncano.
+     *
+     * @param object            Object to update. It has to have id. Fields that are not null will be updated.
+     * @param updateGivenObject Should update the passed object. Param updatedAt will be changed for example.
+     */
+    public <T extends SyncanoObject> RequestPatch<T> updateObject(T object, boolean updateGivenObject) {
         if (object.getId() == null || object.getId() == 0) {
             throw new RuntimeException("Trying to update object without id!");
         }
@@ -172,6 +191,7 @@ public class Syncano extends SyncanoBase {
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstanceName(), className, object.getId());
         RequestPatch<T> req = new RequestPatch<>(type, url, this, object);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        req.updateGivenObject(updateGivenObject);
         return req;
     }
 
@@ -218,11 +238,10 @@ public class Syncano extends SyncanoBase {
 
 
     /**
-     * Delete a Data Object.
+     * Delete a Data Object on Syncano.
      *
      * @param type Type of object to delete.
      * @param id   Object id.
-     * @param <T>  Result type.
      */
     public <T extends SyncanoObject> RequestDelete<T> deleteObject(Class<T> type, int id) {
         String className = SyncanoClassHelper.getSyncanoClassName(type);
@@ -236,8 +255,7 @@ public class Syncano extends SyncanoBase {
     /**
      * Delete a Data Object.
      *
-     * @param object Object to delete.
-     * @param <T>    Result type.
+     * @param object Object to delete. it has to have id set.
      */
     public <T extends SyncanoObject> RequestDelete<T> deleteObject(T object) {
         if (object.getId() == null || object.getId() == 0) {
@@ -306,7 +324,7 @@ public class Syncano extends SyncanoBase {
      * Delete previously created CodeBox.
      *
      * @param id CodeBox id.
-     * @return null
+     * @return Deleted CodeBox
      */
     public RequestDelete<CodeBox> deleteCodeBox(int id) {
         String url = String.format(Constants.CODEBOXES_DETAIL_URL, getInstanceName(), id);
@@ -343,6 +361,49 @@ public class Syncano extends SyncanoBase {
         return req;
     }
 
+    /**
+     * Run CodeBox asynchronous. Result of this request is not result of the CodeBox.
+     * Result will be stored in associated Trace.
+     *
+     * @param codeBox CodeBox to run.
+     * @return Result with link do Trace.
+     */
+    public RequestPost<Trace> runCodeBox(final CodeBox codeBox) {
+        return runCodeBox(codeBox, null);
+    }
+
+    /**
+     * Run CodeBox asynchronous. Result of this request is not result of the CodeBox.
+     * Result will be stored in associated Trace.
+     *
+     * @param codeBox CodeBox to run.
+     * @param params  CodeBox params.
+     * @return Result with link do Trace.
+     */
+    public RequestPost<Trace> runCodeBox(final CodeBox codeBox, JsonObject params) {
+        if (codeBox.getId() == null) {
+            throw new RuntimeException("Can't run codebox without giving it's id");
+        }
+        RequestPost<Trace> req = runCodeBox(codeBox.getId(), params);
+        req.setRunAfter(new Request.RunAfter<Trace>() {
+            @Override
+            public void run(Response<Trace> response) {
+                Trace trace = response.getData();
+                if (trace == null) return;
+                trace.setCodeBoxId(codeBox.getId());
+                codeBox.setTrace(trace);
+            }
+        });
+        return req;
+    }
+
+    /**
+     * Get trace, result of asynchronous CodeBox execution.
+     *
+     * @param codeboxId CodeBox id.
+     * @param traceId   Trace id.
+     * @return Trace, it may be still pending, then try to get trace again.
+     */
     public RequestGet<Trace> getTrace(int codeboxId, int traceId) {
         String url = String.format(Constants.TRACE_DETAIL_URL, getInstanceName(), codeboxId, traceId);
         RequestGet<Trace> req = new RequestGetOne<>(Trace.class, url, this);
@@ -351,6 +412,12 @@ public class Syncano extends SyncanoBase {
         return req;
     }
 
+    /**
+     * Get trace, result of CodeBox execution. Refreshes values in given trace object.
+     *
+     * @param trace Trace that should be refreshed. It has to have id and codebox id set.
+     * @return Trace, it may be still pending, then try to get trace again.
+     */
     public RequestGet<Trace> getTrace(Trace trace) {
         if (trace.getCodeBoxId() == null) {
             throw new RuntimeException("Fetching trace result without codebox id. If run from webhook, result is already known.");
@@ -444,20 +511,21 @@ public class Syncano extends SyncanoBase {
     }
 
     /**
-     * Run a Webhook synchronous. It should contain result of associated CodeBox.
+     * Run a Webhook synchronous.
      *
      * @param name Webhook id.
-     * @return Result of executed CodeBox.
+     * @return Result of executed Webhook.
      */
     public RequestPost<Trace> runWebhook(String name) {
         return runWebhook(name, null);
     }
 
     /**
-     * Run a Webhook synchronous. It should contain result of associated CodeBox.
+     * Run a Webhook synchronous.
      *
-     * @param name Webhook id.
-     * @return Result of executed CodeBox.
+     * @param name    Webhook id.
+     * @param payload Params to pass to webhook.
+     * @return Result of executed Webhook.
      */
     public RequestPost<Trace> runWebhook(String name, JsonObject payload) {
         String url = String.format(Constants.WEBHOOKS_RUN_URL, getInstanceName(), name);
@@ -466,10 +534,54 @@ public class Syncano extends SyncanoBase {
         return req;
     }
 
+    /**
+     * Run a Webhook synchronous.
+     *
+     * @param webhook Webhook to run.
+     * @return Result of executed Webhook.
+     */
+    public RequestPost<Trace> runWebhook(Webhook webhook) {
+        return runWebhook(webhook, null);
+    }
+
+    /**
+     * Run a Webhook synchronous.
+     *
+     * @param webhook Webhook to run.
+     * @param payload Params to pass to webhook.
+     * @return Result of executed Webhook.
+     */
+    public RequestPost<Trace> runWebhook(final Webhook webhook, JsonObject payload) {
+        if (webhook.getName() == null) {
+            throw new RuntimeException("Can't run webhook without a name.");
+        }
+        RequestPost<Trace> req = runWebhook(webhook.getName(), payload);
+        req.setRunAfter(new Request.RunAfter<Trace>() {
+            @Override
+            public void run(Response<Trace> response) {
+                webhook.setTrace(response.getData());
+            }
+        });
+        return req;
+    }
+
+    /**
+     * Run a public Webhook synchronous.
+     *
+     * @param url Public webhook url.
+     * @return Result of executed Webhook.
+     */
     public RequestPost<Trace> runWebhookUrl(String url) {
         return runWebhookUrl(url, null);
     }
 
+    /**
+     * Run a public Webhook synchronous.
+     *
+     * @param url     Public webhook url.
+     * @param payload Params to pass to webhook.
+     * @return Result of executed Webhook.
+     */
     public RequestPost<Trace> runWebhookUrl(String url, JsonObject payload) {
         RequestPost<Trace> req = new RequestPost<>(Trace.class, null, this, payload);
         req.setCompleteCustomUrl(url);

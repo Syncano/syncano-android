@@ -140,16 +140,16 @@ public abstract class SyncanoObject extends Entity {
 
     public <T extends SyncanoObject> Response<T> save() {
         if (getId() == null) {
-            return getSyncano().createObject((T) this).send();
+            return getSyncano().createObject((T) this, true).send();
         }
-        return getSyncano().updateObject((T) this).send();
+        return getSyncano().updateObject((T) this, true).send();
     }
 
     public <T extends SyncanoObject> void save(SyncanoCallback<T> callback) {
         if (getId() == null) {
-            getSyncano().createObject((T) this).sendAsync(callback);
+            getSyncano().createObject((T) this, false).sendAsync(callback);
         } else {
-            getSyncano().updateObject((T) this).sendAsync(callback);
+            getSyncano().updateObject((T) this, false).sendAsync(callback);
         }
     }
 

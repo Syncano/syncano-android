@@ -1,6 +1,10 @@
 package com.syncano.library.data;
 
+import com.google.gson.JsonObject;
+import com.syncano.library.Syncano;
 import com.syncano.library.annotation.SyncanoField;
+import com.syncano.library.api.Response;
+import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.choice.RuntimeName;
 
 import org.json.JSONObject;
@@ -28,7 +32,14 @@ public class CodeBox extends Entity {
     @SyncanoField(name = FIELD_CONFIG)
     private JSONObject config;
 
+    private Trace trace;
+    private Syncano syncano;
+
     public CodeBox() {
+    }
+
+    public CodeBox(int id) {
+        setId(id);
     }
 
     public CodeBox(String label, String source, RuntimeName runtimeName) {
@@ -75,5 +86,41 @@ public class CodeBox extends Entity {
 
     public void setConfig(JSONObject config) {
         this.config = config;
+    }
+
+    private Syncano getSyncano() {
+        if (syncano == null) {
+            return Syncano.getInstance();
+        }
+        return syncano;
+    }
+
+    public CodeBox on(Syncano syncano) {
+        this.syncano = syncano;
+        return this;
+    }
+
+    public Trace getTrace() {
+        return trace;
+    }
+
+    public void setTrace(Trace trace) {
+        this.trace = trace;
+    }
+
+    public Response<Trace> run() {
+        return getSyncano().runCodeBox(this).send();
+    }
+
+    public Response<Trace> run(JsonObject payload) {
+        return getSyncano().runCodeBox(this, payload).send();
+    }
+
+    public void run(SyncanoCallback<Trace> callback) {
+        getSyncano().runCodeBox(this).sendAsync(callback);
+    }
+
+    public void run(SyncanoCallback<Trace> callback, JsonObject payload) {
+        getSyncano().runCodeBox(this, payload).sendAsync(callback);
     }
 }

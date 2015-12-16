@@ -1,7 +1,12 @@
 package com.syncano.library.data;
 
 
+import com.google.gson.JsonObject;
+import com.syncano.library.Syncano;
+import com.syncano.library.callbacks.SyncanoCallback;
+import com.syncano.library.utils.Log;
 import com.syncano.library.annotation.SyncanoField;
+import com.syncano.library.api.Response;
 
 public class Webhook {
 
@@ -30,7 +35,14 @@ public class Webhook {
     @SyncanoField(name = FIELD_LINKS, readOnly = true)
     private WebHookLinks links;
 
+    private Trace trace;
+    private Syncano syncano;
+
     public Webhook() {
+    }
+
+    public Webhook(String name) {
+        this.name = name;
     }
 
     public Webhook(String name, int codebox) {
@@ -84,6 +96,58 @@ public class Webhook {
 
     public void setLinks(WebHookLinks links) {
         this.links = links;
+    }
+
+    private Syncano getSyncano() {
+        if (syncano == null) {
+            return Syncano.getInstance();
+        }
+        return syncano;
+    }
+
+    public Webhook on(Syncano syncano) {
+        this.syncano = syncano;
+        return this;
+    }
+
+    public String getOutput() {
+        if (trace != null) {
+            return trace.getOutput();
+        }
+        Log.d(Webhook.class.getSimpleName(), "Getting output, without calling run() first");
+        return null;
+    }
+
+    public String getErrorOutput() {
+        if (trace != null) {
+            return trace.getErrorOutput();
+        }
+        Log.d(Webhook.class.getSimpleName(), "Getting output, without calling run() first");
+        return null;
+    }
+
+    public Response<Trace> run() {
+        return getSyncano().runWebhook(this).send();
+    }
+
+    public Response<Trace> run(JsonObject payload) {
+        return getSyncano().runWebhook(this, payload).send();
+    }
+
+    public void run(SyncanoCallback<Trace> callback) {
+        getSyncano().runWebhook(this).sendAsync(callback);
+    }
+
+    public void run(SyncanoCallback<Trace> callback, JsonObject payload) {
+        getSyncano().runWebhook(this, payload).sendAsync(callback);
+    }
+
+    public Trace getTrace() {
+        return trace;
+    }
+
+    public void setTrace(Trace trace) {
+        this.trace = trace;
     }
 
     public static class WebHookLinks {

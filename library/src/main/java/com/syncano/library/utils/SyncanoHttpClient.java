@@ -1,7 +1,5 @@
 package com.syncano.library.utils;
 
-import android.util.Log;
-
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;

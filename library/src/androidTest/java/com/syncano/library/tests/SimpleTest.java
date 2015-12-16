@@ -6,6 +6,7 @@ import com.syncano.library.api.Response;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.User;
 
+import java.util.Date;
 import java.util.List;
 
 public class SimpleTest extends SyncanoApplicationTestCase {
@@ -32,35 +33,40 @@ public class SimpleTest extends SyncanoApplicationTestCase {
 
     public void testSimple() {
         // ----------------- Create object 1 -----------------
-        Response<Item> resp1 = (new Item()).on(syncano).save();
+        Item item1 = new Item();
+        assertNull(item1.getId());
+        Response<Item> resp1 = item1.on(syncano).save();
         assertTrue(resp1.isSuccess());
+        assertNotNull(item1.getId());
+        Date firstUpdatedAt = item1.getUpdatedAt();
+        assertNotNull(firstUpdatedAt);
 
         // ----------------- Create object 2 -----------------
         Response<Item> resp2 = (new Item()).save();
         assertTrue(resp2.isSuccess());
 
-        // ----------------- Update object 2 -----------------
-        Item toUpdate = resp2.getData();
-        toUpdate.text += "---";
-        toUpdate.number = 11;
-        Response<Item> respUpdate = toUpdate.save();
+        // ----------------- Update object 1 -----------------
+        item1.text += "---";
+        item1.number = 11;
+        Response<Item> respUpdate = item1.save();
         assertTrue(respUpdate.isSuccess());
-        assertEquals(toUpdate.text, respUpdate.getData().text);
-
+        assertEquals(item1.text, respUpdate.getData().text);
+        assertTrue(item1.getUpdatedAt().after(firstUpdatedAt));
+        
         // ----------------- Get list of objects -----------------
         Response<List<Item>> respList = SyncanoObject.please(Item.class).on(syncano).sortBy("text").limit(2).
                 where().lte("number", 12).gt("number", 10).get();
         assertTrue(respList.isSuccess());
         assertEquals(2, respList.getData().size());
 
-        // ----------------- Get object 2 using fetch() -----------------
-        Item toFetch = new Item(toUpdate.getId());
+        // ----------------- Get object 1 using fetch() -----------------
+        Item toFetch = new Item(item1.getId());
         toFetch.fetch();
-        assertEquals(toUpdate.text, toFetch.text);
-        assertEquals(toUpdate.number, toFetch.number);
+        assertEquals(item1.text, toFetch.text);
+        assertEquals(item1.number, toFetch.number);
 
         // ----------------- Delete object 2 -----------------
-        Response<Item> respDelete = toUpdate.delete();
+        Response<Item> respDelete = item1.delete();
         assertTrue(respDelete.isSuccess());
     }
 
