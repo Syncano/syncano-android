@@ -1,5 +1,7 @@
 package com.syncano.library.api;
 
+import android.util.Log;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.syncano.library.Syncano;
@@ -7,6 +9,7 @@ import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
+import com.syncano.library.utils.GsonHelper;
 import com.syncano.library.utils.SyncanoClassHelper;
 
 import org.apache.http.HttpEntity;
@@ -29,6 +32,7 @@ import java.util.Map;
 
 public abstract class SendRequest<T> extends ResultRequest<T> {
     private Object data;
+    private boolean updateGivenData = false;
     private final static String boundary = "*****" + Long.toString(System.currentTimeMillis()) + "*****";
     private final static String twoHyphens = "--";
     private final static String lineEnd = "\r\n";
@@ -167,5 +171,26 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
             return "application/json";
         }
         return "multipart/form-data; boundary=" + boundary;
+    }
+
+    @Override
+    public T parseResult(String json) {
+        if (updateGivenData) {
+            if (data.getClass().isAssignableFrom(resultType)) {
+                return GsonHelper.createGson(data).fromJson(json, resultType);
+            } else {
+                Log.w(SendRequest.class.getSimpleName(),
+                        "Can't update object " + data.getClass().getSimpleName() + " from " + resultType.getSimpleName());
+            }
+        }
+        return super.parseResult(json);
+    }
+
+    public boolean isSetUpdateGivenObject() {
+        return updateGivenData;
+    }
+
+    public void updateGivenObject(boolean updateGivenData) {
+        this.updateGivenData = updateGivenData;
     }
 }

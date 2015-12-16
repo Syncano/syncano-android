@@ -71,7 +71,7 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
         assertNotNull(trace);
 
         // ----------------- Result -----------------
-        Thread.sleep(1000); // wait until codebox finishes execution
+        Thread.sleep(2000); // wait until codebox finishes execution
         // first method
         Response<Trace> responseTrace = trace.fetch();
         assertTrue(responseTrace.isSuccess());
