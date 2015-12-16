@@ -119,6 +119,7 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream os = new DataOutputStream(baos);
         JsonObject json = gson.toJsonTree(data).getAsJsonObject();
+        ((SyncanoObject)data.getIncrementBuilder()).build(json);
 
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
             os.writeBytes(twoHyphens + boundary + lineEnd);

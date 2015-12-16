@@ -8,7 +8,7 @@ import com.syncano.library.data.SyncanoObject;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class Addition {
+public final class IncrementBuilder {
     private final static String SYNCANO_INCREMENT_OR_DECREMENT = "_increment";
     private final Class type;
     private final int objectId;
@@ -16,7 +16,10 @@ public final class Addition {
     private HashMap<String, Integer> additionField = new HashMap<>();
     private Syncano syncano;
 
-    public Addition(SyncanoObject syncanoObject) {
+    public IncrementBuilder() {
+    }
+
+    public IncrementBuilder(SyncanoObject syncanoObject) {
         if (syncanoObject.getId() == null || syncanoObject.getId() == 0) {
             throw new RuntimeException("Trying to addition object without id!");
         }
@@ -26,26 +29,26 @@ public final class Addition {
 
     }
 
-    public Addition(SyncanoObject syncanoObject, boolean updateObject) {
+    public IncrementBuilder(SyncanoObject syncanoObject, boolean updateObject) {
         this(syncanoObject);
     }
 
-    public Addition(Class type, int objectId) {
+    public IncrementBuilder(Class type, int objectId) {
         this.type = type;
         this.objectId = objectId;
     }
 
-    public Addition setSyncanoInstance(Syncano syncano) {
+    public IncrementBuilder setSyncanoInstance(Syncano syncano) {
         this.syncano = syncano;
         return this;
     }
 
-    public Addition increment(String fieldName, int value) {
+    public IncrementBuilder increment(String fieldName, int value) {
         additionField.put(fieldName, value);
         return this;
     }
 
-    public Addition decrement(String fieldName, int value) {
+    public IncrementBuilder decrement(String fieldName, int value) {
         additionField.put(fieldName, -value);
         return this;
     }
