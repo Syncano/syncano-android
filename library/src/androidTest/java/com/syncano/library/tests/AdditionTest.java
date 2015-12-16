@@ -3,14 +3,13 @@ package com.syncano.library.tests;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.annotation.SyncanoField;
-import com.syncano.library.api.CounterBuilder;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.SyncanoObject;
 
 import java.util.List;
 
-public class IncreaseDecreaseTest extends SyncanoApplicationTestCase {
+public class AdditionTest extends SyncanoApplicationTestCase {
 
     @Override
     protected void setUp() throws Exception {
@@ -37,19 +36,16 @@ public class IncreaseDecreaseTest extends SyncanoApplicationTestCase {
 
         Response<List<KernelOS>> kernelOSResponse = syncano.getObjects(KernelOS.class).send();
         KernelOS kernelOS = kernelOSResponse.getData().get(0);
-        Response<KernelOS> response = kernelOS.changeFieldsCounters(new CounterBuilder()
-                .incrementField(KernelOS.COLUMN_KERNEL_VERSION, 2));
+        Response<KernelOS> response = kernelOS.increment(KernelOS.COLUMN_KERNEL_VERSION, 2).send();
         expectedKernelVersion += 2;
         assertTrue(response.isSuccess());
         kernelOS = response.getData();
         assertEquals(kernelOS.kernelVersion, expectedKernelVersion);
         assertEquals(kernelOS.kernelRevision, expectedKernelRevision);
 
-        Response<KernelOS> response2 = kernelOS.changeFieldsCounters(
-                new CounterBuilder()
-                        .incrementField(KernelOS.COLUMN_KERNEL_VERSION, 2)
-                        .decrementField(KernelOS.COLUMN_KERNEL_REVISION, 1)
-        );
+        Response<KernelOS> response2 = kernelOS.increment(KernelOS.COLUMN_KERNEL_VERSION, 2)
+                .decrement(KernelOS.COLUMN_KERNEL_REVISION, 1).send();
+
         expectedKernelVersion += 2;
         expectedKernelRevision--;
         assertTrue(response2.isSuccess());

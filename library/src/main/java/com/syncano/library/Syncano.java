@@ -1,7 +1,7 @@
 package com.syncano.library;
 
 import com.google.gson.JsonObject;
-import com.syncano.library.api.CounterBuilder;
+import com.syncano.library.api.Addition;
 import com.syncano.library.api.Request;
 import com.syncano.library.api.RequestDelete;
 import com.syncano.library.api.RequestGet;
@@ -185,14 +185,14 @@ public class Syncano extends SyncanoBase {
      * @param <T>    Result type.
      * @return Updated DataObject.
      */
-    public <T extends SyncanoObject> RequestPatch<T> changeCounterFieldsObject(T object, CounterBuilder counterBuilder) {
+    public <T extends SyncanoObject> RequestPatch<T> addition(T object, Addition addition) {
         if (object.getId() == null || object.getId() == 0) {
             throw new RuntimeException("Trying to update object without id!");
         }
         Class<T> type = (Class<T>) object.getClass();
         String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstanceName(), className, object.getId());
-        RequestPatch<T> req = new RequestPatch<>(type, url, this, counterBuilder.buildQuery());
+        RequestPatch<T> req = new RequestPatch<>(type, url, this, addition.buildQuery());
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
     }
@@ -208,10 +208,10 @@ public class Syncano extends SyncanoBase {
      * @param <T>  Result type.
      * @return Updated DataObject.
      */
-    public <T extends SyncanoObject> RequestPatch<T> changeCounterFieldsObject(Class<T> type, int id, CounterBuilder counterBuilder) {
+    public <T extends SyncanoObject> RequestPatch<T> addition(Class<T> type, int id, Addition addition) {
         String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getInstanceName(), className, id);
-        RequestPatch<T> req = new RequestPatch<>(type, url, this, counterBuilder.buildQuery());
+        RequestPatch<T> req = new RequestPatch<>(type, url, this, addition.buildQuery());
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
     }

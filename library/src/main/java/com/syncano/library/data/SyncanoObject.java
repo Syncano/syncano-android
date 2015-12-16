@@ -2,7 +2,7 @@ package com.syncano.library.data;
 
 import com.syncano.library.Syncano;
 import com.syncano.library.annotation.SyncanoField;
-import com.syncano.library.api.CounterBuilder;
+import com.syncano.library.api.Addition;
 import com.syncano.library.api.Request;
 import com.syncano.library.api.Response;
 import com.syncano.library.callbacks.SyncanoCallback;
@@ -126,7 +126,7 @@ public abstract class SyncanoObject extends Entity {
         this.expectedRevision = expectedRevision;
     }
 
-    private Syncano getSyncano() {
+    public Syncano getSyncano() {
         if (syncano == null) {
             return Syncano.getInstance();
         }
@@ -171,13 +171,15 @@ public abstract class SyncanoObject extends Entity {
         req.sendAsync(callback);
     }
 
-    public <T extends SyncanoObject> Response<T> changeFieldsCounters(CounterBuilder counterBuilder) {
-        Request<T> req = (Request<T>) getSyncano().changeCounterFieldsObject(this, counterBuilder);
-        return req.send();
+    public Addition increment(String fieldName, int value) {
+        Addition additionBuilder = new Addition(this);
+        additionBuilder.increment(fieldName, value);
+        return additionBuilder;
     }
 
-    public <T extends SyncanoObject> void changeFieldsCounters(CounterBuilder counterBuilder, SyncanoCallback<T> callback) {
-        Request<T> req = (Request<T>) getSyncano().changeCounterFieldsObject(this, counterBuilder);
-        req.sendAsync(callback);
+    public Addition decrement(String fieldName, int value) {
+        Addition additionBuilder = new Addition(this);
+        additionBuilder.decrement(fieldName, value);
+        return additionBuilder;
     }
 }
