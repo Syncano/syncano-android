@@ -122,7 +122,6 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
         }
         assertTrue(trace.getOutput().contains(EXPECTED_RESULT));
 
-
         // run codebox with payload
         JsonObject json = new JsonObject();
         json.addProperty(ARGUMENT_NAME, ARGUMENT_VALUE);
@@ -136,5 +135,6 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
             Thread.sleep(100);
         }
         assertTrue(trace.getOutput().contains(EXPECTED_RESULT));
+        assertTrue(trace.getOutput().contains(ARGUMENT_VALUE));
     }
 }

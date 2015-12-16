@@ -355,7 +355,9 @@ public class Syncano extends SyncanoBase {
      */
     public RequestPost<Trace> runCodeBox(int id, JsonObject params) {
         String url = String.format(Constants.CODEBOXES_RUN_URL, getInstanceName(), id);
-        RequestPost<Trace> req = new RequestPost<>(Trace.class, url, this, params);
+        JsonObject payload = new JsonObject();
+        payload.add("payload", params);
+        RequestPost<Trace> req = new RequestPost<>(Trace.class, url, this, payload);
         addCodeboxIdAfterCall(req, id);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;

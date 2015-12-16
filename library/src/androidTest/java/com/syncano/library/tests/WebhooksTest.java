@@ -1,5 +1,6 @@
 package com.syncano.library.tests;
 
+import com.google.gson.JsonObject;
 import com.syncano.library.BuildConfig;
 import com.syncano.library.Constants;
 import com.syncano.library.Syncano;
@@ -19,6 +20,8 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
     private static final String WEBHOOK_NAME = "webhook_test";
     private static final String PUBLIC_WEBHOOK_NAME = "public_webhook";
     private static final String EXPECTED_RESULT = "This is message from our Codebox";
+    private static final String ARGUMENT_NAME = "argument";
+    private static final String ARGUMENT_VALUE = "GRrr";
 
     @Override
     protected void setUp() throws Exception {
@@ -26,7 +29,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
 
         String codeBoxLabel = "CodeBox Test";
         RuntimeName runtime = RuntimeName.NODEJS;
-        String source = "var msg = '" + EXPECTED_RESULT + "'; console.log(msg);";
+        String source = "var msg = '" + EXPECTED_RESULT + "'; console.log(msg); console.log(ARGS);";
         CodeBox newCodeBox = new CodeBox(codeBoxLabel, source, runtime);
 
         // ----------------- Create CodeBox -----------------
@@ -120,6 +123,18 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
         assertNotNull(webhook.getTrace());
         assertNotNull(webhook.getOutput());
         assertTrue(webhook.getOutput().contains(EXPECTED_RESULT));
+
+        // test webhook run with payload
+        JsonObject json = new JsonObject();
+        json.addProperty(ARGUMENT_NAME, ARGUMENT_VALUE);
+        respRun = webhook.run(json);
+
+        assertTrue(respRun.isSuccess());
+        assertNotNull(webhook.getTrace());
+        String output = webhook.getOutput();
+        assertNotNull(output);
+        assertTrue(output.contains(EXPECTED_RESULT));
+        assertTrue(output.contains(ARGUMENT_VALUE));
     }
 
     public void testPublicWebhook() {
