@@ -84,6 +84,8 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
      * @see SortOrder
      */
     public void setOrderBy(String fieldName, SortOrder sortOrder) {
+        if (fieldName == null || fieldName.length() == 0 || fieldName.startsWith("-"))
+            throw new RuntimeException("Syncano field name can not be empty or begin with character '-'");
         orderBy = (sortOrder == SortOrder.DESCENDING) ? "-" + fieldName : fieldName;
     }
 
