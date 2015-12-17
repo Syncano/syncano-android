@@ -67,7 +67,7 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
         channelConnection.stop();
     }
 
-    public void testCreateObject() {
+    public void testCreateObject() throws InterruptedException {
         createClass(Book.class);
         createChannel("channel_name", ChannelType.DEFAULT, false);
 

@@ -6,6 +6,7 @@ import android.test.ApplicationTestCase;
 import android.util.Log;
 
 import com.syncano.library.api.Response;
+import com.syncano.library.choice.ClassStatus;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.utils.SyncanoClassHelper;
@@ -36,14 +37,19 @@ public class SyncanoApplicationTestCase extends ApplicationTestCase<Application>
         syncano = Syncano.getInstance();
     }
 
-    public void createClass(Class<? extends SyncanoObject> clazz) {
+    public void createClass(Class<? extends SyncanoObject> clazz) throws InterruptedException {
         removeClass(clazz);
         Response resp = syncano.createSyncanoClass(clazz).send();
         assertTrue(resp.isSuccess());
 
-        Response<SyncanoClass> respClass = syncano.getSyncanoClass(SyncanoClassHelper.getSyncanoClassName(clazz)).send();
-        assertTrue(respClass.isSuccess());
-        SyncanoClass downloadedClass = respClass.getData();
+        long start = System.currentTimeMillis();
+        SyncanoClass downloadedClass = null;
+        while (System.currentTimeMillis() - start < 5000 && (downloadedClass == null || downloadedClass.getStatus() != ClassStatus.READY)) {
+            Response<SyncanoClass> respClass = syncano.getSyncanoClass(clazz).send();
+            assertTrue(respClass.isSuccess());
+            downloadedClass = respClass.getData();
+            Thread.sleep(100);
+        }
         assertNotNull(downloadedClass);
         assertEquals(SyncanoClassHelper.getSyncanoClassSchema(clazz), downloadedClass.getSchema());
     }

@@ -617,7 +617,7 @@ public class Syncano extends SyncanoBase {
     }
 
     /**
-     * Get an information on a selected Class.
+     * Get an information about selected Class.
      *
      * @param name Class name.
      * @return Existing class.
@@ -627,6 +627,16 @@ public class Syncano extends SyncanoBase {
         RequestGetOne<SyncanoClass> req = new RequestGetOne<>(SyncanoClass.class, url, this);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
+    }
+
+    /**
+     * Get an information about selected Class.
+     *
+     * @param clazz Class.
+     * @return Existing class.
+     */
+    public RequestGetOne<SyncanoClass> getSyncanoClass(Class<? extends SyncanoObject> clazz) {
+        return getSyncanoClass(SyncanoClassHelper.getSyncanoClassName(clazz));
     }
 
     /**

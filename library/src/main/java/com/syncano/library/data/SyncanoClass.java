@@ -3,6 +3,7 @@ package com.syncano.library.data;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.syncano.library.annotation.SyncanoField;
+import com.syncano.library.choice.ClassStatus;
 import com.syncano.library.choice.SyncanoClassPermissions;
 import com.syncano.library.utils.SyncanoClassHelper;
 
@@ -33,7 +34,7 @@ public class SyncanoClass {
     private JsonArray schema;
 
     @SyncanoField(name = FIELD_STATUS, readOnly = true)
-    private String status;
+    private ClassStatus status;
 
     @SyncanoField(name = FIELD_CREATED_AT, readOnly = true)
     private Date createdAt;
@@ -96,11 +97,11 @@ public class SyncanoClass {
         this.schema = schema;
     }
 
-    public String getStatus() {
+    public ClassStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ClassStatus status) {
         this.status = status;
     }
 

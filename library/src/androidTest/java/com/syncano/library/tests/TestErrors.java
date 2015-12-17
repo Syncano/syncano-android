@@ -7,11 +7,10 @@ import com.syncano.library.api.Response;
 import com.syncano.library.data.SyncanoObject;
 
 import java.util.Date;
-import java.util.List;
 
 public class TestErrors extends SyncanoApplicationTestCase {
 
-    public void testWrongTypes() {
+    public void testWrongTypes() throws InterruptedException {
         createClass(TypeA.class);
 
         TypeA objA = new TypeA();
@@ -20,7 +19,7 @@ public class TestErrors extends SyncanoApplicationTestCase {
 
         Exception parseEx = null;
         try {
-            Response<List<TypeB>> respGet = SyncanoObject.please(TypeB.class).get();
+            SyncanoObject.please(TypeB.class).get();
         } catch (Exception e) {
             parseEx = e;
         }

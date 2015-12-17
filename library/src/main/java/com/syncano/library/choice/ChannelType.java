@@ -8,5 +8,5 @@ public enum ChannelType {
     DEFAULT,
 
     @SerializedName(value = "separate_rooms")
-    SEPARATE_ROOMS,
+    SEPARATE_ROOMS
 }

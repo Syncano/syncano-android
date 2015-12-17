@@ -17,7 +17,7 @@ public class Permissions extends SyncanoApplicationTestCase {
         removeClass(ExampleObject.class);
     }
 
-    public void testCreateObjectPermission() {
+    public void testCreateObjectPermission() throws InterruptedException {
         createClass(ExampleObject.class);
         // ---------- Creating a Data Object with an owner_permissions example
         ExampleObject obj = new ExampleObject();
