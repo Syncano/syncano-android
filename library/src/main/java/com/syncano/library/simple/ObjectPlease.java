@@ -11,6 +11,8 @@ import com.syncano.library.data.SyncanoObject;
 
 import java.util.List;
 
+import static com.syncano.library.api.FieldsFilter.FilterType;
+
 public class ObjectPlease<T extends SyncanoObject> {
     private Syncano syncano;
     private Class<T> clazz;
@@ -84,6 +86,16 @@ public class ObjectPlease<T extends SyncanoObject> {
         return sortBy(fieldName, SortOrder.DESCENDING);
     }
 
+
+    public ObjectPlease<T> setFieldsFilter(FilterType filterType, String... fields) {
+        this.fieldsFilter = new FieldsFilter(filterType, fields);
+        return this;
+    }
+
+    public ObjectPlease<T> setFieldsFilter(FilterType filterType, List<String> fields) {
+        this.fieldsFilter = new FieldsFilter(filterType, fields);
+        return this;
+    }
 
     public ObjectPlease<T> setFieldsFilter(FieldsFilter fieldsFilter) {
         this.fieldsFilter = fieldsFilter;
