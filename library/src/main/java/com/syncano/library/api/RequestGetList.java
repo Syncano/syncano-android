@@ -71,8 +71,9 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
      *
      * @param where Filtering query.
      */
-    public void setWhereFilter(Where where) {
+    public RequestGetList<T> setWhereFilter(Where where) {
         this.where = where;
+        return this;
     }
 
     /**
@@ -83,10 +84,11 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
      *                  {@link SortOrder#ASCENDING} data will be sorted ascending
      * @see SortOrder
      */
-    public void setOrderBy(String fieldName, SortOrder sortOrder) {
+    public RequestGetList<T> setOrderBy(String fieldName, SortOrder sortOrder) {
         if (fieldName == null || fieldName.length() == 0 || fieldName.startsWith("-"))
             throw new RuntimeException("Syncano field name can not be empty or begin with character '-'");
         orderBy = (sortOrder == SortOrder.DESCENDING) ? "-" + fieldName : fieldName;
+        return this;
     }
 
     /**
@@ -107,8 +109,9 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
      *
      * @param limit Maximum amount of items.
      */
-    public void setLimit(int limit) {
+    public RequestGetList<T> setLimit(int limit) {
         pageSize = limit;
+        return this;
     }
 
     /**
@@ -120,7 +123,7 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
      * @param lastPk          Id to start from paging.
      * @param revertDirection If true, page direction will be changed.
      */
-    public void setLastPk(int lastPk, boolean revertDirection) {
+    public RequestGetList<T> setLastPk(int lastPk, boolean revertDirection) {
         this.lastPk = lastPk;
 
         if (revertDirection) {
@@ -128,5 +131,6 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
         } else {
             direction = DIRECTION_NEXT;
         }
+        return this;
     }
 }

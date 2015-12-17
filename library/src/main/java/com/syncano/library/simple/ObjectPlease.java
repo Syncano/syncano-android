@@ -1,6 +1,7 @@
 package com.syncano.library.simple;
 
 import com.syncano.library.Syncano;
+import com.syncano.library.api.FieldsFilter;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.Where;
@@ -17,6 +18,8 @@ public class ObjectPlease<T extends SyncanoObject> {
     private SortOrder sortOrder;
     private int limit = -1;
     private Where<T> where;
+    private FieldsFilter fieldsFilter;
+
 
     public ObjectPlease(Class<T> clazz) {
         this.clazz = clazz;
@@ -53,6 +56,9 @@ public class ObjectPlease<T extends SyncanoObject> {
         if (where != null) {
             request.setWhereFilter(where);
         }
+        if (fieldsFilter != null) {
+            request.setFieldsFilter(fieldsFilter);
+        }
     }
 
     public ObjectPlease<T> on(Syncano syncano) {
@@ -76,6 +82,12 @@ public class ObjectPlease<T extends SyncanoObject> {
      */
     public ObjectPlease<T> sortByReversed(String fieldName) {
         return sortBy(fieldName, SortOrder.DESCENDING);
+    }
+
+
+    public ObjectPlease<T> setFieldsFilter(FieldsFilter fieldsFilter) {
+        this.fieldsFilter = fieldsFilter;
+        return this;
     }
 
     public ObjectPlease<T> limit(int limit) {

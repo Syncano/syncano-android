@@ -37,7 +37,8 @@ public abstract class RequestGet<T> extends Request<T> {
         return fieldsFilter != null && fieldsFilter.getFieldNames() != null && fieldsFilter.getFieldNames().size() > 0;
     }
 
-    public void setFieldsFilter(FieldsFilter fieldsFilter) {
+    public RequestGet<T> setFieldsFilter(FieldsFilter fieldsFilter) {
         this.fieldsFilter = fieldsFilter;
+        return this;
     }
 }
