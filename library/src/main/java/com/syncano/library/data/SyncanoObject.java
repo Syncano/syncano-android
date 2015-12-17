@@ -2,7 +2,7 @@ package com.syncano.library.data;
 
 import com.syncano.library.Syncano;
 import com.syncano.library.annotation.SyncanoField;
-import com.syncano.library.api.Addition;
+import com.syncano.library.api.IncrementBuilder;
 import com.syncano.library.api.Request;
 import com.syncano.library.api.Response;
 import com.syncano.library.callbacks.SyncanoCallback;
@@ -49,6 +49,7 @@ public abstract class SyncanoObject extends Entity {
     private Integer expectedRevision;
 
     private Syncano syncano;
+    private IncrementBuilder incrementBuilder = new IncrementBuilder();
 
     public static <T extends SyncanoObject> ObjectPlease<T> please(Class<T> clazz) {
         return new ObjectPlease<>(clazz);
@@ -126,6 +127,10 @@ public abstract class SyncanoObject extends Entity {
         this.expectedRevision = expectedRevision;
     }
 
+    public IncrementBuilder getIncrementBuilder() {
+        return incrementBuilder;
+    }
+
     public Syncano getSyncano() {
         if (syncano == null) {
             return Syncano.getInstance();
@@ -171,15 +176,13 @@ public abstract class SyncanoObject extends Entity {
         req.sendAsync(callback);
     }
 
-    public Addition increment(String fieldName, int value) {
-        Addition additionBuilder = new Addition(this);
-        additionBuilder.increment(fieldName, value);
-        return additionBuilder;
+    public <T extends SyncanoObject> T increment(String fieldName, int value) {
+        incrementBuilder.increment(fieldName, value);
+        return (T) this;
     }
 
-    public Addition decrement(String fieldName, int value) {
-        Addition additionBuilder = new Addition(this);
-        additionBuilder.decrement(fieldName, value);
-        return additionBuilder;
+    public <T extends SyncanoObject> T decrement(String fieldName, int value) {
+        incrementBuilder.decrement(fieldName, value);
+        return (T) this;
     }
 }
