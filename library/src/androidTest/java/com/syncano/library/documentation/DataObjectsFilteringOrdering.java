@@ -29,24 +29,24 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseList.getHttpResultCode());
         assertNotNull(responseList.getData());
-        
+
         // ---------- Complex Filtering Data Objects
 
         Response<List<Book>> responseListComplex = SyncanoObject.please(Book.class)
                 .where().gt("release_year", 1990).lte("release_year", 2000).get();
-                
+
         // -----------------------------
-        
+
         assertEquals(Response.HTTP_CODE_SUCCESS, responseListComplex.getHttpResultCode());
         assertNotNull(responseListComplex.getData());
-        
+
         // ---------- Filtering on multiple fields
 
         Response<List<Book>> responseListMultiple = SyncanoObject.please(Book.class)
-                .where().gt("release_year", 1990).lte("release_year", 2000).gt("pages",199).get();
-                
+                .where().gt("release_year", 1990).lte("release_year", 2000).gt("pages", 199).get();
+
         // -----------------------------
-        
+
         assertEquals(Response.HTTP_CODE_SUCCESS, responseListMultiple.getHttpResultCode());
         assertNotNull(responseListMultiple.getData());
 
@@ -59,7 +59,7 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseOrdered.getHttpResultCode());
         assertNotNull(responseOrdered.getData());
-        
+
         // ---------- Reversed Ordering Data Objects
 
         Response<List<Book>> responseOrderedReversed = SyncanoObject.please(Book.class)
@@ -69,7 +69,7 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseOrderedReversed.getHttpResultCode());
         assertNotNull(responseOrderedReversed.getData());
-        
+
         // ---------- Ordering with Filtering Data Objects
 
         Response<List<Book>> responseOrderedFiltered = SyncanoObject.please(Book.class)
@@ -80,7 +80,6 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_SUCCESS, responseOrderedFiltered.getHttpResultCode());
         assertNotNull(responseOrderedFiltered.getData());
     }
-
 
     @SyncanoClass(name = "Book")
     private static class Book extends SyncanoObject {
@@ -95,5 +94,8 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
 
         @SyncanoField(name = "release_year", orderIndex = true, filterIndex = true)
         public Integer releaseYear;
+
+        @SyncanoField(name = "pages", orderIndex = true, filterIndex = true)
+        public Integer pages;
     }
 }

@@ -44,14 +44,19 @@ public class SyncanoApplicationTestCase extends ApplicationTestCase<Application>
 
         long start = System.currentTimeMillis();
         SyncanoClass downloadedClass = null;
-        while (System.currentTimeMillis() - start < 5000 && (downloadedClass == null || downloadedClass.getStatus() != ClassStatus.READY)) {
+        while (System.currentTimeMillis() - start < 120000 && (downloadedClass == null || downloadedClass.getStatus() != ClassStatus.READY)) {
+            Log.d(SyncanoApplicationTestCase.class.getSimpleName(), "Waiting for class to create: " + (System.currentTimeMillis() - start));
             Response<SyncanoClass> respClass = syncano.getSyncanoClass(clazz).send();
             assertTrue(respClass.isSuccess());
             downloadedClass = respClass.getData();
+            if (downloadedClass != null && downloadedClass.getStatus() == ClassStatus.READY) {
+                break;
+            }
             Thread.sleep(100);
         }
         assertNotNull(downloadedClass);
         assertEquals(SyncanoClassHelper.getSyncanoClassSchema(clazz), downloadedClass.getSchema());
+        assertEquals(ClassStatus.READY, downloadedClass.getStatus());
     }
 
     public void removeClass(Class<? extends SyncanoObject> clazz) {

@@ -15,8 +15,6 @@ import java.util.List;
 import com.syncano.library.data.Trace;
 import com.syncano.library.data.CodeBox;
 
-import com.syncano.library.utils.SyncanoClassHelper;
-
 // ---------- Adding your class
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.annotation.SyncanoField;
@@ -48,13 +46,14 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
+        createClass(Book.class);
         this.syncano = super.syncano;
-        Response<com.syncano.library.data.SyncanoClass> respDelete = syncano.deleteSyncanoClass(SyncanoClassHelper.getSyncanoClassName(Book.class)).send();
-        assertEquals(Response.HTTP_CODE_NO_CONTENT, respDelete.getHttpResultCode());
+    }
 
-        com.syncano.library.data.SyncanoClass syncanoClass = new com.syncano.library.data.SyncanoClass(Book.class);
-        Response<com.syncano.library.data.SyncanoClass> response = syncano.createSyncanoClass(syncanoClass).send();
-        assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
+    @Override
+    protected void tearDown() throws Exception {
+        removeClass(Book.class);
+        super.tearDown();
     }
 
     public void testInitiateSyncano() {
