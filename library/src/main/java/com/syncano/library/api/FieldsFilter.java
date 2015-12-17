@@ -3,23 +3,23 @@ package com.syncano.library.api;
 
 import com.syncano.library.Constants;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class FieldsFilter {
 
-    public enum FilterType {
-
-        INCLUDE_FIELDS,
-        EXCLUDE_FIELDS
-    }
-
     private FilterType filterType;
     private List<String> fieldNames;
-
 
     public FieldsFilter(FilterType filterType, List<String> fieldNames) {
         this.filterType = filterType;
         this.fieldNames = fieldNames;
+    }
+
+
+    public FieldsFilter(FilterType filterType, String... fieldNames) {
+        this.filterType = filterType;
+        this.fieldNames = Arrays.asList(fieldNames);
     }
 
     public FilterType getFilterType() {
@@ -36,5 +36,11 @@ public class FieldsFilter {
 
     public List<String> getFieldNames() {
         return fieldNames;
+    }
+
+    public enum FilterType {
+
+        INCLUDE_FIELDS,
+        EXCLUDE_FIELDS
     }
 }
