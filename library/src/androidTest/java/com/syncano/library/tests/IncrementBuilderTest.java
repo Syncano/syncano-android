@@ -47,15 +47,17 @@ public class IncrementBuilderTest extends SyncanoApplicationTestCase {
 
         IncrementBuilder a = new IncrementBuilder();
         a.increment(KernelOS.COLUMN_KERNEL_VERSION, 2);
-        syncano.addition(KernelOS.class, kernelOS.getId(), a).send();
+        expectedKernelVersion += 2;
 
-        Response<KernelOS> response2 = kernelOS.increment(KernelOS.COLUMN_KERNEL_VERSION, 2)
-                .decrement(KernelOS.COLUMN_KERNEL_REVISION, 1).increment("", 2).save();
+        Response<KernelOS> response2 = syncano.addition(KernelOS.class, kernelOS.getId(), a).send();
+        kernelOS = response2.getData();
+        Response<KernelOS> response3 = kernelOS.increment(KernelOS.COLUMN_KERNEL_VERSION, 2)
+                .decrement(KernelOS.COLUMN_KERNEL_REVISION, 1).save();
 
         expectedKernelVersion += 2;
         expectedKernelRevision--;
-        assertTrue(response2.isSuccess());
-        kernelOS = response2.getData();
+        assertTrue(response3.isSuccess());
+        kernelOS = response3.getData();
         assertEquals(kernelOS.kernelVersion, expectedKernelVersion);
         assertEquals(kernelOS.kernelRevision, expectedKernelRevision);
     }
