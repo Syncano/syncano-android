@@ -5,7 +5,6 @@ import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.IncrementBuilder;
 import com.syncano.library.api.Response;
-import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.SyncanoObject;
 
 import java.util.List;
@@ -15,65 +14,65 @@ public class IncrementBuilderTest extends SyncanoApplicationTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        createClass(KernelOS.class);
-        createTestsKernel();
+        createClass(TestObject.class);
+        createTestObjects();
     }
 
-    private void createTestsKernel() {
-        KernelOS kernelOS = new KernelOS();
-        Response<KernelOS> responseCreateKernelOS = kernelOS.save();
-        assertTrue(responseCreateKernelOS.isSuccess());
+    private void createTestObjects() {
+        TestObject testObject = new TestObject();
+        Response<TestObject> responseCreate = testObject.save();
+        assertTrue(responseCreate.isSuccess());
     }
 
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
-        removeClass(KernelOS.class);
+        removeClass(TestObject.class);
     }
 
     public void testIncreaseValue() {
-        int expectedKernelVersion = 0;
-        int expectedKernelRevision = 0;
+        int expectedVersion = 0;
+        int expectedRevision = 0;
 
-        Response<List<KernelOS>> kernelOSResponse = syncano.getObjects(KernelOS.class).send();
-        KernelOS kernelOS = kernelOSResponse.getData().get(0);
-        Response<KernelOS> response = kernelOS.increment(KernelOS.COLUMN_KERNEL_VERSION, 2).save();
+        Response<List<TestObject>> listResponse = syncano.getObjects(TestObject.class).send();
+        TestObject testObject = listResponse.getData().get(0);
+        Response<TestObject> response = testObject.increment(TestObject.COLUMN_VERSION, 2).save();
 
-        expectedKernelVersion += 2;
+        expectedVersion += 2;
         assertTrue(response.isSuccess());
-        kernelOS = response.getData();
-        assertEquals(kernelOS.kernelVersion, expectedKernelVersion);
-        assertEquals(kernelOS.kernelRevision, expectedKernelRevision);
+        assertEquals(expectedVersion, testObject.version);
+        assertEquals(expectedRevision, testObject.revision);
 
         IncrementBuilder a = new IncrementBuilder();
-        a.increment(KernelOS.COLUMN_KERNEL_VERSION, 2);
-        expectedKernelVersion += 2;
+        a.increment(TestObject.COLUMN_VERSION, 2);
+        expectedVersion += 2;
 
-        Response<KernelOS> response2 = syncano.addition(KernelOS.class, kernelOS.getId(), a).send();
-        kernelOS = response2.getData();
-        Response<KernelOS> response3 = kernelOS.increment(KernelOS.COLUMN_KERNEL_VERSION, 2)
-                .decrement(KernelOS.COLUMN_KERNEL_REVISION, 1).save();
+        Response<TestObject> response2 = syncano.addition(TestObject.class, testObject.getId(), a).send();
+        testObject = response2.getData();
 
-        expectedKernelVersion += 2;
-        expectedKernelRevision--;
+        assertEquals(expectedVersion, testObject.version);
+
+        Response<TestObject> response3 = testObject.increment(TestObject.COLUMN_VERSION, 2)
+                .decrement(TestObject.COLUMN_REVISION, 1).save();
+
+        expectedVersion += 2;
+        expectedRevision--;
         assertTrue(response3.isSuccess());
-        kernelOS = response3.getData();
-        assertEquals(kernelOS.kernelVersion, expectedKernelVersion);
-        assertEquals(kernelOS.kernelRevision, expectedKernelRevision);
+        testObject = response3.getData();
+        assertEquals(expectedVersion, testObject.version);
+        assertEquals(expectedRevision, testObject.revision);
     }
 
 
-    @SyncanoClass(name = KernelOS.TABLE_NAME)
-    public static class KernelOS extends SyncanoObject {
-        public final static String TABLE_NAME = "kernel";
-        public final static String COLUMN_KERNEL_NAME = "kernel_name";
-        public final static String COLUMN_KERNEL_VERSION = "kernel_version";
-        public final static String COLUMN_KERNEL_REVISION = "kernel_revision";
-        @SyncanoField(name = COLUMN_KERNEL_NAME, filterIndex = true, type = FieldType.STRING)
-        public String kernelName;
-        @SyncanoField(name = COLUMN_KERNEL_VERSION)
-        public int kernelVersion;
-        @SyncanoField(name = COLUMN_KERNEL_REVISION)
-        public int kernelRevision;
+    @SyncanoClass(name = TestObject.TABLE_NAME)
+    private static class TestObject extends SyncanoObject {
+        public final static String TABLE_NAME = "test_object";
+        public final static String COLUMN_VERSION = "obj_version";
+        public final static String COLUMN_REVISION = "obj_revision";
+
+        @SyncanoField(name = COLUMN_VERSION)
+        public int version = 0;
+        @SyncanoField(name = COLUMN_REVISION)
+        public int revision = 0;
     }
 }
