@@ -1,7 +1,10 @@
 package com.syncano.library.api;
 
 import com.syncano.library.Syncano;
+import com.syncano.library.choice.FilterType;
 import com.syncano.library.utils.SyncanoHttpClient;
+
+import java.util.List;
 
 public abstract class RequestGet<T> extends Request<T> {
 
@@ -39,6 +42,16 @@ public abstract class RequestGet<T> extends Request<T> {
 
     public RequestGet<T> setFieldsFilter(FieldsFilter fieldsFilter) {
         this.fieldsFilter = fieldsFilter;
+        return this;
+    }
+
+    public RequestGet<T> selectFields(FilterType filterType, String... fields) {
+        this.fieldsFilter = new FieldsFilter(filterType, fields);
+        return this;
+    }
+
+    public RequestGet<T> selectFields(FilterType filterType, List<String> fields) {
+        this.fieldsFilter = new FieldsFilter(filterType, fields);
         return this;
     }
 }

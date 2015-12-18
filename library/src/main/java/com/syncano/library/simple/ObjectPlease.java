@@ -6,12 +6,12 @@ import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.Where;
 import com.syncano.library.callbacks.SyncanoCallback;
+import com.syncano.library.choice.FilterType;
 import com.syncano.library.choice.SortOrder;
 import com.syncano.library.data.SyncanoObject;
 
 import java.util.List;
 
-import static com.syncano.library.api.FieldsFilter.FilterType;
 
 public class ObjectPlease<T extends SyncanoObject> {
     private Syncano syncano;
@@ -87,12 +87,12 @@ public class ObjectPlease<T extends SyncanoObject> {
     }
 
 
-    public ObjectPlease<T> setFieldsFilter(FilterType filterType, String... fields) {
+    public ObjectPlease<T> selectFields(FilterType filterType, String... fields) {
         this.fieldsFilter = new FieldsFilter(filterType, fields);
         return this;
     }
 
-    public ObjectPlease<T> setFieldsFilter(FilterType filterType, List<String> fields) {
+    public ObjectPlease<T> selectFields(FilterType filterType, List<String> fields) {
         this.fieldsFilter = new FieldsFilter(filterType, fields);
         return this;
     }

@@ -2,6 +2,7 @@ package com.syncano.library.api;
 
 
 import com.syncano.library.Constants;
+import com.syncano.library.choice.FilterType;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,9 +39,5 @@ public class FieldsFilter {
         return fieldNames;
     }
 
-    public enum FilterType {
 
-        INCLUDE_FIELDS,
-        EXCLUDE_FIELDS
-    }
 }

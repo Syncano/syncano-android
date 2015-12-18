@@ -4,21 +4,19 @@ import android.util.Log;
 
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
+import com.syncano.library.annotation.SyncanoClass;
+import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.FieldsFilter;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.callbacks.SyncanoCallback;
+import com.syncano.library.choice.FilterType;
+import com.syncano.library.data.CodeBox;
+import com.syncano.library.data.SyncanoObject;
+import com.syncano.library.data.Trace;
 
 import java.util.Arrays;
 import java.util.List;
-
-import com.syncano.library.data.Trace;
-import com.syncano.library.data.CodeBox;
-
-// ---------- Adding your class
-import com.syncano.library.annotation.SyncanoClass;
-import com.syncano.library.annotation.SyncanoField;
-import com.syncano.library.data.SyncanoObject;
 
 @SyncanoClass(name = "book")
 class Book extends SyncanoObject {
@@ -168,7 +166,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         // ---------- Fields filtering
         RequestGetList<Book> requestFilters = syncano.getObjects(Book.class);
 
-        FieldsFilter filter = new FieldsFilter(FieldsFilter.FilterType.INCLUDE_FIELDS, Arrays.asList(Book.FIELD_ID, Book.FIELD_TITLE));
+        FieldsFilter filter = new FieldsFilter(FilterType.INCLUDE_FIELDS, Arrays.asList(Book.FIELD_ID, Book.FIELD_TITLE));
         requestFilters.setFieldsFilter(filter);
 
         Response<List<Book>> responseFilters = requestFilters.send();
