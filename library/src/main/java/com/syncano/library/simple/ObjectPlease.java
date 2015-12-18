@@ -60,22 +60,15 @@ public class ObjectPlease<T extends SyncanoObject> {
         return this;
     }
 
-    public ObjectPlease<T> sortBy(String fieldName) {
-        return sortBy(fieldName, SortOrder.ASCENDING);
+    public ObjectPlease<T> orderBy(String fieldName) {
+        return orderBy(fieldName, SortOrder.ASCENDING);
 
     }
 
-    public ObjectPlease<T> sortBy(String fieldName, SortOrder sortOrder) {
+    public ObjectPlease<T> orderBy(String fieldName, SortOrder sortOrder) {
         this.sortByField = fieldName;
         this.sortOrder = sortOrder;
         return this;
-    }
-
-    /**
-     * @deprecated Use {@link #sortBy(String, SortOrder)} instead.
-     */
-    public ObjectPlease<T> sortByReversed(String fieldName) {
-        return sortBy(fieldName, SortOrder.DESCENDING);
     }
 
     public ObjectPlease<T> limit(int limit) {

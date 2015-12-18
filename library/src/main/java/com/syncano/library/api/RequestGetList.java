@@ -4,6 +4,7 @@ package com.syncano.library.api;
 import com.google.gson.JsonElement;
 import com.syncano.library.Constants;
 import com.syncano.library.Syncano;
+import com.syncano.library.choice.PageDirection;
 import com.syncano.library.choice.SortOrder;
 import com.syncano.library.data.PageInternal;
 
@@ -12,16 +13,13 @@ import java.util.List;
 
 public class RequestGetList<T> extends RequestGet<List<T>> {
 
-    private static final int DIRECTION_NEXT = 1;
-    private static final int DIRECTION_PREV = 0;
-
     protected Class<T> resultType;
     private Where where;
     private String orderBy;
     private int pageSize = 0;
 
     private int lastPk = 0;
-    private int direction = DIRECTION_NEXT;
+    private PageDirection direction = PageDirection.NEXT;
 
     public RequestGetList(Class<T> resultType, String url, Syncano syncano) {
         super(url, syncano);
@@ -120,13 +118,23 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
      * @param lastPk          Id to start from paging.
      * @param revertDirection If true, page direction will be changed.
      */
+    @Deprecated
     public void setLastPk(int lastPk, boolean revertDirection) {
         this.lastPk = lastPk;
 
         if (revertDirection) {
-            direction = DIRECTION_PREV;
+            direction = PageDirection.PREVIOUS;
         } else {
-            direction = DIRECTION_NEXT;
+            direction = PageDirection.NEXT;
         }
+    }
+
+    public void nextPage(int lastPk, PageDirection pageDirection) {
+        this.lastPk = lastPk;
+        direction = pageDirection;
+    }
+
+    public void nextPage(int lastPk) {
+        nextPage(lastPk, PageDirection.NEXT);
     }
 }

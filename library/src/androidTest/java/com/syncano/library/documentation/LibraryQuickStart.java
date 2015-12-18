@@ -142,7 +142,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         assertNotNull(updatedBook);
 
         // ---------- Where and OrderBy
-        Response<List<Book>> response = SyncanoObject.please(Book.class).sortBy(Book.FIELD_TITLE)
+        Response<List<Book>> response = SyncanoObject.please(Book.class).orderBy(Book.FIELD_TITLE)
                 .where().gte(Book.FIELD_ID, 10).lte(Book.FIELD_ID, 15).get();
         // -----------------------------
 
