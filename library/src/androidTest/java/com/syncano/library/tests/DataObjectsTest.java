@@ -6,7 +6,6 @@ import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.Where;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DataObjectsTest extends SyncanoApplicationTestCase {
@@ -122,40 +121,5 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
         assertEquals(response.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
         assertNotNull(response.getData());
         assertEquals(limitItems, response.getData().size());
-    }
-
-    public void testLastPk() {
-        int testObjectCount = 3;
-        int limitItems = 1;
-
-        List<TestSyncanoObject> objects = new ArrayList<>(testObjectCount);
-
-        // Create test objects
-        for (int i = 0; i < testObjectCount; i++) {
-            TestSyncanoObject testObject = new TestSyncanoObject("valueOne: " + i, "valueTwo: " + i);
-            Response<TestSyncanoObject> responseCreateObject = syncano.createObject(testObject).send();
-            assertTrue(responseCreateObject.isSuccess());
-            objects.add(responseCreateObject.getData());
-        }
-
-        int idInMiddle = objects.get(objects.size() / 2).getId();
-
-        // Get with bigger id
-        RequestGetList<TestSyncanoObject> requestNext = syncano.getObjects(TestSyncanoObject.class);
-        requestNext.setLimit(limitItems);
-        requestNext.setLastPk(idInMiddle, false);
-        Response<List<TestSyncanoObject>> responseNext = requestNext.send();
-
-        assertTrue(responseNext.isSuccess());
-        assertTrue(responseNext.getData().get(0).getId() > idInMiddle);
-
-        // Get with smaller id
-        RequestGetList<TestSyncanoObject> requestPrevious = syncano.getObjects(TestSyncanoObject.class);
-        requestPrevious.setLimit(limitItems);
-        requestPrevious.setLastPk(idInMiddle, true);
-        Response<List<TestSyncanoObject>> responsePrevious = requestPrevious.send();
-
-        assertTrue(responsePrevious.isSuccess());
-        assertTrue(responsePrevious.getData().get(0).getId() < idInMiddle);
     }
 }

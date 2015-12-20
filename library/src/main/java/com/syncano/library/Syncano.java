@@ -167,6 +167,12 @@ public class Syncano extends SyncanoBase {
         return req;
     }
 
+    public <T extends SyncanoObject> RequestGetList<T> getObjects(Class<T> type, String pageUrl) {
+        RequestGetList<T> req = new RequestGetList<>(type, pageUrl, this);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
+    }
+
     /**
      * Update Data Object on Syncano.
      *

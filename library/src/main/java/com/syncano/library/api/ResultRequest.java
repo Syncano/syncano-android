@@ -12,7 +12,7 @@ public abstract class ResultRequest<T> extends Request<T> {
     }
 
     @Override
-    public T parseResult(String json) {
+    public T parseResult(Response<T> response, String json) {
         return gson.fromJson(json, resultType);
     }
 }

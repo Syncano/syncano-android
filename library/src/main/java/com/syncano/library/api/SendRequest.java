@@ -181,7 +181,7 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
     }
 
     @Override
-    public T parseResult(String json) {
+    public T parseResult(Response<T> response, String json) {
         if (updateGivenData) {
             if (data.getClass().isAssignableFrom(resultType)) {
                 return GsonHelper.createGson(data).fromJson(json, resultType);
@@ -190,7 +190,7 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
                         "Can't update object " + data.getClass().getSimpleName() + " from " + resultType.getSimpleName());
             }
         }
-        return super.parseResult(json);
+        return super.parseResult(response, json);
     }
 
     public boolean isSetUpdateGivenObject() {

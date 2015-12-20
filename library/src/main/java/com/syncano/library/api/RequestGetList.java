@@ -4,7 +4,6 @@ package com.syncano.library.api;
 import com.google.gson.JsonElement;
 import com.syncano.library.Constants;
 import com.syncano.library.Syncano;
-import com.syncano.library.choice.PageDirection;
 import com.syncano.library.choice.SortOrder;
 import com.syncano.library.data.PageInternal;
 
@@ -17,9 +16,6 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
     private Where where;
     private String orderBy;
     private int pageSize = 0;
-
-    private int lastPk = 0;
-    private PageDirection direction = PageDirection.NEXT;
 
     public RequestGetList(Class<T> resultType, String url, Syncano syncano) {
         super(url, syncano);
@@ -41,26 +37,23 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
         if (pageSize > 0) {
             addUrlParam(Constants.URL_PARAM_PAGE_SIZE, String.valueOf(pageSize));
         }
-
-        if (lastPk > 0) {
-            addUrlParam(Constants.URL_PARAM_PAGE_LAST_PK, String.valueOf(lastPk));
-            addUrlParam(Constants.URL_PARAM_PAGE_DIRECTION, String.valueOf(direction));
-        }
     }
 
     @Override
-    public List<T> parseResult(String json) {
-
+    public List<T> parseResult(Response<List<T>> response, String json) {
         PageInternal pageInternal = gson.fromJson(json, PageInternal.class);
         List<T> resultList = new ArrayList<>();
 
-        if (pageInternal.getObjects() != null) {
-
-            for (JsonElement element : pageInternal.getObjects()) {
+        List<JsonElement> objects = pageInternal.getObjects();
+        if (objects != null) {
+            for (JsonElement element : objects) {
                 resultList.add(gson.fromJson(element, resultType));
             }
         }
 
+        ResponseGetList<T> r = (ResponseGetList<T>) response;
+        r.setLinkNext(pageInternal.getNext());
+        r.setLinkPrevious(pageInternal.getPrev());
         return resultList;
     }
 
@@ -109,32 +102,13 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
         pageSize = limit;
     }
 
-    /**
-     * Set last pk for paging.
-     * If revert is false, "next page" will be requested.
-     * When reverted, direction will be changed and objects with
-     * smaller id will be get. It's equivalent of "previous page".
-     *
-     * @param lastPk          Id to start from paging.
-     * @param revertDirection If true, page direction will be changed.
-     */
-    @Deprecated
-    public void setLastPk(int lastPk, boolean revertDirection) {
-        this.lastPk = lastPk;
-
-        if (revertDirection) {
-            direction = PageDirection.PREVIOUS;
-        } else {
-            direction = PageDirection.NEXT;
-        }
+    @Override
+    public Response<List<T>> instantiateResponse() {
+        return new ResponseGetList<>();
     }
 
-    public void nextPage(int lastPk, PageDirection pageDirection) {
-        this.lastPk = lastPk;
-        direction = pageDirection;
-    }
-
-    public void nextPage(int lastPk) {
-        nextPage(lastPk, PageDirection.NEXT);
+    @Override
+    public ResponseGetList<T> send() {
+        return (ResponseGetList<T>) super.send();
     }
 }
