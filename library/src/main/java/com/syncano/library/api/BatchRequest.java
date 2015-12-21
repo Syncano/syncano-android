@@ -27,7 +27,7 @@ public class BatchRequest extends Request<List<BatchAnswer>> {
     }
 
     @Override
-    public List<BatchAnswer> parseResult(String json) {
+    public List<BatchAnswer> parseResult(Response<List<BatchAnswer>> response, String json) {
         return gson.fromJson(json, new TypeToken<List<BatchAnswer>>() {
         }.getType());
     }

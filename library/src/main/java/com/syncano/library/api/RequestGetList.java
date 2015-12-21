@@ -12,16 +12,10 @@ import java.util.List;
 
 public class RequestGetList<T> extends RequestGet<List<T>> {
 
-    private static final int DIRECTION_NEXT = 1;
-    private static final int DIRECTION_PREV = 0;
-
     protected Class<T> resultType;
     private Where where;
     private String orderBy;
     private int pageSize = 0;
-
-    private int lastPk = 0;
-    private int direction = DIRECTION_NEXT;
 
     public RequestGetList(Class<T> resultType, String url, Syncano syncano) {
         super(url, syncano);
@@ -43,26 +37,23 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
         if (pageSize > 0) {
             addUrlParam(Constants.URL_PARAM_PAGE_SIZE, String.valueOf(pageSize));
         }
-
-        if (lastPk > 0) {
-            addUrlParam(Constants.URL_PARAM_PAGE_LAST_PK, String.valueOf(lastPk));
-            addUrlParam(Constants.URL_PARAM_PAGE_DIRECTION, String.valueOf(direction));
-        }
     }
 
     @Override
-    public List<T> parseResult(String json) {
-
+    public List<T> parseResult(Response<List<T>> response, String json) {
         PageInternal pageInternal = gson.fromJson(json, PageInternal.class);
         List<T> resultList = new ArrayList<>();
 
-        if (pageInternal.getObjects() != null) {
-
-            for (JsonElement element : pageInternal.getObjects()) {
+        List<JsonElement> objects = pageInternal.getObjects();
+        if (objects != null) {
+            for (JsonElement element : objects) {
                 resultList.add(gson.fromJson(element, resultType));
             }
         }
 
+        ResponseGetList<T> r = (ResponseGetList<T>) response;
+        r.setLinkNext(pageInternal.getNext());
+        r.setLinkPrevious(pageInternal.getPrev());
         return resultList;
     }
 
@@ -114,23 +105,14 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
         return this;
     }
 
-    /**
-     * Set last pk for paging.
-     * If revert is false, "next page" will be requested.
-     * When reverted, direction will be changed and objects with
-     * smaller id will be get. It's equivalent of "previous page".
-     *
-     * @param lastPk          Id to start from paging.
-     * @param revertDirection If true, page direction will be changed.
-     */
-    public RequestGetList<T> setLastPk(int lastPk, boolean revertDirection) {
-        this.lastPk = lastPk;
+    @Override
+    public Response<List<T>> instantiateResponse() {
+        return new ResponseGetList<>();
+    }
 
-        if (revertDirection) {
-            direction = DIRECTION_PREV;
-        } else {
-            direction = DIRECTION_NEXT;
-        }
-        return this;
+    @Override
+    public ResponseGetList<T> send() {
+        return (ResponseGetList<T>) super.send();
+
     }
 }

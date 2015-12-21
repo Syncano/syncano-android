@@ -4,6 +4,7 @@ import com.syncano.library.Syncano;
 import com.syncano.library.api.FieldsFilter;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
+import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.api.Where;
 import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.choice.FilterType;
@@ -21,6 +22,7 @@ public class ObjectPlease<T extends SyncanoObject> {
     private int limit = -1;
     private Where<T> where;
     private FieldsFilter fieldsFilter;
+    private String pageUrl;
 
 
     public ObjectPlease(Class<T> clazz) {
@@ -28,16 +30,23 @@ public class ObjectPlease<T extends SyncanoObject> {
         this.syncano = Syncano.getInstance();
     }
 
-    public Response<List<T>> get() {
-        RequestGetList<T> request = syncano.getObjects(clazz);
-        decorateRequest(request);
-        return request.send();
+    public ResponseGetList<T> get() {
+        return prepareGetRequest().send();
     }
 
     public void getAsync(SyncanoCallback<List<T>> callback) {
-        RequestGetList<T> request = syncano.getObjects(clazz);
+        prepareGetRequest().sendAsync(callback);
+    }
+
+    private RequestGetList<T> prepareGetRequest() {
+        RequestGetList<T> request;
+        if (pageUrl == null) {
+            request = syncano.getObjects(clazz);
+        } else {
+            request = syncano.getObjects(clazz, pageUrl);
+        }
         decorateRequest(request);
-        request.sendAsync(callback);
+        return request;
     }
 
     public Response<T> get(int id) {
@@ -68,24 +77,16 @@ public class ObjectPlease<T extends SyncanoObject> {
         return this;
     }
 
-    public ObjectPlease<T> sortBy(String fieldName) {
-        return sortBy(fieldName, SortOrder.ASCENDING);
+    public ObjectPlease<T> orderBy(String fieldName) {
+        return orderBy(fieldName, SortOrder.ASCENDING);
 
     }
 
-    public ObjectPlease<T> sortBy(String fieldName, SortOrder sortOrder) {
+    public ObjectPlease<T> orderBy(String fieldName, SortOrder sortOrder) {
         this.sortByField = fieldName;
         this.sortOrder = sortOrder;
         return this;
     }
-
-    /**
-     * @deprecated Use {@link #sortBy(String, SortOrder)} instead.
-     */
-    public ObjectPlease<T> sortByReversed(String fieldName) {
-        return sortBy(fieldName, SortOrder.DESCENDING);
-    }
-
 
     public ObjectPlease<T> selectFields(FilterType filterType, String... fields) {
         this.fieldsFilter = new FieldsFilter(filterType, fields);
@@ -107,9 +108,13 @@ public class ObjectPlease<T extends SyncanoObject> {
         return this;
     }
 
+    public ObjectPlease<T> page(String pageUrl) {
+        this.pageUrl = pageUrl;
+        return this;
+    }
+
     public Where<T> where() {
         where = new Where<>(this);
         return where;
     }
-
 }

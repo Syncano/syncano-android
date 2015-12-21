@@ -139,8 +139,8 @@ public class SyncanoHttpClient {
             HttpConnectionParams.setSoTimeout(httpParameters, timeout * 1000);
         }
 
-        Response<T> syncanoResponse = new Response<T>();
-        HttpResponse response = null;
+        Response<T> syncanoResponse = syncanoRequest.instantiateResponse();
+        HttpResponse response;
 
         try {
             response = httpclient.execute(request);
@@ -187,7 +187,7 @@ public class SyncanoHttpClient {
             // when request succeeded parse data, otherwise set error flags
             if (syncanoRequest.isCorrectHttpResponseCode(response.getStatusLine().getStatusCode())) {
                 // For some requests it may be null (for example: DELETE).
-                syncanoResponse.setData(syncanoRequest.parseResult(json));
+                syncanoResponse.setData(syncanoRequest.parseResult(syncanoResponse, json));
             } else {
                 syncanoResponse.setResultCode(Response.CODE_HTTP_ERROR);
                 syncanoResponse.setError("Http error.");

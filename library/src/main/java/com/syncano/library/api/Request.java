@@ -136,7 +136,7 @@ public abstract class Request<T> {
         return url;
     }
 
-    public abstract T parseResult(String json);
+    public abstract T parseResult(Response<T> response, String json);
 
     public Response<T> send() {
         if (syncano == null) {
@@ -170,6 +170,10 @@ public abstract class Request<T> {
 
     public void setRunAfter(RunAfter<T> runAfter) {
         this.runAfter = runAfter;
+    }
+
+    public <T> Response<T> instantiateResponse() {
+        return new Response<>();
     }
 
     public interface RunAfter<T> {

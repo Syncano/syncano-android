@@ -9,6 +9,7 @@ import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.FieldsFilter;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
+import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.choice.FilterType;
 import com.syncano.library.data.CodeBox;
@@ -140,28 +141,20 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         assertNotNull(updatedBook);
 
         // ---------- Where and OrderBy
-        Response<List<Book>> response = SyncanoObject.please(Book.class).sortBy(Book.FIELD_TITLE)
+        Response<List<Book>> response = SyncanoObject.please(Book.class).orderBy(Book.FIELD_TITLE)
                 .where().gte(Book.FIELD_ID, 10).lte(Book.FIELD_ID, 15).get();
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
 
+        ResponseGetList<Book> responseFirst = SyncanoObject.please(Book.class).limit(10).get();
         // ---------- Page size and LastPk
         // Get with bigger id - next page
-        RequestGetList<Book> requestNextPage = syncano.getObjects(Book.class);
-        requestNextPage.setLimit(10);
-        requestNextPage.setLastPk(100, true);
-        Response<List<Book>> responseNextPage = requestNextPage.send();
+        ResponseGetList<Book> responseNextPage = syncano.getObjects(Book.class, responseFirst.getLinkNext()).send();
 
         // Get with smaller id - previous page
-        RequestGetList<Book> requestPreviousPage = syncano.getObjects(Book.class);
-        requestPreviousPage.setLimit(10);
-        requestPreviousPage.setLastPk(100, false); // false - reverse direction
-        Response<List<Book>> responsePreviousPage = requestPreviousPage.send();
+        ResponseGetList<Book> responsePreviousPage = syncano.getObjects(Book.class, responseFirst.getLinkPrevious()).send();
         // -----------------------------
-
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseNextPage.getHttpResultCode());
-        assertEquals(Response.HTTP_CODE_SUCCESS, responsePreviousPage.getHttpResultCode());
 
         // ---------- Fields filtering
         RequestGetList<Book> requestFilters = syncano.getObjects(Book.class);
