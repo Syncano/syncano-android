@@ -15,9 +15,9 @@ import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.Trace;
 
-import java.util.Arrays;
 import java.util.List;
 
+// ---------- Adding your class
 @SyncanoClass(name = "book")
 class Book extends SyncanoObject {
 
@@ -166,7 +166,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         // ---------- Fields filtering
         RequestGetList<Book> requestFilters = syncano.getObjects(Book.class);
 
-        FieldsFilter filter = new FieldsFilter(FilterType.INCLUDE_FIELDS, Arrays.asList(Book.FIELD_ID, Book.FIELD_TITLE));
+        FieldsFilter filter = new FieldsFilter(FilterType.INCLUDE_FIELDS, Book.FIELD_ID, Book.FIELD_TITLE);
         requestFilters.setFieldsFilter(filter);
 
         Response<List<Book>> responseFilters = requestFilters.send();
