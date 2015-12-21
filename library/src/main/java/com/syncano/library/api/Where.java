@@ -7,7 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.syncano.library.choice.Case;
 import com.syncano.library.data.SyncanoObject;
-import com.syncano.library.simple.ObjectPlease;
+import com.syncano.library.simple.RequestBuilder;
 import com.syncano.library.utils.DateTool;
 
 import java.util.Date;
@@ -34,13 +34,13 @@ public class Where<T extends SyncanoObject> {
     private static final String FILTER_INS_CONTAINS = "_icontains";
 
     private Map<String, JsonObject> query;
-    private ObjectPlease<T> please;
+    private RequestBuilder<T> please;
 
     public Where() {
         query = new HashMap<>();
     }
 
-    public Where(ObjectPlease<T> please) {
+    public Where(RequestBuilder<T> please) {
         this();
         this.please = please;
     }

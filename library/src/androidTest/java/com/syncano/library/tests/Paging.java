@@ -1,11 +1,11 @@
 package com.syncano.library.tests;
 
+import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.TestSyncanoObject;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.callbacks.SyncanoListCallback;
-import com.syncano.library.data.SyncanoObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,13 +62,13 @@ public class Paging extends SyncanoApplicationTestCase {
         ArrayList<TestSyncanoObject> list = new ArrayList<>();
         int loops = 0;
 
-        ResponseGetList<TestSyncanoObject> resp = SyncanoObject.please(TestSyncanoObject.class).limit(PAGE).get();
+        ResponseGetList<TestSyncanoObject> resp = Syncano.please(TestSyncanoObject.class).limit(PAGE).get();
         loops++;
         assertTrue(resp.isSuccess());
         list.addAll(resp.getData());
 
         while (resp.getLinkNext() != null) {
-            resp = SyncanoObject.please(TestSyncanoObject.class).page(resp.getLinkNext()).get();
+            resp = Syncano.please(TestSyncanoObject.class).page(resp.getLinkNext()).get();
             loops++;
             assertTrue(resp.isSuccess());
             list.addAll(resp.getData());
@@ -120,7 +120,7 @@ public class Paging extends SyncanoApplicationTestCase {
             loops++;
 
             if (response.getLinkNext() != null) {
-                SyncanoObject.please(TestSyncanoObject.class).page(response.getLinkNext()).getAsync(callbackPlease);
+                Syncano.please(TestSyncanoObject.class).page(response.getLinkNext()).getAsync(callbackPlease);
             } else {
                 assertEquals(list.size(), NUMBER);
                 assertEquals(LOOPS, loops);
@@ -135,7 +135,7 @@ public class Paging extends SyncanoApplicationTestCase {
     };
 
     public void testPleaseAsyncPaging() throws InterruptedException {
-        SyncanoObject.please(TestSyncanoObject.class).limit(PAGE).getAsync(callbackPlease);
+        Syncano.please(TestSyncanoObject.class).limit(PAGE).getAsync(callbackPlease);
         countDownLatch = new CountDownLatch(1);
         countDownLatch.await();
     }

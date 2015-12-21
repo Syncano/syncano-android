@@ -1,5 +1,6 @@
 package com.syncano.library.tests;
 
+import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.annotation.SyncanoField;
@@ -19,7 +20,7 @@ public class TestErrors extends SyncanoApplicationTestCase {
 
         Exception parseEx = null;
         try {
-            SyncanoObject.please(TypeB.class).get();
+            Syncano.please(TypeB.class).get();
         } catch (Exception e) {
             parseEx = e;
         }

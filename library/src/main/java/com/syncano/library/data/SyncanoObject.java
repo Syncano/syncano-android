@@ -7,7 +7,6 @@ import com.syncano.library.api.Request;
 import com.syncano.library.api.Response;
 import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.choice.DataObjectPermissions;
-import com.syncano.library.simple.ObjectPlease;
 
 public abstract class SyncanoObject extends Entity {
 
@@ -50,10 +49,6 @@ public abstract class SyncanoObject extends Entity {
 
     private Syncano syncano;
     private IncrementBuilder incrementBuilder = new IncrementBuilder();
-
-    public static <T extends SyncanoObject> ObjectPlease<T> please(Class<T> clazz) {
-        return new ObjectPlease<>(clazz);
-    }
 
     public String getChannelRoom() {
         return channelRoom;

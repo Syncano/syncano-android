@@ -14,7 +14,7 @@ import com.syncano.library.data.SyncanoObject;
 import java.util.List;
 
 
-public class ObjectPlease<T extends SyncanoObject> {
+public class RequestBuilder<T extends SyncanoObject> {
     private Syncano syncano;
     private Class<T> clazz;
     private String sortByField;
@@ -25,7 +25,7 @@ public class ObjectPlease<T extends SyncanoObject> {
     private String pageUrl;
 
 
-    public ObjectPlease(Class<T> clazz) {
+    public RequestBuilder(Class<T> clazz) {
         this.clazz = clazz;
         this.syncano = Syncano.getInstance();
     }
@@ -72,43 +72,43 @@ public class ObjectPlease<T extends SyncanoObject> {
         }
     }
 
-    public ObjectPlease<T> on(Syncano syncano) {
+    public RequestBuilder<T> on(Syncano syncano) {
         this.syncano = syncano;
         return this;
     }
 
-    public ObjectPlease<T> orderBy(String fieldName) {
+    public RequestBuilder<T> orderBy(String fieldName) {
         return orderBy(fieldName, SortOrder.ASCENDING);
 
     }
 
-    public ObjectPlease<T> orderBy(String fieldName, SortOrder sortOrder) {
+    public RequestBuilder<T> orderBy(String fieldName, SortOrder sortOrder) {
         this.sortByField = fieldName;
         this.sortOrder = sortOrder;
         return this;
     }
 
-    public ObjectPlease<T> selectFields(FilterType filterType, String... fields) {
+    public RequestBuilder<T> selectFields(FilterType filterType, String... fields) {
         this.fieldsFilter = new FieldsFilter(filterType, fields);
         return this;
     }
 
-    public ObjectPlease<T> selectFields(FilterType filterType, List<String> fields) {
+    public RequestBuilder<T> selectFields(FilterType filterType, List<String> fields) {
         this.fieldsFilter = new FieldsFilter(filterType, fields);
         return this;
     }
 
-    public ObjectPlease<T> setFieldsFilter(FieldsFilter fieldsFilter) {
+    public RequestBuilder<T> setFieldsFilter(FieldsFilter fieldsFilter) {
         this.fieldsFilter = fieldsFilter;
         return this;
     }
 
-    public ObjectPlease<T> limit(int limit) {
+    public RequestBuilder<T> limit(int limit) {
         this.limit = limit;
         return this;
     }
 
-    public ObjectPlease<T> page(String pageUrl) {
+    public RequestBuilder<T> page(String pageUrl) {
         this.pageUrl = pageUrl;
         return this;
     }

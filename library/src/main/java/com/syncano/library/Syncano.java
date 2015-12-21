@@ -22,6 +22,7 @@ import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.Trace;
 import com.syncano.library.data.User;
 import com.syncano.library.data.Webhook;
+import com.syncano.library.simple.RequestBuilder;
 import com.syncano.library.utils.SyncanoClassHelper;
 
 public class Syncano extends SyncanoBase {
@@ -1172,5 +1173,9 @@ public class Syncano extends SyncanoBase {
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
         return req;
+    }
+
+    public static <T extends SyncanoObject> RequestBuilder<T> please(Class<T> clazz) {
+        return new RequestBuilder<>(clazz);
     }
 }

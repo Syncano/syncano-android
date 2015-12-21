@@ -1,5 +1,6 @@
 package com.syncano.library.tests;
 
+import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.annotation.SyncanoField;
@@ -50,7 +51,7 @@ public class FieldsFilterTest extends SyncanoApplicationTestCase {
     }
 
     public void testGetObjectListFilterIncludePlease() {
-        Response<List<ExampleSyncanoObject>> syncanoResponse1 = SyncanoObject.please(ExampleSyncanoObject.class)
+        Response<List<ExampleSyncanoObject>> syncanoResponse1 = Syncano.please(ExampleSyncanoObject.class)
                 .selectFields(FilterType.INCLUDE_FIELDS, ExampleSyncanoObject.COLUMN_IMPORTANT_NUMBER).get();
         assertTrue(syncanoResponse1.isSuccess());
         ExampleSyncanoObject exampleSyncanoObject = syncanoResponse1.getData().get(0);
@@ -61,7 +62,7 @@ public class FieldsFilterTest extends SyncanoApplicationTestCase {
     }
 
     public void testGetObjectListFilterExcludePlease() {
-        Response<List<ExampleSyncanoObject>> syncanoResponse = SyncanoObject.please(ExampleSyncanoObject.class)
+        Response<List<ExampleSyncanoObject>> syncanoResponse = Syncano.please(ExampleSyncanoObject.class)
                 .selectFields(FilterType.EXCLUDE_FIELDS, ExampleSyncanoObject.COLUMN_LONG_TEXT).get();
         assertTrue(syncanoResponse.isSuccess());
         ExampleSyncanoObject exampleSyncanoObject = syncanoResponse.getData().get(0);
