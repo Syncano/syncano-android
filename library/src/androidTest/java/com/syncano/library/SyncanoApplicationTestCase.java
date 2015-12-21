@@ -9,7 +9,9 @@ import com.syncano.library.api.Response;
 import com.syncano.library.choice.ClassStatus;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
+import com.syncano.library.utils.SyncanoLogger;
 import com.syncano.library.utils.SyncanoClassHelper;
+import com.syncano.library.utils.SyncanoLog;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -35,6 +37,22 @@ public class SyncanoApplicationTestCase extends ApplicationTestCase<Application>
         super.setUp();
         Syncano.init(BuildConfig.STAGING_SERVER_URL, BuildConfig.API_KEY, BuildConfig.INSTANCE_NAME);
         syncano = Syncano.getInstance();
+        SyncanoLog.initLogger(new SyncanoLogger() {
+            @Override
+            public void d(String tag, String message) {
+                Log.d(tag, message);
+            }
+
+            @Override
+            public void w(String tag, String message) {
+                Log.w(tag, message);
+            }
+
+            @Override
+            public void e(String tag, String message) {
+                Log.e(tag, message);
+            }
+        });
     }
 
     public void createClass(Class<? extends SyncanoObject> clazz) throws InterruptedException {
@@ -67,6 +85,7 @@ public class SyncanoApplicationTestCase extends ApplicationTestCase<Application>
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
+        SyncanoLog.release();
     }
 
     public void copyAssets() {

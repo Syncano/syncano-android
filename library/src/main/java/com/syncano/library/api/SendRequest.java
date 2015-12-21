@@ -8,7 +8,7 @@ import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.utils.GsonHelper;
-import com.syncano.library.utils.Log;
+import com.syncano.library.utils.SyncanoLog;
 import com.syncano.library.utils.SyncanoClassHelper;
 
 import org.apache.http.HttpEntity;
@@ -186,7 +186,7 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
             if (data.getClass().isAssignableFrom(resultType)) {
                 return GsonHelper.createGson(data).fromJson(json, resultType);
             } else {
-                Log.w(SendRequest.class.getSimpleName(),
+                SyncanoLog.w(SendRequest.class.getSimpleName(),
                         "Can't update object " + data.getClass().getSimpleName() + " from " + resultType.getSimpleName());
             }
         }

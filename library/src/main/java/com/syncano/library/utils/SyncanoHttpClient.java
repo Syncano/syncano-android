@@ -1,5 +1,10 @@
 package com.syncano.library.utils;
 
+import com.syncano.library.BuildConfig;
+import com.syncano.library.Constants;
+import com.syncano.library.api.Request;
+import com.syncano.library.api.Response;
+
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -22,11 +27,6 @@ import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
-
-import com.syncano.library.BuildConfig;
-import com.syncano.library.Constants;
-import com.syncano.library.api.Request;
-import com.syncano.library.api.Response;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -115,8 +115,8 @@ public class SyncanoHttpClient {
         }
 
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Request: " + syncanoRequest.getRequestMethod() + "  " + url);
-            Log.d(TAG, "Request params: " + parameters);
+            SyncanoLog.d(TAG, "Request: " + syncanoRequest.getRequestMethod() + "  " + url);
+            SyncanoLog.d(TAG, "Request params: " + parameters);
         }
 
         request = getHttpUriRequest(syncanoRequest.getRequestMethod(), url, parameters);
@@ -145,12 +145,12 @@ public class SyncanoHttpClient {
         try {
             response = httpclient.execute(request);
         } catch (ClientProtocolException e) {
-            Log.w(LOG_TAG, "ClientProtocolException");
+            SyncanoLog.w(LOG_TAG, "ClientProtocolException");
             syncanoResponse.setResultCode(Response.CODE_CLIENT_PROTOCOL_EXCEPTION);
             syncanoResponse.setError(e.toString());
             return syncanoResponse;
         } catch (IOException e) {
-            Log.w(LOG_TAG, "IOException");
+            SyncanoLog.w(LOG_TAG, "IOException");
             syncanoResponse.setResultCode(Response.CODE_ILLEGAL_IO_EXCEPTION);
             syncanoResponse.setError(e.toString());
             return syncanoResponse;
@@ -163,7 +163,7 @@ public class SyncanoHttpClient {
             syncanoResponse.setHttpReasonPhrase(response.getStatusLine().getReasonPhrase());
 
             if (BuildConfig.DEBUG) {
-                Log.d(LOG_TAG, "HTTP Response: " + response.getStatusLine().getStatusCode() + "  " + response.getStatusLine().getReasonPhrase());
+                SyncanoLog.d(LOG_TAG, "HTTP Response: " + response.getStatusLine().getStatusCode() + "  " + response.getStatusLine().getReasonPhrase());
             }
 
             // download response data
@@ -179,7 +179,7 @@ public class SyncanoHttpClient {
                 if (data != null) {
                     json = new String(data);
                     if (BuildConfig.DEBUG) {
-                        Log.d(TAG, "Received: " + json);
+                        SyncanoLog.d(TAG, "Received: " + json);
                     }
                 }
             }
@@ -196,12 +196,12 @@ public class SyncanoHttpClient {
                 }
             }
         } catch (IllegalStateException e) {
-            Log.w(LOG_TAG, "IllegalStateException");
+            SyncanoLog.w(LOG_TAG, "IllegalStateException");
             syncanoResponse.setResultCode(Response.CODE_ILLEGAL_STATE_EXCEPTION);
             syncanoResponse.setError(e.toString());
             return syncanoResponse;
         } catch (IOException e) {
-            Log.w(LOG_TAG, "IOException");
+            SyncanoLog.w(LOG_TAG, "IOException");
             syncanoResponse.setResultCode(Response.CODE_ILLEGAL_IO_EXCEPTION);
             syncanoResponse.setError(e.toString());
             return syncanoResponse;
@@ -308,7 +308,7 @@ public class SyncanoHttpClient {
             try {
                 httpclient.getConnectionManager().shutdown();
             } catch (Exception e) {
-                Log.e(LOG_TAG, "Error while shutting down http client: " + e.toString());
+                SyncanoLog.e(LOG_TAG, "Error while shutting down http client: " + e.toString());
             }
         }
 

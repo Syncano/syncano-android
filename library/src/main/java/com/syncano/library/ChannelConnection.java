@@ -4,7 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
-import com.syncano.library.utils.Log;
+import com.syncano.library.utils.SyncanoLog;
 
 import com.syncano.library.api.Response;
 import com.syncano.library.data.Notification;
@@ -71,7 +71,7 @@ public class ChannelConnection {
         this.lastId = lastId;
 
         if (BuildConfig.DEBUG)
-            Log.d(TAG, "start channel: " + channel + " room: " + room + " lastId: " + lastId);
+            SyncanoLog.d(TAG, "start channel: " + channel + " room: " + room + " lastId: " + lastId);
 
         if (pollRequestLoop == null) {
             pollRequestLoop = new PollRequestLoop();
@@ -86,7 +86,7 @@ public class ChannelConnection {
      * Good place to call it is onPause or onStop method from Activity/Fragment lifecycle.
      */
     public void stop() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "stop");
+        if (BuildConfig.DEBUG) SyncanoLog.d(TAG, "stop");
 
         if (pollRequestLoop != null) {
             pollRequestLoop.setIsRunning(false);
@@ -126,9 +126,9 @@ public class ChannelConnection {
 
             while (isRunning) {
                 if (BuildConfig.DEBUG)
-                    Log.d(TAG, "poll request channel: " + channel + " room: " + room + " lastId: " + lastId);
+                    SyncanoLog.d(TAG, "poll request channel: " + channel + " room: " + room + " lastId: " + lastId);
                 Response<Notification> responsePollFromChannel = syncano.pollChannel(channel, room, lastId).send();
-                if (BuildConfig.DEBUG) Log.d(TAG, "response: " + responsePollFromChannel);
+                if (BuildConfig.DEBUG) SyncanoLog.d(TAG, "response: " + responsePollFromChannel);
 
                 // If still running, handle response.
                 if (isRunning) {
