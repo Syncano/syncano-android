@@ -2,7 +2,7 @@ package com.syncano.library.utils;
 
 import com.syncano.library.BuildConfig;
 import com.syncano.library.Constants;
-import com.syncano.library.api.Request;
+import com.syncano.library.api.HttpRequest;
 import com.syncano.library.api.Response;
 
 import org.apache.http.Header;
@@ -101,7 +101,7 @@ public class SyncanoHttpClient {
      *
      * @return Response with data
      */
-    public <T> Response<T> send(String serverUrl, Request<T> syncanoRequest) {
+    public <T> Response<T> send(String serverUrl, HttpRequest<T> syncanoRequest) {
         HttpEntity parameters = syncanoRequest.prepareParams();
 
         String url;

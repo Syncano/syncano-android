@@ -13,15 +13,15 @@ import java.util.List;
 
 public class BatchBuilder {
     public static final int MAX_BATCH = 50;
-    private ArrayList<Request> requests = new ArrayList<>();
+    private ArrayList<HttpRequest> requests = new ArrayList<>();
     private Syncano syncano;
 
     public BatchBuilder(Syncano syncano) {
         this.syncano = syncano;
     }
 
-    public BatchBuilder add(Request request) {
-        requests.add(request);
+    public BatchBuilder add(HttpRequest httpRequest) {
+        requests.add(httpRequest);
         return this;
     }
 
@@ -34,7 +34,7 @@ public class BatchBuilder {
         }
 
         JsonArray array = new JsonArray();
-        for (Request r : requests) {
+        for (HttpRequest r : requests) {
             if (r.getCompleteCustomUrl() != null) {
                 throw new RuntimeException("Can't send completely custom url request in batch");
             }

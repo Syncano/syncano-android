@@ -2,7 +2,7 @@ package com.syncano.library.api;
 
 import com.syncano.library.Syncano;
 
-public abstract class ResultRequest<T> extends Request<T> {
+public abstract class ResultRequest<T> extends HttpRequest<T> {
 
     protected Class<T> resultType;
 

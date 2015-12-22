@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Paging extends SyncanoApplicationTestCase {
 
@@ -127,6 +128,35 @@ public class Paging extends SyncanoApplicationTestCase {
 
         assertEquals(list.size(), NUMBER);
         assertEquals(LOOPS, loops);
+    }
+
+    public void testGetAll() {
+        ResponseGetList<MyObject> resp = Syncano.please(MyObject.class).limit(PAGE).getAll();
+        assertTrue(resp.isSuccess());
+        assertNotNull(resp.getData());
+        assertEquals(NUMBER, resp.getData().size());
+    }
+
+    public void testAsyncGetAll() throws InterruptedException {
+        final AtomicBoolean requestFinished = new AtomicBoolean(false);
+        Syncano.please(MyObject.class).limit(PAGE).getAll(new SyncanoListCallback<MyObject>() {
+            @Override
+            public void success(ResponseGetList<MyObject> resp, List<MyObject> result) {
+                assertTrue(resp.isSuccess());
+                assertNotNull(resp.getData());
+                assertEquals(NUMBER, resp.getData().size());
+                requestFinished.set(true);
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void failure(ResponseGetList<MyObject> response) {
+                fail();
+            }
+        });
+        countDownLatch = new CountDownLatch(1);
+        countDownLatch.await();
+        assertTrue(requestFinished.get());
     }
 
     @SyncanoClass(name = "myobject")

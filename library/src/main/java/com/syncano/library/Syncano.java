@@ -2,7 +2,7 @@ package com.syncano.library;
 
 import com.google.gson.JsonObject;
 import com.syncano.library.api.IncrementBuilder;
-import com.syncano.library.api.Request;
+import com.syncano.library.api.HttpRequest;
 import com.syncano.library.api.RequestDelete;
 import com.syncano.library.api.RequestGet;
 import com.syncano.library.api.RequestGetList;
@@ -426,7 +426,7 @@ public class Syncano {
             throw new RuntimeException("Can't run codebox without giving it's id");
         }
         RequestPost<Trace> req = runCodeBox(codeBox.getId(), params);
-        req.setRunAfter(new Request.RunAfter<Trace>() {
+        req.setRunAfter(new HttpRequest.RunAfter<Trace>() {
             @Override
             public void run(Response<Trace> response) {
                 Trace trace = response.getData();
@@ -469,8 +469,8 @@ public class Syncano {
         return req;
     }
 
-    private void addCodeboxIdAfterCall(Request<Trace> req, final int codeboxId) {
-        req.setRunAfter(new Request.RunAfter<Trace>() {
+    private void addCodeboxIdAfterCall(HttpRequest<Trace> req, final int codeboxId) {
+        req.setRunAfter(new HttpRequest.RunAfter<Trace>() {
             @Override
             public void run(Response<Trace> response) {
                 Trace trace = response.getData();
@@ -597,7 +597,7 @@ public class Syncano {
             throw new RuntimeException("Can't run webhook without a name.");
         }
         RequestPost<Trace> req = runWebhook(webhook.getName(), payload);
-        req.setRunAfter(new Request.RunAfter<Trace>() {
+        req.setRunAfter(new HttpRequest.RunAfter<Trace>() {
             @Override
             public void run(Response<Trace> response) {
                 webhook.setTrace(response.getData());
@@ -914,8 +914,8 @@ public class Syncano {
         return req;
     }
 
-    private <T extends AbstractUser> void saveUserApikeyIfSuccess(Request<T> request) {
-        request.setRunAfter(new Request.RunAfter<T>() {
+    private <T extends AbstractUser> void saveUserApikeyIfSuccess(HttpRequest<T> request) {
+        request.setRunAfter(new HttpRequest.RunAfter<T>() {
             @Override
             public void run(Response<T> response) {
                 if (!response.isSuccess() || response.getData() == null) {
