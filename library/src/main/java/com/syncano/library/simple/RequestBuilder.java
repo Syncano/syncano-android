@@ -11,6 +11,7 @@ import com.syncano.library.choice.FilterType;
 import com.syncano.library.choice.SortOrder;
 import com.syncano.library.data.SyncanoObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -34,7 +35,35 @@ public class RequestBuilder<T extends SyncanoObject> {
         return prepareGetRequest().send();
     }
 
-    public void getAsync(SyncanoCallback<List<T>> callback) {
+    /**
+     * You can get limited amount of objects in one request. This method gets objects until all are
+     * downloaded. Use carefully. Will work very bad for more than a few hundreds of objects .
+     */
+    public ResponseGetList<T> getAll() {
+        ResponseGetList<T> r = prepareGetRequest().send();
+        if (!r.isSuccess()) {
+            return r;
+        }
+        ArrayList<T> data = new ArrayList<>(r.getData());
+        while (r.hasNextPage()) {
+            r = r.getNextPage();
+            if (!r.isSuccess()) {
+                return r;
+            } else {
+                data.addAll(r.getData());
+            }
+        }
+
+        ResponseGetList<T> response = new ResponseGetList<>(syncano, clazz);
+        response.setData(data);
+        response.setResultCode(Response.CODE_SUCCESS);
+        response.setHttpResultCode(Response.HTTP_CODE_SUCCESS);
+        return response;
+    }
+
+
+
+    public void get(SyncanoCallback<List<T>> callback) {
         prepareGetRequest().sendAsync(callback);
     }
 
@@ -53,7 +82,7 @@ public class RequestBuilder<T extends SyncanoObject> {
         return syncano.getObject(clazz, id).send();
     }
 
-    public void getAsync(int id, SyncanoCallback<T> callback) {
+    public void get(int id, SyncanoCallback<T> callback) {
         syncano.getObject(clazz, id).sendAsync(callback);
     }
 

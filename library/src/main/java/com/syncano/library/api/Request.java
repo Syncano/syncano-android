@@ -23,7 +23,7 @@ public abstract class Request<T> {
     private List<NameValuePair> httpHeaders = new ArrayList<>();
     private String url;
     private String completeCustomUrl;
-    private Syncano syncano;
+    protected Syncano syncano;
     private RunAfter<T> runAfter;
     private HashSet<Integer> correctHttpResponse = new HashSet<>();
 
