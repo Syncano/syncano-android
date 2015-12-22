@@ -25,15 +25,19 @@ import com.syncano.library.data.Webhook;
 import com.syncano.library.simple.RequestBuilder;
 import com.syncano.library.utils.SyncanoClassHelper;
 
-public class Syncano extends SyncanoBase {
+public class Syncano {
 
     private static Syncano sharedInstance = null;
+    protected String customServerUrl;
+    protected String apiKey;
+    protected String userKey;
+    protected String instanceName;
 
     /**
      * Create Syncano object.
      */
     public Syncano() {
-        super(null, null);
+        this(null, null);
     }
 
     /**
@@ -42,7 +46,7 @@ public class Syncano extends SyncanoBase {
      * @param instanceName Syncano instanceName related with apiKey.
      */
     public Syncano(String instanceName) {
-        super(null, instanceName);
+        this(null, instanceName);
     }
 
     /**
@@ -52,7 +56,8 @@ public class Syncano extends SyncanoBase {
      * @param instanceName Syncano instanceName related with apiKey.
      */
     public Syncano(String apiKey, String instanceName) {
-        super(apiKey, instanceName);
+        this.apiKey = apiKey;
+        this.instanceName = instanceName;
     }
 
     /**
@@ -63,7 +68,8 @@ public class Syncano extends SyncanoBase {
      * @param instanceName    Syncano instanceName related with apiKey.
      */
     public Syncano(String customServerUrl, String apiKey, String instanceName) {
-        super(customServerUrl, apiKey, instanceName);
+        this(apiKey, instanceName);
+        this.customServerUrl = customServerUrl;
     }
 
     /**
@@ -87,6 +93,22 @@ public class Syncano extends SyncanoBase {
      */
     public static void init(String apiKey, String instanceName) {
         init(null, apiKey, instanceName);
+    }
+
+    public String getInstanceName() {
+        return instanceName;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public String getUserKey() {
+        return userKey;
+    }
+
+    public void setUserKey(String userKey) {
+        this.userKey = userKey;
     }
 
     public static Syncano getInstance() {

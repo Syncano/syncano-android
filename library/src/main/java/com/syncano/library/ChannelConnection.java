@@ -110,7 +110,7 @@ public class ChannelConnection {
             lastId = response.getData().getId();
 
             if (channelConnectionListener != null) {
-                syncano.runOnCallbackThread(new Runnable() {
+                PlatformType.get().runOnCallbackThread(new Runnable() {
                     @Override
                     public void run() {
                         channelConnectionListener.onNotification(response.getData());
@@ -128,7 +128,7 @@ public class ChannelConnection {
         }
 
         if (channelConnectionListener != null) {
-            syncano.runOnCallbackThread(new Runnable() {
+            PlatformType.get().runOnCallbackThread(new Runnable() {
                 @Override
                 public void run() {
                     channelConnectionListener.onError(response);

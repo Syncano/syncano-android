@@ -2,9 +2,12 @@ package com.syncano.library.api;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.syncano.library.Constants;
+import com.syncano.library.PlatformType;
 import com.syncano.library.Syncano;
 import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.utils.GsonHelper;
+import com.syncano.library.utils.SyncanoHttpClient;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -15,9 +18,12 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public abstract class Request<T> {
 
+    private static final ExecutorService requestExecutor = Executors.newFixedThreadPool(3);
     protected Gson gson;
     private List<NameValuePair> urlParams = new ArrayList<>();
     private List<NameValuePair> httpHeaders = new ArrayList<>();
@@ -35,6 +41,12 @@ public abstract class Request<T> {
         this.url = url;
         this.syncano = syncano;
         gson = GsonHelper.createGson();
+        if (syncano.getApiKey() != null && !syncano.getApiKey().isEmpty()) {
+            setHttpHeader("X-API-KEY", syncano.getApiKey());
+        }
+        if (syncano.getUserKey() != null && !syncano.getUserKey().isEmpty()) {
+            setHttpHeader("X-USER-KEY", syncano.getUserKey());
+        }
     }
 
     /**
@@ -139,12 +151,46 @@ public abstract class Request<T> {
     public abstract T parseResult(Response<T> response, String json);
 
     public Response<T> send() {
-        if (syncano == null) {
-            throw new RuntimeException("Request initiated without Syncano instance so can't call send()");
+        SyncanoHttpClient http = new SyncanoHttpClient();
+
+        Response<T> response;
+        if (completeCustomUrl != null && !completeCustomUrl.isEmpty()) {
+            response = http.send(completeCustomUrl, this);
+        } else {
+            response = http.send(Constants.PRODUCTION_SERVER_URL, this);
         }
-        return syncano.request(this);
+
+        if (getRunAfter() != null) {
+            getRunAfter().run(response);
+        }
+        return response;
     }
 
+    /**
+     * Send asynchronous http request. There asynchronous requests may
+     * be executed same time (three Threads). If there are more requests, they
+     * are waiting in queue.
+     *
+     * @param callback Callback to notify when request receives response.
+     */
+    public void sendAsync(final SyncanoCallback<T> callback) {
+        requestExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                final Response<T> response = send();
+                PlatformType.get().runOnCallbackThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (response.isSuccess()) {
+                            callback.success(response, response.getData());
+                        } else {
+                            callback.failure(response);
+                        }
+                    }
+                });
+            }
+        });
+    }
 
     public String getCompleteCustomUrl() {
         return completeCustomUrl;
@@ -168,14 +214,6 @@ public abstract class Request<T> {
 
     public <T> Response<T> instantiateResponse() {
         return new Response<>();
-    }
-
-
-    public void sendAsync(SyncanoCallback<T> callback) {
-        if (syncano == null) {
-            throw new RuntimeException("Request initiated without Syncano instance so can't call sendAsync()");
-        }
-        syncano.requestAsync(this, callback);
     }
 
     public interface RunAfter<T> {

@@ -102,7 +102,6 @@ public class SyncanoHttpClient {
      * @return Response with data
      */
     public <T> Response<T> send(String serverUrl, Request<T> syncanoRequest) {
-        HttpUriRequest request;
         HttpEntity parameters = syncanoRequest.prepareParams();
 
         String url;
@@ -117,7 +116,7 @@ public class SyncanoHttpClient {
             SyncanoLog.d(LOG_TAG, "Request params: " + parameters);
         }
 
-        request = getHttpUriRequest(syncanoRequest.getRequestMethod(), url, parameters);
+        HttpUriRequest request = getHttpUriRequest(syncanoRequest.getRequestMethod(), url, parameters);
         request.setHeader("Content-Type", syncanoRequest.getContentType());
         request.setHeader("Accept-Encoding", "gzip");
 
