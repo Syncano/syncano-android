@@ -1,13 +1,8 @@
 package com.syncano.library;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-
-import com.syncano.library.utils.SyncanoLog;
-
 import com.syncano.library.api.Response;
 import com.syncano.library.data.Notification;
+import com.syncano.library.utils.SyncanoLog;
 
 /**
  * Class responsible for real time communication.
@@ -18,9 +13,9 @@ public class ChannelConnection {
     private static final int ERROR_DELAY = 1000;
     private static final int MSG_SUCCESS = 1;
     private static final int MSG_ERROR = 2;
+    private final ListenerHandler handler;
 
     private Syncano syncano;
-    private Handler handler;
     private ChannelConnectionListener channelConnectionListener;
     private PollRequestLoop pollRequestLoop;
     private String channel;
@@ -36,7 +31,7 @@ public class ChannelConnection {
     public ChannelConnection(Syncano syncano, ChannelConnectionListener channelConnectionListener) {
         this.syncano = syncano;
         this.channelConnectionListener = channelConnectionListener;
-        handler = new ListenerHandler(Looper.getMainLooper());
+        this.handler = new ListenerHandler();
     }
 
     /**
@@ -113,6 +108,31 @@ public class ChannelConnection {
         this.channelConnectionListener = channelConnectionListener;
     }
 
+    private void handleSuccess(Response<Notification> response) {
+
+        if (response.getData() != null) {
+            lastId = response.getData().getId();
+
+            if (channelConnectionListener != null) {
+                ListenerHandler.ChannelMessage message = handler.obtainMessage(MSG_SUCCESS, response.getData());
+                handler.sendMessage(message);
+            }
+        }
+    }
+
+    private void handleError(Response<Notification> response) {
+
+        if (response.getHttpResultCode() == Response.HTTP_CODE_GATEWAY_TIMEOUT) {
+            // If timeout, start new poll in pollRequestLoop.
+            return;
+        }
+
+        if (channelConnectionListener != null) {
+            ListenerHandler.ChannelMessage message = handler.obtainMessage(MSG_ERROR, response);
+            handler.sendMessage(message);
+        }
+    }
+
     private class PollRequestLoop implements Runnable {
 
         private boolean isRunning;
@@ -141,7 +161,7 @@ public class ChannelConnection {
                         hasError = false;
                     } else {
                         // Handle error only once
-                        if (hasError == false) {
+                        if (!hasError) {
                             handleError(responsePollFromChannel);
                             hasError = true;
                         }
@@ -157,46 +177,47 @@ public class ChannelConnection {
         }
     }
 
-    private void handleSuccess(Response<Notification> response) {
+    private class ListenerHandler {
 
-        if (response.getData() != null) {
-            lastId = response.getData().getId();
 
-            if (channelConnectionListener != null) {
-                Message message = handler.obtainMessage(MSG_SUCCESS, response.getData());
-                handler.sendMessage(message);
+        private ListenerHandler() {
+        }
+
+        public ChannelMessage obtainMessage(int msgSuccess, Object data) {
+            return new ChannelMessage(msgSuccess, data);
+        }
+
+        public void sendMessage(final ChannelMessage msg) {
+            syncano.postRunnableOnCallbackThread(new Runnable() {
+                @Override
+                public void run() {
+                    switch (msg.getType()) {
+                        case MSG_SUCCESS:
+                            channelConnectionListener.onNotification((Notification) msg.getData());
+                            break;
+                        case MSG_ERROR:
+                            channelConnectionListener.onError((Response<Notification>) msg.getData());
+                            break;
+                    }
+                }
+            });
+        }
+
+        public class ChannelMessage {
+            private final int type;
+            private final Object data;
+
+            public ChannelMessage(int type, Object data) {
+                this.type = type;
+                this.data = data;
             }
-        }
-    }
 
-    private void handleError(Response<Notification> response) {
+            public int getType() {
+                return type;
+            }
 
-        if (response.getHttpResultCode() == Response.HTTP_CODE_GATEWAY_TIMEOUT) {
-            // If timeout, start new poll in pollRequestLoop.
-            return;
-        }
-
-        if (channelConnectionListener != null) {
-            Message message = handler.obtainMessage(MSG_ERROR, response);
-            handler.sendMessage(message);
-        }
-    }
-
-    private class ListenerHandler extends Handler {
-
-        ListenerHandler(Looper l) {
-            super(l);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_SUCCESS:
-                    channelConnectionListener.onNotification((Notification) msg.obj);
-                    break;
-                case MSG_ERROR:
-                    channelConnectionListener.onError((Response<Notification>) msg.obj);
-                    break;
+            public Object getData() {
+                return data;
             }
         }
     }

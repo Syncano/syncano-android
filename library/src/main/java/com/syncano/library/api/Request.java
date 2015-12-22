@@ -145,12 +145,6 @@ public abstract class Request<T> {
         return syncano.request(this);
     }
 
-    public void sendAsync(SyncanoCallback<T> callback) {
-        if (syncano == null) {
-            throw new RuntimeException("Request initiated without Syncano instance so can't call sendAsync()");
-        }
-        syncano.requestAsync(this, callback);
-    }
 
     public String getCompleteCustomUrl() {
         return completeCustomUrl;
@@ -174,6 +168,14 @@ public abstract class Request<T> {
 
     public <T> Response<T> instantiateResponse() {
         return new Response<>();
+    }
+
+
+    public void sendAsync(SyncanoCallback<T> callback) {
+        if (syncano == null) {
+            throw new RuntimeException("Request initiated without Syncano instance so can't call sendAsync()");
+        }
+        syncano.requestAsync(this, callback);
     }
 
     public interface RunAfter<T> {

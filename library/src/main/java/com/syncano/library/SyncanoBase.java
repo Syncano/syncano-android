@@ -1,9 +1,6 @@
 package com.syncano.library;
 
 
-import android.os.Handler;
-import android.os.Looper;
-
 import com.google.gson.Gson;
 import com.syncano.library.api.Request;
 import com.syncano.library.api.Response;
@@ -11,6 +8,7 @@ import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.utils.GsonHelper;
 import com.syncano.library.utils.SyncanoHttpClient;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -23,16 +21,22 @@ public abstract class SyncanoBase {
 
     protected Gson gson;
     protected ExecutorService requestExecutor = Executors.newFixedThreadPool(3);
+    protected Executor callbackExecutor;
 
     protected SyncanoBase(String apiKey, String instanceName) {
         this.apiKey = apiKey;
         this.instanceName = instanceName;
-        gson = GsonHelper.createGson();
+        this.gson = GsonHelper.createGson();
+        this.callbackExecutor = PlatformType.get().getDefaultCallbackExecutor();
     }
 
     protected SyncanoBase(String customServerUrl, String apiKey, String instanceName) {
         this(apiKey, instanceName);
         this.customServerUrl = customServerUrl;
+    }
+
+    public void setCallbackExecutor(Executor callbackExecutor) {
+        this.callbackExecutor = callbackExecutor;
     }
 
     public String getApiKey() {
@@ -60,6 +64,10 @@ public abstract class SyncanoBase {
      */
     public void setUserKey(String userKey) {
         this.userKey = userKey;
+    }
+
+    public void setRequestExecutor(ExecutorService requestExecutor) {
+        this.requestExecutor = requestExecutor;
     }
 
     public String getInstanceName() {
@@ -101,7 +109,6 @@ public abstract class SyncanoBase {
         }
         return response;
     }
-
     /**
      * Send asynchronous http request. There asynchronous requests may
      * be executed same time (three Threads). If there is more requests, they
@@ -111,15 +118,11 @@ public abstract class SyncanoBase {
      * @param callback       Callback to notify when request receives response.
      */
     public <T> void requestAsync(final Request<T> syncanoRequest, final SyncanoCallback<T> callback) {
-        final Handler handler = new Handler(Looper.getMainLooper());
-
         requestExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 final Response<T> response = syncanoRequest.send();
-
-                // Post result to UI thread.
-                handler.post(new Runnable() {
+                postRunnableOnCallbackThread(new Runnable() {
                     @Override
                     public void run() {
                         if (response.isSuccess()) {
@@ -131,5 +134,14 @@ public abstract class SyncanoBase {
                 });
             }
         });
+    }
+
+
+    void postRunnableOnCallbackThread(Runnable runnable) {
+        if (callbackExecutor != null) {
+            callbackExecutor.execute(runnable);
+        } else {
+            runnable.run();
+        }
     }
 }

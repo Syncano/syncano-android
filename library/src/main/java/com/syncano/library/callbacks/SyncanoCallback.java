@@ -1,7 +1,21 @@
 package com.syncano.library.callbacks;
 
+import com.syncano.library.SyncanoBase;
 import com.syncano.library.api.Response;
 
+/**
+ * Communicates responses from Syncano. Only one method will be
+ * invoked in response to a given request.
+ * <p/>
+ * Callback methods are executed using the {@link SyncanoBase} callback executor. When none is
+ * specified, the following defaults are used:
+ * <ul>
+ * <li>Android: Callbacks are executed on the application's main (UI) thread.</li>
+ * <li>JVM: Callbacks are executed on the background thread which performed the request.</li>
+ * </ul>
+ *
+ * @param <T> Response body type.
+ */
 public interface SyncanoCallback<T> {
 
     void success(Response<T> response, T result);
