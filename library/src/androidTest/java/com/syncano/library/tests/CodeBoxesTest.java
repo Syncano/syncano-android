@@ -12,10 +12,10 @@ import java.util.List;
 
 public class CodeBoxesTest extends SyncanoApplicationTestCase {
 
-    private CodeBox codeBox;
     private static final String EXPECTED_RESULT = "This is message from our Codebox";
     private static final String ARGUMENT_NAME = "argument";
     private static final String ARGUMENT_VALUE = "GRrr";
+    private CodeBox codeBox;
 
     @Override
     protected void setUp() throws Exception {
@@ -58,6 +58,10 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
         // ----------------- Update -----------------
         String codeBoxNewName = "CodeBox Test New";
         codeBox.setLabel(codeBoxNewName);
+        JsonObject jsonConfig = new JsonObject();
+        jsonConfig.addProperty("email", "duke.nukem@gmail.com");
+        codeBox.setConfig(jsonConfig);
+
         Response<CodeBox> responseUpdateCodeBox = syncano.updateCodeBox(codeBox).send();
 
         assertTrue(responseUpdateCodeBox.isSuccess());
@@ -65,6 +69,9 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
         assertEquals(codeBox.getLabel(), responseUpdateCodeBox.getData().getLabel());
         assertEquals(codeBox.getRuntimeName(), responseUpdateCodeBox.getData().getRuntimeName());
         assertEquals(codeBox.getSource(), responseUpdateCodeBox.getData().getSource());
+        assertNotNull(responseUpdateCodeBox.getData().getConfig());
+        assertNotNull(responseUpdateCodeBox.getData().getConfig().get("email"));
+
 
         // ----------------- Get List -----------------
         Response<List<CodeBox>> responseGetCodeBoxes = syncano.getCodeBoxes().send();

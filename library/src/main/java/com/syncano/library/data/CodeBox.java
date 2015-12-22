@@ -7,8 +7,6 @@ import com.syncano.library.api.Response;
 import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.choice.RuntimeName;
 
-import org.json.JSONObject;
-
 public class CodeBox extends Entity {
 
     public static final String FIELD_LABEL = "label";
@@ -30,7 +28,7 @@ public class CodeBox extends Entity {
     private RuntimeName runtimeName;
 
     @SyncanoField(name = FIELD_CONFIG)
-    private JSONObject config;
+    private JsonObject config;
 
     private Trace trace;
     private Syncano syncano;
@@ -80,11 +78,11 @@ public class CodeBox extends Entity {
         this.runtimeName = runtimeName;
     }
 
-    public JSONObject getConfig() {
+    public JsonObject getConfig() {
         return config;
     }
 
-    public void setConfig(JSONObject config) {
+    public void setConfig(JsonObject config) {
         this.config = config;
     }
 
