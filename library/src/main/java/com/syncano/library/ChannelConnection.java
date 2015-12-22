@@ -11,9 +11,6 @@ public class ChannelConnection {
 
     private static final String TAG = ChannelConnection.class.getSimpleName();
     private static final int ERROR_DELAY = 1000;
-    private static final int MSG_SUCCESS = 1;
-    private static final int MSG_ERROR = 2;
-    private final ListenerHandler handler;
 
     private Syncano syncano;
     private ChannelConnectionListener channelConnectionListener;
@@ -31,7 +28,6 @@ public class ChannelConnection {
     public ChannelConnection(Syncano syncano, ChannelConnectionListener channelConnectionListener) {
         this.syncano = syncano;
         this.channelConnectionListener = channelConnectionListener;
-        this.handler = new ListenerHandler();
     }
 
     /**
@@ -108,19 +104,23 @@ public class ChannelConnection {
         this.channelConnectionListener = channelConnectionListener;
     }
 
-    private void handleSuccess(Response<Notification> response) {
+    private void handleSuccess(final Response<Notification> response) {
 
         if (response.getData() != null) {
             lastId = response.getData().getId();
 
             if (channelConnectionListener != null) {
-                ListenerHandler.ChannelMessage message = handler.obtainMessage(MSG_SUCCESS, response.getData());
-                handler.sendMessage(message);
+                syncano.runOnCallbackThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        channelConnectionListener.onNotification(response.getData());
+                    }
+                });
             }
         }
     }
 
-    private void handleError(Response<Notification> response) {
+    private void handleError(final Response<Notification> response) {
 
         if (response.getHttpResultCode() == Response.HTTP_CODE_GATEWAY_TIMEOUT) {
             // If timeout, start new poll in pollRequestLoop.
@@ -128,8 +128,12 @@ public class ChannelConnection {
         }
 
         if (channelConnectionListener != null) {
-            ListenerHandler.ChannelMessage message = handler.obtainMessage(MSG_ERROR, response);
-            handler.sendMessage(message);
+            syncano.runOnCallbackThread(new Runnable() {
+                @Override
+                public void run() {
+                    channelConnectionListener.onError(response);
+                }
+            });
         }
     }
 
@@ -173,51 +177,6 @@ public class ChannelConnection {
                         }
                     }
                 }
-            }
-        }
-    }
-
-    private class ListenerHandler {
-
-
-        private ListenerHandler() {
-        }
-
-        public ChannelMessage obtainMessage(int msgSuccess, Object data) {
-            return new ChannelMessage(msgSuccess, data);
-        }
-
-        public void sendMessage(final ChannelMessage msg) {
-            syncano.postRunnableOnCallbackThread(new Runnable() {
-                @Override
-                public void run() {
-                    switch (msg.getType()) {
-                        case MSG_SUCCESS:
-                            channelConnectionListener.onNotification((Notification) msg.getData());
-                            break;
-                        case MSG_ERROR:
-                            channelConnectionListener.onError((Response<Notification>) msg.getData());
-                            break;
-                    }
-                }
-            });
-        }
-
-        public class ChannelMessage {
-            private final int type;
-            private final Object data;
-
-            public ChannelMessage(int type, Object data) {
-                this.type = type;
-                this.data = data;
-            }
-
-            public int getType() {
-                return type;
-            }
-
-            public Object getData() {
-                return data;
             }
         }
     }

@@ -109,6 +109,7 @@ public abstract class SyncanoBase {
         }
         return response;
     }
+
     /**
      * Send asynchronous http request. There asynchronous requests may
      * be executed same time (three Threads). If there is more requests, they
@@ -122,7 +123,7 @@ public abstract class SyncanoBase {
             @Override
             public void run() {
                 final Response<T> response = syncanoRequest.send();
-                postRunnableOnCallbackThread(new Runnable() {
+                runOnCallbackThread(new Runnable() {
                     @Override
                     public void run() {
                         if (response.isSuccess()) {
@@ -137,7 +138,7 @@ public abstract class SyncanoBase {
     }
 
 
-    void postRunnableOnCallbackThread(Runnable runnable) {
+    void runOnCallbackThread(Runnable runnable) {
         if (callbackExecutor != null) {
             callbackExecutor.execute(runnable);
         } else {
