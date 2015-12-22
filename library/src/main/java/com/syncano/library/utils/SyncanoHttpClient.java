@@ -55,8 +55,6 @@ public class SyncanoHttpClient {
     public static final String METHOD_PATCH = "PATCH";
     public static final String METHOD_DELETE = "DELETE";
 
-    private static final String TAG = SyncanoHttpClient.class.getSimpleName();
-
     /**
      * Timeout value
      */
@@ -115,8 +113,8 @@ public class SyncanoHttpClient {
         }
 
         if (BuildConfig.DEBUG) {
-            SyncanoLog.d(TAG, "Request: " + syncanoRequest.getRequestMethod() + "  " + url);
-            SyncanoLog.d(TAG, "Request params: " + parameters);
+            SyncanoLog.d(LOG_TAG, "Request: " + syncanoRequest.getRequestMethod() + "  " + url);
+            SyncanoLog.d(LOG_TAG, "Request params: " + parameters);
         }
 
         request = getHttpUriRequest(syncanoRequest.getRequestMethod(), url, parameters);
@@ -179,7 +177,7 @@ public class SyncanoHttpClient {
                 if (data != null) {
                     json = new String(data);
                     if (BuildConfig.DEBUG) {
-                        SyncanoLog.d(TAG, "Received: " + json);
+                        SyncanoLog.d(LOG_TAG, "Received: " + json);
                     }
                 }
             }

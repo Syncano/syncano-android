@@ -90,7 +90,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
             }
         };
 
-        Syncano.please(Book.class).getAsync(callback);
+        Syncano.please(Book.class).get(callback);
         // other way
         syncano.getObjects(Book.class).sendAsync(callback);
         // -----------------------------
@@ -150,10 +150,10 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         ResponseGetList<Book> responseFirst = Syncano.please(Book.class).limit(10).get();
         // ---------- Page size and LastPk
         // Get with bigger id - next page
-        ResponseGetList<Book> responseNextPage = syncano.getObjects(Book.class, responseFirst.getLinkNext()).send();
+        ResponseGetList<Book> responseNextPage = syncano.getObjects(Book.class, responseFirst.getNextPageUrl()).send();
 
         // Get with smaller id - previous page
-        ResponseGetList<Book> responsePreviousPage = syncano.getObjects(Book.class, responseFirst.getLinkPrevious()).send();
+        ResponseGetList<Book> responsePreviousPage = syncano.getObjects(Book.class, responseFirst.getPreviousPageUrl()).send();
         // -----------------------------
 
         // ---------- Fields filtering
