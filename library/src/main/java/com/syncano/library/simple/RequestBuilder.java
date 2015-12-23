@@ -2,6 +2,7 @@ package com.syncano.library.simple;
 
 import com.syncano.library.Syncano;
 import com.syncano.library.api.FieldsFilter;
+import com.syncano.library.api.RequestAll;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
@@ -11,7 +12,6 @@ import com.syncano.library.choice.FilterType;
 import com.syncano.library.choice.SortOrder;
 import com.syncano.library.data.SyncanoObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -40,28 +40,12 @@ public class RequestBuilder<T extends SyncanoObject> {
      * downloaded. Use carefully. Will work very bad for more than a few hundreds of objects .
      */
     public ResponseGetList<T> getAll() {
-        ResponseGetList<T> r = prepareGetRequest().send();
-        if (!r.isSuccess()) {
-            return r;
-        }
-        ArrayList<T> data = new ArrayList<>(r.getData());
-        while (r.hasNextPage()) {
-            r = r.getNextPage();
-            if (!r.isSuccess()) {
-                return r;
-            } else {
-                data.addAll(r.getData());
-            }
-        }
-
-        ResponseGetList<T> response = new ResponseGetList<>(syncano, clazz);
-        response.setData(data);
-        response.setResultCode(Response.CODE_SUCCESS);
-        response.setHttpResultCode(Response.HTTP_CODE_SUCCESS);
-        return response;
+        return (new RequestAll<>(prepareGetRequest())).send();
     }
 
-
+    public void getAll(SyncanoCallback<List<T>> callback) {
+        (new RequestAll<>(prepareGetRequest())).sendAsync(callback);
+    }
 
     public void get(SyncanoCallback<List<T>> callback) {
         prepareGetRequest().sendAsync(callback);

@@ -6,7 +6,7 @@ import com.syncano.library.utils.SyncanoHttpClient;
 
 import java.util.List;
 
-public abstract class RequestGet<T> extends Request<T> {
+public abstract class RequestGet<T> extends HttpRequest<T> {
 
     private FieldsFilter fieldsFilter;
 

@@ -21,10 +21,10 @@ import android.os.Looper;
 
 import java.util.concurrent.Executor;
 
-class PlatformType {
+public class PlatformType {
     private static final PlatformType PLATFORM_TYPE = getPlatformType();
 
-    static PlatformType get() {
+    public static PlatformType get() {
         return PLATFORM_TYPE;
     }
 
@@ -39,14 +39,24 @@ class PlatformType {
         return new PlatformType();
     }
 
-    Executor getDefaultCallbackExecutor() {
+    public void runOnCallbackThread(Runnable runnable) {
+        if (getDefaultCallbackExecutor() != null) {
+            getDefaultCallbackExecutor().execute(runnable);
+        } else {
+            runnable.run();
+        }
+    }
+
+    public Executor getDefaultCallbackExecutor() {
         return null;
     }
 
     static class AndroidPlatform extends PlatformType {
+        private MainThreadExecutor mainThreadExecutor = new MainThreadExecutor();
+
         @Override
-        Executor getDefaultCallbackExecutor() {
-            return new MainThreadExecutor();
+        public Executor getDefaultCallbackExecutor() {
+            return mainThreadExecutor;
         }
 
         static class MainThreadExecutor implements Executor {
