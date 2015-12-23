@@ -23,6 +23,7 @@ import com.syncano.library.data.Trace;
 import com.syncano.library.data.User;
 import com.syncano.library.data.Webhook;
 import com.syncano.library.simple.RequestBuilder;
+import com.syncano.library.utils.Encryption;
 import com.syncano.library.utils.SyncanoClassHelper;
 
 public class Syncano {
@@ -93,6 +94,10 @@ public class Syncano {
      */
     public static void init(String apiKey, String instanceName) {
         init(null, apiKey, instanceName);
+    }
+
+    public static void setStrictCheckCertificate(boolean strictCheck) {
+        Encryption.setStrictCheckCertificate(strictCheck);
     }
 
     public String getInstanceName() {

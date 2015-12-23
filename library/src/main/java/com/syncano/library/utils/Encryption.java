@@ -16,31 +16,36 @@ import java.io.InputStream;
 import java.security.KeyStore;
 
 public class Encryption {
+    private static boolean strictCheckCertificate = true;
 
     private static final int TIMEOUT = 30000;
     private static final int SOCKET_TIMEOUT = 60000;
 
     /**
-     * Method to get new http client with socket factory which allows to connect only to selected domains
+     * Method to get new http client with socket factory which allows to connect only to selected domains,
+     * with selected certificate
      *
      * @return new http client
      */
     public static DefaultHttpClient getHttpClient() {
-        try {
-            HttpParams params = new BasicHttpParams();
-            HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
-            HttpProtocolParams.setContentCharset(params, "utf-8");
-            HttpConnectionParams.setConnectionTimeout(params, TIMEOUT);
-            HttpConnectionParams.setSoTimeout(params, SOCKET_TIMEOUT);
-            params.setBooleanParameter("http.protocol.expect-continue", false);
+        HttpParams params = new BasicHttpParams();
+        HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
+        HttpProtocolParams.setContentCharset(params, "utf-8");
+        HttpConnectionParams.setConnectionTimeout(params, TIMEOUT);
+        HttpConnectionParams.setSoTimeout(params, SOCKET_TIMEOUT);
+        params.setBooleanParameter("http.protocol.expect-continue", false);
 
+        if (!strictCheckCertificate) {
+            return new DefaultHttpClient(params);
+        }
+        try {
             SchemeRegistry registry = new SchemeRegistry();
             registry.register(new Scheme("https", Encryption.newSslSocketFactory(), 443));
 
             ThreadSafeClientConnManager manager = new ThreadSafeClientConnManager(params, registry);
             return new DefaultHttpClient(manager, params);
         } catch (Exception e) {
-            return new DefaultHttpClient();
+            return new DefaultHttpClient(params);
         }
     }
 
@@ -65,5 +70,9 @@ public class Encryption {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static void setStrictCheckCertificate(boolean strictCheck) {
+        strictCheckCertificate = strictCheck;
     }
 }
