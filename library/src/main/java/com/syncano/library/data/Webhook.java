@@ -4,7 +4,7 @@ package com.syncano.library.data;
 import com.google.gson.JsonObject;
 import com.syncano.library.Syncano;
 import com.syncano.library.callbacks.SyncanoCallback;
-import com.syncano.library.utils.Log;
+import com.syncano.library.utils.SyncanoLog;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
 
@@ -114,7 +114,7 @@ public class Webhook {
         if (trace != null) {
             return trace.getOutput();
         }
-        Log.d(Webhook.class.getSimpleName(), "Getting output, without calling run() first");
+        SyncanoLog.d(Webhook.class.getSimpleName(), "Getting output, without calling run() first");
         return null;
     }
 
@@ -122,7 +122,7 @@ public class Webhook {
         if (trace != null) {
             return trace.getErrorOutput();
         }
-        Log.d(Webhook.class.getSimpleName(), "Getting output, without calling run() first");
+        SyncanoLog.d(Webhook.class.getSimpleName(), "Getting output, without calling run() first");
         return null;
     }
 

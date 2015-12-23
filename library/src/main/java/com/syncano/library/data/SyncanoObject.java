@@ -3,11 +3,10 @@ package com.syncano.library.data;
 import com.syncano.library.Syncano;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.IncrementBuilder;
-import com.syncano.library.api.Request;
+import com.syncano.library.api.HttpRequest;
 import com.syncano.library.api.Response;
 import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.choice.DataObjectPermissions;
-import com.syncano.library.simple.ObjectPlease;
 
 public abstract class SyncanoObject extends Entity {
 
@@ -50,10 +49,6 @@ public abstract class SyncanoObject extends Entity {
 
     private Syncano syncano;
     private IncrementBuilder incrementBuilder = new IncrementBuilder();
-
-    public static <T extends SyncanoObject> ObjectPlease<T> please(Class<T> clazz) {
-        return new ObjectPlease<>(clazz);
-    }
 
     public String getChannelRoom() {
         return channelRoom;
@@ -167,12 +162,12 @@ public abstract class SyncanoObject extends Entity {
     }
 
     public <T extends SyncanoObject> Response<T> fetch() {
-        Request<T> req = (Request<T>) getSyncano().getObject(this);
+        HttpRequest<T> req = (HttpRequest<T>) getSyncano().getObject(this);
         return req.send();
     }
 
     public <T extends SyncanoObject> void fetch(SyncanoCallback<T> callback) {
-        Request<T> req = (Request<T>) getSyncano().getObject(this);
+        HttpRequest<T> req = (HttpRequest<T>) getSyncano().getObject(this);
         req.sendAsync(callback);
     }
 

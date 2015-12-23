@@ -12,7 +12,7 @@ import org.apache.http.entity.StringEntity;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-public class BatchRequest extends Request<List<BatchAnswer>> {
+public class BatchRequest extends HttpRequest<List<BatchAnswer>> {
 
     private JsonElement data;
 

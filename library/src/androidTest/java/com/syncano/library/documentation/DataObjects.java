@@ -1,5 +1,6 @@
 package com.syncano.library.documentation;
 
+import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.annotation.SyncanoClass;
@@ -99,7 +100,7 @@ public class DataObjects extends SyncanoApplicationTestCase {
         assertNotNull(book);
 
         // ---------- Listing Data Objects
-        Response<List<Book>> responseList = SyncanoObject.please(Book.class)
+        Response<List<Book>> responseList = Syncano.please(Book.class)
                 .orderBy(Book.FIELD_CREATED_AT, SortOrder.DESCENDING).where().neq(Book.FIELD_ID, 5).get();
 
         // -----------------------------

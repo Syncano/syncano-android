@@ -2,7 +2,7 @@ package com.syncano.library;
 
 import com.google.gson.JsonObject;
 import com.syncano.library.api.IncrementBuilder;
-import com.syncano.library.api.Request;
+import com.syncano.library.api.HttpRequest;
 import com.syncano.library.api.RequestDelete;
 import com.syncano.library.api.RequestGet;
 import com.syncano.library.api.RequestGetList;
@@ -22,17 +22,22 @@ import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.Trace;
 import com.syncano.library.data.User;
 import com.syncano.library.data.Webhook;
+import com.syncano.library.simple.RequestBuilder;
 import com.syncano.library.utils.SyncanoClassHelper;
 
-public class Syncano extends SyncanoBase {
+public class Syncano {
 
     private static Syncano sharedInstance = null;
+    protected String customServerUrl;
+    protected String apiKey;
+    protected String userKey;
+    protected String instanceName;
 
     /**
      * Create Syncano object.
      */
     public Syncano() {
-        super(null, null);
+        this(null, null);
     }
 
     /**
@@ -41,7 +46,7 @@ public class Syncano extends SyncanoBase {
      * @param instanceName Syncano instanceName related with apiKey.
      */
     public Syncano(String instanceName) {
-        super(null, instanceName);
+        this(null, instanceName);
     }
 
     /**
@@ -51,7 +56,8 @@ public class Syncano extends SyncanoBase {
      * @param instanceName Syncano instanceName related with apiKey.
      */
     public Syncano(String apiKey, String instanceName) {
-        super(apiKey, instanceName);
+        this.apiKey = apiKey;
+        this.instanceName = instanceName;
     }
 
     /**
@@ -62,7 +68,8 @@ public class Syncano extends SyncanoBase {
      * @param instanceName    Syncano instanceName related with apiKey.
      */
     public Syncano(String customServerUrl, String apiKey, String instanceName) {
-        super(customServerUrl, apiKey, instanceName);
+        this(apiKey, instanceName);
+        this.customServerUrl = customServerUrl;
     }
 
     /**
@@ -86,6 +93,22 @@ public class Syncano extends SyncanoBase {
      */
     public static void init(String apiKey, String instanceName) {
         init(null, apiKey, instanceName);
+    }
+
+    public String getInstanceName() {
+        return instanceName;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public String getUserKey() {
+        return userKey;
+    }
+
+    public void setUserKey(String userKey) {
+        this.userKey = userKey;
     }
 
     public static Syncano getInstance() {
@@ -403,7 +426,7 @@ public class Syncano extends SyncanoBase {
             throw new RuntimeException("Can't run codebox without giving it's id");
         }
         RequestPost<Trace> req = runCodeBox(codeBox.getId(), params);
-        req.setRunAfter(new Request.RunAfter<Trace>() {
+        req.setRunAfter(new HttpRequest.RunAfter<Trace>() {
             @Override
             public void run(Response<Trace> response) {
                 Trace trace = response.getData();
@@ -446,8 +469,8 @@ public class Syncano extends SyncanoBase {
         return req;
     }
 
-    private void addCodeboxIdAfterCall(Request<Trace> req, final int codeboxId) {
-        req.setRunAfter(new Request.RunAfter<Trace>() {
+    private void addCodeboxIdAfterCall(HttpRequest<Trace> req, final int codeboxId) {
+        req.setRunAfter(new HttpRequest.RunAfter<Trace>() {
             @Override
             public void run(Response<Trace> response) {
                 Trace trace = response.getData();
@@ -574,7 +597,7 @@ public class Syncano extends SyncanoBase {
             throw new RuntimeException("Can't run webhook without a name.");
         }
         RequestPost<Trace> req = runWebhook(webhook.getName(), payload);
-        req.setRunAfter(new Request.RunAfter<Trace>() {
+        req.setRunAfter(new HttpRequest.RunAfter<Trace>() {
             @Override
             public void run(Response<Trace> response) {
                 webhook.setTrace(response.getData());
@@ -891,8 +914,8 @@ public class Syncano extends SyncanoBase {
         return req;
     }
 
-    private <T extends AbstractUser> void saveUserApikeyIfSuccess(Request<T> request) {
-        request.setRunAfter(new Request.RunAfter<T>() {
+    private <T extends AbstractUser> void saveUserApikeyIfSuccess(HttpRequest<T> request) {
+        request.setRunAfter(new HttpRequest.RunAfter<T>() {
             @Override
             public void run(Response<T> response) {
                 if (!response.isSuccess() || response.getData() == null) {
@@ -1172,5 +1195,9 @@ public class Syncano extends SyncanoBase {
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
         return req;
+    }
+
+    public static <T extends SyncanoObject> RequestBuilder<T> please(Class<T> clazz) {
+        return new RequestBuilder<>(clazz);
     }
 }

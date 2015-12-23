@@ -1,13 +1,8 @@
 package com.syncano.library;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-
-import com.syncano.library.utils.Log;
-
 import com.syncano.library.api.Response;
 import com.syncano.library.data.Notification;
+import com.syncano.library.utils.SyncanoLog;
 
 /**
  * Class responsible for real time communication.
@@ -16,11 +11,8 @@ public class ChannelConnection {
 
     private static final String TAG = ChannelConnection.class.getSimpleName();
     private static final int ERROR_DELAY = 1000;
-    private static final int MSG_SUCCESS = 1;
-    private static final int MSG_ERROR = 2;
 
     private Syncano syncano;
-    private Handler handler;
     private ChannelConnectionListener channelConnectionListener;
     private PollRequestLoop pollRequestLoop;
     private String channel;
@@ -36,7 +28,6 @@ public class ChannelConnection {
     public ChannelConnection(Syncano syncano, ChannelConnectionListener channelConnectionListener) {
         this.syncano = syncano;
         this.channelConnectionListener = channelConnectionListener;
-        handler = new ListenerHandler(Looper.getMainLooper());
     }
 
     /**
@@ -71,7 +62,7 @@ public class ChannelConnection {
         this.lastId = lastId;
 
         if (BuildConfig.DEBUG)
-            Log.d(TAG, "start channel: " + channel + " room: " + room + " lastId: " + lastId);
+            SyncanoLog.d(TAG, "start channel: " + channel + " room: " + room + " lastId: " + lastId);
 
         if (pollRequestLoop == null) {
             pollRequestLoop = new PollRequestLoop();
@@ -86,7 +77,7 @@ public class ChannelConnection {
      * Good place to call it is onPause or onStop method from Activity/Fragment lifecycle.
      */
     public void stop() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "stop");
+        if (BuildConfig.DEBUG) SyncanoLog.d(TAG, "stop");
 
         if (pollRequestLoop != null) {
             pollRequestLoop.setIsRunning(false);
@@ -113,6 +104,39 @@ public class ChannelConnection {
         this.channelConnectionListener = channelConnectionListener;
     }
 
+    private void handleSuccess(final Response<Notification> response) {
+
+        if (response.getData() != null) {
+            lastId = response.getData().getId();
+
+            if (channelConnectionListener != null) {
+                PlatformType.get().runOnCallbackThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        channelConnectionListener.onNotification(response.getData());
+                    }
+                });
+            }
+        }
+    }
+
+    private void handleError(final Response<Notification> response) {
+
+        if (response.getHttpResultCode() == Response.HTTP_CODE_GATEWAY_TIMEOUT) {
+            // If timeout, start new poll in pollRequestLoop.
+            return;
+        }
+
+        if (channelConnectionListener != null) {
+            PlatformType.get().runOnCallbackThread(new Runnable() {
+                @Override
+                public void run() {
+                    channelConnectionListener.onError(response);
+                }
+            });
+        }
+    }
+
     private class PollRequestLoop implements Runnable {
 
         private boolean isRunning;
@@ -126,9 +150,9 @@ public class ChannelConnection {
 
             while (isRunning) {
                 if (BuildConfig.DEBUG)
-                    Log.d(TAG, "poll request channel: " + channel + " room: " + room + " lastId: " + lastId);
+                    SyncanoLog.d(TAG, "poll request channel: " + channel + " room: " + room + " lastId: " + lastId);
                 Response<Notification> responsePollFromChannel = syncano.pollChannel(channel, room, lastId).send();
-                if (BuildConfig.DEBUG) Log.d(TAG, "response: " + responsePollFromChannel);
+                if (BuildConfig.DEBUG) SyncanoLog.d(TAG, "response: " + responsePollFromChannel);
 
                 // If still running, handle response.
                 if (isRunning) {
@@ -141,7 +165,7 @@ public class ChannelConnection {
                         hasError = false;
                     } else {
                         // Handle error only once
-                        if (hasError == false) {
+                        if (!hasError) {
                             handleError(responsePollFromChannel);
                             hasError = true;
                         }
@@ -153,50 +177,6 @@ public class ChannelConnection {
                         }
                     }
                 }
-            }
-        }
-    }
-
-    private void handleSuccess(Response<Notification> response) {
-
-        if (response.getData() != null) {
-            lastId = response.getData().getId();
-
-            if (channelConnectionListener != null) {
-                Message message = handler.obtainMessage(MSG_SUCCESS, response.getData());
-                handler.sendMessage(message);
-            }
-        }
-    }
-
-    private void handleError(Response<Notification> response) {
-
-        if (response.getHttpResultCode() == Response.HTTP_CODE_GATEWAY_TIMEOUT) {
-            // If timeout, start new poll in pollRequestLoop.
-            return;
-        }
-
-        if (channelConnectionListener != null) {
-            Message message = handler.obtainMessage(MSG_ERROR, response);
-            handler.sendMessage(message);
-        }
-    }
-
-    private class ListenerHandler extends Handler {
-
-        ListenerHandler(Looper l) {
-            super(l);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MSG_SUCCESS:
-                    channelConnectionListener.onNotification((Notification) msg.obj);
-                    break;
-                case MSG_ERROR:
-                    channelConnectionListener.onError((Response<Notification>) msg.obj);
-                    break;
             }
         }
     }

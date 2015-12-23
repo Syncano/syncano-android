@@ -1,5 +1,6 @@
 package com.syncano.library.documentation;
 
+import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.annotation.SyncanoField;
@@ -22,7 +23,7 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
 
         // ---------- Filtering Data Objects
 
-        Response<List<Book>> responseList = SyncanoObject.please(Book.class)
+        Response<List<Book>> responseList = Syncano.please(Book.class)
                 .where().gt("release_year", 1990).get();
 
         // -----------------------------
@@ -32,7 +33,7 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
 
         // ---------- Complex Filtering Data Objects
 
-        Response<List<Book>> responseListComplex = SyncanoObject.please(Book.class)
+        Response<List<Book>> responseListComplex = Syncano.please(Book.class)
                 .where().gt("release_year", 1990).lte("release_year", 2000).get();
 
         // -----------------------------
@@ -42,7 +43,7 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
 
         // ---------- Filtering on multiple fields
 
-        Response<List<Book>> responseListMultiple = SyncanoObject.please(Book.class)
+        Response<List<Book>> responseListMultiple = Syncano.please(Book.class)
                 .where().gt("release_year", 1990).lte("release_year", 2000).gt("pages", 199).get();
 
         // -----------------------------
@@ -52,7 +53,7 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
 
         // ---------- Ordering Data Objects
 
-        Response<List<Book>> responseOrdered = SyncanoObject.please(Book.class)
+        Response<List<Book>> responseOrdered = Syncano.please(Book.class)
                 .orderBy("release_year").get();
 
         // -----------------------------
@@ -62,7 +63,7 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
 
         // ---------- Reversed Ordering Data Objects
 
-        Response<List<Book>> responseOrderedReversed = SyncanoObject.please(Book.class)
+        Response<List<Book>> responseOrderedReversed = Syncano.please(Book.class)
                 .orderBy("release_year", SortOrder.DESCENDING).get();
 
         // -----------------------------
@@ -72,7 +73,7 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
 
         // ---------- Ordering with Filtering Data Objects
 
-        Response<List<Book>> responseOrderedFiltered = SyncanoObject.please(Book.class)
+        Response<List<Book>> responseOrderedFiltered = Syncano.please(Book.class)
                 .orderBy("release_year").where().gt("release_year", 1990).get();
 
         // -----------------------------

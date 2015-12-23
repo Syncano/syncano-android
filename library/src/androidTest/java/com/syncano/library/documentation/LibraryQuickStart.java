@@ -66,7 +66,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
 
     public void testGetObjects() {
         // ---------- Download the most recent Objects Synchronous
-        Response<List<Book>> responseGetBooks = SyncanoObject.please(Book.class).get();
+        Response<List<Book>> responseGetBooks = Syncano.please(Book.class).get();
         //or other way
         Response<List<Book>> responseGetBooks2 = syncano.getObjects(Book.class).send();
 
@@ -90,7 +90,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
             }
         };
 
-        SyncanoObject.please(Book.class).getAsync(callback);
+        Syncano.please(Book.class).get(callback);
         // other way
         syncano.getObjects(Book.class).sendAsync(callback);
         // -----------------------------
@@ -101,7 +101,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
 
         // ---------- Get a single Data Object
         Response<Book> responseGetBook = syncano.getObject(Book.class, id).send();
-        Book book = SyncanoObject.please(Book.class).get(id).getData();
+        Book book = Syncano.please(Book.class).get(id).getData();
         // other way
         book = responseGetBook.getData();
         // -----------------------------
@@ -141,19 +141,19 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         assertNotNull(updatedBook);
 
         // ---------- Where and OrderBy
-        Response<List<Book>> response = SyncanoObject.please(Book.class).orderBy(Book.FIELD_TITLE)
+        Response<List<Book>> response = Syncano.please(Book.class).orderBy(Book.FIELD_TITLE)
                 .where().gte(Book.FIELD_ID, 10).lte(Book.FIELD_ID, 15).get();
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
 
-        ResponseGetList<Book> responseFirst = SyncanoObject.please(Book.class).limit(10).get();
+        ResponseGetList<Book> responseFirst = Syncano.please(Book.class).limit(10).get();
         // ---------- Page size and LastPk
         // Get with bigger id - next page
-        ResponseGetList<Book> responseNextPage = syncano.getObjects(Book.class, responseFirst.getLinkNext()).send();
+        ResponseGetList<Book> responseNextPage = syncano.getObjects(Book.class, responseFirst.getNextPageUrl()).send();
 
         // Get with smaller id - previous page
-        ResponseGetList<Book> responsePreviousPage = syncano.getObjects(Book.class, responseFirst.getLinkPrevious()).send();
+        ResponseGetList<Book> responsePreviousPage = syncano.getObjects(Book.class, responseFirst.getPreviousPageUrl()).send();
         // -----------------------------
 
         // ---------- Fields filtering

@@ -1,5 +1,6 @@
 package com.syncano.library.tests;
 
+import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
@@ -52,9 +53,9 @@ public class SimpleTest extends SyncanoApplicationTestCase {
         assertTrue(respUpdate.isSuccess());
         assertEquals(item1.text, respUpdate.getData().text);
         assertTrue(item1.getUpdatedAt().after(firstUpdatedAt));
-        
+
         // ----------------- Get list of objects -----------------
-        Response<List<Item>> respList = SyncanoObject.please(Item.class).on(syncano).orderBy("text").limit(2).
+        Response<List<Item>> respList = Syncano.please(Item.class).on(syncano).orderBy("text").limit(2).
                 where().lte("number", 12).gt("number", 10).get();
         assertTrue(respList.isSuccess());
         assertEquals(2, respList.getData().size());

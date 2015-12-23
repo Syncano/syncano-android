@@ -2,7 +2,7 @@ package com.syncano.library.utils;
 
 import com.syncano.library.BuildConfig;
 import com.syncano.library.Constants;
-import com.syncano.library.api.Request;
+import com.syncano.library.api.HttpRequest;
 import com.syncano.library.api.Response;
 
 import org.apache.http.Header;
@@ -33,8 +33,6 @@ public class SyncanoHttpClient {
     public static final String METHOD_PUT = "PUT";
     public static final String METHOD_PATCH = "PATCH";
     public static final String METHOD_DELETE = "DELETE";
-
-    private static final String TAG = SyncanoHttpClient.class.getSimpleName();
 
     /**
      * Timeout value
@@ -71,8 +69,7 @@ public class SyncanoHttpClient {
      *
      * @return Response with data
      */
-    public <T> Response<T> send(String serverUrl, Request<T> syncanoRequest) {
-        HttpUriRequest request;
+    public <T> Response<T> send(String serverUrl, HttpRequest<T> syncanoRequest) {
         HttpEntity parameters = syncanoRequest.prepareParams();
 
         String url;
@@ -83,11 +80,11 @@ public class SyncanoHttpClient {
         }
 
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "Request: " + syncanoRequest.getRequestMethod() + "  " + url);
-            Log.d(TAG, "Request params: " + parameters);
+            SyncanoLog.d(LOG_TAG, "Request: " + syncanoRequest.getRequestMethod() + "  " + url);
+            SyncanoLog.d(LOG_TAG, "Request params: " + parameters);
         }
 
-        request = getHttpUriRequest(syncanoRequest.getRequestMethod(), url, parameters);
+        HttpUriRequest request = getHttpUriRequest(syncanoRequest.getRequestMethod(), url, parameters);
         request.setHeader("Content-Type", syncanoRequest.getContentType());
         request.setHeader("Accept-Encoding", "gzip");
 
@@ -113,12 +110,12 @@ public class SyncanoHttpClient {
         try {
             response = httpclient.execute(request);
         } catch (ClientProtocolException e) {
-            Log.w(LOG_TAG, "ClientProtocolException");
+            SyncanoLog.w(LOG_TAG, "ClientProtocolException");
             syncanoResponse.setResultCode(Response.CODE_CLIENT_PROTOCOL_EXCEPTION);
             syncanoResponse.setError(e.toString());
             return syncanoResponse;
         } catch (IOException e) {
-            Log.w(LOG_TAG, "IOException");
+            SyncanoLog.w(LOG_TAG, "IOException");
             syncanoResponse.setResultCode(Response.CODE_ILLEGAL_IO_EXCEPTION);
             syncanoResponse.setError(e.toString());
             return syncanoResponse;
@@ -130,7 +127,7 @@ public class SyncanoHttpClient {
             syncanoResponse.setHttpReasonPhrase(response.getStatusLine().getReasonPhrase());
 
             if (BuildConfig.DEBUG) {
-                Log.d(LOG_TAG, "HTTP Response: " + response.getStatusLine().getStatusCode() + "  " + response.getStatusLine().getReasonPhrase());
+                SyncanoLog.d(LOG_TAG, "HTTP Response: " + response.getStatusLine().getStatusCode() + "  " + response.getStatusLine().getReasonPhrase());
             }
 
             // download response data
@@ -146,7 +143,7 @@ public class SyncanoHttpClient {
                 if (data != null) {
                     json = new String(data);
                     if (BuildConfig.DEBUG) {
-                        Log.d(TAG, "Received: " + json);
+                        SyncanoLog.d(LOG_TAG, "Received: " + json);
                     }
                 }
             }
@@ -163,12 +160,12 @@ public class SyncanoHttpClient {
                 }
             }
         } catch (IllegalStateException e) {
-            Log.w(LOG_TAG, "IllegalStateException");
+            SyncanoLog.w(LOG_TAG, "IllegalStateException");
             syncanoResponse.setResultCode(Response.CODE_ILLEGAL_STATE_EXCEPTION);
             syncanoResponse.setError(e.toString());
             return syncanoResponse;
         } catch (IOException e) {
-            Log.w(LOG_TAG, "IOException");
+            SyncanoLog.w(LOG_TAG, "IOException");
             syncanoResponse.setResultCode(Response.CODE_ILLEGAL_IO_EXCEPTION);
             syncanoResponse.setError(e.toString());
             return syncanoResponse;
@@ -222,6 +219,4 @@ public class SyncanoHttpClient {
         }
         return baos.toByteArray();
     }
-
-
 }

@@ -52,8 +52,8 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
         }
 
         ResponseGetList<T> r = (ResponseGetList<T>) response;
-        r.setLinkNext(pageInternal.getNext());
-        r.setLinkPrevious(pageInternal.getPrev());
+        r.setNextPageUrl(pageInternal.getNext());
+        r.setPreviousPageUrl(pageInternal.getPrev());
         return resultList;
     }
 
@@ -107,7 +107,7 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
 
     @Override
     public Response<List<T>> instantiateResponse() {
-        return new ResponseGetList<>();
+        return new ResponseGetList<>(syncano, resultType);
     }
 
     @Override

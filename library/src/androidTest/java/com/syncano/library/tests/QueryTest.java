@@ -1,5 +1,6 @@
 package com.syncano.library.tests;
 
+import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.annotation.SyncanoField;
@@ -51,27 +52,27 @@ public class QueryTest extends SyncanoApplicationTestCase {
 
     private void runTestWhereStartWith(String column) {
         Response<List<Article>> response;
-        response = SyncanoObject.please(Article.class).where().startsWith(column, "ExAmPlE").get();
+        response = Syncano.please(Article.class).where().startsWith(column, "ExAmPlE").get();
         assertTrue(response.isSuccess());
         assertEquals(1, response.getData().size());
 
-        response = SyncanoObject.please(Article.class).where().startsWith(column, "EXAMPLE", Case.INSENSITIVE).get();
+        response = Syncano.please(Article.class).where().startsWith(column, "EXAMPLE", Case.INSENSITIVE).get();
         assertTrue(response.isSuccess());
         assertEquals(2, response.getData().size());
 
-        response = SyncanoObject.please(Article.class).where().startsWith(column, "nothing", Case.INSENSITIVE).get();
+        response = Syncano.please(Article.class).where().startsWith(column, "nothing", Case.INSENSITIVE).get();
         assertTrue(response.isSuccess());
         assertEquals(0, response.getData().size());
     }
 
     private void runTestWhereConnectedQuery(String column) {
         Response<List<Article>> response;
-        response = SyncanoObject.please(Article.class).where().gt(Article.COLUMN_RELEASE_YEAR, 1993).lt(Article.COLUMN_RELEASE_YEAR, 1995)
+        response = Syncano.please(Article.class).where().gt(Article.COLUMN_RELEASE_YEAR, 1993).lt(Article.COLUMN_RELEASE_YEAR, 1995)
                 .contains(column, "PlE Ti").get();
         assertTrue(response.isSuccess());
         assertEquals(0, response.getData().size());
 
-        response = SyncanoObject.please(Article.class).where().gt(Article.COLUMN_RELEASE_YEAR, 1993).lt(Article.COLUMN_RELEASE_YEAR, 2000)
+        response = Syncano.please(Article.class).where().gt(Article.COLUMN_RELEASE_YEAR, 1993).lt(Article.COLUMN_RELEASE_YEAR, 2000)
                 .contains(column, "PlE Ti", Case.SENSITIVE).get();
         assertTrue(response.isSuccess());
         assertEquals(1, response.getData().size());
@@ -79,30 +80,30 @@ public class QueryTest extends SyncanoApplicationTestCase {
 
     private void runTestWhereContains(String column) {
         Response<List<Article>> response;
-        response = SyncanoObject.please(Article.class).where().contains(column, "ample Ti").get();
+        response = Syncano.please(Article.class).where().contains(column, "ample Ti").get();
         assertTrue(response.isSuccess());
         assertEquals(1, response.getData().size());
 
-        response = SyncanoObject.please(Article.class).where().contains(column, "ample Ti", Case.INSENSITIVE).get();
+        response = Syncano.please(Article.class).where().contains(column, "ample Ti", Case.INSENSITIVE).get();
         assertTrue(response.isSuccess());
         assertEquals(2, response.getData().size());
     }
 
     private void runTestWhereEqualTo(String column) {
         Response<List<Article>> response;
-        response = SyncanoObject.please(Article.class).where().eq(column, "example title").get();
+        response = Syncano.please(Article.class).where().eq(column, "example title").get();
         assertTrue(response.isSuccess());
         assertEquals(0, response.getData().size());
-        response = SyncanoObject.please(Article.class).where().eq(column, "example title", Case.SENSITIVE).get();
+        response = Syncano.please(Article.class).where().eq(column, "example title", Case.SENSITIVE).get();
         assertTrue(response.isSuccess());
         assertEquals(0, response.getData().size());
-        response = SyncanoObject.please(Article.class).where().eq(column, "example title", Case.INSENSITIVE).get();
+        response = Syncano.please(Article.class).where().eq(column, "example title", Case.INSENSITIVE).get();
         assertTrue(response.isSuccess());
         assertEquals(2, response.getData().size());
-        response = SyncanoObject.please(Article.class).where().eq(column, "example", Case.INSENSITIVE).get();
+        response = Syncano.please(Article.class).where().eq(column, "example", Case.INSENSITIVE).get();
         assertTrue(response.isSuccess());
         assertEquals(0, response.getData().size());
-        response = SyncanoObject.please(Article.class).where().eq(column, "Example Title", Case.SENSITIVE).get();
+        response = Syncano.please(Article.class).where().eq(column, "Example Title", Case.SENSITIVE).get();
         assertTrue(response.isSuccess());
         assertEquals(1, response.getData().size());
     }
@@ -110,16 +111,16 @@ public class QueryTest extends SyncanoApplicationTestCase {
 
     private void runTestWhereEndWith(String column) {
         Response<List<Article>> response;
-        response = SyncanoObject.please(Article.class).where().endsWith(column, "wrong_text_to_end_title", Case.INSENSITIVE).get();
+        response = Syncano.please(Article.class).where().endsWith(column, "wrong_text_to_end_title", Case.INSENSITIVE).get();
         assertTrue(response.isSuccess());
         assertEquals(0, response.getData().size());
-        response = SyncanoObject.please(Article.class).where().endsWith(column, "Example", Case.INSENSITIVE).get();
+        response = Syncano.please(Article.class).where().endsWith(column, "Example", Case.INSENSITIVE).get();
         assertTrue(response.isSuccess());
         assertEquals(0, response.getData().size());
-        response = SyncanoObject.please(Article.class).where().endsWith(column, "Title").get();
+        response = Syncano.please(Article.class).where().endsWith(column, "Title").get();
         assertTrue(response.isSuccess());
         assertEquals(2, response.getData().size());
-        response = SyncanoObject.please(Article.class).where().endsWith(column, "Title", Case.INSENSITIVE).get();
+        response = Syncano.please(Article.class).where().endsWith(column, "Title", Case.INSENSITIVE).get();
         assertTrue(response.isSuccess());
         assertEquals(3, response.getData().size());
     }

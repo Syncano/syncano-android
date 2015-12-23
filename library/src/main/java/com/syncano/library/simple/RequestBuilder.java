@@ -2,6 +2,7 @@ package com.syncano.library.simple;
 
 import com.syncano.library.Syncano;
 import com.syncano.library.api.FieldsFilter;
+import com.syncano.library.api.RequestAll;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
@@ -14,7 +15,7 @@ import com.syncano.library.data.SyncanoObject;
 import java.util.List;
 
 
-public class ObjectPlease<T extends SyncanoObject> {
+public class RequestBuilder<T extends SyncanoObject> {
     private Syncano syncano;
     private Class<T> clazz;
     private String sortByField;
@@ -25,7 +26,7 @@ public class ObjectPlease<T extends SyncanoObject> {
     private String pageUrl;
 
 
-    public ObjectPlease(Class<T> clazz) {
+    public RequestBuilder(Class<T> clazz) {
         this.clazz = clazz;
         this.syncano = Syncano.getInstance();
     }
@@ -34,7 +35,19 @@ public class ObjectPlease<T extends SyncanoObject> {
         return prepareGetRequest().send();
     }
 
-    public void getAsync(SyncanoCallback<List<T>> callback) {
+    /**
+     * You can get limited amount of objects in one request. This method gets objects until all are
+     * downloaded. Use carefully. Will work very bad for more than a few hundreds of objects .
+     */
+    public ResponseGetList<T> getAll() {
+        return (new RequestAll<>(prepareGetRequest())).send();
+    }
+
+    public void getAll(SyncanoCallback<List<T>> callback) {
+        (new RequestAll<>(prepareGetRequest())).sendAsync(callback);
+    }
+
+    public void get(SyncanoCallback<List<T>> callback) {
         prepareGetRequest().sendAsync(callback);
     }
 
@@ -53,7 +66,7 @@ public class ObjectPlease<T extends SyncanoObject> {
         return syncano.getObject(clazz, id).send();
     }
 
-    public void getAsync(int id, SyncanoCallback<T> callback) {
+    public void get(int id, SyncanoCallback<T> callback) {
         syncano.getObject(clazz, id).sendAsync(callback);
     }
 
@@ -72,43 +85,43 @@ public class ObjectPlease<T extends SyncanoObject> {
         }
     }
 
-    public ObjectPlease<T> on(Syncano syncano) {
+    public RequestBuilder<T> on(Syncano syncano) {
         this.syncano = syncano;
         return this;
     }
 
-    public ObjectPlease<T> orderBy(String fieldName) {
+    public RequestBuilder<T> orderBy(String fieldName) {
         return orderBy(fieldName, SortOrder.ASCENDING);
 
     }
 
-    public ObjectPlease<T> orderBy(String fieldName, SortOrder sortOrder) {
+    public RequestBuilder<T> orderBy(String fieldName, SortOrder sortOrder) {
         this.sortByField = fieldName;
         this.sortOrder = sortOrder;
         return this;
     }
 
-    public ObjectPlease<T> selectFields(FilterType filterType, String... fields) {
+    public RequestBuilder<T> selectFields(FilterType filterType, String... fields) {
         this.fieldsFilter = new FieldsFilter(filterType, fields);
         return this;
     }
 
-    public ObjectPlease<T> selectFields(FilterType filterType, List<String> fields) {
+    public RequestBuilder<T> selectFields(FilterType filterType, List<String> fields) {
         this.fieldsFilter = new FieldsFilter(filterType, fields);
         return this;
     }
 
-    public ObjectPlease<T> setFieldsFilter(FieldsFilter fieldsFilter) {
+    public RequestBuilder<T> setFieldsFilter(FieldsFilter fieldsFilter) {
         this.fieldsFilter = fieldsFilter;
         return this;
     }
 
-    public ObjectPlease<T> limit(int limit) {
+    public RequestBuilder<T> limit(int limit) {
         this.limit = limit;
         return this;
     }
 
-    public ObjectPlease<T> page(String pageUrl) {
+    public RequestBuilder<T> page(String pageUrl) {
         this.pageUrl = pageUrl;
         return this;
     }
