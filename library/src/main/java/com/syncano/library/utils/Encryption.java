@@ -11,6 +11,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.security.KeyStore;
 
@@ -45,15 +46,9 @@ public class Encryption {
 
     private static SSLSocketFactory newSslSocketFactory() {
         try {
-            // Get an instance of the Bouncy Castle KeyStore format
             KeyStore trusted = getSslKey();
-            // Pass the keystore to the SSLSocketFactory. The factory is responsible
-            // for the verification of the server certificate.
             SSLSocketFactory sf = new SSLSocketFactory(trusted);
-            // Hostname verification from certificate
-            // http://hc.apache.org/httpcomponents-client-ga/tutorial/html/connmgmt.html#d4e506
-            sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-//			sf.setHostnameVerifier(SSLSocketFactory.STRICT_HOSTNAME_VERIFIER);
+            sf.setHostnameVerifier(SSLSocketFactory.STRICT_HOSTNAME_VERIFIER);
             return sf;
         } catch (Exception e) {
             throw new AssertionError(e);
@@ -62,22 +57,13 @@ public class Encryption {
 
     private static KeyStore getSslKey() {
         try {
+            InputStream in = new ByteArrayInputStream(EncryptionKey.KEY);
             KeyStore trusted = KeyStore.getInstance("BKS");
-            // Get the raw resource, which contains the keystore with
-            // your trusted certificates (root and any intermediate certs)
-            InputStream in = Encryption.class.getResourceAsStream("/com/syncano/library/utils/keystore.bks");
-
-            try {
-                // Initialize the keystore with the provided trusted certificates
-                // Also provide the password of the keystore
-                trusted.load(in, new char[]{});
-            } finally {
-                in.close();
-            }
+            trusted.load(in, null);
             return trusted;
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
+        return null;
     }
 }
