@@ -1,10 +1,5 @@
 package com.syncano.library;
 
-import android.app.Application;
-import android.content.res.AssetManager;
-import android.test.ApplicationTestCase;
-import android.util.Log;
-
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.ClassStatus;
 import com.syncano.library.data.SyncanoClass;
@@ -13,46 +8,42 @@ import com.syncano.library.utils.SyncanoLogger;
 import com.syncano.library.utils.SyncanoClassHelper;
 import com.syncano.library.utils.SyncanoLog;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Random;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-/**
- * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
- */
-public class SyncanoApplicationTestCase extends ApplicationTestCase<Application> {
+public class SyncanoApplicationTestCase {
 
     protected Syncano syncano;
 
     public SyncanoApplicationTestCase() {
-        super(Application.class);
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    public void setUp() throws Exception {
         Syncano.init(BuildConfig.STAGING_SERVER_URL, BuildConfig.API_KEY, BuildConfig.INSTANCE_NAME);
         syncano = Syncano.getInstance();
         SyncanoLog.initLogger(new SyncanoLogger() {
             @Override
             public void d(String tag, String message) {
-                Log.d(tag, message);
+                log(tag, message);
             }
 
             @Override
             public void w(String tag, String message) {
-                Log.w(tag, message);
+                log(tag, message);
             }
 
             @Override
             public void e(String tag, String message) {
-                Log.e(tag, message);
+                log(tag, message);
             }
         });
+    }
+
+    public void log(String tag, String message) {
+        System.out.println(tag + ", " + message);
     }
 
     public void createClass(Class<? extends SyncanoObject> clazz) throws InterruptedException {
@@ -63,7 +54,7 @@ public class SyncanoApplicationTestCase extends ApplicationTestCase<Application>
         long start = System.currentTimeMillis();
         SyncanoClass downloadedClass = null;
         while (System.currentTimeMillis() - start < 180000 && (downloadedClass == null || downloadedClass.getStatus() != ClassStatus.READY)) {
-            Log.d(SyncanoApplicationTestCase.class.getSimpleName(), "Waiting for class to create: " + (System.currentTimeMillis() - start));
+            SyncanoLog.d(SyncanoApplicationTestCase.class.getSimpleName(), "Waiting for class to create: " + (System.currentTimeMillis() - start));
             Response<SyncanoClass> respClass = syncano.getSyncanoClass(clazz).send();
             assertTrue(respClass.isSuccess());
             downloadedClass = respClass.getData();
@@ -82,55 +73,8 @@ public class SyncanoApplicationTestCase extends ApplicationTestCase<Application>
         assertTrue(resp.isSuccess());
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    public void tearDown() throws Exception {
         SyncanoLog.release();
-    }
-
-    public void copyAssets() {
-        AssetManager assetManager = getContext().getAssets();
-        String[] files = null;
-        try {
-            files = assetManager.list("");
-        } catch (IOException e) {
-            Log.e("tag", "Failed to get asset file list.", e);
-        }
-        if (files != null) for (String filename : files) {
-            InputStream in = null;
-            OutputStream out = null;
-            try {
-                in = assetManager.open(filename);
-                File outFile = new File(getContext().getFilesDir(), filename);
-                out = new FileOutputStream(outFile);
-                copyFile(in, out);
-            } catch (IOException e) {
-                Log.e("tag", "Failed to copy asset file: " + filename, e);
-            } finally {
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (IOException e) {
-                        // nothing
-                    }
-                }
-                if (out != null) {
-                    try {
-                        out.close();
-                    } catch (IOException e) {
-                        // nothing
-                    }
-                }
-            }
-        }
-    }
-
-    private void copyFile(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = new byte[1024];
-        int read;
-        while ((read = in.read(buffer)) != -1) {
-            out.write(buffer, 0, read);
-        }
     }
 
     public String generateString(int len) {
