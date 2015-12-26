@@ -8,6 +8,9 @@ import com.syncano.library.utils.SyncanoLogger;
 import com.syncano.library.utils.SyncanoClassHelper;
 import com.syncano.library.utils.SyncanoLog;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
+import java.security.Security;
 import java.util.Random;
 
 import static org.junit.Assert.assertTrue;
@@ -22,6 +25,7 @@ public class SyncanoApplicationTestCase {
     }
 
     public void setUp() throws Exception {
+        Security.addProvider(new BouncyCastleProvider());
         Syncano.init(BuildConfig.STAGING_SERVER_URL, BuildConfig.API_KEY, BuildConfig.INSTANCE_NAME);
         syncano = Syncano.getInstance();
         SyncanoLog.initLogger(new SyncanoLogger() {
