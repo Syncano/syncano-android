@@ -8,7 +8,15 @@ import com.syncano.library.choice.TraceStatus;
 import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Trace;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class CodeBoxesTest extends SyncanoApplicationTestCase {
 
@@ -17,8 +25,8 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
     private static final String ARGUMENT_VALUE = "GRrr";
     private CodeBox codeBox;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
         String codeBoxLabel = "CodeBox Test";
 
@@ -38,13 +46,14 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
         codeBox = responseCreateCodeBox.getData();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         Response<CodeBox> responseCodeBoxDelete = syncano.deleteCodeBox(codeBox.getId()).send();
         assertTrue(responseCodeBoxDelete.isSuccess());
         super.tearDown();
     }
 
+    @Test
     public void testCodeBoxes() throws InterruptedException {
         // ----------------- Get One -----------------
         Response<CodeBox> responseGetCodeBox = syncano.getCodeBox(codeBox.getId()).send();
@@ -116,6 +125,7 @@ public class CodeBoxesTest extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_NOT_FOUND, responseGetOneCodeBox.getHttpResultCode());
     }
 
+    @Test
     public void testSimpleCodeBoxMethods() throws InterruptedException {
         CodeBox cbx = new CodeBox(codeBox.getId());
         assertTrue(cbx.run().isSuccess());

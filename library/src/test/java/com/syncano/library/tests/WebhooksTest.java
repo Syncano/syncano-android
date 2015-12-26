@@ -11,7 +11,15 @@ import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Trace;
 import com.syncano.library.data.Webhook;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class WebhooksTest extends SyncanoApplicationTestCase {
 
@@ -23,8 +31,8 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
     private static final String ARGUMENT_NAME = "argument";
     private static final String ARGUMENT_VALUE = "GRrr";
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
 
         String codeBoxLabel = "CodeBox Test";
@@ -51,8 +59,8 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
         assertNotNull(responseCreateWebhook.getData());
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         // ----------------- Delete CodeBox -----------------
         Response<CodeBox> responseCodeBoxDelete = syncano.deleteCodeBox(codeBox.getId()).send();
         assertTrue(responseCodeBoxDelete.isSuccess());
@@ -60,8 +68,11 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
         // ----------------- Delete Webhook -----------------
         Response<Webhook> delResp = syncano.deleteWebhook(WEBHOOK_NAME).send();
         assertTrue(delResp.isSuccess());
+
+        super.tearDown();
     }
 
+    @Test
     public void testWebhooks() throws InterruptedException {
         // ----------------- Get One -----------------
         Response<Webhook> responseGetWebhook = syncano.getWebhook(WEBHOOK_NAME).send();
@@ -115,6 +126,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_NOT_FOUND, responseGetOneWebhook.getHttpResultCode());
     }
 
+    @Test
     public void testWebHooksSimpleCalls() {
         Webhook webhook = new Webhook(WEBHOOK_NAME);
         Response<Trace> respRun = webhook.run();
@@ -137,6 +149,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
         assertTrue(output.contains(ARGUMENT_VALUE));
     }
 
+    @Test
     public void testPublicWebhook() {
         // ----------------- Create public webhook -----------------
         Webhook newWebhook = new Webhook(PUBLIC_WEBHOOK_NAME, codeBox.getId());

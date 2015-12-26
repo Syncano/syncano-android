@@ -8,11 +8,20 @@ import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.callbacks.SyncanoListCallback;
 import com.syncano.library.data.SyncanoObject;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class Paging extends SyncanoApplicationTestCase {
 
@@ -22,8 +31,8 @@ public class Paging extends SyncanoApplicationTestCase {
 
     private CountDownLatch countDownLatch;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
         createClass(MyObject.class);
 
@@ -33,12 +42,13 @@ public class Paging extends SyncanoApplicationTestCase {
         }
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         removeClass(MyObject.class);
         super.tearDown();
     }
 
+    @Test
     public void testPaging() {
         ArrayList<MyObject> list = new ArrayList<>();
         int loops = 0;
@@ -59,6 +69,7 @@ public class Paging extends SyncanoApplicationTestCase {
         assertEquals(LOOPS, loops);
     }
 
+    @Test
     public void testPleasePaging() {
         ArrayList<MyObject> list = new ArrayList<>();
         int loops = 0;
@@ -103,12 +114,14 @@ public class Paging extends SyncanoApplicationTestCase {
         }
     };
 
+    @Test
     public void testAsyncPaging() throws InterruptedException {
         Syncano.please(MyObject.class).limit(PAGE).get(callbackPlease);
         countDownLatch = new CountDownLatch(1);
         countDownLatch.await();
     }
 
+    @Test
     public void testOrderPaging() {
         ArrayList<MyObject> list = new ArrayList<>();
         int loops = 0;
@@ -130,6 +143,7 @@ public class Paging extends SyncanoApplicationTestCase {
         assertEquals(LOOPS, loops);
     }
 
+    @Test
     public void testGetAll() {
         ResponseGetList<MyObject> resp = Syncano.please(MyObject.class).limit(PAGE).getAll();
         assertTrue(resp.isSuccess());
@@ -137,6 +151,7 @@ public class Paging extends SyncanoApplicationTestCase {
         assertEquals(NUMBER, resp.getData().size());
     }
 
+    @Test
     public void testAsyncGetAll() throws InterruptedException {
         final AtomicBoolean requestFinished = new AtomicBoolean(false);
         Syncano.please(MyObject.class).limit(PAGE).getAll(new SyncanoListCallback<MyObject>() {

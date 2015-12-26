@@ -14,19 +14,34 @@ import com.syncano.library.choice.RuntimeName;
 import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.SyncanoObject;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 public class FieldsFilterTest extends SyncanoApplicationTestCase {
 
     private CodeBox codeBox;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
         createClass(ExampleSyncanoObject.class);
         createCodeBox();
         createTestsObject();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        removeClass(ExampleSyncanoObject.class);
+        deleteCodeBox();
+        super.tearDown();
     }
 
     private void createTestsObject() {
@@ -50,6 +65,7 @@ public class FieldsFilterTest extends SyncanoApplicationTestCase {
         codeBox = responseCodeBoxCreate.getData();
     }
 
+    @Test
     public void testGetObjectListFilterIncludePlease() {
         Response<List<ExampleSyncanoObject>> syncanoResponse1 = Syncano.please(ExampleSyncanoObject.class)
                 .selectFields(FilterType.INCLUDE_FIELDS, ExampleSyncanoObject.COLUMN_IMPORTANT_NUMBER).get();
@@ -61,6 +77,7 @@ public class FieldsFilterTest extends SyncanoApplicationTestCase {
         assertNull(exampleSyncanoObject.longTextSample);
     }
 
+    @Test
     public void testGetObjectListFilterExcludePlease() {
         Response<List<ExampleSyncanoObject>> syncanoResponse = Syncano.please(ExampleSyncanoObject.class)
                 .selectFields(FilterType.EXCLUDE_FIELDS, ExampleSyncanoObject.COLUMN_LONG_TEXT).get();
@@ -72,6 +89,7 @@ public class FieldsFilterTest extends SyncanoApplicationTestCase {
         assertNotNull(exampleSyncanoObject.importantNumber);
     }
 
+    @Test
     public void testGetObjectListFilterExcludeSyncano() {
         Response<List<ExampleSyncanoObject>> syncanoResponse = syncano.getObjects(ExampleSyncanoObject.class)
                 .selectFields(FilterType.INCLUDE_FIELDS, ExampleSyncanoObject.FIELD_ID).send();
@@ -87,17 +105,13 @@ public class FieldsFilterTest extends SyncanoApplicationTestCase {
         assertNull(exampleSyncanoObject.longTextSample);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        removeClass(ExampleSyncanoObject.class);
-        deleteCodeBox();
-    }
 
     private void deleteCodeBox() {
         Response<CodeBox> responseCodeBoxDelete = syncano.deleteCodeBox(codeBox.getId()).send();
         assertTrue(responseCodeBoxDelete.isSuccess());
     }
 
+    @Test
     public void testGetOneFilter() {
         RequestGet<CodeBox> requestGet = syncano.getCodeBox(codeBox.getId());
         FieldsFilter filter = new FieldsFilter(FilterType.INCLUDE_FIELDS, Arrays.asList(CodeBox.FIELD_ID, CodeBox.FIELD_LABEL));
@@ -110,6 +124,7 @@ public class FieldsFilterTest extends SyncanoApplicationTestCase {
         assertNull(responseGetCodeBox.getData().getSource());
     }
 
+    @Test
     public void testGetManyFilter() {
         RequestGetList<CodeBox> requestGetList = syncano.getCodeBoxes();
         FieldsFilter filter = new FieldsFilter(FilterType.INCLUDE_FIELDS, Arrays.asList(CodeBox.FIELD_ID, CodeBox.FIELD_LABEL));

@@ -9,23 +9,31 @@ import com.syncano.library.choice.Case;
 import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.SyncanoObject;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class QueryTest extends SyncanoApplicationTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
         createClass(Article.class);
         createTestsArticles();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
         removeClass(Article.class);
+        super.tearDown();
     }
 
+    @Test
     public void testStringQueries() {
         runTestsOnColumn(Article.COLUMN_TITLE);
     }

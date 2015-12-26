@@ -9,22 +9,31 @@ import com.syncano.library.api.Response;
 import com.syncano.library.data.BatchAnswer;
 import com.syncano.library.data.SyncanoObject;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import java.util.List;
 
 public class BatchTest extends SyncanoApplicationTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
         createClass(Book.class);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         super.tearDown();
         removeClass(Book.class);
     }
 
+    @Test
     public void testBatch() {
         // create objects
         Syncano s = Syncano.getInstance();

@@ -6,6 +6,14 @@ import com.syncano.library.api.Response;
 import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.data.CodeBox;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -17,11 +25,17 @@ public class AsyncQueueTest extends SyncanoApplicationTestCase {
 
     private CountDownLatch lock;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
     }
 
+    @After
+    public void tearDown() throws Exception {
+        super.tearDown();
+    }
+
+    @Test
     public void testAsyncTest() throws InterruptedException {
         lock = new CountDownLatch(TEST_REQUESTS);
 

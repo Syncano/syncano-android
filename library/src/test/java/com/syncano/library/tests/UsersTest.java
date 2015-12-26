@@ -13,7 +13,15 @@ import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.User;
 import com.syncano.library.utils.SyncanoClassHelper;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class UsersTest extends SyncanoApplicationTestCase {
 
@@ -22,8 +30,8 @@ public class UsersTest extends SyncanoApplicationTestCase {
     private static final String NEW_PASSWORD = "new_password";
 
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
 
         Response<User> responseUserAuth = syncano.loginUser(USER_NAME, PASSWORD).send();
@@ -42,6 +50,12 @@ public class UsersTest extends SyncanoApplicationTestCase {
         }
     }
 
+    @After
+    public void tearDown() throws Exception {
+        super.tearDown();
+    }
+
+    @Test
     public void testUsers() throws InterruptedException {
 
         final User newUser = new User(USER_NAME, PASSWORD);
@@ -95,6 +109,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
         assertTrue(responseDeleteUser.isSuccess());
     }
 
+    @Test
     public void testCustomUsers() throws InterruptedException {
 
         // ----------------- Get Profile Class -----------------
@@ -187,6 +202,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteUser.getHttpResultCode());
     }
 
+    @Test
     public void testSocial() {
         if (BuildConfig.FACEBOOK_TOKEN != null && !BuildConfig.FACEBOOK_TOKEN.isEmpty()) {
             Response<User> responseFb = syncano.loginSocialUser(SocialAuthBackend.FACEBOOK, BuildConfig.FACEBOOK_TOKEN).send();

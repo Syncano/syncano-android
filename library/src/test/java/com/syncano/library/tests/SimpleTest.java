@@ -7,13 +7,22 @@ import com.syncano.library.api.Response;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.User;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.Date;
 import java.util.List;
 
+import static junit.framework.TestCase.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 public class SimpleTest extends SyncanoApplicationTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
         createClass(Item.class);
 
@@ -26,12 +35,13 @@ public class SimpleTest extends SyncanoApplicationTestCase {
         }
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
         removeClass(Item.class);
+        super.tearDown();
     }
 
+    @Test
     public void testSimple() {
         // ----------------- Create object 1 -----------------
         Item item1 = new Item();
@@ -71,6 +81,7 @@ public class SimpleTest extends SyncanoApplicationTestCase {
         assertTrue(respDelete.isSuccess());
     }
 
+    @Test
     public void testUsers() {
         // ----------------- Register user -----------------
         User user = new User();

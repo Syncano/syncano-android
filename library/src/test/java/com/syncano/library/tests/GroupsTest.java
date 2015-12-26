@@ -8,7 +8,15 @@ import com.syncano.library.data.Group;
 import com.syncano.library.data.GroupMembership;
 import com.syncano.library.data.User;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class GroupsTest extends SyncanoApplicationTestCase {
     private static final String USER_NAME = "testuser";
@@ -19,8 +27,8 @@ public class GroupsTest extends SyncanoApplicationTestCase {
 
     private User user;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
 
         // ----------------- Get Or Create Test User -----------------
@@ -52,18 +60,17 @@ public class GroupsTest extends SyncanoApplicationTestCase {
         }
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-
+    @After
+    public void tearDown() throws Exception {
         // ----------------- Delete Test User -----------------
         if (user != null) {
             Response<User> responseDeleteUser = syncano.deleteUser(user.getId()).send();
             assertTrue(responseDeleteUser.isSuccess());
         }
+        super.tearDown();
     }
 
-
+    @Test
     public void testGroups() throws InterruptedException {
 
         final Group newGroup = new Group(GROUP_LABEL);
@@ -103,6 +110,7 @@ public class GroupsTest extends SyncanoApplicationTestCase {
         assertTrue(responseDeleteGroup.isSuccess());
     }
 
+    @Test
     public void testGroupMembership() throws InterruptedException {
 
         GroupMembership groupMembership;

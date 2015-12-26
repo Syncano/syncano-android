@@ -4,14 +4,7 @@ machine:
 
 test:
   override:
-    # start the emulator
-    - emulator -avd circleci-android22 -no-audio -no-window:
-        background: true
-        parallel: true
-    # wait for it to have booted
-    - circle-android wait-for-boot
-    # run tests  against the emulator.
-    - ./gradlew connectedCheck -Pinstance_name="\"${YOUR_INSTANCE_NAME}\"" -Papi_key="\"${YOUR_API_KEY}\"" -Papi_key_users="\"${YOUR_API_KEY_USERS}\""
+    - ./gradlew testDebug --continue -Pinstance_name="\"${YOUR_INSTANCE_NAME}\"" -Papi_key="\"${YOUR_API_KEY}\"" -Papi_key_users="\"${YOUR_API_KEY_USERS}\""
     # copy the build outputs to artifacts
     - cp -r library/build/reports $CIRCLE_ARTIFACTS
     - adb logcat -d >> $CIRCLE_ARTIFACTS/logcat.txt

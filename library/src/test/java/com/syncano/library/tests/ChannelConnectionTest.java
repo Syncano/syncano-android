@@ -14,10 +14,19 @@ import com.syncano.library.choice.NotificationAction;
 import com.syncano.library.data.Channel;
 import com.syncano.library.data.Notification;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ChannelConnectionTest extends SyncanoApplicationTestCase {
 
@@ -25,8 +34,8 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
     private CountDownLatch lock;
     private static final String CHANNEL_NAME = "channel_one";
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
 
         // ----------------- Delete Channel -----------------
@@ -38,10 +47,11 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
         createClass(TestSyncanoObject.class);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         Response<Channel> responseDeleteChannel = syncano.deleteChannel(CHANNEL_NAME).send();
         assertTrue(responseDeleteChannel.isSuccess());
+        super.tearDown();
     }
 
     private void customPublishCheck(String room) throws InterruptedException {
@@ -187,18 +197,22 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
         assertTrue(removeReceived.get());
     }
 
+    @Test
     public void testDataChanges() throws InterruptedException {
         dataChangesCheck(null);
     }
 
+    @Test
     public void testDataChangesInRoom() throws InterruptedException {
         dataChangesCheck("custom_room_name");
     }
 
+    @Test
     public void testCustomPublish() throws InterruptedException {
         customPublishCheck(null);
     }
 
+    @Test
     public void testCustomPublishInRoom() throws InterruptedException {
         customPublishCheck("other_custom_room_name");
     }

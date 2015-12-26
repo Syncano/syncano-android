@@ -6,24 +6,31 @@ import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.Where;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class DataObjectsTest extends SyncanoApplicationTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
-
         createClass(TestSyncanoObject.class);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-
+    @After
+    public void tearDown() throws Exception {
         removeClass(TestSyncanoObject.class);
+        super.tearDown();
     }
 
+    @Test
     public void testDataObjects() throws InterruptedException {
 
         String valueOne = "user01";
@@ -72,6 +79,7 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
         assertTrue(responseDeleteObject.isSuccess());
     }
 
+    @Test
     public void testWhereFilter() {
         TestSyncanoObject objectOne = syncano.createObject(new TestSyncanoObject("User", "One")).send().getData();
         TestSyncanoObject objectTwo = syncano.createObject(new TestSyncanoObject("User", "Two")).send().getData();
@@ -88,6 +96,7 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
         assertEquals(1, response.getData().size()); // Should be only one item with given id.
     }
 
+    @Test
     public void testOrderBy() {
         TestSyncanoObject objectOne = syncano.createObject(new TestSyncanoObject("User", "One")).send().getData();
         TestSyncanoObject objectTwo = syncano.createObject(new TestSyncanoObject("User", "Two")).send().getData();
@@ -106,6 +115,7 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
         syncano.deleteObject(TestSyncanoObject.class, objectTwo.getId());
     }
 
+    @Test
     public void testPageSize() {
         Response<TestSyncanoObject> objectOne = syncano.createObject(new TestSyncanoObject("User", "One")).send();
         assertTrue(objectOne.isSuccess());

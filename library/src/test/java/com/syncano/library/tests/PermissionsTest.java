@@ -13,7 +13,15 @@ import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.User;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class PermissionsTest extends SyncanoApplicationTestCase {
     private static final String USER_NAME = "testuser";
@@ -21,8 +29,8 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
     private static final String GROUP_NAME = "mastersofdisasters";
     private Syncano userSyncano;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
 
         // delete user
@@ -53,6 +61,12 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
         userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME);
     }
 
+    @After
+    public void tearDown() throws Exception {
+        super.tearDown();
+    }
+
+    @Test
     public void testGroupPermissionsOnClass() {
         // register user
         User newUser = new User(USER_NAME, PASSWORD);
@@ -128,6 +142,7 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_FORBIDDEN, respGetObjNone.getHttpResultCode());
     }
 
+    @Test
     public void testUserPermissionOnObject() {
         // register user
         User newUser = new User(USER_NAME, PASSWORD);
