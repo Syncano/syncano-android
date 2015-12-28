@@ -7,18 +7,25 @@ import com.syncano.library.choice.RuntimeName;
 import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Trace;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 public class Codebox extends SyncanoApplicationTestCase {
     private static final String EXPECTED_RESULT = "this is message from our Codebox";
     private int codeboxId;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
         String codeBoxLabel = "CodeBox Test";
         RuntimeName runtime = RuntimeName.NODEJS;
         String source = "var msg = '" + EXPECTED_RESULT + "'; console.log(msg);";
 
-        final CodeBox newCodeBox = new CodeBox();
+        CodeBox newCodeBox = new CodeBox();
         newCodeBox.setLabel(codeBoxLabel);
         newCodeBox.setRuntimeName(runtime);
         newCodeBox.setSource(source);
@@ -31,13 +38,13 @@ public class Codebox extends SyncanoApplicationTestCase {
         codeboxId = responseCreateCodeBox.getData().getId();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-
+    @After
+    public void tearDown() throws Exception {
         syncano.deleteCodeBox(codeboxId).send();
+        super.tearDown();
     }
 
+    @Test
     public void testRunCodebox() {
         // ---------- Running CodeBoxes
 

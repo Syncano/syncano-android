@@ -1,7 +1,5 @@
 package com.syncano.library.documentation;
 
-import android.util.Log;
-
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoClass;
@@ -15,8 +13,16 @@ import com.syncano.library.choice.FilterType;
 import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.Trace;
+import com.syncano.library.utils.SyncanoLog;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 // ---------- Adding your class
 @SyncanoClass(name = "book")
@@ -42,19 +48,20 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
     // -----------------------------
 
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
         createClass(Book.class);
         this.syncano = super.syncano;
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         removeClass(Book.class);
         super.tearDown();
     }
 
+    @Test
     public void testInitiateSyncano() {
         // ---------- Connecting to Syncano
         syncano = new Syncano("YOUR API KEY", "YOUR INSTANCE");
@@ -63,7 +70,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         this.syncano = super.syncano;
     }
 
-
+    @Test
     public void testGetObjects() {
         // ---------- Download the most recent Objects Synchronous
         Response<List<Book>> responseGetBooks = Syncano.please(Book.class).get();
@@ -96,6 +103,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         // -----------------------------
     }
 
+    @Test
     public void testGetSingleObject() {
         int id = 0;
 
@@ -107,6 +115,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         // -----------------------------
     }
 
+    @Test
     public void testObjects() {
         // ---------- Creating a new Data Object
         Book newBook = new Book();
@@ -174,6 +183,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteObject.getHttpResultCode());
     }
 
+    @Test
     public void testAdditionalFeatures() {
         CodeBox codeBox = new CodeBox();
         codeBox.setId(0);
@@ -187,6 +197,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         // -----------------------------
     }
 
+    @Test
     public void testErrors() {
         // ---------- Response codes and error messages
         Response<List<Book>> responseGetBooks = syncano.getObjects(Book.class).send();
@@ -194,8 +205,8 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         if (responseGetBooks.getResultCode() == Response.CODE_SUCCESS) {
             // Success
         } else if (responseGetBooks.getResultCode() == Response.CODE_HTTP_ERROR) {
-            Log.d(TAG, "Result Code: " + responseGetBooks.getHttpResultCode());
-            Log.d(TAG, "Reason Phrase: " + responseGetBooks.getHttpReasonPhrase());
+            SyncanoLog.d(TAG, "Result Code: " + responseGetBooks.getHttpResultCode());
+            SyncanoLog.d(TAG, "Reason Phrase: " + responseGetBooks.getHttpReasonPhrase());
         }
         // -----------------------------
 

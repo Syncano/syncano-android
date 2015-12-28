@@ -90,4 +90,8 @@ public class SyncanoApplicationTestCase {
         }
         return sb.toString();
     }
+
+    public String getAssetsDir() {
+        return "./src/test/assets/";
+    }
 }

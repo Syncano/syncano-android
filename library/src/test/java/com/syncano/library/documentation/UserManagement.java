@@ -13,15 +13,22 @@ import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.User;
 import com.syncano.library.utils.SyncanoClassHelper;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.File;
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class UserManagement extends SyncanoApplicationTestCase {
     private final String userName = "userlogin";
     private final String password = "userpass";
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
         deleteTestUser(syncano, userName);
         User newUser = new User(userName, password);
@@ -30,10 +37,10 @@ public class UserManagement extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
         deleteTestUser(syncano, userName);
+        super.tearDown();
     }
 
     public static void deleteTestUser(Syncano syncano, String userName) {
@@ -48,6 +55,7 @@ public class UserManagement extends SyncanoApplicationTestCase {
         }
     }
 
+    @Test
     public void testCreateUser() {
         deleteTestUser(syncano, userName);
 
@@ -59,6 +67,7 @@ public class UserManagement extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
     }
 
+    @Test
     public void testUpdateUserClass() {
         // ---------- You can make same kind of changes to user_profile class
         Response<SyncanoClass> responseGetProfileClass = syncano.getSyncanoClass(Constants.USER_PROFILE_CLASS_NAME).send();
@@ -77,13 +86,14 @@ public class UserManagement extends SyncanoApplicationTestCase {
 
         // ---------- Now a user has an extra avatar field in their user profile, which the user can update with an avatar picture
         MyUserProfile profile = user.getProfile();
-        profile.avatar = new SyncanoFile(new File(getContext().getFilesDir(), "blue.png"));
+        profile.avatar = new SyncanoFile(new File(getAssetsDir(), "blue.png"));
         Response<MyUserProfile> responseAvatar = profile.save();
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseAvatar.getHttpResultCode());
     }
 
+    @Test
     public void testUserAuthentication() {
         // ---------- User authentication
         Response<User> response = syncano.loginUser(userName, password).send();
@@ -107,6 +117,7 @@ public class UserManagement extends SyncanoApplicationTestCase {
         // -----------------------------
     }
 
+    @Test
     public void testSocialUserAuthentication() {
         String socialNetworkAuthToken = "";
 

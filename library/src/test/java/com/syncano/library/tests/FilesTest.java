@@ -7,22 +7,30 @@ import com.syncano.library.api.Response;
 import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.File;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 public class FilesTest extends SyncanoApplicationTestCase {
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
-        copyAssets();
         createClass(TheObject.class);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         removeClass(TheObject.class);
         super.tearDown();
     }
 
+    @Test
     public void testSendFile() {
         TheObject fileNull = new TheObject();
         fileNull.file = null;
@@ -40,7 +48,7 @@ public class FilesTest extends SyncanoApplicationTestCase {
         assertNotNull(respBytes.getData().file.getLink());
 
         TheObject fileAsset = new TheObject();
-        fileAsset.file = new SyncanoFile(new File(getContext().getFilesDir(), "blue.png"));
+        fileAsset.file = new SyncanoFile(new File(getAssetsDir(), "blue.png"));
         Response<TheObject> respAsset = syncano.createObject(fileAsset).send();
         assertTrue(respAsset.isSuccess());
         assertNotNull(respAsset.getData());
@@ -49,8 +57,8 @@ public class FilesTest extends SyncanoApplicationTestCase {
         assertTrue(respAsset.getData().file2 == null);
 
         TheObject fileDouble = new TheObject();
-        fileDouble.file = new SyncanoFile(new File(getContext().getFilesDir(), "blue.png"));
-        fileDouble.file2 = new SyncanoFile(new File(getContext().getFilesDir(), "red.png"));
+        fileDouble.file = new SyncanoFile(new File(getAssetsDir(), "blue.png"));
+        fileDouble.file2 = new SyncanoFile(new File(getAssetsDir(), "red.png"));
         Response<TheObject> respDouble = syncano.createObject(fileDouble).send();
         assertTrue(respDouble.isSuccess());
         assertNotNull(respDouble.getData());

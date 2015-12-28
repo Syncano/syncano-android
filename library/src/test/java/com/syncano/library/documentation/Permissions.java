@@ -9,14 +9,27 @@ import com.syncano.library.data.Group;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 public class Permissions extends SyncanoApplicationTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
         removeClass(ExampleObject.class);
     }
 
+    @After
+    public void tearDown() throws Exception {
+        super.tearDown();
+    }
+
+    @Test
     public void testCreateObjectPermission() throws InterruptedException {
         createClass(ExampleObject.class);
         // ---------- Creating a Data Object with an owner_permissions example
@@ -31,6 +44,7 @@ public class Permissions extends SyncanoApplicationTestCase {
         assertEquals(DataObjectPermissions.READ, response.getData().getOwnerPermissions());
     }
 
+    @Test
     public void testClassPermisions() {
         // ---------- PERMISSION TYPES FOR CLASSES
         SyncanoClass syncanoClass = new SyncanoClass(ExampleObject.class);
@@ -42,6 +56,7 @@ public class Permissions extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
     }
 
+    @Test
     public void testClassGroupPermisions() {
         String groupName = "group";
 

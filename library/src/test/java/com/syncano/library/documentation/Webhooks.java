@@ -8,13 +8,20 @@ import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Trace;
 import com.syncano.library.data.Webhook;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 public class Webhooks extends SyncanoApplicationTestCase {
     private static final String EXPECTED_RESULT = "this is message from our Codebox";
     private static final String WEBHOOK_NAME = "webhook_name";
     private int codeboxId;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
 
         // create codebox
@@ -22,7 +29,7 @@ public class Webhooks extends SyncanoApplicationTestCase {
         RuntimeName runtime = RuntimeName.NODEJS;
         String source = "var msg = '" + EXPECTED_RESULT + "'; console.log(msg);";
 
-        final CodeBox newCodeBox = new CodeBox();
+        CodeBox newCodeBox = new CodeBox();
         newCodeBox.setLabel(codeBoxLabel);
         newCodeBox.setRuntimeName(runtime);
         newCodeBox.setSource(source);
@@ -40,13 +47,14 @@ public class Webhooks extends SyncanoApplicationTestCase {
         syncano.createWebhook(webhook).send();
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    @After
+    public void tearDown() throws Exception {
         syncano.deleteWebhook(WEBHOOK_NAME).send();
         syncano.deleteCodeBox(codeboxId).send();
+        super.tearDown();
     }
 
+    @Test
     public void testWebhooks() {
         // ---------- Let's run the webhook to test if everything works
         Response<Trace> response = syncano.runWebhook("webhook_name").send();
@@ -57,6 +65,7 @@ public class Webhooks extends SyncanoApplicationTestCase {
         assertNotNull(trace);
     }
 
+    @Test
     public void testWebhooksWithPayload() {
         // ---------- If you wanted to use POST, you can pass extra arguments for the Webhook as a JSON body
         JsonObject params = new JsonObject();

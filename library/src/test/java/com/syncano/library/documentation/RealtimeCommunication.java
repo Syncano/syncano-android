@@ -12,9 +12,26 @@ import com.syncano.library.data.Channel;
 import com.syncano.library.data.Notification;
 import com.syncano.library.data.SyncanoObject;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 public class RealtimeCommunication extends SyncanoApplicationTestCase {
+
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        super.tearDown();
+    }
 
     private void createChannel(String name, ChannelType type, boolean customPublish) {
         syncano.deleteChannel(name).send();
@@ -29,6 +46,7 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
         syncano.deleteChannel(name).send();
     }
 
+    @Test
     public void testCreateChannel() {
         deleteChannel("channel_name");
 
@@ -45,6 +63,7 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
         assertNotNull(response.getData());
     }
 
+    @Test
     public void testPoll() {
         createChannel("channel_name", ChannelType.DEFAULT, false);
 
@@ -67,6 +86,7 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
         channelConnection.stop();
     }
 
+    @Test
     public void testCreateObject() throws InterruptedException {
         createClass(Book.class);
         createChannel("channel_name", ChannelType.DEFAULT, false);
@@ -81,6 +101,7 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
     }
 
+    @Test
     public void testHandlePoll() {
         createChannel("channel_name", ChannelType.DEFAULT, false);
         int lastId = 0;
@@ -104,6 +125,7 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
         channelConnection.stop();
     }
 
+    @Test
     public void testCustomPublish() {
         deleteChannel("can_publish");
 
@@ -139,6 +161,7 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
 
     }
 
+    @Test
     public void testSendCustomNotification() {
         createChannel("can_publish", ChannelType.DEFAULT, true);
 
@@ -153,6 +176,7 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
     }
 
+    @Test
     public void testRooms() {
         syncano.deleteChannel("channel_with_rooms").send();
 
@@ -186,6 +210,7 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
         channelConnection.stop();
     }
 
+    @Test
     public void testCreateObjectInRoom() {
         createChannel("separate_rooms", ChannelType.SEPARATE_ROOMS, true);
 
@@ -199,6 +224,7 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
     }
 
+    @Test
     public void testCustomNotification() {
         createChannel("separate_rooms", ChannelType.SEPARATE_ROOMS, true);
 
@@ -213,6 +239,7 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
     }
 
+    @Test
     public void testHistory() {
         createChannel("channel_name", ChannelType.DEFAULT, true);
 
@@ -225,6 +252,7 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
     }
 
+    @Test
     public void testHistoryInRoom() {
         createChannel("channel_name", ChannelType.SEPARATE_ROOMS, true);
 
@@ -237,6 +265,7 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
     }
 
+    @Test
     public void testAdminHistoryInRoom() {
         createChannel("channel_name", ChannelType.SEPARATE_ROOMS, true);
 

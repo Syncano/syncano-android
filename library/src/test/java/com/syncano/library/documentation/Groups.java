@@ -11,7 +11,14 @@ import com.syncano.library.data.GroupMembership;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.User;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class Groups extends SyncanoApplicationTestCase {
 
@@ -20,8 +27,8 @@ public class Groups extends SyncanoApplicationTestCase {
     public final static String USER_PASS = "passwordofuser";
     private Group group;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
         deleteGroup(syncano, GROUP_NAME);
         Response<Group> response = syncano.createGroup(new Group(GROUP_NAME)).send();
@@ -30,6 +37,11 @@ public class Groups extends SyncanoApplicationTestCase {
         assertNotNull(group);
 
         createClass(Book.class);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        super.tearDown();
     }
 
     public static void deleteGroup(Syncano syncano, String label) {
@@ -43,6 +55,7 @@ public class Groups extends SyncanoApplicationTestCase {
         }
     }
 
+    @Test
     public void testCreateGroup() {
         deleteGroup(syncano, GROUP_NAME);
 
@@ -54,6 +67,7 @@ public class Groups extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
     }
 
+    @Test
     public void testAddUserToGroup() {
         UserManagement.deleteTestUser(syncano, USER_NAME);
         Response<User> createResponse = syncano.registerUser(new User(USER_NAME, USER_PASS)).send();
@@ -67,6 +81,7 @@ public class Groups extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
     }
 
+    @Test
     public void testAddObjectGroupPermission() {
         // ---------- Creating objects with Group permissions
         final Book book = new Book();

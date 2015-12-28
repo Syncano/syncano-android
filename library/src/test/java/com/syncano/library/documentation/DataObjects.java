@@ -9,15 +9,22 @@ import com.syncano.library.choice.SortOrder;
 import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
 import java.io.File;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
 public class DataObjects extends SyncanoApplicationTestCase {
 
-    @Override
-    protected void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         super.setUp();
-        copyAssets();
         createClass(Book.class);
 
         Book newBook = new Book();
@@ -28,6 +35,12 @@ public class DataObjects extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_CREATED, responseCreateObject.getHttpResultCode());
     }
 
+    @After
+    public void tearDown() throws Exception {
+        super.tearDown();
+    }
+
+    @Test
     public void testCreateClass() {
 
         // ---------- Creating a Data Object
@@ -47,7 +60,7 @@ public class DataObjects extends SyncanoApplicationTestCase {
         Book bookWithCover = new Book();
         bookWithCover.author = "Ernest Hemingway";
         bookWithCover.title = "The Old Man and the Sea";
-        bookWithCover.cover = new SyncanoFile(new File(getContext().getFilesDir(), "blue.png"));
+        bookWithCover.cover = new SyncanoFile(new File(getAssetsDir(), "blue.png"));
 
         Response<Book> responseCreateObjectWithFile = bookWithCover.save();
         // -----------------------------
@@ -79,7 +92,7 @@ public class DataObjects extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDelete.getHttpResultCode());
     }
 
-
+    @Test
     public void testGetDetails() {
         Response<List<Book>> resp = syncano.getObjects(Book.class).send();
         assertEquals(Response.HTTP_CODE_SUCCESS, resp.getHttpResultCode());
