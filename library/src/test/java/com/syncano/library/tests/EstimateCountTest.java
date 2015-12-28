@@ -46,7 +46,7 @@ public class EstimateCountTest extends SyncanoApplicationTestCase {
         Response<Integer> estimateResponse = Syncano.please(SampleSyncanoObject.class).getCountEstimation();
         assertTrue(estimateResponse.isSuccess());
         assertEquals(Integer.valueOf(3), estimateResponse.getData());
-        ResponseGetList<SampleSyncanoObject> objectsWithEstimateCountResponse = Syncano.please(SampleSyncanoObject.class).estimateCount().getAll();
+        ResponseGetList<SampleSyncanoObject> objectsWithEstimateCountResponse = Syncano.please(SampleSyncanoObject.class).estimateCount().get();
         assertTrue(objectsWithEstimateCountResponse.isSuccess());
         assertEquals(Integer.valueOf(3), objectsWithEstimateCountResponse.getEstimatedCount());
         Integer accurateSize = objectsWithEstimateCountResponse.getData().size();
