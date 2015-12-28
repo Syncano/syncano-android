@@ -52,7 +52,7 @@ public class BatchBuilder {
         JsonObject json = new JsonObject();
         json.add("requests", array);
 
-        String url = String.format(Constants.BATCH_URL, syncano.getInstanceName());
+        String url = String.format(Constants.BATCH_URL, syncano.getNotEmptyInstanceName());
         BatchRequest req = new BatchRequest(url, syncano, json);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;

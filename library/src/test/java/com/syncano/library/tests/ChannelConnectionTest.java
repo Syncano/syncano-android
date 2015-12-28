@@ -1,7 +1,5 @@
 package com.syncano.library.tests;
 
-import android.util.Log;
-
 import com.google.gson.JsonObject;
 import com.syncano.library.ChannelConnection;
 import com.syncano.library.ChannelConnectionListener;
@@ -13,6 +11,7 @@ import com.syncano.library.choice.ChannelType;
 import com.syncano.library.choice.NotificationAction;
 import com.syncano.library.data.Channel;
 import com.syncano.library.data.Notification;
+import com.syncano.library.utils.SyncanoLog;
 
 import org.junit.After;
 import org.junit.Before;
@@ -76,7 +75,7 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
         channelConnection.setChannelConnectionListener(new ChannelConnectionListener() {
             @Override
             public void onNotification(Notification notification) {
-                Log.d(TAG, "onNotification: id= " + notification.getId());
+                SyncanoLog.d(TAG, "onNotification: id= " + notification.getId());
                 assertEquals(notification.getAction(), NotificationAction.CUSTOM);
                 notificationsReceived.incrementAndGet();
                 lock.countDown();
@@ -84,7 +83,7 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
 
             @Override
             public void onError(Response<Notification> response) {
-                Log.d(TAG, "onError: " + response.toString());
+                SyncanoLog.d(TAG, "onError: " + response.toString());
                 fail("Error response: " + response.toString());
             }
         });
@@ -138,7 +137,7 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
         channelConnection.setChannelConnectionListener(new ChannelConnectionListener() {
             @Override
             public void onNotification(Notification notification) {
-                Log.d(TAG, "onNotification: id= " + notification.getId() + " " + notification.getAction());
+                SyncanoLog.d(TAG, "onNotification: id= " + notification.getId() + " " + notification.getAction());
                 if (notification.getAction() == NotificationAction.CREATE) {
                     createReceived.set(true);
                 } else if (notification.getAction() == NotificationAction.UPDATE) {
@@ -151,7 +150,7 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
 
             @Override
             public void onError(Response<Notification> response) {
-                Log.d(TAG, "onError: " + response.toString());
+                SyncanoLog.d(TAG, "onError: " + response.toString());
                 fail("Error response: " + response.toString());
             }
         });
