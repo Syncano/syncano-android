@@ -4,9 +4,8 @@ machine:
 
 test:
   override:
-    - ./gradlew testDebug --continue -Pinstance_name="\"${YOUR_INSTANCE_NAME}\"" -Papi_key="\"${YOUR_API_KEY}\"" -Papi_key_users="\"${YOUR_API_KEY_USERS}\""
+    - ./gradlew testDebug --continue --info -Pinstance_name="\"${YOUR_INSTANCE_NAME}\"" -Papi_key="\"${YOUR_API_KEY}\"" -Papi_key_users="\"${YOUR_API_KEY_USERS}\""
     # copy the build outputs to artifacts
     - cp -r library/build/reports $CIRCLE_ARTIFACTS
-    - adb logcat -d >> $CIRCLE_ARTIFACTS/logcat.txt
     # copy the test results to the test results directory.
-    - cp -r library/build/outputs/androidTest-results/* $CIRCLE_TEST_REPORTS
+    - cp -r library/build/test-results/debug/* $CIRCLE_TEST_REPORTS
