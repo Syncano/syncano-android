@@ -3,6 +3,7 @@ package com.syncano.library.simple;
 import com.syncano.library.Syncano;
 import com.syncano.library.api.FieldsFilter;
 import com.syncano.library.api.RequestAll;
+import com.syncano.library.api.RequestCount;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
@@ -20,10 +21,11 @@ public class RequestBuilder<T extends SyncanoObject> {
     private Class<T> clazz;
     private String sortByField;
     private SortOrder sortOrder;
-    private int limit = -1;
+    private Integer limit;
     private Where<T> where;
     private FieldsFilter fieldsFilter;
     private String pageUrl;
+    private boolean estimateCount = false;
 
 
     public RequestBuilder(Class<T> clazz) {
@@ -58,6 +60,7 @@ public class RequestBuilder<T extends SyncanoObject> {
         } else {
             request = syncano.getObjects(clazz, pageUrl);
         }
+
         decorateRequest(request);
         return request;
     }
@@ -74,7 +77,7 @@ public class RequestBuilder<T extends SyncanoObject> {
         if (sortByField != null) {
             request.setOrderBy(sortByField, sortOrder);
         }
-        if (limit != -1) {
+        if (limit != null) {
             request.setLimit(limit);
         }
         if (where != null) {
@@ -82,6 +85,9 @@ public class RequestBuilder<T extends SyncanoObject> {
         }
         if (fieldsFilter != null) {
             request.setFieldsFilter(fieldsFilter);
+        }
+        if (estimateCount) {
+            request.estimateCount();
         }
     }
 
@@ -121,6 +127,11 @@ public class RequestBuilder<T extends SyncanoObject> {
         return this;
     }
 
+    public RequestBuilder<T> estimateCount() {
+        this.estimateCount = true;
+        return this;
+    }
+
     public RequestBuilder<T> page(String pageUrl) {
         this.pageUrl = pageUrl;
         return this;
@@ -129,5 +140,18 @@ public class RequestBuilder<T extends SyncanoObject> {
     public Where<T> where() {
         where = new Where<>(this);
         return where;
+    }
+
+    /**
+     * Return response with data as integer with estimated objects count
+     * estimation start after 1000 objects, before it's accurate
+     */
+    public Response<Integer> getCountEstimation() {
+        return new RequestCount(prepareGetRequest()).send();
+    }
+
+
+    public void getCountEstimation(SyncanoCallback<Integer> syncanoCallback) {
+        new RequestCount(prepareGetRequest()).sendAsync(syncanoCallback);
     }
 }

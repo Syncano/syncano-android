@@ -15,6 +15,7 @@ public class ResponseGetList<T> extends Response<List<T>> {
 
     private String previousPageUrl;
     private String nextPageUrl;
+    private Integer estimatedCount;
     private Syncano syncano;
     private Class<T> resultType;
 
@@ -73,5 +74,13 @@ public class ResponseGetList<T> extends Response<List<T>> {
 
     public void getPreviousPage(SyncanoCallback<List<T>> callback) {
         getPreviousPageRequest().sendAsync(callback);
+    }
+
+    public void setEstimatedCount(Integer count) {
+        this.estimatedCount = count;
+    }
+
+    public Integer getEstimatedCount() {
+        return estimatedCount;
     }
 }
