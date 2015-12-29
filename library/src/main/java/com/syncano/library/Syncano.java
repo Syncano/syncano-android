@@ -514,7 +514,7 @@ public class Syncano {
      */
     public <T> RequestGetOne<CustomWebhook<T>> getWebhook(String name) {
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getNotEmptyInstanceName(), name);
-        RequestGetOne<CustomWebhook> req = new RequestGetOne<>(CustomWebhook.class, url, this);
+        RequestGetOne<CustomWebhook<T>> req = new RequestGetOne<>(CustomWebhook.class, url, this);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
     }
@@ -553,7 +553,7 @@ public class Syncano {
      * @param name Webhook id.
      * @return null
      */
-    public <T extends Webhook> RequestDelete<T> deleteWebhook(String name) {
+    public <T extends CustomWebhook> RequestDelete<T> deleteWebhook(String name) {
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getNotEmptyInstanceName(), name);
         RequestDelete req = new RequestDelete<>(CustomWebhook.class, url, this);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
@@ -606,7 +606,7 @@ public class Syncano {
      * @param webhook Webhook to run.
      * @return Result of executed Webhook.
      */
-    public <T > RequestPost<T> runWebhook(Class<T> clazz, CustomWebhook<T> webhook) {
+    public <T> RequestPost<T> runWebhook(Class<T> clazz, CustomWebhook<T> webhook) {
         return runWebhook(clazz, webhook, null);
     }
 
