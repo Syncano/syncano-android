@@ -35,17 +35,17 @@ public class CustomWebhook<T> {
     private WebHookLinks links;
 
     private T result;
+    private Class responseType;
     private Syncano syncano;
 
-    private CustomWebhook() {
-    }
 
-    public CustomWebhook(String name) {
+    public CustomWebhook(Class responseClass, String name) {
+        this.responseType = responseClass;
         this.name = name;
     }
 
-    public CustomWebhook(String name, int codebox) {
-        this.name = name;
+    public CustomWebhook(Class responseClass, String name, int codebox) {
+        this(responseClass, name);
         this.codebox = codebox;
     }
 
@@ -131,6 +131,10 @@ public class CustomWebhook<T> {
 
     public void setResult(T trace) {
         this.result = trace;
+    }
+
+    public Class<T> getResponseType() {
+        return responseType;
     }
 
     public static class WebHookLinks {

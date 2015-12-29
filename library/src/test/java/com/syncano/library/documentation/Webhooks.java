@@ -6,7 +6,7 @@ import com.syncano.library.api.Response;
 import com.syncano.library.choice.RuntimeName;
 import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Trace;
-import com.syncano.library.data.CustomWebhook;
+import com.syncano.library.data.Webhook;
 
 import org.junit.After;
 import org.junit.Before;
@@ -43,7 +43,7 @@ public class Webhooks extends SyncanoApplicationTestCase {
 
         // create webhook
         syncano.deleteWebhook(WEBHOOK_NAME).send();
-        CustomWebhook webhook = new CustomWebhook(WEBHOOK_NAME, codeboxId);
+        Webhook webhook = new Webhook(WEBHOOK_NAME, codeboxId);
         syncano.createWebhook(webhook).send();
     }
 
@@ -72,9 +72,7 @@ public class Webhooks extends SyncanoApplicationTestCase {
         params.addProperty("first_name", "Ryan");
         params.addProperty("last_name", "Gosling");
 
-     //   Response<Trace> response = syncano.runWebhook("webhook_name", params).send();
-        // -----------------------------
-
-      //  assertEquals(response.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
+        Response<Trace> response = syncano.runWebhook("webhook_name", params).send();
+        assertEquals(response.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
     }
 }

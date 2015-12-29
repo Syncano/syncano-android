@@ -2,12 +2,12 @@ package com.syncano.library.tests;
 
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoField;
+import com.syncano.library.api.RequestDelete;
 import com.syncano.library.api.RequestGetOne;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.RuntimeName;
 import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.CustomWebhook;
-import com.syncano.library.data.Webhook;
 
 import org.junit.After;
 import org.junit.Before;
@@ -54,7 +54,7 @@ public class CustomWebhooksTest extends SyncanoApplicationTestCase {
         assertTrue(delResp.isSuccess());
 
         // ----------------- Create Webhook -----------------
-        CustomWebhook newWebhook = new CustomWebhook(WEBHOOK_NAME, codeBox.getId());
+        CustomWebhook newWebhook = new CustomWebhook(CustomWebHookResponse.class, WEBHOOK_NAME, codeBox.getId());
         Response<CustomWebhook> responseCreateWebhook = syncano.createWebhook(newWebhook).send();
 
         assertTrue(responseCreateWebhook.isSuccess());
@@ -77,8 +77,8 @@ public class CustomWebhooksTest extends SyncanoApplicationTestCase {
     @Test
     public void testWebhooks() throws InterruptedException {
         // ----------------- Get One -----------------
-        RequestGetOne<CustomWebhook<CustomWebHookResponse>> requestForWebhook = syncano.getWebhook(WEBHOOK_NAME);
-        Response<CustomWebhook<CustomWebHookResponse>> responseGetWebhook = requestForWebhook.send();
+        RequestGetOne<CustomWebhook<CustomWebHookResponse>> getWebhookRequest = syncano.getWebhook(WEBHOOK_NAME);
+        Response<CustomWebhook<CustomWebHookResponse>> responseGetWebhook = getWebhookRequest.send();
 
         assertTrue(responseGetWebhook.isSuccess());
         assertNotNull(responseGetWebhook.getData());
@@ -89,17 +89,18 @@ public class CustomWebhooksTest extends SyncanoApplicationTestCase {
         assertEquals(webhook.getIsPublic(), responseGetWebhook.getData().getIsPublic());
 
         // ----------------- Run -----------------
-        Response<CustomWebHookResponse> responseRunWebhook = syncano.runWebhook(CustomWebHookResponse.class, webhook).send();
+        Response<CustomWebHookResponse> responseRunWebhook = syncano.runWebhook(webhook).send();
         assertTrue(responseRunWebhook.isSuccess());
         assertNotNull(responseRunWebhook.getData());
 
         // ----------------- Delete -----------------
-        Response<Webhook> responseDeleteWebhook = syncano.deleteWebhook(WEBHOOK_NAME).send();
-
+        RequestDelete<CustomWebhook> request = syncano.deleteWebhook(WEBHOOK_NAME);
+        Response<CustomWebhook> responseDeleteWebhook = request.send();
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteWebhook.getHttpResultCode());
 
         // ----------------- Get One -----------------
-        Response<CustomWebhook> responseGetOneWebhook = syncano.getWebhook(WEBHOOK_NAME).send();
+        RequestGetOne<CustomWebhook<CustomWebHookResponse>> requestGetOne = syncano.getWebhook(WEBHOOK_NAME);
+        Response<CustomWebhook<CustomWebHookResponse>> responseGetOneWebhook = requestGetOne.send();
 
         // After delete, Webhook should not be found.
         assertEquals(Response.HTTP_CODE_NOT_FOUND, responseGetOneWebhook.getHttpResultCode());
