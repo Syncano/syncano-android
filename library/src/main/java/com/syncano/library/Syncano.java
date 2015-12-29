@@ -514,7 +514,7 @@ public class Syncano {
      * @param name Webhook id.
      * @return Existing Webhook.
      */
-    public <T extends CustomWebhook<?>> RequestGetOne<T> getWebhook(String name) {
+    public <T extends CustomWebhook> RequestGetOne<T> getWebhook(String name) {
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getNotEmptyInstanceName(), name);
         RequestGetOne req = new RequestGetOne<>(CustomWebhook.class, url, this);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
