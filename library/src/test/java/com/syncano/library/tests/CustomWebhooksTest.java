@@ -91,7 +91,7 @@ public class CustomWebhooksTest extends SyncanoApplicationTestCase {
         assertEquals(webhook.getIsPublic(), responseGetWebhook.getData().getIsPublic());
 
         // ----------------- Run -----------------
-        Response<CustomWebHookResponse> responseRunWebhook = syncano.runWebhook(CustomWebHookResponse.class, webhook).send();
+        Response<CustomWebHookResponse> responseRunWebhook = syncano.runWebhook(webhook).send();
 
         assertTrue(responseRunWebhook.isSuccess());
         assertNotNull(responseRunWebhook.getData());

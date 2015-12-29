@@ -8,7 +8,6 @@ import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.RuntimeName;
 import com.syncano.library.data.CodeBox;
-import com.syncano.library.data.CustomWebhook;
 import com.syncano.library.data.Trace;
 import com.syncano.library.data.Webhook;
 
@@ -132,7 +131,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
         Response<Trace> respRun = webhook.run();
 
         assertTrue(respRun.isSuccess());
-        assertNotNull(webhook.getTrace());
+        assertNotNull(webhook.getResult());
         assertNotNull(webhook.getOutput());
         assertTrue(webhook.getOutput().contains(EXPECTED_RESULT));
 
@@ -142,7 +141,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
         respRun = webhook.run(json);
 
         assertTrue(respRun.isSuccess());
-        assertNotNull(webhook.getTrace());
+        assertNotNull(webhook.getResult());
         String output = webhook.getOutput();
         assertNotNull(output);
         assertTrue(output.contains(EXPECTED_RESULT));

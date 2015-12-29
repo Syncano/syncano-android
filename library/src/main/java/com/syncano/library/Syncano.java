@@ -512,7 +512,7 @@ public class Syncano {
      * @param name Webhook id.
      * @return Existing Webhook.
      */
-    public RequestGetOne<CustomWebhook> getWebhook(String name) {
+    public <T> RequestGetOne<CustomWebhook<T>> getWebhook(String name) {
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getNotEmptyInstanceName(), name);
         RequestGetOne<CustomWebhook> req = new RequestGetOne<>(CustomWebhook.class, url, this);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
@@ -553,12 +553,12 @@ public class Syncano {
      * @param name Webhook id.
      * @return null
      */
-    public  <T extends Webhook>  RequestDelete<T>  deleteWebhook(String name) {
+    public <T extends Webhook> RequestDelete<T> deleteWebhook(String name) {
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getNotEmptyInstanceName(), name);
         RequestDelete req = new RequestDelete<>(CustomWebhook.class, url, this);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_NOT_FOUND);
-     return req;
+        return req;
     }
 
     /**
@@ -606,7 +606,7 @@ public class Syncano {
      * @param webhook Webhook to run.
      * @return Result of executed Webhook.
      */
-    public <T> RequestPost<T> runWebhook(Class  clazz, CustomWebhook<T> webhook) {
+    public <T > RequestPost<T> runWebhook(Class<T> clazz, CustomWebhook<T> webhook) {
         return runWebhook(clazz, webhook, null);
     }
 
@@ -658,8 +658,8 @@ public class Syncano {
      * @param url Public webhook url.
      * @return Result of executed Webhook.
      */
-    public RequestPost<Trace> runWebHookUrl(String url) {
-        return runWebHookUrl(url, null);
+    public RequestPost<Trace> runWebhookUrl(String url) {
+        return runWebhookUrl(url, null);
     }
 
     /**
@@ -669,7 +669,7 @@ public class Syncano {
      * @param payload Params to pass to webhook.
      * @return Result of executed Webhook.
      */
-    public <T> RequestPost<T> runWebHookUrl(Class<T> clazz, String url, JsonObject payload) {
+    public <T> RequestPost<T> runWebhookUrl(Class<T> clazz, String url, JsonObject payload) {
         RequestPost<T> req = new RequestPost<>(clazz, null, this, payload);
         req.setCompleteCustomUrl(url);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
@@ -683,8 +683,8 @@ public class Syncano {
      * @param payload Params to pass to webhook.
      * @return Result of executed Webhook.
      */
-    public RequestPost<Trace> runWebHookUrl(String url, JsonObject payload) {
-        return runWebHookUrl(Trace.class, url, payload);
+    public RequestPost<Trace> runWebhookUrl(String url, JsonObject payload) {
+        return runWebhookUrl(Trace.class, url, payload);
     }
 
     /**

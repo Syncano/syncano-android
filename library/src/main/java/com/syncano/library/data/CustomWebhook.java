@@ -37,7 +37,7 @@ public class CustomWebhook<T> {
     private T result;
     private Syncano syncano;
 
-    public CustomWebhook() {
+    private CustomWebhook() {
     }
 
     public CustomWebhook(String name) {
