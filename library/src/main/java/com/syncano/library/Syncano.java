@@ -1,8 +1,8 @@
 package com.syncano.library;
 
 import com.google.gson.JsonObject;
-import com.syncano.library.api.IncrementBuilder;
 import com.syncano.library.api.HttpRequest;
+import com.syncano.library.api.IncrementBuilder;
 import com.syncano.library.api.RequestDelete;
 import com.syncano.library.api.RequestGet;
 import com.syncano.library.api.RequestGetList;
@@ -14,6 +14,7 @@ import com.syncano.library.choice.SocialAuthBackend;
 import com.syncano.library.data.AbstractUser;
 import com.syncano.library.data.Channel;
 import com.syncano.library.data.CodeBox;
+import com.syncano.library.data.CustomWebhook;
 import com.syncano.library.data.Group;
 import com.syncano.library.data.GroupMembership;
 import com.syncano.library.data.Notification;
@@ -100,6 +101,18 @@ public class Syncano {
         Encryption.setStrictCheckCertificate(strictCheck);
     }
 
+    public static Syncano getInstance() {
+        return sharedInstance;
+    }
+
+    public static void setInstance(Syncano syncano) {
+        sharedInstance = syncano;
+    }
+
+    public static <T extends SyncanoObject> RequestBuilder<T> please(Class<T> clazz) {
+        return new RequestBuilder<>(clazz);
+    }
+
     public String getInstanceName() {
         return instanceName;
     }
@@ -122,16 +135,6 @@ public class Syncano {
     public void setUserKey(String userKey) {
         this.userKey = userKey;
     }
-
-    public static Syncano getInstance() {
-        return sharedInstance;
-    }
-
-    public static void setInstance(Syncano syncano) {
-        sharedInstance = syncano;
-    }
-
-    // ==================== Objects ==================== //
 
     /**
      * Create object on Syncano.
@@ -287,7 +290,6 @@ public class Syncano {
         return req;
     }
 
-
     /**
      * Delete a Data Object on Syncano.
      *
@@ -314,8 +316,6 @@ public class Syncano {
         }
         return deleteObject((Class<T>) object.getClass(), object.getId());
     }
-
-    // ==================== CodeBoxes ==================== //
 
     /**
      * Create a CodeBox.
@@ -493,17 +493,15 @@ public class Syncano {
         });
     }
 
-    // ==================== Webhooks ==================== //
-
     /**
      * Create a new Webhook
      *
      * @param webhook Webhook to create.
      * @return New Webhook.
      */
-    public RequestPost<Webhook> createWebhook(Webhook webhook) {
+    public RequestPost<CustomWebhook> createWebhook(CustomWebhook webhook) {
         String url = String.format(Constants.WEBHOOKS_LIST_URL, getNotEmptyInstanceName());
-        RequestPost<Webhook> req = new RequestPost<>(Webhook.class, url, this, webhook);
+        RequestPost<CustomWebhook> req = new RequestPost<>(CustomWebhook.class, url, this, webhook);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
         return req;
     }
@@ -514,9 +512,9 @@ public class Syncano {
      * @param name Webhook id.
      * @return Existing Webhook.
      */
-    public RequestGetOne<Webhook> getWebhook(String name) {
+    public RequestGetOne<CustomWebhook> getWebhook(String name) {
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getNotEmptyInstanceName(), name);
-        RequestGetOne<Webhook> req = new RequestGetOne<>(Webhook.class, url, this);
+        RequestGetOne<CustomWebhook> req = new RequestGetOne<>(CustomWebhook.class, url, this);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
     }
@@ -526,9 +524,9 @@ public class Syncano {
      *
      * @return List of existing Webhooks.
      */
-    public RequestGetList<Webhook> getWebhooks() {
+    public RequestGetList<CustomWebhook> getWebhooks() {
         String url = String.format(Constants.WEBHOOKS_LIST_URL, getNotEmptyInstanceName());
-        RequestGetList<Webhook> req = new RequestGetList<>(Webhook.class, url, this);
+        RequestGetList<CustomWebhook> req = new RequestGetList<>(CustomWebhook.class, url, this);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
     }
@@ -539,12 +537,12 @@ public class Syncano {
      * @param webhook Webhook to update. It need to have name.
      * @return Updated Webhook.
      */
-    public RequestPatch<Webhook> updateWebhook(Webhook webhook) {
+    public RequestPatch<CustomWebhook> updateWebhook(CustomWebhook webhook) {
         if (webhook.getName() == null || webhook.getName().isEmpty()) {
             throw new RuntimeException("Trying to update Webhook without name!");
         }
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getNotEmptyInstanceName(), webhook.getName());
-        RequestPatch<Webhook> req = new RequestPatch<>(Webhook.class, url, this, webhook);
+        RequestPatch<CustomWebhook> req = new RequestPatch<>(CustomWebhook.class, url, this, webhook);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
     }
@@ -555,12 +553,12 @@ public class Syncano {
      * @param name Webhook id.
      * @return null
      */
-    public RequestDelete<Webhook> deleteWebhook(String name) {
+    public  <T extends Webhook>  RequestDelete<T>  deleteWebhook(String name) {
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getNotEmptyInstanceName(), name);
-        RequestDelete<Webhook> req = new RequestDelete<>(Webhook.class, url, this);
+        RequestDelete req = new RequestDelete<>(CustomWebhook.class, url, this);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_NOT_FOUND);
-        return req;
+     return req;
     }
 
     /**
@@ -573,6 +571,24 @@ public class Syncano {
         return runWebhook(name, null);
     }
 
+    public <T> RequestPost<T> runWebhook(Class<T> clazz, String name) {
+        return runWebhook(clazz, name, null);
+    }
+
+    /**
+     * Run a Webhook synchronous.
+     *
+     * @param name    Webhook id.
+     * @param payload Params to pass to webhook.
+     * @return Result of executed Webhook.
+     */
+    public <T> RequestPost<T> runWebhook(Class<T> clazz, String name, JsonObject payload) {
+        String url = String.format(Constants.WEBHOOKS_RUN_URL, getNotEmptyInstanceName(), name);
+        RequestPost<T> req = new RequestPost<>(clazz, url, this, payload);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
+    }
+
     /**
      * Run a Webhook synchronous.
      *
@@ -581,10 +597,17 @@ public class Syncano {
      * @return Result of executed Webhook.
      */
     public RequestPost<Trace> runWebhook(String name, JsonObject payload) {
-        String url = String.format(Constants.WEBHOOKS_RUN_URL, getNotEmptyInstanceName(), name);
-        RequestPost<Trace> req = new RequestPost<>(Trace.class, url, this, payload);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return runWebhook(Trace.class, name, payload);
+    }
+
+    /**
+     * Run a Webhook synchronous.
+     *
+     * @param webhook Webhook to run.
+     * @return Result of executed Webhook.
+     */
+    public <T> RequestPost<T> runWebhook(Class  clazz, CustomWebhook<T> webhook) {
+        return runWebhook(clazz, webhook, null);
     }
 
     /**
@@ -594,7 +617,28 @@ public class Syncano {
      * @return Result of executed Webhook.
      */
     public RequestPost<Trace> runWebhook(Webhook webhook) {
-        return runWebhook(webhook, null);
+        return runWebhook(Trace.class, webhook, null);
+    }
+
+    /**
+     * Run a Webhook synchronous.
+     *
+     * @param webhook Webhook to run.
+     * @param payload Params to pass to webhook.
+     * @return Result of executed Webhook.
+     */
+    public <T> RequestPost<T> runWebhook(Class<T> clazz, final CustomWebhook<T> webhook, JsonObject payload) {
+        if (webhook.getName() == null) {
+            throw new RuntimeException("Can't run webHook without a name.");
+        }
+        RequestPost<T> req = runWebhook(clazz, webhook.getName(), payload);
+        req.setRunAfter(new HttpRequest.RunAfter<T>() {
+            @Override
+            public void run(Response<T> response) {
+                webhook.setResult(response.getData());
+            }
+        });
+        return req;
     }
 
     /**
@@ -605,17 +649,7 @@ public class Syncano {
      * @return Result of executed Webhook.
      */
     public RequestPost<Trace> runWebhook(final Webhook webhook, JsonObject payload) {
-        if (webhook.getName() == null) {
-            throw new RuntimeException("Can't run webhook without a name.");
-        }
-        RequestPost<Trace> req = runWebhook(webhook.getName(), payload);
-        req.setRunAfter(new HttpRequest.RunAfter<Trace>() {
-            @Override
-            public void run(Response<Trace> response) {
-                webhook.setTrace(response.getData());
-            }
-        });
-        return req;
+        return runWebhook(Trace.class, webhook, payload);
     }
 
     /**
@@ -624,8 +658,8 @@ public class Syncano {
      * @param url Public webhook url.
      * @return Result of executed Webhook.
      */
-    public RequestPost<Trace> runWebhookUrl(String url) {
-        return runWebhookUrl(url, null);
+    public RequestPost<Trace> runWebHookUrl(String url) {
+        return runWebHookUrl(url, null);
     }
 
     /**
@@ -635,14 +669,23 @@ public class Syncano {
      * @param payload Params to pass to webhook.
      * @return Result of executed Webhook.
      */
-    public RequestPost<Trace> runWebhookUrl(String url, JsonObject payload) {
-        RequestPost<Trace> req = new RequestPost<>(Trace.class, null, this, payload);
+    public <T> RequestPost<T> runWebHookUrl(Class<T> clazz, String url, JsonObject payload) {
+        RequestPost<T> req = new RequestPost<>(clazz, null, this, payload);
         req.setCompleteCustomUrl(url);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
     }
 
-    // ==================== Classes ==================== //
+    /**
+     * Run a public Webhook synchronous.
+     *
+     * @param url     Public webhook url.
+     * @param payload Params to pass to webhook.
+     * @return Result of executed Webhook.
+     */
+    public RequestPost<Trace> runWebHookUrl(String url, JsonObject payload) {
+        return runWebHookUrl(Trace.class, url, payload);
+    }
 
     /**
      * Create a class.
@@ -741,8 +784,6 @@ public class Syncano {
     public RequestDelete<SyncanoClass> deleteSyncanoClass(Class<? extends SyncanoObject> clazz) {
         return deleteSyncanoClass(SyncanoClassHelper.getSyncanoClassName(clazz));
     }
-
-    // ==================== Users ==================== //
 
     /**
      * Create a new User.
@@ -939,8 +980,6 @@ public class Syncano {
         });
     }
 
-    // ==================== Groups ==================== //
-
     /**
      * Create a new Group.
      *
@@ -1068,8 +1107,6 @@ public class Syncano {
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
         return req;
     }
-
-    // ==================== Channels ==================== //
 
     /**
      * Create a new Channel
@@ -1207,9 +1244,5 @@ public class Syncano {
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
         return req;
-    }
-
-    public static <T extends SyncanoObject> RequestBuilder<T> please(Class<T> clazz) {
-        return new RequestBuilder<>(clazz);
     }
 }

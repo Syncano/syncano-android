@@ -8,6 +8,7 @@ import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.RuntimeName;
 import com.syncano.library.data.CodeBox;
+import com.syncano.library.data.CustomWebhook;
 import com.syncano.library.data.Trace;
 import com.syncano.library.data.Webhook;
 
@@ -51,12 +52,11 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
         Response<Webhook> delResp = syncano.deleteWebhook(WEBHOOK_NAME).send();
         assertTrue(delResp.isSuccess());
 
-        // ----------------- Create Webhook -----------------
-        Webhook newWebhook = new Webhook(WEBHOOK_NAME, codeBox.getId());
-        Response<Webhook> responseCreateWebhook = syncano.createWebhook(newWebhook).send();
-
-        assertTrue(responseCreateWebhook.isSuccess());
-        assertNotNull(responseCreateWebhook.getData());
+//        // ----------------- Create Webhook -----------------
+//        Webhook newWebhook = new Webhook(WEBHOOK_NAME, codeBox.getId());
+//        Response<CustomWebhook> responseCreateWebhook = syncano.createWebhook(newWebhook).send();
+//    assertTrue(responseCreateWebhook.isSuccess());
+//        assertNotNull(responseCreateWebhook.getData());
     }
 
     @After
