@@ -1,5 +1,7 @@
 package com.syncano.library.data;
 
+import com.syncano.library.utils.FileDownloader;
+
 import java.io.File;
 
 public class SyncanoFile {
@@ -23,11 +25,27 @@ public class SyncanoFile {
         return data;
     }
 
+    public void setData(byte[] data) {
+        this.data = data;
+    }
+
     public String getLink() {
         return link;
     }
 
     public File getFile() {
         return file;
+    }
+
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    public void fetch(FileDownloader.FileDownloadCallback callback) {
+        FileDownloader.download(this, callback);
+    }
+
+    public void fetch(File path, FileDownloader.FileDownloadCallback callback) {
+        FileDownloader.download(this, path, callback);
     }
 }

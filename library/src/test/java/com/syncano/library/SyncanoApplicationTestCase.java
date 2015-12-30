@@ -94,4 +94,8 @@ public class SyncanoApplicationTestCase {
     public String getAssetsDir() {
         return "./src/test/assets/";
     }
+
+    public String getBuildsDir() {
+        return "./build/";
+    }
 }
