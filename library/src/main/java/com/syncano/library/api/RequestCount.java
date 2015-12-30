@@ -1,6 +1,6 @@
 package com.syncano.library.api;
 
-public class RequestCount extends Request {
+public class RequestCount extends Request<Integer> {
     private RequestGetList initialRequest;
 
     public RequestCount(RequestGetList initialRequest) {
@@ -9,24 +9,22 @@ public class RequestCount extends Request {
     }
 
     @Override
-    public Response send() {
-        decorateCountRequest();
+    public Response<Integer> send() {
+        decorateGetListRequest();
         ResponseGetList responseGetList = initialRequest.send();
-        if (!responseGetList.isSuccess())
-            return responseGetList;
-
-        return createCountResponse(responseGetList.getEstimatedCount());
+        return repackGetResponse(responseGetList);
     }
 
-    private Response<Integer> createCountResponse(Integer estimatedCount) {
+    private Response<Integer> repackGetResponse(ResponseGetList response) {
         Response<Integer> countResponse = new Response<>();
-        countResponse.setData(estimatedCount);
-        countResponse.setResultCode(Response.CODE_SUCCESS);
-        countResponse.setHttpResultCode(Response.HTTP_CODE_SUCCESS);
+        countResponse.setData(response.getEstimatedCount());
+        countResponse.setResultCode(response.getResultCode());
+        countResponse.setHttpResultCode(response.getHttpResultCode());
+        countResponse.setError(response.getError());
         return countResponse;
     }
 
-    private void decorateCountRequest() {
+    private void decorateGetListRequest() {
         initialRequest.setLimit(0);
         initialRequest.estimateCount();
     }
