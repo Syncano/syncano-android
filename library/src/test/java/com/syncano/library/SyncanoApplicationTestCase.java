@@ -58,14 +58,14 @@ public class SyncanoApplicationTestCase {
         long start = System.currentTimeMillis();
         SyncanoClass downloadedClass = null;
         while (System.currentTimeMillis() - start < 180000 && (downloadedClass == null || downloadedClass.getStatus() != ClassStatus.READY)) {
+            Thread.sleep(100);
             SyncanoLog.d(SyncanoApplicationTestCase.class.getSimpleName(), "Waiting for class to create: " + (System.currentTimeMillis() - start));
             Response<SyncanoClass> respClass = syncano.getSyncanoClass(clazz).send();
-            assertTrue(respClass.isSuccess());
+            assertEquals(Response.HTTP_CODE_SUCCESS, respClass.getHttpResultCode());
             downloadedClass = respClass.getData();
             if (downloadedClass != null && downloadedClass.getStatus() == ClassStatus.READY) {
                 break;
             }
-            Thread.sleep(100);
         }
         assertNotNull(downloadedClass);
         assertEquals(SyncanoClassHelper.getSyncanoClassSchema(clazz), downloadedClass.getSchema());
