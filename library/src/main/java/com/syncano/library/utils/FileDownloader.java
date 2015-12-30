@@ -19,22 +19,71 @@ public class FileDownloader {
     private static final ExecutorService requestExecutor = Executors.newSingleThreadExecutor();
     private static final int PROGRESS_REFRESH = 200;
 
+    /**
+     * Downloads a file asynchronously from internet.
+     *
+     * @param url      Where to get a file from.
+     * @param callback Callback. Result will be passed as a byte[]. Use getData() on a result SyncanoFile to get downloaded data.
+     */
     public static void download(String url, FileDownloadCallback callback) {
         download(new SyncanoFile(url), null, true, callback);
     }
 
+    /**
+     * Downloads a file asynchronously from internet.
+     *
+     * @param url      Where to get a file from.
+     * @param path     Path where downloaded file should be written. May be null. Then it will not be written anywhere.
+     *                 Use getFile() on a result SyncanoFile to get it.
+     * @param callback Callback.
+     */
     public static void download(String url, File path, FileDownloadCallback callback) {
         download(new SyncanoFile(url), path, false, callback);
     }
 
+    /**
+     * Downloads a file asynchronously from internet.
+     *
+     * @param url      Where to get a file from.
+     * @param path     Path where downloaded file should be written. May be null. Then it will not be written anywhere.
+     *                 Use getFile() on a result object to get it.
+     * @param getBytes Should the result contain bytes array of downloaded file. Use getData() on a result SyncanoFile to get it.
+     * @param callback Callback.
+     */
+    public static void download(String url, File path, boolean getBytes, FileDownloadCallback callback) {
+        download(new SyncanoFile(url), path, getBytes, callback);
+    }
+
+    /**
+     * Downloads a file asynchronously from internet.
+     *
+     * @param file     File that should be downloaded. It's getLink() method will be used to get url.
+     * @param callback Callback. Result will be passed as a byte[]. Use getData() on a result SyncanoFile to get downloaded data.
+     */
     public static void download(SyncanoFile file, FileDownloadCallback callback) {
         download(file, null, true, callback);
     }
 
+    /**
+     * Downloads a file asynchronously from internet.
+     *
+     * @param file     File that should be downloaded. It's getLink() method will be used to get url.
+     * @param path     Path where downloaded file should be written.
+     * @param callback Callback. Result will be written to a file. Use getFile() on a result SyncanoFile to get it.
+     */
     public static void download(SyncanoFile file, File path, FileDownloadCallback callback) {
         download(file, path, false, callback);
     }
 
+    /**
+     * Downloads a file asynchronously from internet.
+     *
+     * @param file     File that should be downloaded. It's getLink() method will be used to get url.
+     * @param path     Path where downloaded file should be written. May be null. Then it will not be written anywhere.
+     *                 Use getFile() on a result SyncanoFile to get it.
+     * @param getBytes Should the result contain bytes array of downloaded file. Use getData() on a result SyncanoFile to get it.
+     * @param callback Callback.
+     */
     public static void download(final SyncanoFile file, final File path, final boolean getBytes, final FileDownloadCallback callback) {
         requestExecutor.execute(new Runnable() {
             @Override
@@ -79,6 +128,9 @@ public class FileDownloader {
         }
     }
 
+    /**
+     * Helps getting file name from url.
+     */
     public static String getFileName(String url) {
         try {
             URL parsedUrl = new URL(url);
@@ -94,6 +146,9 @@ public class FileDownloader {
         return null;
     }
 
+    /**
+     * Helps getting file name from url.
+     */
     public static String getFileName(SyncanoFile file) {
         return getFileName(file.getLink());
     }
@@ -171,10 +226,25 @@ public class FileDownloader {
     }
 
     public interface FileDownloadCallback {
+        /**
+         * When downloader has information about progress, then this method is called periodically
+         * to inform about progress.
+         *
+         * @param fraction minimum 0, maximum 1
+         */
         void progress(float fraction);
 
+        /**
+         * Called when download is finished.
+         *
+         * @param file Has File or/and Data fields set depending on previously setting of downloader.
+         *             Use getFile(), getData() to get downloaded data.
+         */
         void finished(SyncanoFile file);
 
+        /**
+         * Called when something was wrong. finished() will not be called.
+         */
         void error(String message);
     }
 }
