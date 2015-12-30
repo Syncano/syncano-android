@@ -14,6 +14,8 @@ public class Page<T> {
 
     @SyncanoField(name = "next", readOnly = true)
     private String next;
+    @SyncanoField(name = "objects_count", readOnly = true)
+    private Integer count;
 
     public String getPrev() {
         return prev;
@@ -37,5 +39,13 @@ public class Page<T> {
 
     public void setNext(String next) {
         this.next = next;
+    }
+
+    public Integer getCount() {
+        return count;
+    }
+
+    public void setCount(Integer count) {
+        this.count = count;
     }
 }

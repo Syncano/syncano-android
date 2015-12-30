@@ -12,7 +12,6 @@ import com.syncano.library.utils.DateTool;
 
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Where<T extends SyncanoObject> {
@@ -45,7 +44,7 @@ public class Where<T extends SyncanoObject> {
         this.please = please;
     }
 
-    public Response<List<T>> get() {
+    public ResponseGetList<T> get() {
         if (please == null) {
             throw new RuntimeException("Can be called only from SyncanoObject.please(class).where().get()");
         }
@@ -415,4 +414,13 @@ public class Where<T extends SyncanoObject> {
         return new Gson().toJson(query);
     }
 
+    /**
+     * @see RequestBuilder#getCountEstimation()
+     */
+    public Response<Integer> getCountEstimation() {
+        if (please == null) {
+            throw new RuntimeException("Can be called only from SyncanoObject.please(class).where().get()");
+        }
+        return please.getCountEstimation();
+    }
 }

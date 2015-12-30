@@ -15,7 +15,8 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
     protected Class<T> resultType;
     private Where where;
     private String orderBy;
-    private int pageSize = 0;
+    private Integer pageSize;
+    private boolean estimateCount;
 
     public RequestGetList(Class<T> resultType, String url, Syncano syncano) {
         super(url, syncano);
@@ -34,8 +35,12 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
             addUrlParam(Constants.URL_PARAM_ORDER_BY, orderBy);
         }
 
-        if (pageSize > 0) {
+        if (pageSize != null) {
             addUrlParam(Constants.URL_PARAM_PAGE_SIZE, String.valueOf(pageSize));
+        }
+
+        if (estimateCount) {
+            addUrlParam(Constants.URL_PARAM_INCLUDE_COUNT, Boolean.toString(true));
         }
     }
 
@@ -54,6 +59,7 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
         ResponseGetList<T> r = (ResponseGetList<T>) response;
         r.setNextPageUrl(pageInternal.getNext());
         r.setPreviousPageUrl(pageInternal.getPrev());
+        r.setEstimatedCount(pageInternal.getCount());
         return resultList;
     }
 
@@ -96,6 +102,14 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
 
 
     /**
+     * Estimate count.
+     */
+    public RequestGetList<T> estimateCount() {
+        estimateCount = true;
+        return this;
+    }
+
+    /**
      * Set limit of how many items do you want to get.
      *
      * @param limit Maximum amount of items.
@@ -104,6 +118,7 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
         pageSize = limit;
         return this;
     }
+
 
     @Override
     public Response<List<T>> instantiateResponse() {

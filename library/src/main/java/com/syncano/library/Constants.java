@@ -21,6 +21,7 @@ public class Constants {
     public final static String URL_PARAM_PAGE_LAST_PK = "last_pk";
     public final static String URL_PARAM_ROOM = "room";
     public final static String URL_PARAM_LAST_ID = "last_id";
+    public final static String URL_PARAM_INCLUDE_COUNT = "include_count";
 
     public final static String POST_PARAM_USER = "user";
     public final static String POST_PARAM_SOCIAL_TOKEN = "access_token";
