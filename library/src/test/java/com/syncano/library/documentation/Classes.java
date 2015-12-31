@@ -25,7 +25,7 @@ public class Classes extends SyncanoApplicationTestCase {
 
     @Test
     // ---------- Creating a Class
-    public void testCreateClass() {
+    public void createClass() {
         syncano.createSyncanoClass(Book.class).send();
     }
 

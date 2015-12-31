@@ -5,6 +5,7 @@ import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.api.Response;
+import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.choice.SortOrder;
 import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
@@ -81,6 +82,12 @@ public class DataObjects extends SyncanoApplicationTestCase {
 
         // -----------------------------
 
+        // ---------- Incrementing / decrementing fields
+        book.increment("pages", 10).save();
+        book.decrement("pages", 1).save();
+
+        // -----------------------------
+
         assertEquals(Response.HTTP_CODE_SUCCESS, responseUpdate.getHttpResultCode());
 
         // ---------- Deleting a Data Object
@@ -113,9 +120,10 @@ public class DataObjects extends SyncanoApplicationTestCase {
         assertNotNull(book);
 
         // ---------- Listing Data Objects
-        Response<List<Book>> responseList = Syncano.please(Book.class)
+        ResponseGetList<Book> responseList = Syncano.please(Book.class)
                 .orderBy(Book.FIELD_CREATED_AT, SortOrder.DESCENDING).where().neq(Book.FIELD_ID, 5).get();
 
+        List<Book> list = responseList.getData();
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseList.getHttpResultCode());
@@ -133,5 +141,8 @@ public class DataObjects extends SyncanoApplicationTestCase {
 
         @SyncanoField(name = "cover")
         public SyncanoFile cover;
+
+        @SyncanoField(name = "pages")
+        public Integer pages = 10;
     }
 }

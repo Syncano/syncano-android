@@ -4,11 +4,9 @@ import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.annotation.SyncanoField;
-import com.syncano.library.api.FieldsFilter;
-import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
-import com.syncano.library.callbacks.SyncanoCallback;
+import com.syncano.library.callbacks.SyncanoListCallback;
 import com.syncano.library.choice.FilterType;
 import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.SyncanoObject;
@@ -23,6 +21,15 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+// ---------- JSON
+//      [
+//        {"type": "string", "name": "title", "order_index":true, "filter_index":true},
+//        {"type": "string", "name": "subtitle", "order_index":true, "filter_index":true}
+//      ]
+// -----------------------------
+
 
 // ---------- Adding your class
 @SyncanoClass(name = "book")
@@ -73,26 +80,26 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
     @Test
     public void testGetObjects() {
         // ---------- Download the most recent Objects Synchronous
-        Response<List<Book>> responseGetBooks = Syncano.please(Book.class).get();
+        ResponseGetList<Book> responseGetBooks1 = Syncano.please(Book.class).get();
         //or other way
-        Response<List<Book>> responseGetBooks2 = syncano.getObjects(Book.class).send();
+        ResponseGetList<Book> responseGetBooks2 = syncano.getObjects(Book.class).send();
 
-        if (responseGetBooks.getResultCode() == Response.CODE_SUCCESS) {
-            List<Book> books = responseGetBooks.getData();
+        if (responseGetBooks1.isSuccess()) {
+            List<Book> books = responseGetBooks1.getData();
         }
         // -----------------------------
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseGetBooks.getHttpResultCode());
+        assertEquals(Response.HTTP_CODE_SUCCESS, responseGetBooks1.getHttpResultCode());
 
         // ---------- Download the most recent Objects Asynchronous
-        SyncanoCallback<List<Book>> callback = new SyncanoCallback<List<Book>>() {
+        SyncanoListCallback<Book> callback = new SyncanoListCallback<Book>() {
             @Override
-            public void success(Response<List<Book>> response, List<Book> result) {
+            public void success(ResponseGetList<Book> response, List<Book> result) {
                 // Request succeed.
             }
 
             @Override
-            public void failure(Response<List<Book>> response) {
+            public void failure(ResponseGetList<Book> response) {
                 // Something went wrong. Check error codes in response object.
             }
         };
@@ -109,78 +116,69 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
 
         // ---------- Get a single Data Object
         Response<Book> responseGetBook = syncano.getObject(Book.class, id).send();
-        Book book = Syncano.please(Book.class).get(id).getData();
+        Book book = responseGetBook.getData();
+
         // other way
-        book = responseGetBook.getData();
+        book = Syncano.please(Book.class).get(id).getData();
         // -----------------------------
     }
 
     @Test
     public void testObjects() {
         // ---------- Creating a new Data Object
-        Book newBook = new Book();
-        newBook.title = "New Title";
-        newBook.subtitle = "New Subtitle";
+        Book book = new Book();
+        book.title = "New Title";
+        book.subtitle = "New Subtitle";
 
-        Response<Book> responseCreateObject = newBook.save();
-
-        if (responseCreateObject.getResultCode() == Response.CODE_SUCCESS) {
-            // Book with filled id, createdAt, updatedAt and revision.
-            Book book = responseCreateObject.getData();
-        }
+        Response<Book> responseCreateObject = book.save();
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_CREATED, responseCreateObject.getHttpResultCode());
         Book receivedBook = responseCreateObject.getData();
         assertNotNull(receivedBook);
-        assertEquals(newBook.title, receivedBook.title);
-
-        Book book = new Book();
-        int id = receivedBook.getId();
+        assertEquals(book.title, receivedBook.title);
 
         // ---------- Modify an Object
-        book.setId(id);
+        // id has to be set in the object
         book.title = "New Title";
         book.subtitle = "New Subtitle";
 
         Response<Book> responseUpdate = book.save();
-        Book updatedBook = responseUpdate.getData(); // book with updated fields (like updatedAt).
         // -----------------------------
 
-        assertNotNull(updatedBook);
+        assertTrue(responseUpdate.isSuccess());
 
         // ---------- Where and OrderBy
-        Response<List<Book>> response = Syncano.please(Book.class).orderBy(Book.FIELD_TITLE)
+        ResponseGetList<Book> response = Syncano.please(Book.class).orderBy(Book.FIELD_TITLE)
                 .where().gte(Book.FIELD_ID, 10).lte(Book.FIELD_ID, 15).get();
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
 
-        ResponseGetList<Book> responseFirst = Syncano.please(Book.class).limit(10).get();
-        // ---------- Page size and LastPk
+        // ---------- Pages
         // Get with bigger id - next page
-        ResponseGetList<Book> responseNextPage = syncano.getObjects(Book.class, responseFirst.getNextPageUrl()).send();
+        ResponseGetList<Book> responseFirst = Syncano.please(Book.class).limit(10).get();
+        ResponseGetList<Book> responseNextPage = responseFirst.getNextPage();
 
         // Get with smaller id - previous page
-        ResponseGetList<Book> responsePreviousPage = syncano.getObjects(Book.class, responseFirst.getPreviousPageUrl()).send();
+        ResponseGetList<Book> responsePreviousPage = responseNextPage.getPreviousPage();
         // -----------------------------
 
+        assertTrue(responsePreviousPage.isSuccess());
+
         // ---------- Fields filtering
-        RequestGetList<Book> requestFilters = syncano.getObjects(Book.class);
+        ResponseGetList<Book> responseFilters =
+                Syncano.please(Book.class).selectFields(FilterType.INCLUDE_FIELDS, Book.FIELD_ID, Book.FIELD_TITLE).get();
 
-        FieldsFilter filter = new FieldsFilter(FilterType.INCLUDE_FIELDS, Book.FIELD_ID, Book.FIELD_TITLE);
-        requestFilters.setFieldsFilter(filter);
-
-        Response<List<Book>> responseFilters = requestFilters.send();
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_SUCCESS, responseFilters.getHttpResultCode());
 
         // ---------- Delete a Data Object
-        Response<Book> responseDeleteObject = syncano.deleteObject(Book.class, book.getId()).send();
+        Response<Book> responseDeleteObject = book.delete();
         // -----------------------------
 
-        assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteObject.getHttpResultCode());
+        assertTrue(responseDeleteObject.isSuccess());
     }
 
     @Test
@@ -200,22 +198,22 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
     @Test
     public void testErrors() {
         // ---------- Response codes and error messages
-        Response<List<Book>> responseGetBooks = syncano.getObjects(Book.class).send();
+        ResponseGetList<Book> response = Syncano.please(Book.class).get();
 
-        if (responseGetBooks.getResultCode() == Response.CODE_SUCCESS) {
+        if (response.isSuccess()) {
             // Success
-        } else if (responseGetBooks.getResultCode() == Response.CODE_HTTP_ERROR) {
-            SyncanoLog.d(TAG, "Result Code: " + responseGetBooks.getHttpResultCode());
-            SyncanoLog.d(TAG, "Reason Phrase: " + responseGetBooks.getHttpReasonPhrase());
+        } else if (response.getResultCode() == Response.CODE_HTTP_ERROR) {
+            SyncanoLog.d(TAG, "Result Code: " + response.getHttpResultCode());
+            SyncanoLog.d(TAG, "Reason Phrase: " + response.getHttpReasonPhrase());
         }
         // -----------------------------
 
         // ---------- Response codes and error messages
-        responseGetBooks.getResultCode(); // Library error codes
-        responseGetBooks.getError(); // Library error message
+        response.getResultCode(); // Library error codes
+        response.getError(); // Library error message
 
-        responseGetBooks.getHttpResultCode(); // Http result code
-        responseGetBooks.getHttpReasonPhrase(); // Http error message
+        response.getHttpResultCode(); // Http result code
+        response.getHttpReasonPhrase(); // Http error message
         // -----------------------------
     }
 }

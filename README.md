@@ -43,7 +43,7 @@ Version **gson-2.5** is recommended.
 ## TESTS
 To run tests call from command line:
 ```bash
-$ ./gradlew connectedAndroidTest
+$ ./gradlew testDebug --continue --info
 ```
 
 To run tests, remember to provide correct Api Key and Instance Name in:
@@ -52,5 +52,5 @@ library/gradle.properties
 ```
 or pass them in gradlew command:
 ```bash
-$ ./gradlew connectedCheck -Pinstance_name="\"your_instance_name\"" -Papi_key="\"your_api_key\"" -Papi_key_users="\"your_api_key_for_registering users\""
+$ ./gradlew testDebug --continue --info -Pinstance_name="\"your_instance_name\"" -Papi_key="\"your_api_key\"" -Papi_key_users="\"your_api_key_for_registering users\""
 ```
