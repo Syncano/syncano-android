@@ -13,6 +13,9 @@ public abstract class ResultRequest<T> extends HttpRequest<T> {
 
     @Override
     public T parseResult(Response<T> response, String json) {
+        if (resultType.equals(String.class)) {
+            return (T) json;
+        }
         return gson.fromJson(json, resultType);
     }
 }

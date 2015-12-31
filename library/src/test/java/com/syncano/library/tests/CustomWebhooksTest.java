@@ -1,11 +1,13 @@
 package com.syncano.library.tests;
 
 import com.syncano.library.SyncanoApplicationTestCase;
-import com.syncano.library.annotation.SyncanoField;
+import com.syncano.library.api.RequestDelete;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.RuntimeName;
+import com.syncano.library.choice.TraceStatus;
 import com.syncano.library.data.CodeBox;
-import com.syncano.library.data.CustomWebhook;
+import com.syncano.library.data.Trace;
+import com.syncano.library.data.Webhook;
 
 import org.junit.After;
 import org.junit.Before;
@@ -18,97 +20,75 @@ import static org.junit.Assert.assertTrue;
 public class CustomWebhooksTest extends SyncanoApplicationTestCase {
 
     private static final String WEBHOOK_NAME = "custom_webhook_test";
+    private static final String EXPECTED_RESULT = "This is message from our Codebox";
 
     private CodeBox codeBox;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
-
-        String codeBoxLabel = "CodeBox Test";
-        RuntimeName runtime = RuntimeName.PYTHON;
-        String source = "import json\n" +
-                "\n" +
-                "dictionary = {\n" +
-                "    \"mystatus\" : \"OK\",\n" +
-                "    \"information about\" : \"Visit us\",\n" +
-                "    \"site\" : \"https://www.syncano.io\"\n" +
-                "    }\n" +
-                "    \n" +
-                "content = json.dumps(dictionary)\n" +
-                "redirectResponse = HttpResponse(status_code=200, content=content, content_type='text/json');\n" +
-                "set_response(redirectResponse);";
-        CodeBox newCodeBox = new CodeBox(codeBoxLabel, source, runtime);
-
-        // ----------------- Create CodeBox -----------------
+        // create codebox
+        String source = "set_response(HttpResponse(status_code=200, content='" + EXPECTED_RESULT + "', content_type='text/plain'));";
+        CodeBox newCodeBox = new CodeBox("Codebox custom response", source, RuntimeName.PYTHON);
         Response<CodeBox> responseCodeBoxCreate = syncano.createCodeBox(newCodeBox).send();
-
         assertTrue(responseCodeBoxCreate.isSuccess());
         assertNotNull(responseCodeBoxCreate.getData());
         codeBox = responseCodeBoxCreate.getData();
 
-        // ----------------- Delete Webhook -----------------
-        Response<CustomWebhook> delResp = syncano.deleteWebhook(WEBHOOK_NAME).send();
+        // delete old webhook
+        RequestDelete<Webhook> deleteRequest = syncano.deleteWebhook(WEBHOOK_NAME);
+        Response<Webhook> delResp = deleteRequest.send();
         assertTrue(delResp.isSuccess());
 
-        // ----------------- Create Webhook -----------------
-        CustomWebhook newWebhook = new CustomWebhook(CustomWebHookResponse.class, WEBHOOK_NAME, codeBox.getId());
-        Response<CustomWebhook> responseCreateWebhook = syncano.createWebhook(newWebhook).send();
-
+        // create new webhook
+        Webhook newWebhook = new Webhook(WEBHOOK_NAME, codeBox.getId());
+        Response<Webhook> responseCreateWebhook = syncano.createWebhook(newWebhook).send();
         assertTrue(responseCreateWebhook.isSuccess());
         assertNotNull(responseCreateWebhook.getData());
     }
 
     @After
     public void tearDown() throws Exception {
-        // ----------------- Delete CodeBox -----------------
+        // delete codebox
         Response<CodeBox> responseCodeBoxDelete = syncano.deleteCodeBox(codeBox.getId()).send();
         assertTrue(responseCodeBoxDelete.isSuccess());
 
-        // ----------------- Delete Webhook -----------------
-        Response<CustomWebhook> delResp = syncano.deleteWebhook(WEBHOOK_NAME).send();
+        // delete webhook
+        RequestDelete<Webhook> deleteWebhookRequest = syncano.deleteWebhook(WEBHOOK_NAME);
+        Response<Webhook> delResp = deleteWebhookRequest.send();
         assertTrue(delResp.isSuccess());
-
         super.tearDown();
     }
 
     @Test
-    public void testWebhooks() throws InterruptedException {
-        // ----------------- Get One -----------------
-        Response<CustomWebhook> responseGetWebhook = syncano.getWebhook(WEBHOOK_NAME).send();
+    public void testCustomWebhooks() throws InterruptedException {
+        // first check if codebox itself runs properly
+        Response<Trace> cbResp = codeBox.run();
+        Trace cbTrace = cbResp.getData();
+        assertNotNull(cbTrace);
+        long start = System.currentTimeMillis();
+        // wait until codebox finishes execution
+        while (System.currentTimeMillis() - start < 10000 && cbTrace.getStatus() != TraceStatus.SUCCESS) {
+            assertTrue(cbTrace.fetch().isSuccess());
+            Thread.sleep(100);
+        }
+        Trace.TraceResponse cbCustomResult = cbTrace.getResponse();
+        assertNotNull(cbCustomResult);
+        assertNotNull(cbCustomResult.content);
+        assertTrue(cbCustomResult.content.contains(EXPECTED_RESULT));
 
-        assertTrue(responseGetWebhook.isSuccess());
-        assertNotNull(responseGetWebhook.getData());
-        CustomWebhook webhook = responseGetWebhook.getData();
-        assertEquals(webhook.getName(), responseGetWebhook.getData().getName());
-        assertEquals(webhook.getCodebox(), responseGetWebhook.getData().getCodebox());
-        assertEquals(webhook.getPublicLink(), responseGetWebhook.getData().getPublicLink());
-        assertEquals(webhook.getIsPublic(), responseGetWebhook.getData().getIsPublic());
+        // run as a normal webhook
+        Response<Trace> traceResp = syncano.runWebhook(WEBHOOK_NAME).send();
+        assertEquals(Response.CODE_PARSING_RESPONSE_EXCEPTION, traceResp.getResultCode());
 
-        // ----------------- Run -----------------
-        Response<CustomWebHookResponse> responseRunWebhook = syncano.runWebhook(webhook).send();
-        assertTrue(responseRunWebhook.isSuccess());
-        assertNotNull(responseRunWebhook.getData());
+        // run as a custom response webhook
+        Response<String> stringResp = syncano.runWebhookCustomResponse(WEBHOOK_NAME).send();
+        assertTrue(stringResp.isSuccess());
+        assertTrue(stringResp.getData().contains(EXPECTED_RESULT));
 
-        // ----------------- Delete -----------------
-        Response<CustomWebhook> responseDeleteWebhook = syncano.deleteWebhook(WEBHOOK_NAME).send();
-        assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteWebhook.getHttpResultCode());
-
-        // ----------------- Get One -----------------
-        Response<CustomWebhook> responseGetOneWebhook = syncano.getWebhook(WEBHOOK_NAME).send();
-
-        // After delete, Webhook should not be found.
-        assertEquals(Response.HTTP_CODE_NOT_FOUND, responseGetOneWebhook.getHttpResultCode());
-    }
-
-
-    public static class CustomWebHookResponse {
-        @SyncanoField(name = "mystatus")
-        private String status;
-        @SyncanoField(name = "information about")
-        private String moreInfo;
-        @SyncanoField(name = "site")
-        private String site;
-
+        // run with webhook object method
+        Webhook webhook = new Webhook(WEBHOOK_NAME);
+        webhook.runCustomResponse();
+        assertTrue(webhook.getCustomResponse().contains(EXPECTED_RESULT));
     }
 }

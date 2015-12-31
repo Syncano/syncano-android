@@ -1,5 +1,6 @@
 package com.syncano.library.utils;
 
+import com.google.gson.JsonSyntaxException;
 import com.syncano.library.BuildConfig;
 import com.syncano.library.Constants;
 import com.syncano.library.api.HttpRequest;
@@ -163,6 +164,11 @@ public class SyncanoHttpClient {
             SyncanoLog.w(LOG_TAG, "IllegalStateException");
             syncanoResponse.setResultCode(Response.CODE_ILLEGAL_STATE_EXCEPTION);
             syncanoResponse.setError(e.toString());
+            return syncanoResponse;
+        } catch (JsonSyntaxException e) {
+            SyncanoLog.w(LOG_TAG, "JsonSyntaxException");
+            syncanoResponse.setResultCode(Response.CODE_PARSING_RESPONSE_EXCEPTION);
+            syncanoResponse.setError("Error parsing response. " + e.toString());
             return syncanoResponse;
         } catch (IOException e) {
             SyncanoLog.w(LOG_TAG, "IOException");

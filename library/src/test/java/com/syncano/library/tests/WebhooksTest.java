@@ -11,15 +11,12 @@ import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.choice.RuntimeName;
 import com.syncano.library.data.CodeBox;
-import com.syncano.library.data.CustomWebhook;
 import com.syncano.library.data.Trace;
 import com.syncano.library.data.Webhook;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -102,7 +99,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
         assertEquals(webhook.getIsPublic(), responseUpdateWebhook.getData().getIsPublic());
 
         // ----------------- Get List -----------------
-        ResponseGetList<List<CustomWebhook>> responseGetWebhooks = syncano.getWebhooks().send();
+        ResponseGetList<Webhook> responseGetWebhooks = syncano.getWebhooks().send();
 
         assertNotNull(responseGetWebhooks.getData());
         assertTrue("List should contain at least one item.", responseGetWebhooks.getData().size() > 0);
@@ -139,7 +136,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
         Response<Trace> respRun = webhook.run();
 
         assertTrue(respRun.isSuccess());
-        assertNotNull(webhook.getResult());
+        assertNotNull(webhook.getTrace());
         assertNotNull(webhook.getOutput());
         assertTrue(webhook.getOutput().contains(EXPECTED_RESULT));
 
@@ -149,7 +146,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
         respRun = webhook.run(json);
 
         assertTrue(respRun.isSuccess());
-        assertNotNull(webhook.getResult());
+        assertNotNull(webhook.getTrace());
         String output = webhook.getOutput();
         assertNotNull(output);
         assertTrue(output.contains(EXPECTED_RESULT));

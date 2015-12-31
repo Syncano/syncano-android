@@ -12,9 +12,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class TestErrors extends SyncanoApplicationTestCase {
 
@@ -35,14 +35,8 @@ public class TestErrors extends SyncanoApplicationTestCase {
         TypeA objA = new TypeA();
         Response<TypeA> respA = objA.save();
         assertEquals(Response.HTTP_CODE_CREATED, respA.getHttpResultCode());
-
-        Exception parseEx = null;
-        try {
-            Syncano.please(TypeB.class).get();
-        } catch (Exception e) {
-            parseEx = e;
-        }
-        assertNotNull(parseEx);
+        Response<List<TypeB>> respB = Syncano.please(TypeB.class).get();
+        assertEquals(Response.CODE_PARSING_RESPONSE_EXCEPTION, respB.getResultCode());
     }
 
     @SyncanoClass(name = "myclass")
