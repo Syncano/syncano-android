@@ -36,7 +36,7 @@ public class Webhook {
     private WebHookLinks links;
 
     private Trace trace;
-    private String customResponse;
+    private Object customResponse;
     private Syncano syncano;
 
     public Webhook() {
@@ -139,7 +139,7 @@ public class Webhook {
         getSyncano().runWebhook(this).sendAsync(callback);
     }
 
-    public void run(SyncanoCallback<Trace> callback, JsonObject payload) {
+    public void run(JsonObject payload, SyncanoCallback<Trace> callback) {
         getSyncano().runWebhook(this, payload).sendAsync(callback);
     }
 
@@ -147,16 +147,32 @@ public class Webhook {
         return getSyncano().runWebhookCustomResponse(this).send();
     }
 
+    public <T> Response<T> runCustomResponse(Class<T> type) {
+        return getSyncano().runWebhookCustomResponse(this, type).send();
+    }
+
     public Response<String> runCustomResponse(JsonObject payload) {
         return getSyncano().runWebhookCustomResponse(this, payload).send();
+    }
+
+    public <T> Response<T> runCustomResponse(Class<T> type, JsonObject payload) {
+        return getSyncano().runWebhookCustomResponse(this, type, payload).send();
     }
 
     public void runCustomResponse(SyncanoCallback<String> callback) {
         getSyncano().runWebhookCustomResponse(this).sendAsync(callback);
     }
 
-    public void runCustomResponse(SyncanoCallback<String> callback, JsonObject payload) {
+    public <T> void runCustomResponse(Class<T> type, SyncanoCallback<T> callback) {
+        getSyncano().runWebhookCustomResponse(this, type).sendAsync(callback);
+    }
+
+    public void runCustomResponse(JsonObject payload, SyncanoCallback<String> callback) {
         getSyncano().runWebhookCustomResponse(this, payload).sendAsync(callback);
+    }
+
+    public <T> void runCustomResponse(Class<T> type, JsonObject payload, SyncanoCallback<T> callback) {
+        getSyncano().runWebhookCustomResponse(this, type, payload).sendAsync(callback);
     }
 
     public Trace getTrace() {
@@ -167,11 +183,11 @@ public class Webhook {
         this.trace = trace;
     }
 
-    public String getCustomResponse() {
-        return customResponse;
+    public <T> T getCustomResponse() {
+        return (T) customResponse;
     }
 
-    public void setCustomResponse(String customResponse) {
+    public void setCustomResponse(Object customResponse) {
         this.customResponse = customResponse;
     }
 

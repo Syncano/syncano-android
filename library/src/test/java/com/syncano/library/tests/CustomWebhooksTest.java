@@ -1,6 +1,7 @@
 package com.syncano.library.tests;
 
 import com.syncano.library.SyncanoApplicationTestCase;
+import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.RequestDelete;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.RuntimeName;
@@ -20,7 +21,9 @@ import static org.junit.Assert.assertTrue;
 public class CustomWebhooksTest extends SyncanoApplicationTestCase {
 
     private static final String WEBHOOK_NAME = "custom_webhook_test";
-    private static final String EXPECTED_RESULT = "This is message from our Codebox";
+    private static final String KEY = "testKey";
+    private static final String VALUE = "testValue";
+    private static final String EXPECTED_RESULT = "{\"" + KEY + "\":\"" + VALUE + "\"}";
 
     private CodeBox codeBox;
 
@@ -45,6 +48,21 @@ public class CustomWebhooksTest extends SyncanoApplicationTestCase {
         Response<Webhook> responseCreateWebhook = syncano.createWebhook(newWebhook).send();
         assertTrue(responseCreateWebhook.isSuccess());
         assertNotNull(responseCreateWebhook.getData());
+
+        // check if codebox itself runs properly
+        Response<Trace> cbResp = codeBox.run();
+        Trace cbTrace = cbResp.getData();
+        assertNotNull(cbTrace);
+        long start = System.currentTimeMillis();
+        // wait until codebox finishes execution
+        while (System.currentTimeMillis() - start < 10000 && cbTrace.getStatus() != TraceStatus.SUCCESS) {
+            assertTrue(cbTrace.fetch().isSuccess());
+            Thread.sleep(100);
+        }
+        Trace.TraceResponse cbCustomResult = cbTrace.getResponse();
+        assertNotNull(cbCustomResult);
+        assertNotNull(cbCustomResult.content);
+        assertTrue(cbCustomResult.content.contains(EXPECTED_RESULT));
     }
 
     @After
@@ -61,26 +79,7 @@ public class CustomWebhooksTest extends SyncanoApplicationTestCase {
     }
 
     @Test
-    public void testCustomWebhooks() throws InterruptedException {
-        // first check if codebox itself runs properly
-        Response<Trace> cbResp = codeBox.run();
-        Trace cbTrace = cbResp.getData();
-        assertNotNull(cbTrace);
-        long start = System.currentTimeMillis();
-        // wait until codebox finishes execution
-        while (System.currentTimeMillis() - start < 10000 && cbTrace.getStatus() != TraceStatus.SUCCESS) {
-            assertTrue(cbTrace.fetch().isSuccess());
-            Thread.sleep(100);
-        }
-        Trace.TraceResponse cbCustomResult = cbTrace.getResponse();
-        assertNotNull(cbCustomResult);
-        assertNotNull(cbCustomResult.content);
-        assertTrue(cbCustomResult.content.contains(EXPECTED_RESULT));
-
-        // run as a normal webhook
-        Response<Trace> traceResp = syncano.runWebhook(WEBHOOK_NAME).send();
-        assertEquals(Response.CODE_PARSING_RESPONSE_EXCEPTION, traceResp.getResultCode());
-
+    public void testStringWebhooks() {
         // run as a custom response webhook
         Response<String> stringResp = syncano.runWebhookCustomResponse(WEBHOOK_NAME).send();
         assertTrue(stringResp.isSuccess());
@@ -89,6 +88,29 @@ public class CustomWebhooksTest extends SyncanoApplicationTestCase {
         // run with webhook object method
         Webhook webhook = new Webhook(WEBHOOK_NAME);
         webhook.runCustomResponse();
-        assertTrue(webhook.getCustomResponse().contains(EXPECTED_RESULT));
+        String response = webhook.getCustomResponse();
+        assertEquals(EXPECTED_RESULT, response);
+    }
+
+    @Test
+    public void testCustomWebhooks() {
+        // run as a custom response webhook
+        Response<MyResponse> customResp = syncano.runWebhookCustomResponse(WEBHOOK_NAME, MyResponse.class).send();
+        assertTrue(customResp.isSuccess());
+        MyResponse myResp = customResp.getData();
+        assertNotNull(myResp);
+        assertEquals(VALUE, myResp.someParam);
+
+        // run with webhook object method
+        Webhook webhook = new Webhook(WEBHOOK_NAME);
+        webhook.runCustomResponse(MyResponse.class);
+        myResp = webhook.getCustomResponse();
+        assertNotNull(myResp);
+        assertEquals(VALUE, myResp.someParam);
+    }
+
+    private static class MyResponse {
+        @SyncanoField(name = KEY)
+        String someParam;
     }
 }

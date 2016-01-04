@@ -560,38 +560,6 @@ public class Syncano {
         return req;
     }
 
-    private <T> RequestPost<T> makeRunWebhook(Class<T> resposneType, String name, JsonObject payload) {
-        String url = String.format(Constants.WEBHOOKS_RUN_URL, getNotEmptyInstanceName(), name);
-        RequestPost<T> req = new RequestPost<>(resposneType, url, this, payload);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
-    }
-
-    private <T> RequestPost<T> makeRunWebhook(final Class<T> responseType, final Webhook webhook, JsonObject payload) {
-        if (webhook.getName() == null) {
-            throw new RuntimeException("Can't run webhook without a name.");
-        }
-        RequestPost<T> req = makeRunWebhook(responseType, webhook.getName(), payload);
-        req.setRunAfter(new HttpRequest.RunAfter<T>() {
-            @Override
-            public void run(Response<T> response) {
-                if (responseType.equals(Trace.class)) {
-                    webhook.setTrace((Trace) response.getData());
-                } else if (responseType.equals(String.class)) {
-                    webhook.setCustomResponse((String) response.getData());
-                }
-            }
-        });
-        return req;
-    }
-
-    private <T> RequestPost<T> makeRunWebhookUrl(Class<T> responseType, String url, JsonObject payload) {
-        RequestPost<T> req = new RequestPost<>(responseType, null, this, payload);
-        req.setCompleteCustomUrl(url);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
-    }
-
     /**
      * Run a Webhook.
      *
@@ -609,7 +577,17 @@ public class Syncano {
      * @return Result of executed Webhook.
      */
     public RequestPost<String> runWebhookCustomResponse(String name) {
-        return runWebhookCustomResponse(name, null);
+        return runWebhookCustomResponse(name, String.class);
+    }
+
+    /**
+     * Run a Webhook.
+     *
+     * @param name Webhook id.
+     * @return Result of executed Webhook.
+     */
+    public <T> RequestPost<T> runWebhookCustomResponse(String name, Class<T> type) {
+        return runWebhookCustomResponse(name, type, null);
     }
 
     /**
@@ -620,7 +598,7 @@ public class Syncano {
      * @return Result of executed Webhook.
      */
     public RequestPost<Trace> runWebhook(String name, JsonObject payload) {
-        return makeRunWebhook(Trace.class, name, payload);
+        return runWebhookCustomResponse(name, Trace.class, payload);
     }
 
     /**
@@ -631,7 +609,21 @@ public class Syncano {
      * @return Result of executed Webhook.
      */
     public RequestPost<String> runWebhookCustomResponse(String name, JsonObject payload) {
-        return makeRunWebhook(String.class, name, payload);
+        return runWebhookCustomResponse(name, String.class, payload);
+    }
+
+    /**
+     * Run a Webhook.
+     *
+     * @param name    Webhook id.
+     * @param payload Params to pass to webhook.
+     * @return Result of executed Webhook.
+     */
+    public <T> RequestPost<T> runWebhookCustomResponse(String name, Class<T> type, JsonObject payload) {
+        String url = String.format(Constants.WEBHOOKS_RUN_URL, getNotEmptyInstanceName(), name);
+        RequestPost<T> req = new RequestPost<>(type, url, this, payload);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
     }
 
     /**
@@ -651,7 +643,17 @@ public class Syncano {
      * @return Result of executed Webhook.
      */
     public RequestPost<String> runWebhookCustomResponse(Webhook webhook) {
-        return runWebhookCustomResponse(webhook, null);
+        return runWebhookCustomResponse(webhook, String.class);
+    }
+
+    /**
+     * Run a Webhook.
+     *
+     * @param webhook Webhook to run.
+     * @return Result of executed Webhook.
+     */
+    public <T> RequestPost<T> runWebhookCustomResponse(Webhook webhook, Class<T> type) {
+        return runWebhookCustomResponse(webhook, type, null);
     }
 
     /**
@@ -661,8 +663,8 @@ public class Syncano {
      * @param payload Params to pass to webhook.
      * @return Result of executed Webhook.
      */
-    public RequestPost<Trace> runWebhook(final Webhook webhook, JsonObject payload) {
-        return makeRunWebhook(Trace.class, webhook, payload);
+    public RequestPost<Trace> runWebhook(Webhook webhook, JsonObject payload) {
+        return runWebhookCustomResponse(webhook, Trace.class, payload);
     }
 
     /**
@@ -672,8 +674,33 @@ public class Syncano {
      * @param payload Params to pass to webhook.
      * @return Result of executed Webhook.
      */
-    public RequestPost<String> runWebhookCustomResponse(final Webhook webhook, JsonObject payload) {
-        return makeRunWebhook(String.class, webhook, payload);
+    public RequestPost<String> runWebhookCustomResponse(Webhook webhook, JsonObject payload) {
+        return runWebhookCustomResponse(webhook, String.class, payload);
+    }
+
+    /**
+     * Run a Webhook.
+     *
+     * @param webhook Webhook to run.
+     * @param payload Params to pass to webhook.
+     * @return Result of executed Webhook.
+     */
+    public <T> RequestPost<T> runWebhookCustomResponse(final Webhook webhook, final Class<T> type, JsonObject payload) {
+        if (webhook.getName() == null) {
+            throw new RuntimeException("Can't run webhook without a name.");
+        }
+        RequestPost<T> req = runWebhookCustomResponse(webhook.getName(), type, payload);
+        req.setRunAfter(new HttpRequest.RunAfter<T>() {
+            @Override
+            public void run(Response<T> response) {
+                if (type.equals(Trace.class)) {
+                    webhook.setTrace((Trace) response.getData());
+                } else {
+                    webhook.setCustomResponse(response.getData());
+                }
+            }
+        });
+        return req;
     }
 
 
@@ -694,7 +721,17 @@ public class Syncano {
      * @return Result of executed Webhook.
      */
     public RequestPost<String> runWebhookUrlCustomResponse(String url) {
-        return runWebhookUrlCustomResponse(url, null);
+        return runWebhookUrlCustomResponse(url, String.class);
+    }
+
+    /**
+     * Run a public Webhook.
+     *
+     * @param url Public webhook url.
+     * @return Result of executed Webhook.
+     */
+    public <T> RequestPost<T> runWebhookUrlCustomResponse(String url, Class<T> type) {
+        return runWebhookUrlCustomResponse(url, type, null);
     }
 
     /**
@@ -705,7 +742,7 @@ public class Syncano {
      * @return Result of executed Webhook.
      */
     public RequestPost<Trace> runWebhookUrl(String url, JsonObject payload) {
-        return makeRunWebhookUrl(Trace.class, url, payload);
+        return runWebhookUrlCustomResponse(url, Trace.class, payload);
     }
 
     /**
@@ -716,7 +753,21 @@ public class Syncano {
      * @return Result of executed Webhook.
      */
     public RequestPost<String> runWebhookUrlCustomResponse(String url, JsonObject payload) {
-        return makeRunWebhookUrl(String.class, url, payload);
+        return runWebhookUrlCustomResponse(url, String.class, payload);
+    }
+
+    /**
+     * Run a public Webhook.
+     *
+     * @param url     Public webhook url.
+     * @param payload Params to pass to webhook.
+     * @return Result of executed Webhook.
+     */
+    public <T> RequestPost<T> runWebhookUrlCustomResponse(String url, Class<T> type, JsonObject payload) {
+        RequestPost<T> req = new RequestPost<>(type, null, this, payload);
+        req.setCompleteCustomUrl(url);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
     }
 
     /**
