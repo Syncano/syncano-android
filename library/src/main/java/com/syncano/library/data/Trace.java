@@ -17,6 +17,9 @@ public class Trace {
     public static final String FIELD_EXECUTED_AT = "executed_at";
     public static final String FIELD_STDERR = "stderr";
     public static final String FIELD_STDOUT = "stdout";
+    public static final String FIELD_RESPONSE = "response";
+    public static final String FIELD_CONTENT = "content";
+    public static final String FIELD_CONTENT_TYPE = "content_type";
 
     @SyncanoField(name = FIELD_ID, readOnly = true)
     private int id;
@@ -118,10 +121,28 @@ public class Trace {
         return null;
     }
 
+    public TraceResponse getResponse() {
+        if (result != null) {
+            return result.response;
+        }
+        return null;
+    }
+
     private static class TraceResult {
         @SyncanoField(name = FIELD_STDERR, readOnly = true)
         public String stderr;
         @SyncanoField(name = FIELD_STDOUT, readOnly = true)
         public String stdout;
+        @SyncanoField(name = FIELD_RESPONSE, readOnly = true)
+        public TraceResponse response;
+    }
+
+    public static class TraceResponse {
+        @SyncanoField(name = FIELD_STATUS, readOnly = true)
+        public Integer status;
+        @SyncanoField(name = FIELD_CONTENT, readOnly = true)
+        public String content;
+        @SyncanoField(name = FIELD_CONTENT_TYPE, readOnly = true)
+        public String contentType;
     }
 }

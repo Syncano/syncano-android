@@ -93,7 +93,6 @@ public class Webhooks extends SyncanoApplicationTestCase {
         // ---------- Public Webhooks POST
         JsonObject payload = new JsonObject();
         payload.addProperty("message", "Hello World!");
-
         Response<Trace> response = syncano.runWebhookUrl(url, payload).send();
         // -----------------------------
 

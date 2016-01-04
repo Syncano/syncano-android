@@ -34,6 +34,7 @@ public class Webhook {
     private WebHookLinks links;
 
     private Trace trace;
+    private Object customResponse;
     private Syncano syncano;
 
     public Webhook() {
@@ -135,8 +136,40 @@ public class Webhook {
         getSyncano().runWebhook(this).sendAsync(callback);
     }
 
-    public void run(SyncanoCallback<Trace> callback, JsonObject payload) {
+    public void run(JsonObject payload, SyncanoCallback<Trace> callback) {
         getSyncano().runWebhook(this, payload).sendAsync(callback);
+    }
+
+    public Response<String> runCustomResponse() {
+        return getSyncano().runWebhookCustomResponse(this).send();
+    }
+
+    public <T> Response<T> runCustomResponse(Class<T> type) {
+        return getSyncano().runWebhookCustomResponse(this, type).send();
+    }
+
+    public Response<String> runCustomResponse(JsonObject payload) {
+        return getSyncano().runWebhookCustomResponse(this, payload).send();
+    }
+
+    public <T> Response<T> runCustomResponse(Class<T> type, JsonObject payload) {
+        return getSyncano().runWebhookCustomResponse(this, type, payload).send();
+    }
+
+    public void runCustomResponse(SyncanoCallback<String> callback) {
+        getSyncano().runWebhookCustomResponse(this).sendAsync(callback);
+    }
+
+    public <T> void runCustomResponse(Class<T> type, SyncanoCallback<T> callback) {
+        getSyncano().runWebhookCustomResponse(this, type).sendAsync(callback);
+    }
+
+    public void runCustomResponse(JsonObject payload, SyncanoCallback<String> callback) {
+        getSyncano().runWebhookCustomResponse(this, payload).sendAsync(callback);
+    }
+
+    public <T> void runCustomResponse(Class<T> type, JsonObject payload, SyncanoCallback<T> callback) {
+        getSyncano().runWebhookCustomResponse(this, type, payload).sendAsync(callback);
     }
 
     public Trace getTrace() {
@@ -145,6 +178,14 @@ public class Webhook {
 
     public void setTrace(Trace trace) {
         this.trace = trace;
+    }
+
+    public <T> T getCustomResponse() {
+        return (T) customResponse;
+    }
+
+    public void setCustomResponse(Object customResponse) {
+        this.customResponse = customResponse;
     }
 
     public static class WebHookLinks {

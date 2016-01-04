@@ -92,6 +92,11 @@ public class Response<T> {
     public final static int CODE_ILLEGAL_IO_EXCEPTION = 4;
 
     /**
+     * Parsing exception.
+     */
+    public final static int CODE_PARSING_RESPONSE_EXCEPTION = 5;
+
+    /**
      * Internal results code.
      */
     private int resultCode;
