@@ -38,6 +38,7 @@ public class DataObjects extends SyncanoApplicationTestCase {
 
     @After
     public void tearDown() throws Exception {
+        removeClass(Book.class);
         super.tearDown();
     }
 

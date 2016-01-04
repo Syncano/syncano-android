@@ -1,7 +1,6 @@
 package com.syncano.library.documentation;
 
 import com.syncano.library.Constants;
-import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
@@ -11,17 +10,16 @@ import com.syncano.library.data.Profile;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.User;
-import com.syncano.library.utils.SyncanoClassHelper;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class UserManagement extends SyncanoApplicationTestCase {
     private final String userName = "userlogin";
@@ -43,17 +41,6 @@ public class UserManagement extends SyncanoApplicationTestCase {
         super.tearDown();
     }
 
-    public static void deleteTestUser(Syncano syncano, String userName) {
-        Response<List<User>> response = syncano.getUsers().send();
-
-        if (response.getData() != null && response.getData().size() > 0) {
-            for (User u : response.getData()) {
-                if (userName.equals(u.getUserName())) {
-                    syncano.deleteUser(u.getId()).send();
-                }
-            }
-        }
-    }
 
     @Test
     public void testCreateUser() {
@@ -70,13 +57,13 @@ public class UserManagement extends SyncanoApplicationTestCase {
     @Test
     public void testUpdateUserClass() {
         // ---------- You can make same kind of changes to user_profile class
-        Response<SyncanoClass> responseGetProfileClass = syncano.getSyncanoClass(Constants.USER_PROFILE_CLASS_NAME).send();
-        SyncanoClass profileClass = responseGetProfileClass.getData();
-        profileClass.setSchema(SyncanoClassHelper.getSyncanoClassSchema(MyUserProfile.class));
-        Response<SyncanoClass> response = syncano.updateSyncanoClass(profileClass).send();
+
+        // MyUserProfile should extend Profile class
+        Response<SyncanoClass> response = syncano.updateSyncanoClass(MyUserProfile.class).send();
+
         // -----------------------------
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
+        assertTrue(response.isSuccess());
 
         deleteTestUser(syncano, userName);
         MyUser newUser = new MyUser(userName, password);
@@ -90,7 +77,7 @@ public class UserManagement extends SyncanoApplicationTestCase {
         Response<MyUserProfile> responseAvatar = profile.save();
         // -----------------------------
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseAvatar.getHttpResultCode());
+        assertTrue(responseAvatar.isSuccess());
     }
 
     @Test
@@ -106,6 +93,8 @@ public class UserManagement extends SyncanoApplicationTestCase {
 
 
         // ---------- Acting as a user
+
+        // Don't have to do it if used login method on this Syncano object
         syncano.setUserKey(userKey);
 
         // -----------------------------

@@ -83,7 +83,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
         assertEquals(webhook.getName(), responseGetWebhook.getData().getName());
         assertEquals(webhook.getCodebox(), responseGetWebhook.getData().getCodebox());
         assertEquals(webhook.getPublicLink(), responseGetWebhook.getData().getPublicLink());
-        assertEquals(webhook.getIsPublic(), responseGetWebhook.getData().getIsPublic());
+        assertEquals(webhook.isPublic(), responseGetWebhook.getData().isPublic());
 
         // ----------------- Update -----------------
         webhook.setCodebox(codeBox.getId());
@@ -94,7 +94,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
         assertEquals(webhook.getName(), responseUpdateWebhook.getData().getName());
         assertEquals(webhook.getCodebox(), responseUpdateWebhook.getData().getCodebox());
         assertEquals(webhook.getPublicLink(), responseUpdateWebhook.getData().getPublicLink());
-        assertEquals(webhook.getIsPublic(), responseUpdateWebhook.getData().getIsPublic());
+        assertEquals(webhook.isPublic(), responseUpdateWebhook.getData().isPublic());
 
         // ----------------- Get List -----------------
         Response<List<Webhook>> responseGetWebhooks = syncano.getWebhooks().send();
@@ -153,7 +153,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
     public void testPublicWebhook() {
         // ----------------- Create public webhook -----------------
         Webhook newWebhook = new Webhook(PUBLIC_WEBHOOK_NAME, codeBox.getId());
-        newWebhook.setIsPublic(true);
+        newWebhook.setPublic(true);
 
         Response<Webhook> responseCreateWebhook = syncano.createWebhook(newWebhook).send();
         assertTrue(responseCreateWebhook.isSuccess());

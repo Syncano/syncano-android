@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.RuntimeName;
+import com.syncano.library.choice.TraceStatus;
 import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Trace;
 
@@ -13,6 +14,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class Codebox extends SyncanoApplicationTestCase {
     private static final String EXPECTED_RESULT = "this is message from our Codebox";
@@ -45,7 +47,7 @@ public class Codebox extends SyncanoApplicationTestCase {
     }
 
     @Test
-    public void testRunCodebox() {
+    public void testRunCodebox() throws InterruptedException {
         // ---------- Running CodeBoxes
 
         JsonObject params = new JsonObject();
@@ -56,6 +58,16 @@ public class Codebox extends SyncanoApplicationTestCase {
 
         // -----------------------------
 
-        assertEquals(response.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
+        assertTrue(response.isSuccess());
+        Thread.sleep(1000);
+
+        // ---------- Getting result
+        Trace trace = response.getData();
+        trace.fetch();
+
+        if (trace.getStatus() == TraceStatus.SUCCESS) {
+            trace.getOutput();
+        }
+        // -----------------------------
     }
 }

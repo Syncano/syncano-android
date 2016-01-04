@@ -67,7 +67,7 @@ public class Permissions extends SyncanoApplicationTestCase {
         assertNotNull(group);
 
         // ---------- Next, when creating a Class, you'd set group_permissions to
-        // create_objects and pass a group id to the group parameter
+
         SyncanoClass syncanoClass = new SyncanoClass(ExampleObject.class);
         syncanoClass.setGroup(group.getId());
         syncanoClass.setGroupPermissions(SyncanoClassPermissions.CREATE_OBJECTS);

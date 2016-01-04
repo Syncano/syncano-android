@@ -164,7 +164,6 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         ResponseGetList<Book> responsePreviousPage = responseNextPage.getPreviousPage();
         // -----------------------------
 
-        assertTrue(responsePreviousPage.isSuccess());
 
         // ---------- Fields filtering
         ResponseGetList<Book> responseFilters =

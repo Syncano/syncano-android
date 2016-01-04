@@ -4,7 +4,8 @@ import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.annotation.SyncanoField;
-import com.syncano.library.api.Response;
+import com.syncano.library.api.ResponseGetList;
+import com.syncano.library.choice.FilterType;
 import com.syncano.library.choice.SortOrder;
 import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
@@ -13,10 +14,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
 
@@ -36,63 +34,88 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
 
         // ---------- Filtering Data Objects
 
-        Response<List<Book>> responseList = Syncano.please(Book.class)
+        ResponseGetList<Book> responseList = Syncano.please(Book.class)
                 .where().gt("release_year", 1990).get();
 
         // -----------------------------
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseList.getHttpResultCode());
-        assertNotNull(responseList.getData());
+        assertTrue(responseList.isSuccess());
+
+        // ---------- Fields skipping
+
+        ResponseGetList<Book> responseSkip = Syncano.please(Book.class)
+                .selectFields(FilterType.INCLUDE_FIELDS, "release_year", "id", "pages").get();
+
+        // -----------------------------
+
+        assertTrue(responseSkip.isSuccess());
 
         // ---------- Complex Filtering Data Objects
 
-        Response<List<Book>> responseListComplex = Syncano.please(Book.class)
-                .where().gt("release_year", 1990).lte("release_year", 2000).get();
+        ResponseGetList<Book> responseSimple = Syncano.please(Book.class)
+                .where().gt("release_year", 1990).get();
 
         // -----------------------------
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseListComplex.getHttpResultCode());
-        assertNotNull(responseListComplex.getData());
+        assertTrue(responseSimple.isSuccess());
+
+        // ---------- Complex filtering on one field
+
+        ResponseGetList<Book> responseComplex = Syncano.please(Book.class)
+                .selectFields(FilterType.INCLUDE_FIELDS, "release_year", "id", "pages")
+                .where().gt("release_year", 1900).lte("release_year", 2000).get();
+
+        // -----------------------------
+
+        assertTrue(responseComplex.isSuccess());
 
         // ---------- Filtering on multiple fields
 
-        Response<List<Book>> responseListMultiple = Syncano.please(Book.class)
-                .where().gt("release_year", 1990).lte("release_year", 2000).gt("pages", 199).get();
+        ResponseGetList<Book> responseMultiple = Syncano.please(Book.class)
+                .selectFields(FilterType.INCLUDE_FIELDS, "release_year", "id", "pages")
+                .where().gt("release_year", 1900).lte("release_year", 2000).gt("pages", 199).get();
 
         // -----------------------------
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseListMultiple.getHttpResultCode());
-        assertNotNull(responseListMultiple.getData());
+        assertTrue(responseMultiple.isSuccess());
 
         // ---------- Ordering Data Objects
 
-        Response<List<Book>> responseOrdered = Syncano.please(Book.class)
+        ResponseGetList<Book> responseOrdered = Syncano.please(Book.class)
                 .orderBy("release_year").get();
 
         // -----------------------------
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseOrdered.getHttpResultCode());
-        assertNotNull(responseOrdered.getData());
+        assertTrue(responseOrdered.isSuccess());
 
         // ---------- Reversed Ordering Data Objects
 
-        Response<List<Book>> responseOrderedReversed = Syncano.please(Book.class)
+        ResponseGetList<Book> responseOrderedReversed = Syncano.please(Book.class)
                 .orderBy("release_year", SortOrder.DESCENDING).get();
 
         // -----------------------------
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseOrderedReversed.getHttpResultCode());
-        assertNotNull(responseOrderedReversed.getData());
+        assertTrue(responseOrderedReversed.isSuccess());
 
         // ---------- Ordering with Filtering Data Objects
 
-        Response<List<Book>> responseOrderedFiltered = Syncano.please(Book.class)
+        ResponseGetList<Book> responseOrderedFiltered = Syncano.please(Book.class)
+                .selectFields(FilterType.INCLUDE_FIELDS, "release_year", "id", "pages")
                 .orderBy("release_year").where().gt("release_year", 1990).get();
 
         // -----------------------------
 
-        assertEquals(Response.HTTP_CODE_SUCCESS, responseOrderedFiltered.getHttpResultCode());
-        assertNotNull(responseOrderedFiltered.getData());
+        assertTrue(responseOrderedFiltered.isSuccess());
+
+        // ---------- Using paging with filtering and ordering
+
+        ResponseGetList<Book> responsePage = Syncano.please(Book.class).limit(1)
+                .selectFields(FilterType.INCLUDE_FIELDS, "release_year", "id", "pages")
+                .where().gt("release_year", 1900).lte("release_year", 2000).gt("pages", 199).get();
+
+        // -----------------------------
+
+        assertTrue(responsePage.isSuccess());
     }
 
     @SyncanoClass(name = "Book")

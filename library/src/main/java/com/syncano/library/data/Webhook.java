@@ -2,6 +2,7 @@ package com.syncano.library.data;
 
 
 import com.google.gson.JsonObject;
+import com.syncano.library.Constants;
 import com.syncano.library.Syncano;
 import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.utils.SyncanoLog;
@@ -22,9 +23,6 @@ public class Webhook {
 
     @SyncanoField(name = FIELD_CODEBOX, required = true)
     private int codebox;
-
-    @SyncanoField(name = FIELD_PUBLIC_LINK, readOnly = true)
-    private String publicLink;
 
     @SyncanoField(name = FIELD_PUBLIC)
     private boolean isPublic;
@@ -67,18 +65,17 @@ public class Webhook {
     }
 
     public String getPublicLink() {
-        return publicLink;
+        if (links == null || links.publicLink == null) {
+            return null;
+        }
+        return Constants.PRODUCTION_SERVER_URL + links.publicLink;
     }
 
-    public void setPublicLink(String publicLink) {
-        this.publicLink = publicLink;
-    }
-
-    public boolean getIsPublic() {
+    public boolean isPublic() {
         return isPublic;
     }
 
-    public void setIsPublic(boolean isPublic) {
+    public void setPublic(boolean isPublic) {
         this.isPublic = isPublic;
     }
 

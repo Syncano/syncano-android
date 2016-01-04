@@ -6,6 +6,7 @@ import com.syncano.library.ChannelConnectionListener;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.api.Response;
+import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.choice.ChannelPermissions;
 import com.syncano.library.choice.ChannelType;
 import com.syncano.library.data.Channel;
@@ -94,8 +95,7 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
         // ---------- Creating a Data Object
         Book book = new Book();
         book.setChannel("channel_name");
-
-        Response<Book> response = syncano.createObject(book).send();
+        Response<Book> response = book.save();
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
@@ -215,10 +215,10 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
         createChannel("separate_rooms", ChannelType.SEPARATE_ROOMS, true);
 
         // ---------- Creating Data Objects connected to the separate_rooms channel
-        final Book book = new Book();
+        Book book = new Book();
         book.setChannel("separate_rooms");
         book.setChannelRoom("room_name");
-        Response<Book> response = syncano.createObject(book).send();
+        Response<Book> response = book.save();
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());
@@ -244,7 +244,7 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
         createChannel("channel_name", ChannelType.DEFAULT, true);
 
         // ---------- User viewing a Channel history
-        Response<List<Notification>> response = syncano.getChannelsHistory("channel_name").send();
+        ResponseGetList<Notification> response = syncano.getChannelsHistory("channel_name").send();
 
         List<Notification> list = response.getData();
         // -----------------------------
@@ -270,7 +270,7 @@ public class RealtimeCommunication extends SyncanoApplicationTestCase {
         createChannel("channel_name", ChannelType.SEPARATE_ROOMS, true);
 
         // ---------- User viewing history of a Channel with "separate_rooms`
-        Response<List<Notification>> response = syncano.getChannelsHistory("channel_name", "room_name").send();
+        ResponseGetList<Notification> response = syncano.getChannelsHistory("channel_name", "room_name").send();
 
         List<Notification> list = response.getData();
         // -----------------------------

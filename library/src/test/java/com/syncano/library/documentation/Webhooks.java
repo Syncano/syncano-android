@@ -14,11 +14,13 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class Webhooks extends SyncanoApplicationTestCase {
     private static final String EXPECTED_RESULT = "this is message from our Codebox";
     private static final String WEBHOOK_NAME = "webhook_name";
     private int codeboxId;
+    private String url;
 
     @Before
     public void setUp() throws Exception {
@@ -42,9 +44,15 @@ public class Webhooks extends SyncanoApplicationTestCase {
         codeboxId = responseCreateCodeBox.getData().getId();
 
         // create webhook
-        syncano.deleteWebhook(WEBHOOK_NAME).send();
+        Response<Webhook> responseDeleteWebhook = syncano.deleteWebhook(WEBHOOK_NAME).send();
+        assertTrue(responseDeleteWebhook.isSuccess());
+
         Webhook webhook = new Webhook(WEBHOOK_NAME, codeboxId);
-        syncano.createWebhook(webhook).send();
+        webhook.setPublic(true);
+        Response<Webhook> responseCreateWebhook = syncano.createWebhook(webhook).send();
+        assertTrue(responseCreateWebhook.isSuccess());
+        Webhook createdWebhook = responseCreateWebhook.getData();
+        url = createdWebhook.getPublicLink();
     }
 
     @After
@@ -57,22 +65,36 @@ public class Webhooks extends SyncanoApplicationTestCase {
     @Test
     public void testWebhooks() {
         // ---------- Let's run the webhook to test if everything works
-        Response<Trace> response = syncano.runWebhook("webhook_name").send();
+        Response<Trace> response = syncano.runWebhook(WEBHOOK_NAME).send();
         Trace trace = response.getData();
+        String output = trace.getOutput();
         // -----------------------------
 
         assertEquals(response.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
         assertNotNull(trace);
+
+        // ---------- Run with payload
+        JsonObject payload = new JsonObject();
+        payload.addProperty("user_search", "dancing");
+        Response<Trace> responsePayload = syncano.runWebhook(WEBHOOK_NAME, payload).send();
+        Trace tracePayload = responsePayload.getData();
+        String outputPayload = tracePayload.getOutput();
+        // -----------------------------
     }
 
     @Test
-    public void testWebhooksWithPayload() {
-        // ---------- If you wanted to use POST, you can pass extra arguments for the Webhook as a JSON body
-        JsonObject params = new JsonObject();
-        params.addProperty("first_name", "Ryan");
-        params.addProperty("last_name", "Gosling");
+    public void testPublicWebhooks() {
+        // ---------- Public Webhooks
+        Response<Trace> responsePublic = syncano.runWebhookUrl(url + "?message=Hello").send();
+        // -----------------------------
 
-        Response<Trace> response = syncano.runWebhook("webhook_name", params).send();
+        assertEquals(responsePublic.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, responsePublic.getHttpResultCode());
+
+        // ---------- Public Webhooks POST
+        JsonObject payload = new JsonObject();
+        payload.addProperty("message", "Hello World!");
+
+        Response<Trace> response = syncano.runWebhookUrl(url, payload).send();
         // -----------------------------
 
         assertEquals(response.getHttpReasonPhrase(), Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());

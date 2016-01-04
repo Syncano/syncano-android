@@ -708,6 +708,16 @@ public class Syncano {
      * @param clazz SyncanoClass to update. It need to have name.
      * @return Updated Class.
      */
+    public RequestPatch<SyncanoClass> updateSyncanoClass(Class<? extends SyncanoObject> clazz) {
+        return updateSyncanoClass(new SyncanoClass(clazz));
+    }
+
+    /**
+     * Update a Class.
+     *
+     * @param clazz SyncanoClass to update. It need to have name.
+     * @return Updated Class.
+     */
     public RequestPatch<SyncanoClass> updateSyncanoClass(SyncanoClass clazz) {
         if (clazz.getName() == null || clazz.getName().isEmpty()) {
             throw new RuntimeException("Trying to update SyncanoClass without giving name!");

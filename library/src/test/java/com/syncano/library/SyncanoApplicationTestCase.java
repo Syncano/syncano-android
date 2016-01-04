@@ -4,6 +4,7 @@ import com.syncano.library.api.Response;
 import com.syncano.library.choice.ClassStatus;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
+import com.syncano.library.data.User;
 import com.syncano.library.utils.SyncanoLogger;
 import com.syncano.library.utils.SyncanoClassHelper;
 import com.syncano.library.utils.SyncanoLog;
@@ -11,6 +12,7 @@ import com.syncano.library.utils.SyncanoLog;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.security.Security;
+import java.util.List;
 import java.util.Random;
 
 import static org.junit.Assert.assertTrue;
@@ -97,5 +99,17 @@ public class SyncanoApplicationTestCase {
 
     public String getBuildsDir() {
         return "./build/";
+    }
+
+    public static void deleteTestUser(Syncano syncano, String userName) {
+        Response<List<User>> response = syncano.getUsers().send();
+
+        if (response.getData() != null && response.getData().size() > 0) {
+            for (User u : response.getData()) {
+                if (userName.equals(u.getUserName())) {
+                    syncano.deleteUser(u.getId()).send();
+                }
+            }
+        }
     }
 }
