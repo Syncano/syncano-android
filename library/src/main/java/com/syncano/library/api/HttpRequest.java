@@ -2,7 +2,6 @@ package com.syncano.library.api;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
-import com.syncano.library.Constants;
 import com.syncano.library.Syncano;
 import com.syncano.library.utils.GsonHelper;
 import com.syncano.library.utils.SyncanoHttpClient;
@@ -23,12 +22,14 @@ public abstract class HttpRequest<T> extends Request<T> {
     private List<NameValuePair> urlParams = new ArrayList<>();
     private List<NameValuePair> httpHeaders = new ArrayList<>();
     private String url;
+    private String path;
     private String completeCustomUrl;
     private HashSet<Integer> correctHttpResponse = new HashSet<>();
 
-    protected HttpRequest(String url, Syncano syncano) {
+    protected HttpRequest(String path, Syncano syncano) {
         super(syncano);
-        this.url = url;
+        this.path = path;
+        this.url = syncano.getUrl();
         gson = GsonHelper.createGson();
         if (syncano.getApiKey() != null && !syncano.getApiKey().isEmpty()) {
             setHttpHeader("X-API-KEY", syncano.getApiKey());
@@ -133,21 +134,25 @@ public abstract class HttpRequest<T> extends Request<T> {
         return httpHeaders;
     }
 
+    public String getUrlPath() {
+        return path;
+    }
+
     public String getUrl() {
-        return url;
+        String fullUrl;
+        if (getCompleteCustomUrl() != null) {
+            fullUrl = getCompleteCustomUrl() + getUrlParams();
+        } else {
+            fullUrl = url + getUrlPath() + getUrlParams();
+        }
+        return fullUrl;
     }
 
     public abstract T parseResult(Response<T> response, String json);
 
     public Response<T> send() {
         SyncanoHttpClient http = new SyncanoHttpClient();
-
-        Response<T> response;
-        if (completeCustomUrl != null && !completeCustomUrl.isEmpty()) {
-            response = http.send(completeCustomUrl, this);
-        } else {
-            response = http.send(Constants.PRODUCTION_SERVER_URL, this);
-        }
+        Response<T> response = http.send(this);
 
         if (getRunAfter() != null) {
             getRunAfter().run(response);

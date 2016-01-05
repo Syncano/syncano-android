@@ -3,6 +3,7 @@ package com.syncano.library;
 import com.google.gson.JsonObject;
 import com.syncano.library.api.HttpRequest;
 import com.syncano.library.api.IncrementBuilder;
+import com.syncano.library.api.Request;
 import com.syncano.library.api.RequestDelete;
 import com.syncano.library.api.RequestGet;
 import com.syncano.library.api.RequestGetList;
@@ -94,6 +95,13 @@ public class Syncano {
      */
     public static void init(String apiKey, String instanceName) {
         init(null, apiKey, instanceName);
+    }
+
+    public String getUrl() {
+        if (customServerUrl != null && !customServerUrl.isEmpty()) {
+            return customServerUrl;
+        }
+        return Constants.PRODUCTION_SERVER_URL;
     }
 
     public static void setStrictCheckCertificate(boolean strictCheck) {
@@ -406,7 +414,7 @@ public class Syncano {
     public RequestPost<Trace> runCodeBox(int id, JsonObject params) {
         String url = String.format(Constants.CODEBOXES_RUN_URL, getNotEmptyInstanceName(), id);
         JsonObject payload = new JsonObject();
-        payload.add("payload", params);
+        payload.add(Constants.POST_PARAM_PAYLOAD, params);
         RequestPost<Trace> req = new RequestPost<>(Trace.class, url, this, payload);
         addCodeboxIdAfterCall(req, id);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
@@ -498,10 +506,17 @@ public class Syncano {
      * @param webhook Webhook to create.
      * @return New Webhook.
      */
-    public RequestPost<Webhook> createWebhook(Webhook webhook) {
+    public RequestPost<Webhook> createWebhook(final Webhook webhook) {
         String url = String.format(Constants.WEBHOOKS_LIST_URL, getNotEmptyInstanceName());
         RequestPost<Webhook> req = new RequestPost<>(Webhook.class, url, this, webhook);
+        req.updateGivenObject(true);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
+        req.setRunAfter(new Request.RunAfter<Webhook>() {
+            @Override
+            public void run(Response<Webhook> response) {
+                webhook.on(Syncano.this);
+            }
+        });
         return req;
     }
 

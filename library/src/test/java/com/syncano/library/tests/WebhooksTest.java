@@ -19,6 +19,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class WebhooksTest extends SyncanoApplicationTestCase {
@@ -155,13 +156,12 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
     @Test
     public void testPublicWebhook() {
         // ----------------- Create public webhook -----------------
-        Webhook newWebhook = new Webhook(PUBLIC_WEBHOOK_NAME, codeBox.getId());
-        newWebhook.setPublic(true);
+        Webhook webhook = new Webhook(PUBLIC_WEBHOOK_NAME, codeBox.getId());
+        webhook.setPublic(true);
+        assertNull(webhook.getPublicLink());
 
-        Response<Webhook> responseCreateWebhook = syncano.createWebhook(newWebhook).send();
+        Response<Webhook> responseCreateWebhook = syncano.createWebhook(webhook).send();
         assertTrue(responseCreateWebhook.isSuccess());
-        Webhook webhook = responseCreateWebhook.getData();
-        assertNotNull(webhook);
         assertNotNull(webhook.getPublicLink());
 
 

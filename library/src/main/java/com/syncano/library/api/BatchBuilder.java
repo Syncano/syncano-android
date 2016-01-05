@@ -38,10 +38,13 @@ public class BatchBuilder {
             if (r.getCompleteCustomUrl() != null) {
                 throw new RuntimeException("Can't send completely custom url request in batch");
             }
+            if (r.getUrlPath() == null) {
+                throw new RuntimeException("Can't send request without url path in batch");
+            }
 
             JsonObject reqJson = new JsonObject();
             reqJson.addProperty("method", r.getRequestMethod());
-            reqJson.addProperty("path", r.getUrl() + r.getUrlParams());
+            reqJson.addProperty("path", r.getUrlPath() + r.getUrlParams());
             JsonElement body = r.prepareJsonParams();
             if (body != null) {
                 reqJson.add("body", body);

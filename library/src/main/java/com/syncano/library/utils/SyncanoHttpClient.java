@@ -70,15 +70,9 @@ public class SyncanoHttpClient {
      *
      * @return Response with data
      */
-    public <T> Response<T> send(String serverUrl, HttpRequest<T> syncanoRequest) {
+    public <T> Response<T> send(HttpRequest<T> syncanoRequest) {
         HttpEntity parameters = syncanoRequest.prepareParams();
-
-        String url;
-        if (syncanoRequest.getCompleteCustomUrl() != null) {
-            url = syncanoRequest.getCompleteCustomUrl() + syncanoRequest.getUrlParams();
-        } else {
-            url = serverUrl + syncanoRequest.getUrl() + syncanoRequest.getUrlParams();
-        }
+        String url = syncanoRequest.getUrl();
 
         if (BuildConfig.DEBUG) {
             SyncanoLog.d(LOG_TAG, "Request: " + syncanoRequest.getRequestMethod() + "  " + url);

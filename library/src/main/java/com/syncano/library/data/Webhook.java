@@ -13,7 +13,6 @@ public class Webhook {
 
     public static final String FIELD_NAME = "name";
     public static final String FIELD_CODEBOX = "codebox";
-    public static final String FIELD_PUBLIC_LINK = "public_link";
     public static final String FIELD_PUBLIC = "public";
     public static final String FIELD_DESCRIPTION = "description";
     public static final String FIELD_LINKS = "links";
@@ -68,6 +67,9 @@ public class Webhook {
     public String getPublicLink() {
         if (links == null || links.publicLink == null) {
             return null;
+        }
+        if (getSyncano() != null) {
+            return getSyncano().getUrl() + links.publicLink;
         }
         return Constants.PRODUCTION_SERVER_URL + links.publicLink;
     }
