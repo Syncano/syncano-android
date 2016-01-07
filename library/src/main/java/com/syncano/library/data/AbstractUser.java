@@ -4,7 +4,6 @@ import com.syncano.library.Syncano;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
 import com.syncano.library.callbacks.SyncanoCallback;
-import com.syncano.library.choice.SocialAuthBackend;
 
 /**
  * Override this class with ProfileType to create your custom User.

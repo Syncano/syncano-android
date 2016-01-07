@@ -88,20 +88,20 @@ public class UserManagement extends SyncanoApplicationTestCase {
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
-        String userKey = response.getData().getUserKey();
-        assertNotNull(userKey);
+        User user = response.getData();
+        assertNotNull(user);
 
 
         // ---------- Acting as a user
 
         // Don't have to do it if used login method on this Syncano object
-        syncano.setUserKey(userKey);
+        syncano.setUser(user);
 
         // -----------------------------
 
 
         // ---------- How to reset the User Key
-        syncano.setUserKey(null);
+        syncano.setUser(null);
 
         // -----------------------------
     }

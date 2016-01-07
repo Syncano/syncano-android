@@ -51,7 +51,7 @@ public class PlatformType {
         return null;
     }
 
-    static class AndroidPlatform extends PlatformType {
+    public static class AndroidPlatform extends PlatformType {
         private MainThreadExecutor mainThreadExecutor = new MainThreadExecutor();
 
         @Override

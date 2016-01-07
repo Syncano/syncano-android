@@ -52,6 +52,11 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
         Response<Webhook> delResp = deleteRequest.send();
         assertTrue(delResp.isSuccess());
 
+        deleteRequest = syncano.deleteWebhook(PUBLIC_WEBHOOK_NAME);
+        delResp = deleteRequest.send();
+        assertTrue(delResp.isSuccess());
+
+
         // ----------------- Create Webhook -----------------
         Webhook newWebhook = new Webhook(WEBHOOK_NAME, codeBox.getId());
         Response<Webhook> responseCreateWebhook = syncano.createWebhook(newWebhook).send();

@@ -1,5 +1,7 @@
 package com.syncano.library;
 
+import android.content.Context;
+
 import com.google.gson.JsonObject;
 import com.syncano.library.api.HttpRequest;
 import com.syncano.library.api.IncrementBuilder;
@@ -26,13 +28,15 @@ import com.syncano.library.data.Webhook;
 import com.syncano.library.simple.RequestBuilder;
 import com.syncano.library.utils.Encryption;
 import com.syncano.library.utils.SyncanoClassHelper;
+import com.syncano.library.utils.UserMemory;
 
 public class Syncano {
 
     private static Syncano sharedInstance = null;
+    private Context androidContext = null;
     protected String customServerUrl;
     protected String apiKey;
-    protected String userKey;
+    protected AbstractUser user;
     protected String instanceName;
 
     /**
@@ -58,8 +62,18 @@ public class Syncano {
      * @param instanceName Syncano instanceName related with apiKey.
      */
     public Syncano(String apiKey, String instanceName) {
-        this.apiKey = apiKey;
-        this.instanceName = instanceName;
+        this(null, apiKey, instanceName);
+    }
+
+    /**
+     * Create Syncano object.
+     *
+     * @param apiKey         Api key.
+     * @param instanceName   Syncano instanceName related with apiKey.
+     * @param androidContext used for android specific functions
+     */
+    public Syncano(String apiKey, String instanceName, Context androidContext) {
+        this(null, apiKey, instanceName, androidContext);
     }
 
     /**
@@ -70,8 +84,35 @@ public class Syncano {
      * @param instanceName    Syncano instanceName related with apiKey.
      */
     public Syncano(String customServerUrl, String apiKey, String instanceName) {
-        this(apiKey, instanceName);
+        this(customServerUrl, apiKey, instanceName, null);
+    }
+
+    /**
+     * Create Syncano object.
+     *
+     * @param customServerUrl If not set, production URL will be used.
+     * @param apiKey          Api key.
+     * @param instanceName    Syncano instanceName related with apiKey.
+     */
+    public Syncano(String customServerUrl, String apiKey, String instanceName, Context androidContext) {
         this.customServerUrl = customServerUrl;
+        this.apiKey = apiKey;
+        this.instanceName = instanceName;
+        this.androidContext = androidContext;
+        this.user = UserMemory.getUserFromStorage(this);
+    }
+
+    /**
+     * Create static Syncano instance.
+     * Use getInstance() to get its reference.
+     *
+     * @param customServerUrl If not set, production URL will be used.
+     * @param apiKey          Api key.
+     * @param instanceName    Syncano instanceName related with apiKey.
+     * @param androidContext  used for android specific functions
+     */
+    public static void init(String customServerUrl, String apiKey, String instanceName, Context androidContext) {
+        sharedInstance = new Syncano(customServerUrl, apiKey, instanceName, androidContext);
     }
 
     /**
@@ -83,7 +124,19 @@ public class Syncano {
      * @param instanceName    Syncano instanceName related with apiKey.
      */
     public static void init(String customServerUrl, String apiKey, String instanceName) {
-        sharedInstance = new Syncano(customServerUrl, apiKey, instanceName);
+        init(customServerUrl, apiKey, instanceName, null);
+    }
+
+    /**
+     * Create static Syncano instance.
+     * Use getInstance() to get its reference.
+     *
+     * @param apiKey         Api key.
+     * @param instanceName   Syncano instanceName related with apiKey.
+     * @param androidContext used for android specific functions
+     */
+    public static void init(String apiKey, String instanceName, Context androidContext) {
+        init(null, apiKey, instanceName, androidContext);
     }
 
     /**
@@ -136,11 +189,23 @@ public class Syncano {
     }
 
     public String getUserKey() {
-        return userKey;
+        if (user == null) {
+            return null;
+        }
+        return user.getUserKey();
     }
 
-    public void setUserKey(String userKey) {
-        this.userKey = userKey;
+    public AbstractUser getUser() {
+        return user;
+    }
+
+    public void setUser(AbstractUser user) {
+        this.user = user;
+        UserMemory.saveUserToStorage(this, user);
+    }
+
+    public Context getAndroidContext() {
+        return androidContext;
     }
 
     /**
@@ -1040,7 +1105,7 @@ public class Syncano {
         jsonParams.addProperty(User.FIELD_PASSWORD, password);
 
         RequestPost<T> req = new RequestPost<>(type, url, this, jsonParams);
-        saveUserApikeyIfSuccess(req);
+        saveUserIfSuccess(req);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
     }
@@ -1070,20 +1135,19 @@ public class Syncano {
         jsonParams.addProperty(Constants.POST_PARAM_SOCIAL_TOKEN, authToken);
 
         RequestPost<T> req = new RequestPost<>(type, url, this, jsonParams);
-        saveUserApikeyIfSuccess(req);
+        saveUserIfSuccess(req);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
     }
 
-    private <T extends AbstractUser> void saveUserApikeyIfSuccess(HttpRequest<T> request) {
+    private <T extends AbstractUser> void saveUserIfSuccess(HttpRequest<T> request) {
         request.setRunAfter(new HttpRequest.RunAfter<T>() {
             @Override
             public void run(Response<T> response) {
                 if (!response.isSuccess() || response.getData() == null) {
                     return;
                 }
-                AbstractUser user = response.getData();
-                Syncano.this.setUserKey(user.getUserKey());
+                Syncano.this.setUser(response.getData());
             }
         });
     }

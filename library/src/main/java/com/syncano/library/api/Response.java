@@ -117,14 +117,14 @@ public class Response<T> {
     private String httpReasonPhrase;
 
     /**
-     * Result from server.
+     * Parsed result from server.
      */
     private T data;
 
     /**
      * Returns true if result is success.
      *
-     * @return
+     * @return true if result is success
      */
     public boolean isSuccess() {
         return resultCode == CODE_SUCCESS;
@@ -166,8 +166,8 @@ public class Response<T> {
         return data;
     }
 
-    public void setData(T data) {
-        this.data = data;
+    public void setData(T parsedData) {
+        this.data = parsedData;
     }
 
     @Override
