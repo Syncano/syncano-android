@@ -70,7 +70,7 @@ generateRelease.dependsOn(zipRelease)
 
 // Bintray
 Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
+properties.load(project.file('gradle.properties').newDataInputStream())
 
 bintray {
     user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
