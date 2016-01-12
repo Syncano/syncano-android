@@ -28,14 +28,26 @@ artifacts {
     archives sourcesJar
 }
 
+// doc/source/jar  ,if no this part ,only aar and pom file will be published
+android.libraryVariants.all { variant ->
+    def name = variant.buildType.name
+
+    def task = project.tasks.create "jar${name.capitalize()}", Jar
+    task.dependsOn variant.javaCompile
+    task.from variant.javaCompile.destinationDir
+    artifacts.add('archives', task);
+}
+
+
+
 install {
     repositories.mavenInstaller {
         pom.project {
+            packaging = 'jar'
             name 'Syncano Android Library'
             description 'Syncano\'s library is written in Java and provides communication with Syncano (www.syncano.io) via HTTPS RESTful interface.'
             url 'https://github.com/Syncano/syncano-android'
             inceptionYear '2016'
-            packaging 'jar'
             groupId 'io.syncano'
             artifactId 'library'
             licenses {
@@ -44,10 +56,17 @@ install {
                     distribution 'repo'
                 }
             }
+            developers {
+                developer {
+                    id 'Syncano Dev'
+                    name 'support@syncano.com'
+                }
+            }
             scm {
                 connection 'https://github.com/Syncano/syncano-android.git'
                 url 'https://github.com/Syncano/syncano-android'
             }
+
         }
     }
 }
