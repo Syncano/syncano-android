@@ -4,14 +4,13 @@ import com.syncano.library.Syncano;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
 import com.syncano.library.callbacks.SyncanoCallback;
-import com.syncano.library.choice.SocialAuthBackend;
 
 /**
  * Override this class with ProfileType to create your custom User.
  *
- * @param <ProfileType> Type of user profile.
+ * @param <P> Type of user profile.
  */
-public abstract class AbstractUser<ProfileType> {
+public abstract class AbstractUser<P extends Profile> {
 
     public static final String FIELD_ID = "id";
     public static final String FIELD_USER_NAME = "username";
@@ -22,7 +21,7 @@ public abstract class AbstractUser<ProfileType> {
     private Syncano syncano;
 
     @SyncanoField(name = FIELD_ID, readOnly = true)
-    private int id;
+    private Integer id;
 
     @SyncanoField(name = FIELD_USER_NAME, required = true)
     private String userName;
@@ -34,7 +33,7 @@ public abstract class AbstractUser<ProfileType> {
     private String userKey;
 
     @SyncanoField(name = FIELD_PROFILE, readOnly = true)
-    private ProfileType profile;
+    private P profile;
 
     public AbstractUser() {
     }
@@ -44,11 +43,11 @@ public abstract class AbstractUser<ProfileType> {
         this.password = password;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -76,11 +75,11 @@ public abstract class AbstractUser<ProfileType> {
         this.userKey = userKey;
     }
 
-    public ProfileType getProfile() {
+    public P getProfile() {
         return profile;
     }
 
-    public void setProfile(ProfileType profile) {
+    public void setProfile(P profile) {
         this.profile = profile;
     }
 
@@ -91,7 +90,7 @@ public abstract class AbstractUser<ProfileType> {
         return syncano;
     }
 
-    public <T extends AbstractUser<ProfileType>> T on(Syncano syncano) {
+    public <T extends AbstractUser<P>> T on(Syncano syncano) {
         this.syncano = syncano;
         return (T) this;
     }

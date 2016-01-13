@@ -1,0 +1,112 @@
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
+def localReleaseDest = "build/release/${version}"
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    source = android.sourceSets.main.java.srcDirs
+    destinationDir = file("build/javadoc/")
+    classpath = configurations.compile
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    options.links("http://docs.oracle.com/javase/7/docs/api/");
+    options.links("http://d.android.com/reference/");
+    exclude '**/BuildConfig.java'
+    exclude '**/R.java'
+    failOnError false
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+// doc/source/jar  ,if no this part ,only aar and pom file will be published
+android.libraryVariants.all { variant ->
+    def name = variant.buildType.name
+
+    def task = project.tasks.create "jar${name.capitalize()}", Jar
+    task.dependsOn variant.javaCompile
+    task.from variant.javaCompile.destinationDir
+    artifacts.add('archives', task);
+}
+
+
+
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            packaging = 'jar'
+            name 'Syncano Android Library'
+            description 'Syncano\'s library is written in Java and provides communication with Syncano (www.syncano.io) via HTTPS RESTful interface.'
+            url 'https://github.com/Syncano/syncano-android'
+            inceptionYear '2016'
+            groupId 'io.syncano'
+            artifactId 'library'
+            licenses {
+                license {
+                    name 'MIT License'
+                    distribution 'repo'
+                }
+            }
+            developers {
+                developer {
+                    id 'Syncano Dev'
+                    name 'support@syncano.com'
+                }
+            }
+            scm {
+                connection 'https://github.com/Syncano/syncano-android.git'
+                url 'https://github.com/Syncano/syncano-android'
+            }
+
+        }
+    }
+}
+
+
+
+task zipRelease(type: Zip) {
+    from localReleaseDest
+    destinationDir buildDir
+    archiveName "release-${version}.zip"
+}
+
+task generateRelease << {
+    println "Release ${version} can be found at ${localReleaseDest}/"
+    println "Release ${version} zipped can be found ${buildDir}/release-${version}.zip"
+}
+
+generateRelease.dependsOn(uploadArchives)
+generateRelease.dependsOn(zipRelease)
+
+// Bintray
+Properties properties = new Properties()
+properties.load(project.file('gradle.properties').newDataInputStream())
+
+bintray {
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+    configurations = ['archives']
+
+    pkg {
+        repo = 'maven'
+        name = 'io.syncano:library'
+        publish = true
+        publicDownloadNumbers = false
+        licenses = ['MIT']
+        labels = ['android', 'syncano', 'java', 'rest']
+        websiteUrl = 'http://syncano.io'
+        issueTrackerUrl = 'https://github.com/Syncano/syncano-android/issues'
+        vcsUrl = 'https://github.com/Syncano/syncano-android.git'
+
+    }
+
+}

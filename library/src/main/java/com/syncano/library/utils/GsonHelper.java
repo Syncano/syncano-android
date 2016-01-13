@@ -22,18 +22,30 @@ import com.syncano.library.data.SyncanoFile;
 
 public class GsonHelper {
 
-    public static Gson createGson() {
-        return createGson(null);
+    public static class GsonConfig {
+        public boolean readOnlyNotImportant = false;
     }
 
-    public static <T> Gson createGson(final T object) {
+    public static Gson createGson() {
+        return createGson(new GsonConfig());
+    }
+
+    public static <T> Gson createGson(GsonConfig config) {
+        return createGson(null, config);
+    }
+
+    public static <T> Gson createGson(T object) {
+        return createGson(object, new GsonConfig());
+    }
+
+    public static <T> Gson createGson(final T object, GsonConfig config) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(NanosDate.class, new DateSerializer());
         gsonBuilder.registerTypeAdapter(NanosDate.class, new DateDeserializer());
         gsonBuilder.registerTypeAdapter(Date.class, new DateSerializer());
         gsonBuilder.registerTypeAdapter(Date.class, new DateDeserializer());
         gsonBuilder.registerTypeAdapter(SyncanoFile.class, new FileDeserializer());
-        gsonBuilder.addSerializationExclusionStrategy(new SyncanoSerializationStrategy());
+        gsonBuilder.addSerializationExclusionStrategy(new SyncanoSerializationStrategy(config.readOnlyNotImportant));
         gsonBuilder.addDeserializationExclusionStrategy(new SyncanoDeserializationStrategy());
         gsonBuilder.setFieldNamingStrategy(new SyncanoFieldNamingStrategy());
 
@@ -76,6 +88,12 @@ public class GsonHelper {
 
     private static class SyncanoSerializationStrategy implements ExclusionStrategy {
 
+        private boolean readOnlyNotImportant = false;
+
+        public SyncanoSerializationStrategy(boolean readOnlyNotImportant) {
+            this.readOnlyNotImportant = readOnlyNotImportant;
+        }
+
         @Override
         public boolean shouldSkipField(FieldAttributes f) {
 
@@ -84,7 +102,8 @@ public class GsonHelper {
             // Don't serialize read only fields (like "id" or "created_at").
             // We want only to receive it, not send.
             // don't serialize more complicated data structures as SyncanoFile
-            if (syncanoField == null || (syncanoField.readOnly() && !syncanoField.required()) ||
+            if (syncanoField == null ||
+                    (!readOnlyNotImportant && syncanoField.readOnly() && !syncanoField.required()) ||
                     f.getDeclaredClass().isAssignableFrom(SyncanoFile.class)) {
                 return true;
             }

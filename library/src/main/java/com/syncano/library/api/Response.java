@@ -1,6 +1,6 @@
 package com.syncano.library.api;
 
-public class Response <T> {
+public class Response<T> {
 
     /**
      * Everything is ok!
@@ -92,6 +92,11 @@ public class Response <T> {
     public final static int CODE_ILLEGAL_IO_EXCEPTION = 4;
 
     /**
+     * Parsing exception.
+     */
+    public final static int CODE_PARSING_RESPONSE_EXCEPTION = 5;
+
+    /**
      * Internal results code.
      */
     private int resultCode;
@@ -112,19 +117,20 @@ public class Response <T> {
     private String httpReasonPhrase;
 
     /**
-     * Result from server.
+     * Parsed result from server.
      */
     private T data;
 
     /**
-     * Returns true if http result code is ok.
-     * @return
+     * Returns true if result is success.
+     *
+     * @return true if result is success
      */
-    public boolean isOk() {
-        return httpResultCode >= 200 && httpResultCode < 400;
+    public boolean isSuccess() {
+        return resultCode == CODE_SUCCESS;
     }
 
-    public Integer getResultCode() {
+    public int getResultCode() {
         return resultCode;
     }
 
@@ -160,8 +166,8 @@ public class Response <T> {
         return data;
     }
 
-    public void setData(T data) {
-        this.data = data;
+    public void setData(T parsedData) {
+        this.data = parsedData;
     }
 
     @Override

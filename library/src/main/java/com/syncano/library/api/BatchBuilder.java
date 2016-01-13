@@ -13,15 +13,15 @@ import java.util.List;
 
 public class BatchBuilder {
     public static final int MAX_BATCH = 50;
-    private ArrayList<Request> requests = new ArrayList<>();
+    private ArrayList<HttpRequest> requests = new ArrayList<>();
     private Syncano syncano;
 
     public BatchBuilder(Syncano syncano) {
         this.syncano = syncano;
     }
 
-    public BatchBuilder add(Request request) {
-        requests.add(request);
+    public BatchBuilder add(HttpRequest httpRequest) {
+        requests.add(httpRequest);
         return this;
     }
 
@@ -34,14 +34,17 @@ public class BatchBuilder {
         }
 
         JsonArray array = new JsonArray();
-        for (Request r : requests) {
+        for (HttpRequest r : requests) {
             if (r.getCompleteCustomUrl() != null) {
                 throw new RuntimeException("Can't send completely custom url request in batch");
+            }
+            if (r.getUrlPath() == null) {
+                throw new RuntimeException("Can't send request without url path in batch");
             }
 
             JsonObject reqJson = new JsonObject();
             reqJson.addProperty("method", r.getRequestMethod());
-            reqJson.addProperty("path", r.getUrl() + r.getUrlParams());
+            reqJson.addProperty("path", r.getUrlPath() + r.getUrlParams());
             JsonElement body = r.prepareJsonParams();
             if (body != null) {
                 reqJson.add("body", body);
@@ -52,8 +55,10 @@ public class BatchBuilder {
         JsonObject json = new JsonObject();
         json.add("requests", array);
 
-        String url = String.format(Constants.BATCH_URL, syncano.getInstanceName());
-        return new BatchRequest(url, syncano, json);
+        String url = String.format(Constants.BATCH_URL, syncano.getNotEmptyInstanceName());
+        BatchRequest req = new BatchRequest(url, syncano, json);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
     }
 
     public Response<List<BatchAnswer>> send() {

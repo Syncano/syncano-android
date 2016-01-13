@@ -69,7 +69,7 @@ public class SyncanoClassHelper {
                 continue;
             }
             fieldDescription.addProperty(Constants.FIELD_TYPE, typeName);
-            fieldDescription.addProperty(Constants.FIELD_NAME, getFieldName(field));
+            fieldDescription.addProperty(Constants.FIELD_NAME, getFieldName(field, true));
             if (fieldAnnotation.filterIndex()) {
                 fieldDescription.addProperty(Constants.FIELD_FILTER_INDEX, true);
             }
@@ -83,6 +83,10 @@ public class SyncanoClassHelper {
     }
 
     public static String getFieldName(Field f) {
+        return getFieldName(f, false);
+    }
+
+    public static String getFieldName(Field f, boolean checkCapitalLetters) {
         SyncanoField syncanoField = f.getAnnotation(SyncanoField.class);
 
         String name;
@@ -91,7 +95,7 @@ public class SyncanoClassHelper {
         } else {
             name = f.getName();
         }
-        if (!name.equals(name.toLowerCase())) {
+        if (checkCapitalLetters && !name.equals(name.toLowerCase())) {
             throw new RuntimeException("Can't use capital letters in field names");
         }
         return name;

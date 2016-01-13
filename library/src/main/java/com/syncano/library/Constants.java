@@ -21,6 +21,7 @@ public class Constants {
     public final static String URL_PARAM_PAGE_LAST_PK = "last_pk";
     public final static String URL_PARAM_ROOM = "room";
     public final static String URL_PARAM_LAST_ID = "last_id";
+    public final static String URL_PARAM_INCLUDE_COUNT = "include_count";
 
     public final static String POST_PARAM_USER = "user";
     public final static String POST_PARAM_SOCIAL_TOKEN = "access_token";
@@ -47,6 +48,7 @@ public class Constants {
     public static final String CODEBOXES_LIST_URL = "/v1/instances/%s/codeboxes/";
     public static final String CODEBOXES_DETAIL_URL = "/v1/instances/%s/codeboxes/%d/";
     public static final String CODEBOXES_RUN_URL = "/v1/instances/%s/codeboxes/%d/run/";
+    public static final String TRACE_DETAIL_URL = "/v1/instances/%s/codeboxes/%d/traces/%d/";
 
     // ==================== Webhooks ==================== //
     public static final String WEBHOOKS_LIST_URL = "/v1/instances/%s/webhooks/";

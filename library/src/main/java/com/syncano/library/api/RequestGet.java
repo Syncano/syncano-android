@@ -1,9 +1,12 @@
 package com.syncano.library.api;
 
 import com.syncano.library.Syncano;
+import com.syncano.library.choice.FilterType;
 import com.syncano.library.utils.SyncanoHttpClient;
 
-public abstract class RequestGet<T> extends Request<T> {
+import java.util.List;
+
+public abstract class RequestGet<T> extends HttpRequest<T> {
 
     private FieldsFilter fieldsFilter;
 
@@ -19,20 +22,36 @@ public abstract class RequestGet<T> extends Request<T> {
     @Override
     public void prepareUrlParams() {
         super.prepareUrlParams();
-
-        if (fieldsFilter != null && fieldsFilter.getFieldNames() != null && fieldsFilter.getFieldNames().size() > 0) {
-
-            StringBuilder filterFields = new StringBuilder();
-            for (String fieldName : fieldsFilter.getFieldNames()) {
-                if (filterFields.length() != 0) filterFields.append(',');
-                filterFields.append(fieldName);
-            }
-
-            addUrlParam(fieldsFilter.getFilterTypeString(), filterFields.toString());
+        if (isFieldsFilter()) {
+            addUrlParam(fieldsFilter.getFilterTypeString(), createFilterFieldParam());
         }
     }
 
-    public void setFieldsFilter(FieldsFilter fieldsFilter) {
+    private String createFilterFieldParam() {
+        StringBuilder filterFields = new StringBuilder();
+        for (String fieldName : fieldsFilter.getFieldNames()) {
+            if (filterFields.length() != 0) filterFields.append(',');
+            filterFields.append(fieldName);
+        }
+        return filterFields.toString();
+    }
+
+    private boolean isFieldsFilter() {
+        return fieldsFilter != null && fieldsFilter.getFieldNames() != null && fieldsFilter.getFieldNames().size() > 0;
+    }
+
+    public RequestGet<T> setFieldsFilter(FieldsFilter fieldsFilter) {
         this.fieldsFilter = fieldsFilter;
+        return this;
+    }
+
+    public RequestGet<T> selectFields(FilterType filterType, String... fields) {
+        this.fieldsFilter = new FieldsFilter(filterType, fields);
+        return this;
+    }
+
+    public RequestGet<T> selectFields(FilterType filterType, List<String> fields) {
+        this.fieldsFilter = new FieldsFilter(filterType, fields);
+        return this;
     }
 }

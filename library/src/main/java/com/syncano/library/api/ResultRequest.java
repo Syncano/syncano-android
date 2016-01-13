@@ -2,7 +2,7 @@ package com.syncano.library.api;
 
 import com.syncano.library.Syncano;
 
-public abstract class ResultRequest<T> extends Request<T> {
+public abstract class ResultRequest<T> extends HttpRequest<T> {
 
     protected Class<T> resultType;
 
@@ -12,7 +12,10 @@ public abstract class ResultRequest<T> extends Request<T> {
     }
 
     @Override
-    public T parseResult(String json) {
+    public T parseResult(Response<T> response, String json) {
+        if (resultType.equals(String.class)) {
+            return (T) json;
+        }
         return gson.fromJson(json, resultType);
     }
 }

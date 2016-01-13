@@ -1,14 +1,12 @@
 package com.syncano.library.data;
 
-import com.syncano.library.Constants;
 import com.syncano.library.Syncano;
 import com.syncano.library.annotation.SyncanoField;
-import com.syncano.library.api.RequestGetOne;
+import com.syncano.library.api.IncrementBuilder;
+import com.syncano.library.api.HttpRequest;
 import com.syncano.library.api.Response;
 import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.choice.DataObjectPermissions;
-import com.syncano.library.simple.ObjectPlease;
-import com.syncano.library.utils.SyncanoClassHelper;
 
 public abstract class SyncanoObject extends Entity {
 
@@ -50,6 +48,7 @@ public abstract class SyncanoObject extends Entity {
     private Integer expectedRevision;
 
     private Syncano syncano;
+    private IncrementBuilder incrementBuilder = new IncrementBuilder();
 
     public String getChannelRoom() {
         return channelRoom;
@@ -123,7 +122,11 @@ public abstract class SyncanoObject extends Entity {
         this.expectedRevision = expectedRevision;
     }
 
-    private Syncano getSyncano() {
+    public IncrementBuilder getIncrementBuilder() {
+        return incrementBuilder;
+    }
+
+    public Syncano getSyncano() {
         if (syncano == null) {
             return Syncano.getInstance();
         }
@@ -137,16 +140,16 @@ public abstract class SyncanoObject extends Entity {
 
     public <T extends SyncanoObject> Response<T> save() {
         if (getId() == null) {
-            return getSyncano().createObject((T) this).send();
+            return getSyncano().createObject((T) this, true).send();
         }
-        return getSyncano().updateObject((T) this).send();
+        return getSyncano().updateObject((T) this, true).send();
     }
 
     public <T extends SyncanoObject> void save(SyncanoCallback<T> callback) {
         if (getId() == null) {
-            getSyncano().createObject((T) this).sendAsync(callback);
+            getSyncano().createObject((T) this, false).sendAsync(callback);
         } else {
-            getSyncano().updateObject((T) this).sendAsync(callback);
+            getSyncano().updateObject((T) this, false).sendAsync(callback);
         }
     }
 
@@ -158,27 +161,23 @@ public abstract class SyncanoObject extends Entity {
         getSyncano().deleteObject((T) this).sendAsync(callback);
     }
 
-    private <T extends SyncanoObject> RequestGetOne<T> prepareFetchRequest() {
-        if (getId() == null) {
-            throw new RuntimeException("Can't fetch object without id");
-        }
-        Syncano syncano = getSyncano();
-        String className = SyncanoClassHelper.getSyncanoClassName(getClass());
-        String url = String.format(Constants.OBJECTS_DETAIL_URL, syncano.getInstanceName(), className, getId());
-        return new RequestGetOne<>((T) this, url, syncano);
-    }
-
     public <T extends SyncanoObject> Response<T> fetch() {
-        RequestGetOne<T> request = prepareFetchRequest();
-        return request.send();
+        HttpRequest<T> req = (HttpRequest<T>) getSyncano().getObject(this);
+        return req.send();
     }
 
     public <T extends SyncanoObject> void fetch(SyncanoCallback<T> callback) {
-        RequestGetOne<T> request = prepareFetchRequest();
-        request.sendAsync(callback);
+        HttpRequest<T> req = (HttpRequest<T>) getSyncano().getObject(this);
+        req.sendAsync(callback);
     }
 
-    public static <T extends SyncanoObject> ObjectPlease<T> please(Class<T> clazz) {
-        return new ObjectPlease<>(clazz);
+    public <T extends SyncanoObject> T increment(String fieldName, int value) {
+        incrementBuilder.increment(fieldName, value);
+        return (T) this;
+    }
+
+    public <T extends SyncanoObject> T decrement(String fieldName, int value) {
+        incrementBuilder.decrement(fieldName, value);
+        return (T) this;
     }
 }

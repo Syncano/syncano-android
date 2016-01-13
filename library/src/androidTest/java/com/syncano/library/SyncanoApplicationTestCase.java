@@ -1,23 +1,20 @@
 package com.syncano.library;
 
 import android.app.Application;
-import android.content.res.AssetManager;
 import android.test.ApplicationTestCase;
 import android.util.Log;
 
 import com.syncano.library.api.Response;
+import com.syncano.library.choice.ClassStatus;
+import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
+import com.syncano.library.data.User;
+import com.syncano.library.utils.SyncanoLogger;
+import com.syncano.library.utils.SyncanoClassHelper;
+import com.syncano.library.utils.SyncanoLog;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.util.List;
 
-
-/**
- * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
- */
 public class SyncanoApplicationTestCase extends ApplicationTestCase<Application> {
 
     protected Syncano syncano;
@@ -26,70 +23,68 @@ public class SyncanoApplicationTestCase extends ApplicationTestCase<Application>
         super(Application.class);
     }
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        Syncano.init(BuildConfig.STAGING_SERVER_URL, BuildConfig.API_KEY, BuildConfig.INSTANCE_NAME);
+    public void setUp() throws Exception {
+        Syncano.init(BuildConfig.STAGING_SERVER_URL, BuildConfig.API_KEY, BuildConfig.INSTANCE_NAME, getContext());
         syncano = Syncano.getInstance();
+        SyncanoLog.initLogger(new SyncanoLogger() {
+            @Override
+            public void d(String tag, String message) {
+                Log.d(tag, message);
+            }
+
+            @Override
+            public void w(String tag, String message) {
+                Log.w(tag, message);
+            }
+
+            @Override
+            public void e(String tag, String message) {
+                Log.e(tag, message);
+            }
+        });
     }
 
-    public void createClass(Class<? extends SyncanoObject> clazz) {
+
+    public void createClass(Class<? extends SyncanoObject> clazz) throws InterruptedException {
         removeClass(clazz);
         Response resp = syncano.createSyncanoClass(clazz).send();
-        assertEquals(Response.HTTP_CODE_CREATED, resp.getHttpResultCode());
+        assertTrue(resp.isSuccess());
+
+        long start = System.currentTimeMillis();
+        SyncanoClass downloadedClass = null;
+        while (System.currentTimeMillis() - start < 180000 && (downloadedClass == null || downloadedClass.getStatus() != ClassStatus.READY)) {
+            Thread.sleep(100);
+            SyncanoLog.d(SyncanoApplicationTestCase.class.getSimpleName(), "Waiting for class to create: " + (System.currentTimeMillis() - start));
+            Response<SyncanoClass> respClass = syncano.getSyncanoClass(clazz).send();
+            assertEquals(Response.HTTP_CODE_SUCCESS, respClass.getHttpResultCode());
+            downloadedClass = respClass.getData();
+            if (downloadedClass != null && downloadedClass.getStatus() == ClassStatus.READY) {
+                break;
+            }
+        }
+        assertNotNull(downloadedClass);
+        assertEquals(SyncanoClassHelper.getSyncanoClassSchema(clazz), downloadedClass.getSchema());
+        assertEquals(ClassStatus.READY, downloadedClass.getStatus());
     }
 
     public void removeClass(Class<? extends SyncanoObject> clazz) {
-        syncano.deleteSyncanoClass(clazz).send();
+        Response<SyncanoClass> resp = syncano.deleteSyncanoClass(clazz).send();
+        assertTrue(resp.isSuccess());
     }
 
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
+    public void tearDown() throws Exception {
+        SyncanoLog.release();
     }
 
-    public void copyAssets() {
-        AssetManager assetManager = getContext().getAssets();
-        String[] files = null;
-        try {
-            files = assetManager.list("");
-        } catch (IOException e) {
-            Log.e("tag", "Failed to get asset file list.", e);
-        }
-        if (files != null) for (String filename : files) {
-            InputStream in = null;
-            OutputStream out = null;
-            try {
-                in = assetManager.open(filename);
-                File outFile = new File(getContext().getFilesDir(), filename);
-                out = new FileOutputStream(outFile);
-                copyFile(in, out);
-            } catch (IOException e) {
-                Log.e("tag", "Failed to copy asset file: " + filename, e);
-            } finally {
-                if (in != null) {
-                    try {
-                        in.close();
-                    } catch (IOException e) {
-                        // nothing
-                    }
-                }
-                if (out != null) {
-                    try {
-                        out.close();
-                    } catch (IOException e) {
-                        // nothing
-                    }
+    public static void deleteTestUser(Syncano syncano, String userName) {
+        Response<List<User>> response = syncano.getUsers().send();
+
+        if (response.getData() != null && response.getData().size() > 0) {
+            for (User u : response.getData()) {
+                if (userName.equals(u.getUserName())) {
+                    syncano.deleteUser(u.getId()).send();
                 }
             }
-        }
-    }
-
-    private void copyFile(InputStream in, OutputStream out) throws IOException {
-        byte[] buffer = new byte[1024];
-        int read;
-        while ((read = in.read(buffer)) != -1) {
-            out.write(buffer, 0, read);
         }
     }
 }

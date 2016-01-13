@@ -4,6 +4,7 @@ package com.syncano.library.api;
 import com.google.gson.JsonElement;
 import com.syncano.library.Constants;
 import com.syncano.library.Syncano;
+import com.syncano.library.choice.SortOrder;
 import com.syncano.library.data.PageInternal;
 
 import java.util.ArrayList;
@@ -11,16 +12,11 @@ import java.util.List;
 
 public class RequestGetList<T> extends RequestGet<List<T>> {
 
-    private static final int DIRECTION_NEXT = 1;
-    private static final int DIRECTION_PREV = 0;
-
     protected Class<T> resultType;
     private Where where;
     private String orderBy;
-    private int pageSize = 0;
-
-    private int lastPk = 0;
-    private int direction = DIRECTION_NEXT;
+    private Integer pageSize;
+    private boolean estimateCount;
 
     public RequestGetList(Class<T> resultType, String url, Syncano syncano) {
         super(url, syncano);
@@ -39,29 +35,31 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
             addUrlParam(Constants.URL_PARAM_ORDER_BY, orderBy);
         }
 
-        if (pageSize > 0) {
+        if (pageSize != null) {
             addUrlParam(Constants.URL_PARAM_PAGE_SIZE, String.valueOf(pageSize));
         }
 
-        if (lastPk > 0) {
-            addUrlParam(Constants.URL_PARAM_PAGE_LAST_PK, String.valueOf(lastPk));
-            addUrlParam(Constants.URL_PARAM_PAGE_DIRECTION, String.valueOf(direction));
+        if (estimateCount) {
+            addUrlParam(Constants.URL_PARAM_INCLUDE_COUNT, Boolean.toString(true));
         }
     }
 
     @Override
-    public List<T> parseResult(String json) {
-
+    public List<T> parseResult(Response<List<T>> response, String json) {
         PageInternal pageInternal = gson.fromJson(json, PageInternal.class);
         List<T> resultList = new ArrayList<>();
 
-        if (pageInternal.getObjects() != null) {
-
-            for (JsonElement element : pageInternal.getObjects()) {
+        List<JsonElement> objects = pageInternal.getObjects();
+        if (objects != null) {
+            for (JsonElement element : objects) {
                 resultList.add(gson.fromJson(element, resultType));
             }
         }
 
+        ResponseGetList<T> r = (ResponseGetList<T>) response;
+        r.setNextPageUrl(pageInternal.getNext());
+        r.setPreviousPageUrl(pageInternal.getPrev());
+        r.setEstimatedCount(pageInternal.getCount());
         return resultList;
     }
 
@@ -70,18 +68,32 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
      *
      * @param where Filtering query.
      */
-    public void setWhereFilter(Where where) {
+    public RequestGetList<T> setWhereFilter(Where where) {
         this.where = where;
+        return this;
     }
 
     /**
      * You can order objects using this method. Field must be marked as "order_index" in class schema.
      *
      * @param fieldName Field to order by.
-     * @param reverse   If true, change from ascending to descending.
+     * @param sortOrder {@link SortOrder#DESCENDING} data will be sorted descending
+     *                  {@link SortOrder#ASCENDING} data will be sorted ascending
+     * @see SortOrder
      */
-    public void setOrderBy(String fieldName, boolean reverse) {
-        orderBy = reverse ? "-" + fieldName : fieldName;
+    public RequestGetList<T> setOrderBy(String fieldName, SortOrder sortOrder) {
+        if (fieldName == null || fieldName.length() == 0 || fieldName.startsWith("-"))
+            throw new RuntimeException("Syncano field name can not be empty or begin with character '-'");
+        orderBy = (sortOrder == SortOrder.DESCENDING) ? "-" + fieldName : fieldName;
+        return this;
+    }
+
+    /**
+     * Estimate count.
+     */
+    public RequestGetList<T> estimateCount() {
+        estimateCount = true;
+        return this;
     }
 
     /**
@@ -89,26 +101,20 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
      *
      * @param limit Maximum amount of items.
      */
-    public void setLimit(int limit) {
+    public RequestGetList<T> setLimit(int limit) {
         pageSize = limit;
+        return this;
     }
 
-    /**
-     * Set last pk for paging.
-     * If revert is false, "next page" will be requested.
-     * When reverted, direction will be changed and objects with
-     * smaller id will be get. It's equivalent of "previous page".
-     *
-     * @param lastPk          Id to start from paging.
-     * @param revertDirection If true, page direction will be changed.
-     */
-    public void setLastPk(int lastPk, boolean revertDirection) {
-        this.lastPk = lastPk;
 
-        if (revertDirection) {
-            direction = DIRECTION_PREV;
-        } else {
-            direction = DIRECTION_NEXT;
-        }
+    @Override
+    public Response<List<T>> instantiateResponse() {
+        return new ResponseGetList<>(syncano, resultType);
+    }
+
+    @Override
+    public ResponseGetList<T> send() {
+        return (ResponseGetList<T>) super.send();
+
     }
 }

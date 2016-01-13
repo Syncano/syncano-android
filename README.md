@@ -3,26 +3,25 @@
 ## Overview
 ---
 
-Syncano's Android library is written in pure Java and provides communication with Syncano ([www.syncano.io](http://www.syncano.io/)) via HTTPS RESTful interface.
-
+Syncano's Android library is written in pure Java and provides communication with Syncano ([www.syncano.io](http://www.syncano.io/?utm_source=github&utm_medium=readme&utm_campaign=syncano-android)) via HTTPS RESTful interface.
 
 ## Android QuickStart Guide
 ---
-Syncano library is now avaiable on Jcenter just add one line inside your project gradle dependencies and you can use it out of box without Jar
+Syncano library is now available on Jcenter just add one line inside your project gradle dependencies and you can use it out of box without Jar
 ```
 dependencies {
   compile 'io.syncano:library:4.0.5'
 }
 ```
 
-You can find quick start on installing and using Syncano's Android library in our [documentation](http://docs.syncano.com/docs/android).
+You can find quick start on installing and using Syncano's Android library in our [documentation](http://docs.syncano.com/docs/android/?utm_source=github&utm_medium=readme&utm_campaign=syncano-android).
 
-For more detailed information on how to use Syncano and its features - our [Developer Manual](http://docs.syncano.com/docs/getting-started-with-syncano) should be very helpful.
+For more detailed information on how to use Syncano and its features - our [Developer Manual](http://docs.syncano.com/docs/getting-started-with-syncano/?utm_source=github&utm_medium=readme&utm_campaign=syncano-android) should be very helpful.
 
 In case you need help working with the library - email us at libraries@syncano.com - we will be happy to help!
 
 ## Contributing
-We love contributions with want create better Syncano with us. If you'd like to contribute code, documentation, add test or any other improvements, please [create a Pull Request] (https://github.com/Syncano/syncano-android/pulls) on our GitHub repository.
+We love contributions those want create better Syncano with us. If you'd like to contribute code, documentation, add test or any other improvements, please [create a Pull Request] (https://github.com/Syncano/syncano-android/pulls) on our GitHub repository.
 Happy coding!
 
 ## Use library inside your pure Java project without Android
@@ -54,7 +53,7 @@ library/build/outputs/jar/library-release-x.jar
 ## TESTS
 To run tests call from command line:
 ```bash
-$ ./gradlew connectedAndroidTest
+$ ./gradlew testDebug --continue --info
 ```
 
 To run tests, remember to provide correct Api Key and Instance Name in:
@@ -63,7 +62,7 @@ library/gradle.properties
 ```
 or pass them in gradlew command:
 ```bash
-$ ./gradlew connectedCheck -Pinstance_name="\"your_instance_name\"" -Papi_key="\"your_api_key\"" -Papi_key_users="\"your_api_key_for_registering users\""
+$ ./gradlew testDebug --continue --info -Pinstance_name="\"your_instance_name\"" -Papi_key="\"your_api_key\"" -Papi_key_users="\"your_api_key_for_registering users\""
 ```
 
 
