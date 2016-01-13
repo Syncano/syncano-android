@@ -24,7 +24,7 @@ public class Webhook {
     private int codebox;
 
     @SyncanoField(name = FIELD_PUBLIC)
-    private boolean isPublic;
+    private boolean isPublic = false;
 
     @SyncanoField(name = FIELD_DESCRIPTION)
     private String description;

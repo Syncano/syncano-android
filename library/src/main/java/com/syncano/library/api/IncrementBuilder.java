@@ -20,7 +20,7 @@ public final class IncrementBuilder {
         return this;
     }
 
-    public boolean isAdditionFields() {
+    public boolean hasAdditionFields() {
         return additionField.isEmpty();
     }
 

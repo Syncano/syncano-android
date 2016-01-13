@@ -50,10 +50,10 @@ public class UserMemory {
     }
 
     private static String dataKey(Syncano s) {
-        return s.getInstanceName() + "_" + s.getApiKey() + "_user";
+        return s.getNotEmptyInstanceName() + "_" + s.getNotEmptyApiKey() + "_user";
     }
 
     private static String typeKey(Syncano s) {
-        return s.getInstanceName() + "_" + s.getApiKey() + "_class";
+        return s.getNotEmptyInstanceName() + "_" + s.getNotEmptyApiKey() + "_class";
     }
 }

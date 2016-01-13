@@ -29,7 +29,7 @@ public abstract class Request<T> {
         this.runAfter = runAfter;
     }
 
-    public <T> Response<T> instantiateResponse() {
+    public Response<T> instantiateResponse() {
         return new Response<>();
     }
 

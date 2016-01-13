@@ -23,7 +23,7 @@ public class AuthenticationAPIKeys extends SyncanoApplicationTestCase {
     public void testMakeInstance() {
 
         // ---------- API KEY CONNECTION
-        Syncano syncano = new Syncano("api_key", "instance_name");
+        Syncano syncano = Syncano.init("api_key", "instance_name");
         // -----------------------------
     }
 

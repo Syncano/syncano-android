@@ -89,19 +89,6 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
     }
 
     /**
-     * You can order objects using this method. Field must be marked as "order_index" in class schema.
-     *
-     * @param fieldName  Field to order by.
-     * @param descending If true, change sort from ascending to descending.
-     * @deprecated Use {@link #setOrderBy(String, SortOrder)} instead.
-     */
-    public void setOrderBy(String fieldName, boolean descending) {
-        SortOrder sortOrder = descending ? SortOrder.DESCENDING : SortOrder.ASCENDING;
-        setOrderBy(fieldName, sortOrder);
-    }
-
-
-    /**
      * Estimate count.
      */
     public RequestGetList<T> estimateCount() {

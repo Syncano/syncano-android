@@ -5,6 +5,7 @@ import com.syncano.library.TestSyncanoObject;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.Where;
+import com.syncano.library.choice.SortOrder;
 
 import org.junit.After;
 import org.junit.Before;
@@ -102,7 +103,7 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
         TestSyncanoObject objectTwo = syncano.createObject(new TestSyncanoObject("User", "Two")).send().getData();
 
         RequestGetList<TestSyncanoObject> requestGetList = syncano.getObjects(TestSyncanoObject.class);
-        requestGetList.setOrderBy(TestSyncanoObject.FIELD_ID, true);
+        requestGetList.setOrderBy(TestSyncanoObject.FIELD_ID, SortOrder.DESCENDING);
         Response<List<TestSyncanoObject>> response = requestGetList.send();
 
         assertTrue(response.isSuccess());

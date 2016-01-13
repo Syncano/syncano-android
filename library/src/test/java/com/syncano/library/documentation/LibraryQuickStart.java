@@ -71,7 +71,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
     @Test
     public void testInitiateSyncano() {
         // ---------- Connecting to Syncano
-        syncano = new Syncano("YOUR API KEY", "YOUR INSTANCE");
+        syncano = Syncano.init("YOUR API KEY", "YOUR INSTANCE");
         // -----------------------------
 
         this.syncano = super.syncano;

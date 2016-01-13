@@ -11,8 +11,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -22,13 +20,6 @@ public class IncrementBuilderTest extends SyncanoApplicationTestCase {
     public void setUp() throws Exception {
         super.setUp();
         createClass(TestObject.class);
-        createTestObjects();
-    }
-
-    private void createTestObjects() {
-        TestObject testObject = new TestObject();
-        Response<TestObject> responseCreate = testObject.save();
-        assertTrue(responseCreate.isSuccess());
     }
 
     @After
@@ -39,11 +30,14 @@ public class IncrementBuilderTest extends SyncanoApplicationTestCase {
 
     @Test
     public void testIncreaseValue() {
-        int expectedVersion = 0;
-        int expectedRevision = 0;
+        // create object
+        TestObject testObject = new TestObject();
+        int expectedVersion = testObject.version;
+        int expectedRevision = testObject.revision;
+        Response<TestObject> responseCreate = testObject.save();
+        assertTrue(responseCreate.isSuccess());
 
-        Response<List<TestObject>> listResponse = syncano.getObjects(TestObject.class).send();
-        TestObject testObject = listResponse.getData().get(0);
+        // increment on object
         Response<TestObject> response = testObject.increment(TestObject.COLUMN_VERSION, 2).save();
 
         expectedVersion += 2;
@@ -51,15 +45,17 @@ public class IncrementBuilderTest extends SyncanoApplicationTestCase {
         assertEquals(expectedVersion, testObject.version);
         assertEquals(expectedRevision, testObject.revision);
 
-        IncrementBuilder a = new IncrementBuilder();
-        a.increment(TestObject.COLUMN_VERSION, 2);
+        // increment using increment builder
+        IncrementBuilder ib = new IncrementBuilder();
+        ib.increment(TestObject.COLUMN_VERSION, 2);
         expectedVersion += 2;
 
-        Response<TestObject> response2 = syncano.addition(TestObject.class, testObject.getId(), a).send();
+        Response<TestObject> response2 = syncano.addition(TestObject.class, testObject.getId(), ib).send();
         testObject = response2.getData();
 
         assertEquals(expectedVersion, testObject.version);
 
+        // increment and decrement on object
         Response<TestObject> response3 = testObject.increment(TestObject.COLUMN_VERSION, 2)
                 .decrement(TestObject.COLUMN_REVISION, 1).save();
 

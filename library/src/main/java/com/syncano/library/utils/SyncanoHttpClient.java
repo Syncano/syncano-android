@@ -46,11 +46,6 @@ public class SyncanoHttpClient {
     private int timeout = NOT_SET;
 
     /**
-     * Http client used to connect to API
-     */
-    private DefaultHttpClient httpclient;
-
-    /**
      * Default constructor
      */
     public SyncanoHttpClient() {
@@ -87,7 +82,7 @@ public class SyncanoHttpClient {
             request.setHeader(header.getName(), header.getValue());
         }
 
-        httpclient = Encryption.getHttpClient();
+        DefaultHttpClient httpclient = Encryption.getHttpClient();
         httpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, Constants.USER_AGENT);
         HttpParams httpParameters = httpclient.getParams();
         if (timeout != NOT_SET) {

@@ -33,6 +33,11 @@ public class RequestBuilder<T extends SyncanoObject> {
         this.syncano = Syncano.getInstance();
     }
 
+    /**
+     * Does a requests for a list of objects.
+     *
+     * @return response with a requested list
+     */
     public ResponseGetList<T> get() {
         return prepareGetRequest().send();
     }
@@ -45,10 +50,20 @@ public class RequestBuilder<T extends SyncanoObject> {
         return (new RequestAll<>(prepareGetRequest())).send();
     }
 
+    /**
+     * Same as getAll(), but asynchronously
+     *
+     * @param callback callback
+     */
     public void getAll(SyncanoCallback<List<T>> callback) {
         (new RequestAll<>(prepareGetRequest())).sendAsync(callback);
     }
 
+    /**
+     * Same as get(), but asynchronously
+     *
+     * @param callback callback
+     */
     public void get(SyncanoCallback<List<T>> callback) {
         prepareGetRequest().sendAsync(callback);
     }
@@ -65,10 +80,21 @@ public class RequestBuilder<T extends SyncanoObject> {
         return request;
     }
 
+    /**
+     * Gets a single object
+     *
+     * @param id Id of requested object
+     * @return Response that has requested object.
+     */
     public Response<T> get(int id) {
         return syncano.getObject(clazz, id).send();
     }
 
+    /**
+     * Same as get(id), but asynchronously
+     *
+     * @param callback callback
+     */
     public void get(int id, SyncanoCallback<T> callback) {
         syncano.getObject(clazz, id).sendAsync(callback);
     }
@@ -91,67 +117,128 @@ public class RequestBuilder<T extends SyncanoObject> {
         }
     }
 
+    /**
+     * Perform requests on this syncano instance. If not called, shared static instance will be used.
+     *
+     * @param syncano instance to use.
+     * @return itself
+     */
     public RequestBuilder<T> on(Syncano syncano) {
         this.syncano = syncano;
         return this;
     }
 
+    /**
+     * @param fieldName order by witch field, by default order ascending
+     * @return itself
+     */
     public RequestBuilder<T> orderBy(String fieldName) {
         return orderBy(fieldName, SortOrder.ASCENDING);
 
     }
 
+    /**
+     * @param fieldName order by witch field
+     * @param sortOrder order direction
+     * @return itself
+     */
     public RequestBuilder<T> orderBy(String fieldName, SortOrder sortOrder) {
         this.sortByField = fieldName;
         this.sortOrder = sortOrder;
         return this;
     }
 
+    /**
+     * Get only selected fields
+     *
+     * @param filterType include or exclude
+     * @param fields     field names
+     * @return itself
+     */
     public RequestBuilder<T> selectFields(FilterType filterType, String... fields) {
         this.fieldsFilter = new FieldsFilter(filterType, fields);
         return this;
     }
 
+    /**
+     * Get only selected fields
+     *
+     * @param filterType include or exclude
+     * @param fields     field names
+     * @return itself
+     */
     public RequestBuilder<T> selectFields(FilterType filterType, List<String> fields) {
         this.fieldsFilter = new FieldsFilter(filterType, fields);
         return this;
     }
 
+    /**
+     * Get only selected fields
+     *
+     * @param fieldsFilter Previously prepared fields filter
+     * @return itself
+     */
     public RequestBuilder<T> setFieldsFilter(FieldsFilter fieldsFilter) {
         this.fieldsFilter = fieldsFilter;
         return this;
     }
 
+    /**
+     * Limit response size to given number
+     *
+     * @param limit maximum number of returned objects
+     * @return itself
+     */
     public RequestBuilder<T> limit(int limit) {
         this.limit = limit;
         return this;
     }
 
+    /**
+     * If called, response will contain estimated number of all objects that match the request.
+     *
+     * @return itself
+     */
     public RequestBuilder<T> estimateCount() {
         this.estimateCount = true;
         return this;
     }
 
+    /**
+     * Sets specific page to request.
+     *
+     * @param pageUrl page url
+     * @return itself
+     */
     public RequestBuilder<T> page(String pageUrl) {
         this.pageUrl = pageUrl;
         return this;
     }
 
+    /**
+     * After calling this you can start building your where query.
+     *
+     * @return new Where
+     */
     public Where<T> where() {
         where = new Where<>(this);
         return where;
     }
 
     /**
-     * Return response with data as integer with estimated objects count
+     * @return Response with data as integer with estimated objects count
      * estimation start after 1000 objects, before it's accurate
      */
     public Response<Integer> getCountEstimation() {
         return new RequestCount(prepareGetRequest()).send();
     }
 
-
-    public void getCountEstimation(SyncanoCallback<Integer> syncanoCallback) {
-        new RequestCount(prepareGetRequest()).sendAsync(syncanoCallback);
+    /**
+     * Same as getCountEstimation(), but asynchronously
+     *
+     * @param callback callback
+     */
+    public void getCountEstimation(SyncanoCallback<Integer> callback) {
+        new RequestCount(prepareGetRequest()).sendAsync(callback);
     }
 }

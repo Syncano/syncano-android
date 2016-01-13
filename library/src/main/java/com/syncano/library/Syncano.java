@@ -40,16 +40,17 @@ public class Syncano {
     protected String instanceName;
 
     /**
-     * Create Syncano object.
+     * Create Syncano object. When using this constructor most functions will not work, because api key
+     * and instance name are usually required.
      */
     public Syncano() {
         this(null, null);
     }
 
     /**
-     * Create Syncano object.
+     * Create Syncano object. Functions that require api key will not work.
      *
-     * @param instanceName Syncano instanceName related with apiKey.
+     * @param instanceName Syncano instanceName.
      */
     public Syncano(String instanceName) {
         this(null, instanceName);
@@ -70,7 +71,7 @@ public class Syncano {
      *
      * @param apiKey         Api key.
      * @param instanceName   Syncano instanceName related with apiKey.
-     * @param androidContext used for android specific functions
+     * @param androidContext used for android specific functions, for example saving logged in user data
      */
     public Syncano(String apiKey, String instanceName, Context androidContext) {
         this(null, apiKey, instanceName, androidContext);
@@ -93,6 +94,7 @@ public class Syncano {
      * @param customServerUrl If not set, production URL will be used.
      * @param apiKey          Api key.
      * @param instanceName    Syncano instanceName related with apiKey.
+     * @param androidContext  Used for android specific functions, for example saving logged in user data
      */
     public Syncano(String customServerUrl, String apiKey, String instanceName, Context androidContext) {
         this.customServerUrl = customServerUrl;
@@ -109,10 +111,12 @@ public class Syncano {
      * @param customServerUrl If not set, production URL will be used.
      * @param apiKey          Api key.
      * @param instanceName    Syncano instanceName related with apiKey.
-     * @param androidContext  used for android specific functions
+     * @param androidContext  Used for android specific functions, for example saving logged in user data
+     * @return Created instance
      */
-    public static void init(String customServerUrl, String apiKey, String instanceName, Context androidContext) {
+    public static Syncano init(String customServerUrl, String apiKey, String instanceName, Context androidContext) {
         sharedInstance = new Syncano(customServerUrl, apiKey, instanceName, androidContext);
+        return sharedInstance;
     }
 
     /**
@@ -122,9 +126,10 @@ public class Syncano {
      * @param customServerUrl If not set, production URL will be used.
      * @param apiKey          Api key.
      * @param instanceName    Syncano instanceName related with apiKey.
+     * @return Created instance
      */
-    public static void init(String customServerUrl, String apiKey, String instanceName) {
-        init(customServerUrl, apiKey, instanceName, null);
+    public static Syncano init(String customServerUrl, String apiKey, String instanceName) {
+        return init(customServerUrl, apiKey, instanceName, null);
     }
 
     /**
@@ -133,10 +138,11 @@ public class Syncano {
      *
      * @param apiKey         Api key.
      * @param instanceName   Syncano instanceName related with apiKey.
-     * @param androidContext used for android specific functions
+     * @param androidContext Used for android specific functions, for example saving logged in user data
+     * @return Created instance
      */
-    public static void init(String apiKey, String instanceName, Context androidContext) {
-        init(null, apiKey, instanceName, androidContext);
+    public static Syncano init(String apiKey, String instanceName, Context androidContext) {
+        return init(null, apiKey, instanceName, androidContext);
     }
 
     /**
@@ -145,11 +151,15 @@ public class Syncano {
      *
      * @param apiKey       Api key.
      * @param instanceName Syncano instanceName related with apiKey.
+     * @return Created instance
      */
-    public static void init(String apiKey, String instanceName) {
-        init(null, apiKey, instanceName);
+    public static Syncano init(String apiKey, String instanceName) {
+        return init(null, apiKey, instanceName);
     }
 
+    /**
+     * @return Url to syncano API
+     */
     public String getUrl() {
         if (customServerUrl != null && !customServerUrl.isEmpty()) {
             return customServerUrl;
@@ -157,26 +167,51 @@ public class Syncano {
         return Constants.PRODUCTION_SERVER_URL;
     }
 
+    /**
+     * By default this library checks if certificate that is used for https encryption is exactly
+     * the right one.
+     *
+     * @param strictCheck If set to false, https certificate will be still checked, if it's trusted.
+     *                    It will not check if it's exactly the one built into this library.
+     */
     public static void setStrictCheckCertificate(boolean strictCheck) {
         Encryption.setStrictCheckCertificate(strictCheck);
     }
 
+    /**
+     * @return Static instance created by init() or setInstance(). This instance is used by some functions
+     * as SyncanoObject.save(), User.login().
+     */
     public static Syncano getInstance() {
         return sharedInstance;
     }
 
+    /**
+     * @param syncano Instance that will be available from getInstance(). This instance is used by
+     *                some functions as SyncanoObject.save(), User.login().
+     */
     public static void setInstance(Syncano syncano) {
         sharedInstance = syncano;
     }
 
+    /**
+     * @param clazz Syncano class that will be requested.
+     * @return Builder object that makes it easy to configure a request in one line.
+     */
     public static <T extends SyncanoObject> RequestBuilder<T> please(Class<T> clazz) {
         return new RequestBuilder<>(clazz);
     }
 
+    /**
+     * @return instance name
+     */
     public String getInstanceName() {
         return instanceName;
     }
 
+    /**
+     * @return Returns instance name. If not set, it throws RuntimeException.
+     */
     public String getNotEmptyInstanceName() {
         if (instanceName == null || instanceName.isEmpty()) {
             throw new RuntimeException("Syncano instance name is not set");
@@ -184,10 +219,27 @@ public class Syncano {
         return instanceName;
     }
 
+    /**
+     * @return api key
+     */
     public String getApiKey() {
         return apiKey;
     }
 
+    /**
+     * @return Returns api key. If not set, it throws RuntimeException.
+     */
+    public String getNotEmptyApiKey() {
+        if (apiKey == null || apiKey.isEmpty()) {
+            throw new RuntimeException("Syncano api key is not set");
+        }
+        return apiKey;
+    }
+
+    /**
+     * @return User key. It will be set, when user logged in using this instance or set in setUser().
+     * If not null, it will be added automatically to requests.
+     */
     public String getUserKey() {
         if (user == null) {
             return null;
@@ -195,17 +247,35 @@ public class Syncano {
         return user.getUserKey();
     }
 
+    /**
+     * @return User. It will be set, when user logged in using this instance or if it was set in setUser().
+     * If not null, its user key will be added automatically to requests.
+     */
     public AbstractUser getUser() {
         return user;
     }
 
+    /**
+     * If set, this instance will behave as this user is logged in. Its user key will be added automatically to requests.
+     */
     public void setUser(AbstractUser user) {
         this.user = user;
         UserMemory.saveUserToStorage(this, user);
     }
 
+    /**
+     * @return connected context
+     */
     public Context getAndroidContext() {
         return androidContext;
+    }
+
+    /**
+     * @param ctx Connect context to this instance. Functions that require context will work.
+     *            For example saving logged in user to persistent memory.
+     */
+    public void setAndroidContext(Context ctx) {
+        androidContext = ctx;
     }
 
     /**
@@ -277,6 +347,14 @@ public class Syncano {
         return req;
     }
 
+    /**
+     * Get a list of Data Objects associated with a given Class from specific page.
+     * You can get this url by calling ResponseGetList.getNextPageUrl() or getPreviousPageUrl().
+     *
+     * @param type    Type for result List item.
+     * @param <T>     Result type.
+     * @param pageUrl page to request
+     */
     public <T extends SyncanoObject> RequestGetList<T> getObjects(Class<T> type, String pageUrl) {
         RequestGetList<T> req = new RequestGetList<>(type, pageUrl, this);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
@@ -286,7 +364,7 @@ public class Syncano {
     /**
      * Update Data Object on Syncano.
      *
-     * @param object Object to update. It has to have id. Fields that are not null will be updated.
+     * @param object Object to update. It has to have id. Fields that are not null will be updated on server.
      */
     public <T extends SyncanoObject> RequestPatch<T> updateObject(T object) {
         return updateObject(object, false);
@@ -315,9 +393,9 @@ public class Syncano {
      * Change counter field in object.
      * We could do it by updating it's value but to avoid conflicts
      * for situations where multiple user change object at the same time
-     * it's much safer to user our increase/decrease api.
+     * it's much safer to use our increase/decrease api.
      *
-     * @param object Object to update. It need to have id.
+     * @param object Object to update. It has to have id. This object will not be changed.
      * @param <T>    Result type.
      * @return Updated DataObject.
      */
@@ -325,17 +403,8 @@ public class Syncano {
         if (object.getId() == null || object.getId() == 0) {
             throw new RuntimeException("Trying to update object without id!");
         }
-        if (incrementBuilder.isAdditionFields()) {
-            throw new RuntimeException("Cannot create increment query without specify fields to increment/decrement!");
-        }
         Class<T> type = (Class<T>) object.getClass();
-        String className = SyncanoClassHelper.getSyncanoClassName(type);
-        String url = String.format(Constants.OBJECTS_DETAIL_URL, getNotEmptyInstanceName(), className, object.getId());
-        JsonObject additionQuery = new JsonObject();
-        incrementBuilder.build(additionQuery);
-        RequestPatch<T> req = new RequestPatch<>(type, url, this, additionQuery);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return addition(type, object.getId(), incrementBuilder);
     }
 
     /**
@@ -350,7 +419,7 @@ public class Syncano {
      * @return Updated DataObject.
      */
     public <T extends SyncanoObject> RequestPatch<T> addition(Class<T> type, int id, IncrementBuilder incrementBuilder) {
-        if (incrementBuilder.isAdditionFields()) {
+        if (incrementBuilder.hasAdditionFields()) {
             throw new RuntimeException("Cannot create increment query without specify fields to increment/decrement!");
         }
         String className = SyncanoClassHelper.getSyncanoClassName(type);
@@ -380,7 +449,7 @@ public class Syncano {
     /**
      * Delete a Data Object.
      *
-     * @param object Object to delete. it has to have id set.
+     * @param object Object to delete. It has to have id set.
      */
     public <T extends SyncanoObject> RequestDelete<T> deleteObject(T object) {
         if (object.getId() == null || object.getId() == 0) {
@@ -430,7 +499,7 @@ public class Syncano {
     /**
      * Update a CodeBox.
      *
-     * @param codeBox CodeBox to update. It need to have id.
+     * @param codeBox CodeBox to update. It has to have id.
      * @return Updated CodeBox.
      */
     public RequestPatch<CodeBox> updateCodeBox(CodeBox codeBox) {
@@ -458,8 +527,9 @@ public class Syncano {
     }
 
     /**
-     * Run CodeBox asynchronous. Result of this request is not result of the CodeBox.
-     * Result will be stored in associated Trace.
+     * Run CodeBox asynchronously. Result of this request is not a result of the CodeBox.
+     * Result will be stored in associated Trace. You need to call Trace.fetch() to check current
+     * status of execution.
      *
      * @param id CodeBox id.
      * @return Result with link do Trace.
@@ -469,8 +539,9 @@ public class Syncano {
     }
 
     /**
-     * Run CodeBox asynchronous. Result of this request is not result of the CodeBox.
-     * Result will be stored in associated Trace.
+     * Run CodeBox asynchronously. Result of this request is not a result of the CodeBox.
+     * Result will be stored in associated Trace. You need to call Trace.fetch() to check current
+     * status of execution.
      *
      * @param id     CodeBox id.
      * @param params CodeBox params.
@@ -487,8 +558,9 @@ public class Syncano {
     }
 
     /**
-     * Run CodeBox asynchronous. Result of this request is not result of the CodeBox.
-     * Result will be stored in associated Trace.
+     * Run CodeBox asynchronously. Result of this request is not a result of the CodeBox.
+     * Result will be stored in associated Trace. You need to call Trace.fetch() to check current
+     * status of execution.
      *
      * @param codeBox CodeBox to run.
      * @return Result with link do Trace.
@@ -498,8 +570,9 @@ public class Syncano {
     }
 
     /**
-     * Run CodeBox asynchronous. Result of this request is not result of the CodeBox.
-     * Result will be stored in associated Trace.
+     * Run CodeBox asynchronously. Result of this request is not a result of the CodeBox.
+     * Result will be stored in associated Trace. You need to call Trace.fetch() to check current
+     * status of execution.
      *
      * @param codeBox CodeBox to run.
      * @param params  CodeBox params.
@@ -568,7 +641,7 @@ public class Syncano {
     /**
      * Create a new Webhook
      *
-     * @param webhook Webhook to create.
+     * @param webhook Webhook to create. It's params will be updated.
      * @return New Webhook.
      */
     public RequestPost<Webhook> createWebhook(final Webhook webhook) {
@@ -613,7 +686,7 @@ public class Syncano {
     /**
      * Update a Webhook.
      *
-     * @param webhook Webhook to update. It need to have name.
+     * @param webhook Webhook to update. It has to have a name.
      * @return Updated Webhook.
      */
     public RequestPatch<Webhook> updateWebhook(Webhook webhook) {
@@ -629,8 +702,8 @@ public class Syncano {
     /**
      * Delete a Webhook.
      *
-     * @param name Webhook id.
-     * @return null
+     * @param name Webhook name.
+     * @return Deleted webhook
      */
     public RequestDelete<Webhook> deleteWebhook(String name) {
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getNotEmptyInstanceName(), name);
@@ -643,7 +716,7 @@ public class Syncano {
     /**
      * Run a Webhook.
      *
-     * @param name Webhook id.
+     * @param name Webhook name.
      * @return Result of executed Webhook.
      */
     public RequestPost<Trace> runWebhook(String name) {
@@ -653,7 +726,7 @@ public class Syncano {
     /**
      * Run a Webhook.
      *
-     * @param name Webhook id.
+     * @param name Webhook name.
      * @return Result of executed Webhook.
      */
     public RequestPost<String> runWebhookCustomResponse(String name) {
@@ -663,7 +736,7 @@ public class Syncano {
     /**
      * Run a Webhook.
      *
-     * @param name Webhook id.
+     * @param name Webhook name.
      * @return Result of executed Webhook.
      */
     public <T> RequestPost<T> runWebhookCustomResponse(String name, Class<T> type) {
@@ -673,7 +746,7 @@ public class Syncano {
     /**
      * Run a Webhook.
      *
-     * @param name    Webhook id.
+     * @param name    Webhook name.
      * @param payload Params to pass to webhook.
      * @return Result of executed Webhook.
      */
@@ -684,7 +757,7 @@ public class Syncano {
     /**
      * Run a Webhook.
      *
-     * @param name    Webhook id.
+     * @param name    Webhook name.
      * @param payload Params to pass to webhook.
      * @return Result of executed Webhook.
      */
@@ -695,7 +768,7 @@ public class Syncano {
     /**
      * Run a Webhook.
      *
-     * @param name    Webhook id.
+     * @param name    Webhook name.
      * @param payload Params to pass to webhook.
      * @return Result of executed Webhook.
      */
@@ -911,7 +984,7 @@ public class Syncano {
     /**
      * Update a Class.
      *
-     * @param clazz SyncanoClass to update. It need to have name.
+     * @param clazz SyncanoClass to update. It has to have a name.
      * @return Updated Class.
      */
     public RequestPatch<SyncanoClass> updateSyncanoClass(Class<? extends SyncanoObject> clazz) {
