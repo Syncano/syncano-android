@@ -25,6 +25,7 @@ public abstract class HttpRequest<T> extends Request<T> {
     private String path;
     private String completeCustomUrl;
     private HashSet<Integer> correctHttpResponse = new HashSet<>();
+    private boolean longConnectionTimeout = false;
 
     protected HttpRequest(String path, Syncano syncano) {
         super(syncano);
@@ -152,6 +153,11 @@ public abstract class HttpRequest<T> extends Request<T> {
 
     public Response<T> send() {
         SyncanoHttpClient http = new SyncanoHttpClient();
+        if (getLongConnectionTimeout()) {
+            // 5 minutes is required for channel connection
+            // so setting 6
+            http.setTimeout(6 * 60 * 1000);
+        }
         Response<T> response = http.send(this);
 
         if (getRunAfter() != null) {
@@ -170,5 +176,13 @@ public abstract class HttpRequest<T> extends Request<T> {
 
     public String getContentType() {
         return "application/json";
+    }
+
+    public void setLongConnectionTimeout() {
+        longConnectionTimeout = true;
+    }
+
+    public boolean getLongConnectionTimeout() {
+        return longConnectionTimeout;
     }
 }

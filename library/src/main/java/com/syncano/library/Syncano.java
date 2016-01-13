@@ -1479,6 +1479,7 @@ public class Syncano {
 
         String url = String.format(Constants.CHANNELS_POLL_URL, getNotEmptyInstanceName(), channelName);
         RequestGetOne<Notification> req = new RequestGetOne<>(Notification.class, url, this);
+        req.setLongConnectionTimeout();
 
         if (room != null) {
             req.addUrlParam(Constants.URL_PARAM_ROOM, room);
