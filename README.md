@@ -9,7 +9,7 @@ Syncano's Android library is written in pure Java and provides communication wit
 ---
 Syncano library is now available on jCenter. To install it, add one line inside your project's gradle dependencies and you will be able to use it out of the box without the `jar` file.
 
-```json
+```gradle
 dependencies {
   compile 'io.syncano:library:4.0.5'
 }
@@ -30,7 +30,7 @@ Happy coding!
 Syncano library is written in pure Java, so you can use it in your Spring or Java SE project. 
 The only difference is that you have to provide two additional libraries: `Apache HTTP` and `Bouncycastle`.
 
-```json
+```gradle
 dependencies {
   compile 'io.syncano:library:4.0.5'
   compile 'org.apache.httpcomponents:httpclient:4.0.1'
