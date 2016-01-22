@@ -7,8 +7,9 @@ Syncano's Android library is written in pure Java and provides communication wit
 
 ## Android QuickStart Guide
 ---
-Syncano library is now available on Jcenter just add one line inside your project gradle dependencies and you can use it out of box without Jar
-```
+Syncano library is now available on jCenter. To install it, add one line inside your project's gradle dependencies and you will be able to use it out of the box without the `jar` file.
+
+```json
 dependencies {
   compile 'io.syncano:library:4.0.5'
 }
@@ -18,15 +19,18 @@ You can find quick start on installing and using Syncano's Android library in ou
 
 For more detailed information on how to use Syncano and its features - our [Developer Manual](http://docs.syncano.com/docs/getting-started-with-syncano/?utm_source=github&utm_medium=readme&utm_campaign=syncano-android) should be very helpful.
 
-In case you need help working with the library - email us at libraries@syncano.com - we will be happy to help!
+In case you need help working with the library - email us at [libraries@syncano.com](mailto:libraries@syncano.com) - we're always happy to help!
 
 ## Contributing
-We love contributions those want create better Syncano with us. If you'd like to contribute code, documentation, add test or any other improvements, please [create a Pull Request] (https://github.com/Syncano/syncano-android/pulls) on our GitHub repository.
+We love contributions! Those who want to help us improve our Android library -- contribute to code, documentation, adding tests or making any other improvements -- please [create a Pull Request] (https://github.com/Syncano/syncano-android/pulls) with proposed changes.
+
 Happy coding!
 
-## Use library inside your pure Java project without Android
-Syncano library as mentioned above is written in pure java so you can use it in your Spring or Java SE project. The only difference is you should provide two library Apache HTTP and Bouncycastle.
-```
+## Use library inside a pure Java project without Android
+Syncano library is written in pure Java, so you can use it in your Spring or Java SE project. 
+The only difference is that you have to provide two additional libraries: `Apache HTTP` and `Bouncycastle`.
+
+```json
 dependencies {
   compile 'io.syncano:library:4.0.5'
   compile 'org.apache.httpcomponents:httpclient:4.0.1'
@@ -36,11 +40,12 @@ dependencies {
 ```
 
 ##JAR DISTRIBUTION
-If you want to use JAR in our project, you also need to add gson library.
-Version **gson-2.5** is recommended.
+If you want to use JAR file in your project, you need to add gson library.
+We recommend using version **gson-2.5**.
 
 ## JAR
-To generate jar file call "makeJar" from command line:
+To generate a jar file, call "makeJar" from command line:
+
 ```bash
 $ ./gradlew makeJar
 ```
@@ -51,20 +56,23 @@ library/build/outputs/jar/library-release-x.jar
 ```
 
 ## TESTS
-To run tests call from command line:
+To run tests, call from a command line:
+
 ```bash
 $ ./gradlew testDebug --continue --info
 ```
 
-To run tests, remember to provide correct Api Key and Instance Name in:
-```
+Before running tests, remember to provide a correct API Key and your Instance Name in:
+
+```json
 library/gradle.properties
 ```
-or pass them in gradlew command:
-```bash
-$ ./gradlew testDebug --continue --info -Pinstance_name="\"your_instance_name\"" -Papi_key="\"your_api_key\"" -Papi_key_users="\"your_api_key_for_registering users\""
-```
 
+or pass them in `gradlew` command:
+
+```bash
+$ ./gradlew testDebug --continue --info -Pinstance_name="\"YOUR_INSTANCE_NAME\"" -Papi_key="\"YOUR_API_KEY\"" -Papi_key_users="\"YOUR_API_KEY_FOR_RESGISTERING_USERS\""
+```
 
 ## License
 ---
