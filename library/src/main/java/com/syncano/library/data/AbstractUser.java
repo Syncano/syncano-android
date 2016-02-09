@@ -96,11 +96,11 @@ public abstract class AbstractUser<P extends Profile> {
     }
 
     public <T extends AbstractUser> Response<T> register() {
-        return getSyncano().registerCustomUser((T) this).send();
+        return getSyncano().registerUser((T) this).send();
     }
 
     public <T extends AbstractUser> void register(SyncanoCallback<T> callback) {
-        getSyncano().registerCustomUser((T) this).sendAsync(callback);
+        getSyncano().registerUser((T) this).sendAsync(callback);
     }
 
     public <T extends AbstractUser> Response<T> login() {

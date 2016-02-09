@@ -1032,27 +1032,17 @@ public class Syncano {
     }
 
     /**
-     * Create a new User.
-     * To be able to register Users you'll have to create an API Key that has allow_user_create flag set to true.
-     *
-     * @param user User to create.
-     * @return created User
-     */
-    public RequestPost<User> registerUser(User user) {
-        return registerCustomUser(user);
-    }
-
-    /**
      * Create a new custom User.
      * To be able to register Users you'll have to create an API Key that has allow_user_create flag set to true.
      *
      * @param user User to create.
      * @return created User
      */
-    public <T extends AbstractUser> RequestPost<T> registerCustomUser(T user) {
+    public <T extends AbstractUser> RequestPost<T> registerUser(T user) {
         Class<T> type = (Class<T>) user.getClass();
         String url = String.format(Constants.USERS_LIST_URL, getNotEmptyInstanceName());
         RequestPost<T> req = new RequestPost<>(type, url, this, user);
+        saveUserIfSuccess(req);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
         return req;
     }

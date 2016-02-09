@@ -33,7 +33,6 @@ public class UsersTest extends SyncanoApplicationTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-
         Response<User> responseUserAuth = syncano.loginUser(USER_NAME, PASSWORD).send();
 
         if (responseUserAuth.isSuccess() && responseUserAuth.getData() != null) {
@@ -134,7 +133,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
         TestUserProfileObject testUserProfile;
 
         // ----------------- Create -----------------
-        Response<TestUser> responseCreateUser = syncano.registerCustomUser(newUser).send();
+        Response<TestUser> responseCreateUser = syncano.registerUser(newUser).send();
 
         assertTrue(responseCreateUser.isSuccess());
         assertNotNull(responseCreateUser.getData());

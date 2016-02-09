@@ -1,6 +1,5 @@
 package com.syncano.library.documentation;
 
-import com.syncano.library.Constants;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
@@ -70,7 +69,6 @@ public class UserManagement extends SyncanoApplicationTestCase {
         Response<MyUser> responseRegister = newUser.register();
         assertEquals(Response.HTTP_CODE_CREATED, responseRegister.getHttpResultCode());
         MyUser user = responseRegister.getData();
-
         // ---------- Now a user has an extra avatar field in their user profile, which the user can update with an avatar picture
         MyUserProfile profile = user.getProfile();
         profile.avatar = new SyncanoFile(new File(getAssetsDir(), "blue.png"));
@@ -116,8 +114,7 @@ public class UserManagement extends SyncanoApplicationTestCase {
         // -----------------------------
     }
 
-    @com.syncano.library.annotation.SyncanoClass(name = Constants.USER_PROFILE_CLASS_NAME)
-    private static class MyUserProfile extends Profile {
+     private static class MyUserProfile extends Profile {
         @SyncanoField(name = "avatar")
         public SyncanoFile avatar;
     }
