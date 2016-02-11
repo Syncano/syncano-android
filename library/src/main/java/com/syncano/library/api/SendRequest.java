@@ -8,8 +8,8 @@ import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.utils.GsonHelper;
-import com.syncano.library.utils.SyncanoLog;
 import com.syncano.library.utils.SyncanoClassHelper;
+import com.syncano.library.utils.SyncanoLog;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.InputStreamEntity;
@@ -114,12 +114,37 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
         return streamsList;
     }
 
+    private void addSyncanoObjectReferences(JsonObject jsonObject) {
+        for (Field field : data.getClass().getDeclaredFields()) {
+            SyncanoField fieldAnnotation = field.getAnnotation(SyncanoField.class);
+            if (fieldAnnotation == null) {
+                continue;
+            }
+            FieldType type = SyncanoClassHelper.findType(field, fieldAnnotation);
+            if (type == null || !FieldType.REFERENCE.equals(type)) {
+                continue;
+            }
+            field.setAccessible(true);
+            SyncanoObject syncanoObject;
+            try {
+                syncanoObject = (SyncanoObject) field.get(data);
+            } catch (IllegalAccessException e) {
+                continue;
+            }
+            if (syncanoObject == null || syncanoObject.getId() == null) {
+                continue;
+            }
+            String fieldName = SyncanoClassHelper.getFieldName(field);
+            jsonObject.addProperty(fieldName, syncanoObject.getId());
+        }
+    }
+
     private InputStream getStringFieldsInputStream() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream os = new DataOutputStream(baos);
         JsonObject json = gson.toJsonTree(data).getAsJsonObject();
         ((SyncanoObject) data).getIncrementBuilder().build(json);
-
+        addSyncanoObjectReferences(json);
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
             os.writeBytes(twoHyphens + boundary + lineEnd);
             os.writeBytes("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"" + lineEnd);

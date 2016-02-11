@@ -55,10 +55,9 @@ public class SyncanoClassHelper {
             if (type.equals(FieldType.REFERENCE)) {
                 String target = fieldAnnotation.target();
                 if (target == null || target.isEmpty()) {
-                    throw new RuntimeException("Field type " + type + " has to be declared together with " + Constants.FIELD_TARGET);
-                } else {
-                    fieldDescription.addProperty(Constants.FIELD_TARGET, target);
+                    target = fieldAnnotation.name();
                 }
+                fieldDescription.addProperty(Constants.FIELD_TARGET, target);
             }
             String typeName;
             try {
