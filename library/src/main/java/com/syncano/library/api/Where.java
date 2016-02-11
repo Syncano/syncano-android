@@ -414,6 +414,10 @@ public class Where<T extends SyncanoObject> {
         return new Gson().toJson(query);
     }
 
+    public Map<String, JsonObject> getQueryMap() {
+        return query;
+    }
+
     /**
      * @see RequestBuilder#getCountEstimation()
      */

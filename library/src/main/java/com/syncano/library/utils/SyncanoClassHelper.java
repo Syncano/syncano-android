@@ -118,6 +118,8 @@ public class SyncanoClassHelper {
             return FieldType.DATETIME;
         } else if (clazz.equals(boolean.class) || clazz.equals(Boolean.class)) {
             return FieldType.BOOLEAN;
+        } else if (SyncanoObject.class.isAssignableFrom(clazz)) {
+            return FieldType.REFERENCE;
         } else if (clazz.equals(float.class) || clazz.equals(Float.class)
                 || clazz.equals(double.class) || clazz.equals(Double.class)) {
             return FieldType.FLOAT;

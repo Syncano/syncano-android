@@ -16,7 +16,7 @@ import java.io.InputStream;
 import java.security.KeyStore;
 
 public class Encryption {
-    private static boolean strictCheckCertificate = true;
+    private static boolean strictCheckCertificate = false;
 
     private static final int TIMEOUT = 30000;
     private static final int SOCKET_TIMEOUT = 60000;

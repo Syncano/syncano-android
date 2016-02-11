@@ -1,9 +1,5 @@
 package com.syncano.library.utils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
-import java.util.Date;
-
 import com.google.gson.ExclusionStrategy;
 import com.google.gson.FieldAttributes;
 import com.google.gson.FieldNamingStrategy;
@@ -20,11 +16,12 @@ import com.google.gson.JsonSerializer;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.data.SyncanoFile;
 
-public class GsonHelper {
+import java.lang.reflect.Field;
+import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.Date;
 
-    public static class GsonConfig {
-        public boolean readOnlyNotImportant = false;
-    }
+public class GsonHelper {
 
     public static Gson createGson() {
         return createGson(new GsonConfig());
@@ -44,6 +41,8 @@ public class GsonHelper {
         gsonBuilder.registerTypeAdapter(NanosDate.class, new DateDeserializer());
         gsonBuilder.registerTypeAdapter(Date.class, new DateSerializer());
         gsonBuilder.registerTypeAdapter(Date.class, new DateDeserializer());
+        gsonBuilder.registerTypeAdapter(SyncanoHashSet.class, new SyncanoHashSetDeserializer());
+        gsonBuilder.registerTypeAdapter(SyncanoHashSet.class, new SyncanoHashSetSerializer());
         gsonBuilder.registerTypeAdapter(SyncanoFile.class, new FileDeserializer());
         gsonBuilder.addSerializationExclusionStrategy(new SyncanoSerializationStrategy(config.readOnlyNotImportant));
         gsonBuilder.addDeserializationExclusionStrategy(new SyncanoDeserializationStrategy());
@@ -59,6 +58,10 @@ public class GsonHelper {
             });
         }
         return gsonBuilder.create();
+    }
+
+    public static class GsonConfig {
+        public boolean readOnlyNotImportant = false;
     }
 
     private static class DateSerializer implements JsonSerializer<Date> {
@@ -78,6 +81,23 @@ public class GsonHelper {
             return DateTool.parseString(dateString);
         }
     }
+
+    private static class SyncanoHashSetDeserializer implements JsonDeserializer<SyncanoHashSet> {
+        public SyncanoHashSet deserialize(JsonElement json, Type type, JsonDeserializationContext jdc) throws JsonParseException {
+            SyncanoHashSet syncanoHashSet = new SyncanoHashSet();
+            String[] spitedString = json.getAsJsonPrimitive().getAsString().split(",");
+            Collections.addAll(syncanoHashSet, spitedString);
+            return syncanoHashSet;
+        }
+    }
+
+
+    private static class SyncanoHashSetSerializer implements JsonSerializer<SyncanoHashSet> {
+        public JsonElement serialize(SyncanoHashSet syncanoHashSet, Type type, JsonSerializationContext jsc) {
+            return new JsonPrimitive(syncanoHashSet.getAsString());
+        }
+    }
+
 
     private static class FileDeserializer implements JsonDeserializer<SyncanoFile> {
         public SyncanoFile deserialize(JsonElement json, Type type, JsonDeserializationContext jdc) throws JsonParseException {
