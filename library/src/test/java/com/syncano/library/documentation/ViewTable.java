@@ -100,9 +100,9 @@ public class ViewTable extends SyncanoApplicationTestCase {
         public static final String FIELD_ARMOR = "armor";
         public static final String FIELD_WEAPON = "weapon";
         @SyncanoField(name = FIELD_ARMOR)
-        public String armor;
+        private String armor;
         @SyncanoField(name = FIELD_WEAPON)
-        public String weapon;
+        private String weapon;
 
     }
 }

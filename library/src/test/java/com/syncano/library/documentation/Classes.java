@@ -44,7 +44,7 @@ public class Classes extends SyncanoApplicationTestCase {
         public Integer pages;
         @SyncanoField(name = FIELD_NON_FICTION)
         public Boolean nonFiction;
-        @SyncanoField(name = FIELD_AUTHOR, type = FieldType.REFERENCE, target = AUTHOR_CLASS)
+        @SyncanoField(name = FIELD_AUTHOR, type = FieldType.REFERENCE)
         public Integer author;
     }
     // -----------------------------

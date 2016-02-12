@@ -19,6 +19,10 @@ public abstract class Entity {
     @SyncanoField(name = FIELD_UPDATED_AT, readOnly = true)
     private Date updatedAt;
 
+    public Entity() {
+
+    }
+
     public Integer getId() {
         return id;
     }
@@ -31,16 +35,11 @@ public abstract class Entity {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public Date getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
+    public boolean isDirty() {
+        return id == null || createdAt == null;
     }
-
 }
