@@ -8,6 +8,7 @@ import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.api.Where;
 import com.syncano.library.choice.Case;
+import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.SyncanoTableView;
 
@@ -22,15 +23,16 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class ViewTable extends SyncanoApplicationTestCase {
-    String tableName = "great_warriors_view";
-    String tableDescription = "Sample virtual table for get warriors";
+    private static final String tableName = "great_warriors_view";
+    private static final String tableDescription = "Sample virtual table for get warriors";
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        createClass(Warriors.class);
         createClass(Inventory.class);
-        //Remove if exist and create new instance
+        createClass(Warriors.class);
+        createSampleWarriors();
+        //Remove view if exist and create new instance
         Response<SyncanoTableView> deleteResponse = syncano.deleteTableView(tableName).send();
         System.out.println("Delete response status: " + deleteResponse.isSuccess());
         SyncanoTableView syncanoTableView = new SyncanoTableView(tableName, Warriors.class);
@@ -45,9 +47,14 @@ public class ViewTable extends SyncanoApplicationTestCase {
 
     private void createSampleWarriors() {
         Warriors warriorSoccer = new Warriors();
-        warriorSoccer.name = "";
+        warriorSoccer.name = "Warrior man";
         warriorSoccer.number = 10;
-        warriorSoccer.inventory = new Inventory();
+        Inventory inventory = new Inventory();
+        inventory.armor = "Leather armor";
+        Response response = inventory.save();
+        warriorSoccer.inventoryBadField = inventory;
+        Response<Inventory> responseInvestory = warriorSoccer.save();
+        warriorSoccer.fetch();
     }
 
     @After
@@ -68,30 +75,31 @@ public class ViewTable extends SyncanoApplicationTestCase {
         boolean dataIsEmpty = warriorListGetList.getData().isEmpty();
         assertFalse(dataIsEmpty);
         Warriors warriors = data.get(0);
-        assertNotNull(warriors.inventory);
-        assertNotNull(warriors.inventory.getId());
+        assertNotNull(warriors.inventoryBadField);
+        assertNotNull(warriors.inventoryBadField.getId());
     }
 
     @Test
     public void testPleaseGetView() {
-        ResponseGetList<Warriors> warriorListResponse = Syncano.please(Warriors.class).tableView(tableName).orderBy("text").getAll();
+        ResponseGetList<Warriors> warriorListResponse = Syncano.please(Warriors.class).tableView(tableName).orderBy(Warriors.FIELD_NUMBER).getAll();
         assertTrue(warriorListResponse.isSuccess());
         assertFalse(warriorListResponse.getData().isEmpty());
     }
 
+
     @SyncanoClass(name = Warriors.WARRIORS_CLASS_NAME)
     private static class Warriors extends SyncanoObject {
-        public static final String WARRIORS_CLASS_NAME = "inventory";
+        public static final String WARRIORS_CLASS_NAME = "warriors";
         public static final String FIELD_NAME = "name";
         public static final String FIELD_NUMBER = "number";
         public static final String FIELD_INVENTORY = Inventory.INVENTORY_CLASS_NAME;
 
-        @SyncanoField(name = FIELD_NAME)
+        @SyncanoField(name = FIELD_NAME, filterIndex = true)
         public String name;
-        @SyncanoField(name = FIELD_NUMBER)
+        @SyncanoField(name = FIELD_NUMBER, orderIndex = true)
         public int number;
-        @SyncanoField(name = FIELD_INVENTORY)
-        public Inventory inventory;
+        @SyncanoField(name = FIELD_INVENTORY, type = FieldType.REFERENCE)
+        public Inventory inventoryBadField;
     }
 
     @SyncanoClass(name = Inventory.INVENTORY_CLASS_NAME)
@@ -100,9 +108,9 @@ public class ViewTable extends SyncanoApplicationTestCase {
         public static final String FIELD_ARMOR = "armor";
         public static final String FIELD_WEAPON = "weapon";
         @SyncanoField(name = FIELD_ARMOR)
-        private String armor;
+        public String armor;
         @SyncanoField(name = FIELD_WEAPON)
-        private String weapon;
+        public String weapon;
 
     }
 }
