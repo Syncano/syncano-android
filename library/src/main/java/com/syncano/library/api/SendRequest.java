@@ -7,7 +7,7 @@ import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
-import com.syncano.library.utils.GsonHelper;
+import com.syncano.library.parser.GsonParser;
 import com.syncano.library.utils.SyncanoClassHelper;
 import com.syncano.library.utils.SyncanoLog;
 
@@ -183,7 +183,7 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
     public T parseResult(Response<T> response, String json) {
         if (updateGivenData) {
             if (data.getClass().isAssignableFrom(resultType)) {
-                return GsonHelper.createGson(data).fromJson(json, resultType);
+                return GsonParser.createGson(data).fromJson(json, resultType);
             } else {
                 SyncanoLog.w(SendRequest.class.getSimpleName(),
                         "Can't update object " + data.getClass().getSimpleName() + " from " + resultType.getSimpleName());

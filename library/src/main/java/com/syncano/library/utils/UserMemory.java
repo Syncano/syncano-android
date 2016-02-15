@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.syncano.library.PlatformType;
 import com.syncano.library.Syncano;
 import com.syncano.library.data.AbstractUser;
+import com.syncano.library.parser.GsonParser;
 
 public class UserMemory {
 
@@ -21,9 +22,9 @@ public class UserMemory {
             editor.remove(dataKey(syncano));
             editor.remove(typeKey(syncano));
         } else {
-            GsonHelper.GsonConfig config = new GsonHelper.GsonConfig();
+            GsonParser.GsonParseConfig config = new GsonParser.GsonParseConfig();
             config.readOnlyNotImportant = true;
-            Gson gson = GsonHelper.createGson(config);
+            Gson gson = GsonParser.createGson(config);
             editor.putString(dataKey(syncano), gson.toJson(user));
             editor.putString(typeKey(syncano), user.getClass().getName());
         }
@@ -40,7 +41,7 @@ public class UserMemory {
         if (userJson == null || className == null) {
             return null;
         }
-        Gson gson = GsonHelper.createGson();
+        Gson gson = GsonParser.createGson();
         try {
             return (AbstractUser) gson.fromJson(userJson, Class.forName(className));
         } catch (Exception e) {

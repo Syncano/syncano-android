@@ -2,7 +2,7 @@ package com.syncano.library.data;
 
 import com.google.gson.JsonObject;
 import com.syncano.library.annotation.SyncanoField;
-import com.syncano.library.utils.GsonHelper;
+import com.syncano.library.parser.GsonParser;
 
 public class BatchAnswer {
     public static final String FIELD_CONTENT = "content";
@@ -17,7 +17,7 @@ public class BatchAnswer {
         if (content == null) {
             return null;
         }
-        return GsonHelper.createGson().fromJson(content, type);
+        return GsonParser.createGson().fromJson(content, type);
     }
 
     public int getHttpResultCode() {
