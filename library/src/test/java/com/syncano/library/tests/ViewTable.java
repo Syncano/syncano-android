@@ -1,4 +1,4 @@
-package com.syncano.library.documentation;
+package com.syncano.library.tests;
 
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
@@ -20,6 +20,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class ViewTable extends SyncanoApplicationTestCase {
@@ -30,30 +31,31 @@ public class ViewTable extends SyncanoApplicationTestCase {
     public void setUp() throws Exception {
         super.setUp();
         createClass(Inventory.class);
-        createClass(Warriors.class);
+        createClass(Warrior.class);
         createSampleWarriors();
         //Remove view if exist and create new instance
         Response<SyncanoTableView> deleteResponse = syncano.deleteTableView(tableName).send();
         System.out.println("Delete response status: " + deleteResponse.isSuccess());
-        SyncanoTableView syncanoTableView = new SyncanoTableView(tableName, Warriors.class);
+        SyncanoTableView syncanoTableView = new SyncanoTableView(tableName, Warrior.class);
         syncanoTableView.setDescription(tableDescription);
-        syncanoTableView.setOrderBy(Warriors.FIELD_NUMBER);
-        Where query = new Where().startsWith(Warriors.FIELD_NAME, "W", Case.INSENSITIVE);
+        syncanoTableView.setOrderBy(Warrior.FIELD_NUMBER);
+        Where query = new Where().startsWith(Warrior.FIELD_NAME, "W", Case.INSENSITIVE);
         syncanoTableView.setQuery(query);
-        syncanoTableView.addExpandField(Warriors.FIELD_INVENTORY);
-        Response<SyncanoTableView> responseCreateTable = syncano.createTableView(syncanoTableView).send();
+        syncanoTableView.addExpandField(Warrior.FIELD_INVENTORY);
+        Response<SyncanoTableView> responseCreateTable =
+                syncano.createTableView(syncanoTableView).send();
         assertTrue(responseCreateTable.isSuccess());
     }
 
     private void createSampleWarriors() {
-        Warriors warriorSoccer = new Warriors();
+        Warrior warriorSoccer = new Warrior();
         warriorSoccer.name = "Warrior man";
         warriorSoccer.number = 10;
         Inventory inventory = new Inventory();
         inventory.armor = "Leather armor";
         Response responseCreateInventory = inventory.save();
         assertTrue(responseCreateInventory.isSuccess());
-        warriorSoccer.inventoryBadField = inventory;
+        warriorSoccer.inventory = inventory;
         Response<Inventory> responseCreateWarrior = warriorSoccer.save();
         assertTrue(responseCreateWarrior.isSuccess());
         warriorSoccer.fetch();
@@ -64,37 +66,44 @@ public class ViewTable extends SyncanoApplicationTestCase {
         super.tearDown();
         Response deleteResponse = syncano.deleteTableView(tableName).send();
         assertTrue(deleteResponse.isSuccess());
-        removeClass(Warriors.class);
+        removeClass(Warrior.class);
         removeClass(Inventory.class);
     }
 
-
     @Test
     public void testSyncanoGetView() {
-        ResponseGetList<Warriors> warriorListGetList = syncano.getViewObjects(Warriors.class, tableName).send();
-        assertTrue(warriorListGetList.isSuccess());
-        List<Warriors> data = warriorListGetList.getData();
-        boolean dataIsEmpty = warriorListGetList.getData().isEmpty();
-        assertFalse(dataIsEmpty);
-        Warriors warriors = data.get(0);
-        assertNotNull(warriors.inventoryBadField);
-        assertNotNull(warriors.inventoryBadField.getId());
-        warriors.fetch();
-        assertNotNull(warriors.inventoryBadField.armor);
-        warriors.inventoryBadField.fetch();
-        assertNotNull(warriors.inventoryBadField.armor);
+        // get from window
+        ResponseGetList<Warrior> warriorsFromView = syncano.getViewObjects(Warrior.class, tableName).send();
+        assertTrue(warriorsFromView.isSuccess());
+
+        // get standard way
+        ResponseGetList<Warrior> warriors = syncano.getObjects(Warrior.class).send();
+        assertTrue(warriors.isSuccess());
+
+        assertFalse(warriorsFromView.getData().isEmpty());
+        Warrior warrior = warriorsFromView.getData().get(0);
+
+        assertNotNull(warrior.inventory);
+        assertNotNull(warrior.inventory.getId());
+
+        warrior.fetch();
+        assertNotNull(warrior.inventory.getId());
+        assertNull(warrior.inventory.armor);
+        warrior.inventory.fetch();
+        assertNotNull(warrior.inventory.armor);
     }
 
     @Test
     public void testPleaseGetView() {
-        ResponseGetList<Warriors> warriorListResponse = Syncano.please(Warriors.class).tableView(tableName).orderBy(Warriors.FIELD_NUMBER).getAll();
+        ResponseGetList<Warrior> warriorListResponse =
+                Syncano.please(Warrior.class).tableView(tableName).orderBy(Warrior.FIELD_NUMBER).getAll();
         assertTrue(warriorListResponse.isSuccess());
         assertFalse(warriorListResponse.getData().isEmpty());
     }
 
-
-    @SyncanoClass(name = Warriors.WARRIORS_CLASS_NAME)
-    private static class Warriors extends SyncanoObject {
+    @SyncanoClass(name = Warrior.WARRIORS_CLASS_NAME)
+    private static class Warrior
+            extends SyncanoObject {
         public static final String WARRIORS_CLASS_NAME = "warriors";
         public static final String FIELD_NAME = "name";
         public static final String FIELD_NUMBER = "number";
@@ -104,8 +113,8 @@ public class ViewTable extends SyncanoApplicationTestCase {
         public String name;
         @SyncanoField(name = FIELD_NUMBER, orderIndex = true)
         public int number;
-        @SyncanoField(name = FIELD_INVENTORY, type = FieldType.REFERENCE)
-        public Inventory inventoryBadField;
+        @SyncanoField(name = FIELD_INVENTORY)
+        public Inventory inventory;
     }
 
     @SyncanoClass(name = Inventory.INVENTORY_CLASS_NAME)
@@ -117,6 +126,5 @@ public class ViewTable extends SyncanoApplicationTestCase {
         public String armor;
         @SyncanoField(name = FIELD_WEAPON)
         public String weapon;
-
     }
 }
