@@ -53,7 +53,11 @@ public class SyncanoObjectAdapterFactory extends CustomizedTypeAdapterFactory<Sy
                 public void found(Field field) {
                     String fieldName = SyncanoClassHelper.getFieldName(field);
                     JsonObject deserializedObject = deserialized.getAsJsonObject();
-                    JsonObject refData = deserializedObject.get(fieldName).getAsJsonObject();
+                    JsonElement refDataElem = deserializedObject.get(fieldName);
+                    if (refDataElem == null) {
+                        return;
+                    }
+                    JsonObject refData = refDataElem.getAsJsonObject();
                     if (!refData.has(Entity.FIELD_ID) && refData.has(FIELD_VALUE)) {
                         JsonObject newRefObject = new JsonObject();
                         newRefObject.addProperty(Entity.FIELD_ID, refData.get(FIELD_VALUE).getAsString());
