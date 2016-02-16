@@ -26,8 +26,7 @@ class SyncanoObjectSerializer implements JsonSerializer<SyncanoObject> {
                     String keyName = syncanoField.name();
                     JsonElement jsonElement = serializableFieldToJsonObject(localObject, field, jsc);
                     jsonObject.add(keyName, jsonElement);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                } catch (IllegalAccessException ignore) {
                 }
             }
         }

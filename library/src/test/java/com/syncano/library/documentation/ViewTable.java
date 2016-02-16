@@ -51,9 +51,11 @@ public class ViewTable extends SyncanoApplicationTestCase {
         warriorSoccer.number = 10;
         Inventory inventory = new Inventory();
         inventory.armor = "Leather armor";
-        Response response = inventory.save();
+        Response responseCreateInventory = inventory.save();
+        assertTrue(responseCreateInventory.isSuccess());
         warriorSoccer.inventoryBadField = inventory;
-        Response<Inventory> responseInvestory = warriorSoccer.save();
+        Response<Inventory> responseCreateWarrior = warriorSoccer.save();
+        assertTrue(responseCreateWarrior.isSuccess());
         warriorSoccer.fetch();
     }
 
@@ -77,6 +79,10 @@ public class ViewTable extends SyncanoApplicationTestCase {
         Warriors warriors = data.get(0);
         assertNotNull(warriors.inventoryBadField);
         assertNotNull(warriors.inventoryBadField.getId());
+        warriors.fetch();
+        assertNotNull(warriors.inventoryBadField.armor);
+        warriors.inventoryBadField.fetch();
+        assertNotNull(warriors.inventoryBadField.armor);
     }
 
     @Test

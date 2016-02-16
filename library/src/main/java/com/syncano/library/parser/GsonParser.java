@@ -45,7 +45,7 @@ public class GsonParser {
         // it makes possible to fill existing object instead of creating new one
         if (object != null) {
             if (object instanceof SyncanoObject) {
-                gsonBuilder.registerTypeHierarchyAdapter(SyncanoObject.class, new SyncanoObjectDeserializer((SyncanoObject) object, config.deserializeNull));
+                gsonBuilder.registerTypeHierarchyAdapter(SyncanoObject.class, new SyncanoObjectDeserializer((SyncanoObject) object));
             }
             gsonBuilder.registerTypeAdapter(object.getClass(), new InstanceCreator<T>() {
                 @Override
@@ -59,7 +59,6 @@ public class GsonParser {
 
     public static class GsonParseConfig {
         public boolean readOnlyNotImportant = false;
-        public boolean deserializeNull = false;
     }
 
     private static class SyncanoFieldNamingStrategy implements FieldNamingStrategy {
