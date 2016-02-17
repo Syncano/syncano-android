@@ -2,15 +2,13 @@ package com.syncano.library.documentation;
 
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
-import com.syncano.library.annotation.SyncanoClass;
-import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.callbacks.SyncanoListCallback;
 import com.syncano.library.choice.FilterType;
 import com.syncano.library.data.CodeBox;
-import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.Trace;
+import com.syncano.library.model.Book;
 import com.syncano.library.utils.SyncanoLog;
 
 import org.junit.After;
@@ -28,22 +26,6 @@ import static org.junit.Assert.assertTrue;
 //        {"type": "string", "name": "title", "order_index":true, "filter_index":true},
 //        {"type": "string", "name": "subtitle", "order_index":true, "filter_index":true}
 //      ]
-// -----------------------------
-
-
-// ---------- Adding your class
-@SyncanoClass(name = "book")
-class Book extends SyncanoObject {
-
-    public static final String FIELD_TITLE = "title";
-    public static final String FIELD_SUBTITLE = "subtitle";
-
-    @SyncanoField(name = FIELD_TITLE, filterIndex = true, orderIndex = true)
-    public String title;
-
-    @SyncanoField(name = FIELD_SUBTITLE, filterIndex = true, orderIndex = true)
-    public String subtitle;
-}
 // -----------------------------
 
 
