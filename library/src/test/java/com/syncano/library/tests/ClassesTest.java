@@ -138,7 +138,7 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         @SyncanoField(name = "text", type = FieldType.TEXT)
         public String text;
         @SyncanoField(name = "reference", type = FieldType.REFERENCE, target = Constants.FIELD_TARGET_SELF)
-        public Integer reference;
+        public MultiTypesObject reference;
         @SyncanoField(name = "yesorno")
         public boolean yesOrNo;
     }

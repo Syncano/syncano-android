@@ -8,6 +8,7 @@ import com.syncano.library.callbacks.SyncanoListCallback;
 import com.syncano.library.choice.FilterType;
 import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Trace;
+import com.syncano.library.model.Author;
 import com.syncano.library.model.Book;
 import com.syncano.library.utils.SyncanoLog;
 
@@ -40,6 +41,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        createClass(Author.class);
         createClass(Book.class);
         this.syncano = super.syncano;
     }
@@ -47,6 +49,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
     @After
     public void tearDown() throws Exception {
         removeClass(Book.class);
+        removeClass(Author.class);
         super.tearDown();
     }
 
