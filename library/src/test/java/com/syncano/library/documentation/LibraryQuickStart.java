@@ -2,15 +2,14 @@ package com.syncano.library.documentation;
 
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
-import com.syncano.library.annotation.SyncanoClass;
-import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.callbacks.SyncanoListCallback;
 import com.syncano.library.choice.FilterType;
 import com.syncano.library.data.CodeBox;
-import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.Trace;
+import com.syncano.library.model.Author;
+import com.syncano.library.model.Book;
 import com.syncano.library.utils.SyncanoLog;
 
 import org.junit.After;
@@ -31,22 +30,6 @@ import static org.junit.Assert.assertTrue;
 // -----------------------------
 
 
-// ---------- Adding your class
-@SyncanoClass(name = "book")
-class Book extends SyncanoObject {
-
-    public static final String FIELD_TITLE = "title";
-    public static final String FIELD_SUBTITLE = "subtitle";
-
-    @SyncanoField(name = FIELD_TITLE, filterIndex = true, orderIndex = true)
-    public String title;
-
-    @SyncanoField(name = FIELD_SUBTITLE, filterIndex = true, orderIndex = true)
-    public String subtitle;
-}
-// -----------------------------
-
-
 public class LibraryQuickStart extends SyncanoApplicationTestCase {
     private static final String TAG = LibraryQuickStart.class.getSimpleName();
 
@@ -58,6 +41,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        createClass(Author.class);
         createClass(Book.class);
         this.syncano = super.syncano;
     }
@@ -65,6 +49,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
     @After
     public void tearDown() throws Exception {
         removeClass(Book.class);
+        removeClass(Author.class);
         super.tearDown();
     }
 

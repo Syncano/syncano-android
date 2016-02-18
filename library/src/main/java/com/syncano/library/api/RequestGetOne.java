@@ -1,7 +1,7 @@
 package com.syncano.library.api;
 
 import com.syncano.library.Syncano;
-import com.syncano.library.utils.GsonHelper;
+import com.syncano.library.parser.GsonParser;
 
 public class RequestGetOne<T> extends RequestGet<T> {
 
@@ -14,7 +14,7 @@ public class RequestGetOne<T> extends RequestGet<T> {
 
     public RequestGetOne(T dataObject, String url, Syncano syncano) {
         super(url, syncano);
-        gson = GsonHelper.createGson(dataObject);
+        gson = GsonParser.createGson(dataObject);
         this.resultType = (Class<T>) dataObject.getClass();
     }
 

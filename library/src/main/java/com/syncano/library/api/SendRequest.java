@@ -7,9 +7,9 @@ import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
-import com.syncano.library.utils.GsonHelper;
-import com.syncano.library.utils.SyncanoLog;
+import com.syncano.library.parser.GsonParser;
 import com.syncano.library.utils.SyncanoClassHelper;
+import com.syncano.library.utils.SyncanoLog;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.InputStreamEntity;
@@ -80,7 +80,7 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
             if (fieldAnnotation == null) {
                 continue;
             }
-            FieldType type = SyncanoClassHelper.findType(field, fieldAnnotation);
+            FieldType type = SyncanoClassHelper.findType(field);
             if (type == null || !FieldType.FILE.equals(type)) {
                 continue;
             }
@@ -119,7 +119,6 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
         DataOutputStream os = new DataOutputStream(baos);
         JsonObject json = gson.toJsonTree(data).getAsJsonObject();
         ((SyncanoObject) data).getIncrementBuilder().build(json);
-
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
             os.writeBytes(twoHyphens + boundary + lineEnd);
             os.writeBytes("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"" + lineEnd);
@@ -184,7 +183,7 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
     public T parseResult(Response<T> response, String json) {
         if (updateGivenData) {
             if (data.getClass().isAssignableFrom(resultType)) {
-                return GsonHelper.createGson(data).fromJson(json, resultType);
+                return GsonParser.createGson(data).fromJson(json, resultType);
             } else {
                 SyncanoLog.w(SendRequest.class.getSimpleName(),
                         "Can't update object " + data.getClass().getSimpleName() + " from " + resultType.getSimpleName());

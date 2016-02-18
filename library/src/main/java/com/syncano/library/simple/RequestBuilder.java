@@ -25,6 +25,7 @@ public class RequestBuilder<T extends SyncanoObject> {
     private Where<T> where;
     private FieldsFilter fieldsFilter;
     private String pageUrl;
+    private String tableView;
     private boolean estimateCount = false;
 
 
@@ -70,13 +71,20 @@ public class RequestBuilder<T extends SyncanoObject> {
 
     private RequestGetList<T> prepareGetRequest() {
         RequestGetList<T> request;
-        if (pageUrl == null) {
+        request = getRequestGetList();
+        decorateRequest(request);
+        return request;
+    }
+
+    private RequestGetList<T> getRequestGetList() {
+        RequestGetList<T> request;
+        if (pageUrl != null) {
+            request = syncano.getObjects(clazz, pageUrl);
+        } else if (tableView == null) {
             request = syncano.getObjects(clazz);
         } else {
-            request = syncano.getObjects(clazz, pageUrl);
+            request = syncano.getViewObjects(clazz, tableView);
         }
-
-        decorateRequest(request);
         return request;
     }
 
@@ -240,5 +248,16 @@ public class RequestBuilder<T extends SyncanoObject> {
      */
     public void getCountEstimation(SyncanoCallback<Integer> callback) {
         new RequestCount(prepareGetRequest()).sendAsync(callback);
+    }
+
+    /**
+     * Same as getCountEstimation(), but asynchronously
+     *
+     * @param viewName Virtual table name
+     * @return itself
+     */
+    public RequestBuilder<T> tableView(String viewName) {
+        this.tableView = viewName;
+        return this;
     }
 }

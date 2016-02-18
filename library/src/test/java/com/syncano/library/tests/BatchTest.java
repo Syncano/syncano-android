@@ -2,28 +2,28 @@ package com.syncano.library.tests;
 
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
-import com.syncano.library.annotation.SyncanoClass;
-import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.BatchBuilder;
 import com.syncano.library.api.Response;
 import com.syncano.library.data.BatchAnswer;
-import com.syncano.library.data.SyncanoObject;
+import com.syncano.library.model.Author;
+import com.syncano.library.model.Book;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-
-import java.util.List;
+import static org.junit.Assert.assertTrue;
 
 public class BatchTest extends SyncanoApplicationTestCase {
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        createClass(Author.class);
         createClass(Book.class);
     }
 
@@ -31,6 +31,7 @@ public class BatchTest extends SyncanoApplicationTestCase {
     public void tearDown() throws Exception {
         super.tearDown();
         removeClass(Book.class);
+        removeClass(Author.class);
     }
 
     @Test
@@ -67,19 +68,5 @@ public class BatchTest extends SyncanoApplicationTestCase {
         Book bookUdpated = answers2.get(0).getDataAs(Book.class);
         assertEquals(book1.title, bookUdpated.title);
         assertEquals(Response.HTTP_CODE_NO_CONTENT, answers2.get(1).getHttpResultCode());
-    }
-
-    @SyncanoClass(name = "Book")
-    public static class Book extends SyncanoObject {
-
-        public Book(String author, String title) {
-            this.author = author;
-            this.title = title;
-        }
-
-        @SyncanoField(name = "author")
-        String author;
-        @SyncanoField(name = "title")
-        String title;
     }
 }

@@ -20,6 +20,7 @@ public class Constants {
     public final static String URL_PARAM_PAGE_DIRECTION = "direction";
     public final static String URL_PARAM_PAGE_LAST_PK = "last_pk";
     public final static String URL_PARAM_ROOM = "room";
+    public final static String URL_PARAM_EXPAND = "expand";
     public final static String URL_PARAM_LAST_ID = "last_id";
     public final static String URL_PARAM_INCLUDE_COUNT = "include_count";
 
@@ -34,6 +35,8 @@ public class Constants {
     // ==================== Classes ==================== //
     public static final String FIELD_TYPE = "type";
     public static final String FIELD_NAME = "name";
+    public static final String FIELD_DESCRIPTION = "description";
+
     public static final String FIELD_ORDER_INDEX = "order_index";
     public static final String FIELD_FILTER_INDEX = "filter_index";
     public static final String FIELD_TARGET = "target";
@@ -43,6 +46,13 @@ public class Constants {
     // ==================== Objects ==================== //
     public static final String OBJECTS_LIST_URL = "/v1/instances/%s/classes/%s/objects/";
     public static final String OBJECTS_DETAIL_URL = "/v1/instances/%s/classes/%s/objects/%d/";
+
+    // ==================== Views ==================== //
+    public static final String OBJECTS_VIEW = "/v1/instances/%s/api/objects/%s/get/";
+    public static final String OBJECTS_VIEW_CREATE = "/v1/instances/%s/api/objects/";
+    public static final String OBJECTS_VIEW_REMOVE = "/v1/instances/%s/api/objects/%s/";
+
+    public static final String OBJECTS_VIEW_PARAM_CLASS = "class";
 
     // ==================== CodeBoxes ==================== //
     public static final String CODEBOXES_LIST_URL = "/v1/instances/%s/codeboxes/";

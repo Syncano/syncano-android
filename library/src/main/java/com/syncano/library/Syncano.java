@@ -22,6 +22,7 @@ import com.syncano.library.data.GroupMembership;
 import com.syncano.library.data.Notification;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
+import com.syncano.library.data.SyncanoTableView;
 import com.syncano.library.data.Trace;
 import com.syncano.library.data.User;
 import com.syncano.library.data.Webhook;
@@ -33,11 +34,11 @@ import com.syncano.library.utils.UserMemory;
 public class Syncano {
 
     private static Syncano sharedInstance = null;
-    private Context androidContext = null;
     protected String customServerUrl;
     protected String apiKey;
     protected AbstractUser user;
     protected String instanceName;
+    private Context androidContext = null;
 
     /**
      * Create Syncano object. When using this constructor most functions will not work, because api key
@@ -158,16 +159,6 @@ public class Syncano {
     }
 
     /**
-     * @return Url to syncano API
-     */
-    public String getUrl() {
-        if (customServerUrl != null && !customServerUrl.isEmpty()) {
-            return customServerUrl;
-        }
-        return Constants.PRODUCTION_SERVER_URL;
-    }
-
-    /**
      * By default this library checks if certificate that is used for https encryption is exactly
      * the right one.
      *
@@ -200,6 +191,16 @@ public class Syncano {
      */
     public static <T extends SyncanoObject> RequestBuilder<T> please(Class<T> clazz) {
         return new RequestBuilder<>(clazz);
+    }
+
+    /**
+     * @return Url to syncano API
+     */
+    public String getUrl() {
+        if (customServerUrl != null && !customServerUrl.isEmpty()) {
+            return customServerUrl;
+        }
+        return Constants.PRODUCTION_SERVER_URL;
     }
 
     /**
@@ -329,6 +330,20 @@ public class Syncano {
         String className = SyncanoClassHelper.getSyncanoClassName(object.getClass());
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getNotEmptyInstanceName(), className, object.getId());
         RequestGetOne<T> req = new RequestGetOne<>(object, url, this);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
+    }
+
+
+    /**
+     * Get a list of Data Objects associated with a given Class.
+     *
+     * @param type Type for result List item.
+     * @param <T>  Result type.
+     */
+    public <T extends SyncanoObject> RequestGetList<T> getViewObjects(Class<T> type, String tableView) {
+        String url = String.format(Constants.OBJECTS_VIEW, getNotEmptyInstanceName(), tableView);
+        RequestGetList<T> req = new RequestGetList<>(type, url, this);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
     }
@@ -933,6 +948,33 @@ public class Syncano {
         String url = String.format(Constants.CLASSES_LIST_URL, getNotEmptyInstanceName());
         RequestPost<SyncanoClass> req = new RequestPost<>(SyncanoClass.class, url, this, clazz);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
+        return req;
+    }
+
+    /**
+     * Create a virtual view.
+     *
+     * @param clazz View class to create.
+     * @return Created class.
+     */
+    public RequestPost<SyncanoTableView> createTableView(SyncanoTableView clazz) {
+        String url = String.format(Constants.OBJECTS_VIEW_CREATE, getNotEmptyInstanceName());
+        RequestPost<SyncanoTableView> req = new RequestPost<>(SyncanoTableView.class, url, this, clazz);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
+        return req;
+    }
+
+    /**
+     * Delete a virtual view.
+     *
+     * @param name View to delete.
+     * @return RequestDelete<SyncanoTableView>
+     */
+    public RequestDelete<SyncanoTableView> deleteTableView(String name) {
+        String url = String.format(Constants.OBJECTS_VIEW_REMOVE, getNotEmptyInstanceName(), name);
+        RequestDelete<SyncanoTableView> req = new RequestDelete<>(SyncanoTableView.class, url, this);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NOT_FOUND);
         return req;
     }
 

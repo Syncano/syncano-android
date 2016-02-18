@@ -19,10 +19,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class ClassesTest extends SyncanoApplicationTestCase {
 
@@ -88,8 +87,12 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         assertTrue(respClass.isSuccess());
 
         MultiTypesObject obj1 = generateMultiTypesObject();
+        MultiTypesObject obj2 = generateMultiTypesObject();
+        assertTrue(obj2.save().isSuccess());
+        obj1.reference = obj2;
         Response<MultiTypesObject> resp1 = syncano.createObject(obj1).send();
         assertTrue(resp1.isSuccess());
+        assertTrue(obj1.reference.save().isSuccess());
 
         MultiTypesObject serverObj1 = resp1.getData();
         assertNotNull(serverObj1);
@@ -103,7 +106,8 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         assertEquals(obj1.stringVal, serverObj1.stringVal);
         assertEquals(obj1.text.length(), serverObj1.text.length());
         assertEquals(obj1.text, serverObj1.text);
-        assertEquals(obj1.reference, serverObj1.reference);
+        assertNotNull(obj1.reference.getId());
+        assertEquals(obj1.reference.getId(), serverObj1.reference.getId());
         assertEquals(obj1.yesOrNo, serverObj1.yesOrNo);
     }
 
@@ -118,6 +122,7 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         o.stringVal = generateString(rnd.nextInt(128));
         o.text = generateString(rnd.nextInt(32000));
         o.yesOrNo = rnd.nextBoolean();
+        o.reference = new MultiTypesObject();
         return o;
     }
 
@@ -137,8 +142,8 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         public String stringVal;
         @SyncanoField(name = "text", type = FieldType.TEXT)
         public String text;
-        @SyncanoField(name = "reference", type = FieldType.REFERENCE, target = Constants.FIELD_TARGET_SELF)
-        public Integer reference;
+        @SyncanoField(name = "reference", target = Constants.FIELD_TARGET_SELF)
+        public MultiTypesObject reference;
         @SyncanoField(name = "yesorno")
         public boolean yesOrNo;
     }
