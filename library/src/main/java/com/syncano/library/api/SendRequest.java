@@ -80,7 +80,7 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
             if (fieldAnnotation == null) {
                 continue;
             }
-            FieldType type = SyncanoClassHelper.findType(field, fieldAnnotation);
+            FieldType type = SyncanoClassHelper.findType(field);
             if (type == null || !FieldType.FILE.equals(type)) {
                 continue;
             }

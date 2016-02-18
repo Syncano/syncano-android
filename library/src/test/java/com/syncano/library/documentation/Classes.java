@@ -54,6 +54,7 @@ public class Classes extends SyncanoApplicationTestCase {
         Response bookSaveResponse = book.save();
         assertTrue(bookSaveResponse.isSuccess());
         assertNotNull(book.author);
+        assertNotNull(book.author.name);
     }
 
     @Test
@@ -65,7 +66,6 @@ public class Classes extends SyncanoApplicationTestCase {
         //Author is replaced by reference got from backend
         assertNull(book.author);
     }
-
 
     @Test
     public void testChangeReferenceToSyncanoObject() {
@@ -82,8 +82,6 @@ public class Classes extends SyncanoApplicationTestCase {
         otherAuthor.save();
         book.author = otherAuthor;
         book.fetch();
-        //Should be dirty object
-        assertTrue(book.author.isDirty());
     }
 
     @Test
@@ -104,6 +102,4 @@ public class Classes extends SyncanoApplicationTestCase {
         //Should be dirty object
         assertTrue(book.author.isDirty());
     }
-
-    // -----------------------------
 }

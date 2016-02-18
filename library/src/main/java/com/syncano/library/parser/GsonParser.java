@@ -4,18 +4,12 @@ import com.google.gson.FieldNamingStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
-import com.google.gson.TypeAdapter;
-import com.google.gson.TypeAdapterFactory;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.utils.NanosDate;
 import com.syncano.library.utils.SyncanoClassHelper;
 import com.syncano.library.utils.SyncanoHashSet;
 
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Date;
@@ -26,7 +20,7 @@ public class GsonParser {
         return createGson(new GsonParseConfig());
     }
 
-    public static <T> Gson createGson(GsonParseConfig config) {
+    public static Gson createGson(GsonParseConfig config) {
         return createGson(null, config);
     }
 
@@ -43,19 +37,17 @@ public class GsonParser {
         gsonBuilder.registerTypeAdapter(SyncanoHashSet.class, new SyncanoHashSetDeserializer());
         gsonBuilder.registerTypeAdapter(SyncanoHashSet.class, new SyncanoHashSetSerializer());
         gsonBuilder.registerTypeAdapter(SyncanoFile.class, new FileDeserializer());
-        gsonBuilder.addSerializationExclusionStrategy(new SyncanoSerializationStrategy(config.readOnlyNotImportant));
-        gsonBuilder.addDeserializationExclusionStrategy(new SyncanoDeserializationStrategy());
         gsonBuilder.setFieldNamingStrategy(new SyncanoFieldNamingStrategy());
-        gsonBuilder.registerTypeAdapterFactory(new SyncanoObjectAdapterFactory(SyncanoObject.class));
-
-        // it makes possible to fill existing object instead of creating new one
-        if (object != null) {
+        gsonBuilder.registerTypeHierarchyAdapter(SyncanoObject.class, new SyncanoObjectDeserializer(object));
+        gsonBuilder.registerTypeHierarchyAdapter(SyncanoObject.class, new SyncanoObjectSerializer());
+        if (object != null && !(object instanceof SyncanoObject)) {
             gsonBuilder.registerTypeAdapter(object.getClass(), new InstanceCreator<T>() {
                 @Override
                 public T createInstance(Type type) {
                     return object;
                 }
             });
+
         }
         return gsonBuilder.create();
     }

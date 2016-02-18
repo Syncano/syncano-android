@@ -11,7 +11,11 @@ import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 public class SyncanoClassHelper {
 
@@ -47,7 +51,7 @@ public class SyncanoClassHelper {
             }
 
             JsonObject fieldDescription = new JsonObject();
-            FieldType type = findType(field, fieldAnnotation);
+            FieldType type = findType(field);
             if (type == null) {
                 continue;
             }
@@ -100,7 +104,8 @@ public class SyncanoClassHelper {
         return name;
     }
 
-    public static FieldType findType(Field field, SyncanoField fieldAnnotation) {
+    public static FieldType findType(Field field) {
+        SyncanoField fieldAnnotation = field.getAnnotation(SyncanoField.class);
         FieldType type = fieldAnnotation.type();
         if (type != null && !FieldType.NOT_SET.equals(type)) {
             return type;
@@ -125,9 +130,23 @@ public class SyncanoClassHelper {
         } else if (clazz.equals(SyncanoFile.class)) {
             return FieldType.FILE;
         }
-        if (fieldAnnotation.readOnly()) {
-            return null;
+        return null;
+    }
+
+    public static Collection<Field> findAllSyncanoFields(Class type) {
+        List<Field> fields = new ArrayList<>();
+        for (Class<?> c = type; c != null; c = c.getSuperclass()) {
+            fields.addAll(Arrays.asList(c.getDeclaredFields()));
         }
-        throw new RuntimeException("Field type " + clazz.getSimpleName() + " is not supported.");
+
+        ArrayList<Field> syncanoFields = new ArrayList<>();
+        for (Field field : fields) {
+            SyncanoField fieldAnnotation = field.getAnnotation(SyncanoField.class);
+            if (fieldAnnotation == null) {
+                continue;
+            }
+            syncanoFields.add(field);
+        }
+        return syncanoFields;
     }
 }
