@@ -1,6 +1,7 @@
 package com.syncano.library.parser;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -17,8 +18,8 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 
 public class SyncanoObjectDeserializer implements JsonDeserializer<SyncanoObject> {
-    private SyncanoObject syncanoObject = null;
     private final static String FIELD_VALUE = "value";
+    private SyncanoObject syncanoObject = null;
 
     public SyncanoObjectDeserializer(Object syncanoObject) {
         if (syncanoObject != null && syncanoObject instanceof SyncanoObject) {
@@ -81,10 +82,13 @@ public class SyncanoObjectDeserializer implements JsonDeserializer<SyncanoObject
     private SyncanoObject createSyncanoObject(Class<? extends SyncanoObject> clazz) {
         try {
             Constructor<? extends SyncanoObject> defaultConstructor = clazz.getConstructor();
+            defaultConstructor.setAccessible(true);
             return defaultConstructor.newInstance();
         } catch (Exception e) {
             //Workaround if no empty constructor provided
-            return new Gson().fromJson("{}", clazz);
+            Gson gson = new GsonBuilder()
+                    .setFieldNamingStrategy(new SyncanoFieldNamingStrategy()).create();
+            return gson.fromJson("{}", clazz);
         }
     }
 }

@@ -585,7 +585,7 @@ public class Where<T extends SyncanoObject> {
      * Checking if field is not empty.
      */
     public Where<T> isNull(String fieldName) {
-        addFilter(fieldName, FILTER_EXISTS, true);
+        addFilter(fieldName, FILTER_EXISTS, false);
         return this;
     }
 

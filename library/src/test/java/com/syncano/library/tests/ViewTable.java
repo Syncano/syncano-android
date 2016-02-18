@@ -8,7 +8,6 @@ import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.api.Where;
 import com.syncano.library.choice.Case;
-import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.SyncanoTableView;
 
@@ -16,11 +15,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.List;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class ViewTable extends SyncanoApplicationTestCase {
@@ -85,10 +81,8 @@ public class ViewTable extends SyncanoApplicationTestCase {
 
         assertNotNull(warrior.inventory);
         assertNotNull(warrior.inventory.getId());
-
         warrior.fetch();
         assertNotNull(warrior.inventory.getId());
-        assertNull(warrior.inventory.armor);
         warrior.inventory.fetch();
         assertNotNull(warrior.inventory.armor);
     }

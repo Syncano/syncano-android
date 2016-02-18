@@ -58,6 +58,54 @@ public class Classes extends SyncanoApplicationTestCase {
     }
 
     @Test
+    public void testRemoveReferenceObject() {
+        Book book = createPlainBook();
+        Author author = createPlainAuthor();
+        book.author = author;
+        Response authorSave = author.save();
+        assertTrue(authorSave.isSuccess());
+        Response bookSaveResponse = book.save();
+        assertTrue(bookSaveResponse.isSuccess());
+        book.author = null;
+        Response bookRemoveReferenceResponse = book.save();
+        assertTrue(bookRemoveReferenceResponse.isSuccess());
+        Response bookFetchResponse = book.fetch();
+        assertTrue(bookFetchResponse.isSuccess());
+        assertNull(book.author);
+    }
+
+    @Test
+    public void testChangeReferenceObject() {
+        Book book = createPlainBook();
+        Author originalAuthor = createPlainAuthor();
+        book.author = originalAuthor;
+        Response authorSave = originalAuthor.save();
+        assertTrue(authorSave.isSuccess());
+        Response bookSaveResponse = book.save();
+        assertTrue(bookSaveResponse.isSuccess());
+        changeAuthorToGhost(book.getId());
+        Response bookFetchResponse = book.fetch();
+        assertTrue(bookFetchResponse.isSuccess());
+        assertNotNull(book.author);
+        assertNull(book.author.name);
+        assertNull(book.author.surname);
+    }
+
+    private void changeAuthorToGhost(Integer bookId) {
+        Author ghostAuthor = createPlainAuthor();
+        ghostAuthor.surname = "Ghost";
+        Response ghostAuthorSave = ghostAuthor.save();
+        assertTrue(ghostAuthorSave.isSuccess());
+        Response<Book> requestGetOneBook = syncano.getObject(Book.class, bookId).send();
+        assertTrue(requestGetOneBook.isSuccess());
+        Book book = requestGetOneBook.getData();
+        assertNotNull(book);
+        book.author = ghostAuthor;
+        Response response = syncano.updateObject(book, false).send();
+        assertTrue(response.isSuccess());
+    }
+
+    @Test
     public void testCreateReferenceWithPlainObject() {
         Book book = createPlainBook();
         book.author = createPlainAuthor();
@@ -101,5 +149,7 @@ public class Classes extends SyncanoApplicationTestCase {
         book.fetch();
         //Should be dirty object
         assertTrue(book.author.isDirty());
+        //Reference should be point to new object
+        assertTrue(book.author != otherAuthor);
     }
 }

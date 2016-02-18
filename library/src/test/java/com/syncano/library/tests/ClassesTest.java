@@ -19,10 +19,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class ClassesTest extends SyncanoApplicationTestCase {
 
@@ -88,9 +87,11 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         assertTrue(respClass.isSuccess());
 
         MultiTypesObject obj1 = generateMultiTypesObject();
+        MultiTypesObject obj2 = generateMultiTypesObject();
+        assertTrue(obj2.save().isSuccess());
+        obj1.reference = obj2;
         Response<MultiTypesObject> resp1 = syncano.createObject(obj1).send();
         assertTrue(resp1.isSuccess());
-
         assertTrue(obj1.reference.save().isSuccess());
 
         MultiTypesObject serverObj1 = resp1.getData();
