@@ -47,29 +47,39 @@ public class SyncanoObjectDeserializer implements JsonDeserializer<SyncanoObject
         }
     }
 
-    private SyncanoObject parseSyncanoObject(SyncanoObject o, Type type, JsonObject jo, JsonDeserializationContext jdc) {
-        // create object if null
-        if (o == null) {
-            o = createSyncanoObject((Class<? extends SyncanoObject>) type);
-        }
-        // if received only reference id, set it and return this object
-        Integer idFromReference = getIdFromReference(jo);
-        if (idFromReference != null) {
-            if (!idFromReference.equals(o.getId())) {
-                o.setId(idFromReference);
-            }
-            return o;
-        }
+    private SyncanoObject parseSyncanoObject(SyncanoObject syncanoObject, Type type, JsonObject jo, JsonDeserializationContext jdc) {
+        // if received only reference id, replace old object by created
+        SyncanoObject referenceSyncanoObject = getReferenceSyncanoObject(syncanoObject, type, jo);
+        if (referenceSyncanoObject != null) return referenceSyncanoObject;
 
-        // if received full object parse it
+        if (syncanoObject == null) {
+            syncanoObject = createSyncanoObject((Class<? extends SyncanoObject>) type);
+        }
+        // if received full syncano object parse it
         Collection<Field> fields = SyncanoClassHelper.findAllSyncanoFields((Class) type);
         for (Field field : fields) {
             field.setAccessible(true);
             String syncanoKey = SyncanoClassHelper.getFieldName(field);
             JsonElement syncanoElement = jo.get(syncanoKey);
-            setFieldFromJsonElement(o, field, jdc, syncanoElement);
+            setFieldFromJsonElement(syncanoObject, field, jdc, syncanoElement);
         }
-        return o;
+        return syncanoObject;
+    }
+
+    private SyncanoObject getReferenceSyncanoObject(SyncanoObject syncanoObject, Type type, JsonObject jo) {
+        Integer referenceId = getIdFromReference(jo);
+        if (referenceId != null) {
+            return parseSyncanoReference(syncanoObject, type, referenceId);
+        }
+        return null;
+    }
+
+    private SyncanoObject parseSyncanoReference(SyncanoObject syncanoObject, Type type, Integer referenceId) {
+        if (syncanoObject == null || !referenceId.equals(syncanoObject.getId())) {
+            syncanoObject = createSyncanoObject((Class<? extends SyncanoObject>) type);
+            syncanoObject.setId(referenceId);
+        }
+        return syncanoObject;
     }
 
     private Integer getIdFromReference(JsonObject jo) {

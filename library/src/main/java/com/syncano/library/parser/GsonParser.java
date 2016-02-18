@@ -53,5 +53,4 @@ public class GsonParser {
         public boolean serializeReadOnlyFields = false;
     }
 
-
 }

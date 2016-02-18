@@ -39,7 +39,8 @@ public class Classes extends SyncanoApplicationTestCase {
 
     private Author createPlainAuthor() {
         Author author = new Author();
-        author.name = "Adam Mickiewicz";
+        author.name = "Adam";
+        author.surname = "Mickiewicz";
         author.isMale = true;
         return author;
     }
@@ -87,6 +88,7 @@ public class Classes extends SyncanoApplicationTestCase {
         Response bookFetchResponse = book.fetch();
         assertTrue(bookFetchResponse.isSuccess());
         assertNotNull(book.author);
+        assertTrue(book.author.isDirty());
         assertNull(book.author.name);
         assertNull(book.author.surname);
     }
@@ -126,7 +128,8 @@ public class Classes extends SyncanoApplicationTestCase {
         assertTrue(bookSaveResponse.isSuccess());
         assertNotNull(book.author);
         Author otherAuthor = new Author();
-        otherAuthor.name = "Juliusz Slowacki";
+        otherAuthor.name = "Juliusz";
+        otherAuthor.surname = "Slowacki";
         otherAuthor.save();
         book.author = otherAuthor;
         book.fetch();
@@ -143,10 +146,12 @@ public class Classes extends SyncanoApplicationTestCase {
         assertTrue(bookSaveResponse.isSuccess());
         assertNotNull(book.author);
         Author otherAuthor = new Author();
-        otherAuthor.name = "Juliusz Slowacki";
+        otherAuthor.name = "Juliusz";
+        otherAuthor.surname = "Slowacki";
         //change book author without save
         book.author = otherAuthor;
-        book.fetch();
+        Response<Book> fetchResponse = book.fetch();
+        assertTrue(fetchResponse.isSuccess());
         //Should be dirty object
         assertTrue(book.author.isDirty());
         //Reference should be point to new object
