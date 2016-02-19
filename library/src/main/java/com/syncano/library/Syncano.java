@@ -20,6 +20,8 @@ import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Group;
 import com.syncano.library.data.GroupMembership;
 import com.syncano.library.data.Notification;
+import com.syncano.library.data.PushDevice;
+import com.syncano.library.data.PushMessage;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.SyncanoTableView;
@@ -1521,6 +1523,63 @@ public class Syncano {
         }
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
+        return req;
+    }
+
+    public RequestPost<PushDevice> pushGCMRegister(PushDevice pushDevice) {
+        String url = String.format(Constants.PUSH_GCM_DEVICES_URL, getNotEmptyInstanceName());
+        RequestPost<PushDevice> req = new RequestPost<>(PushDevice.class, url, this, pushDevice);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
+        return req;
+    }
+
+    public RequestGetList<PushDevice> pushGetGCMDevices() {
+        String url = String.format(Constants.PUSH_GCM_DEVICES_URL, getNotEmptyInstanceName());
+        RequestGetList<PushDevice> req = new RequestGetList<>(PushDevice.class, url, this);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
+    }
+
+    public RequestGetOne<PushDevice> pushGetGCMDevice(String registrationId) {
+        String url = String.format(Constants.PUSH_GCM_DEVICE_URL, getNotEmptyInstanceName(), registrationId);
+        RequestGetOne<PushDevice> req = new RequestGetOne<>(PushDevice.class, url, this);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
+    }
+
+    public RequestPatch<PushDevice> pushUpdateGCMDevice(PushDevice pushDevice) {
+        String url = String.format(Constants.PUSH_GCM_DEVICE_URL, getNotEmptyInstanceName(), pushDevice.registrationId);
+        RequestPatch<PushDevice> req = new RequestPatch<>(PushDevice.class, url, this, pushDevice);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
+    }
+
+    public RequestDelete<PushDevice> pushRemoveGCMDevice(PushDevice pushDevice) {
+        String url = String.format(Constants.PUSH_GCM_DEVICE_URL, getNotEmptyInstanceName(), pushDevice.registrationId);
+        RequestDelete<PushDevice> req = new RequestDelete<>(PushDevice.class, url, this);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NOT_FOUND);
+        return req;
+    }
+
+    public RequestGetList<PushMessage> pushGetGCMMessages() {
+        String url = String.format(Constants.PUSH_GCM_MESSAGES_URL, getNotEmptyInstanceName());
+        RequestGetList<PushMessage> req = new RequestGetList<>(PushMessage.class, url, this);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
+    }
+
+    public RequestGetOne<Object> pushGetGCMMessage(String messageId) {
+        String url = String.format(Constants.PUSH_GCM_MESSAGE_URL, getNotEmptyInstanceName(), messageId);
+        RequestGetOne<Object> req = new RequestGetOne<>(Object.class, url, this);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
+    }
+
+    public RequestPost<PushMessage> pushAddGCMMessage(PushMessage pushMessage) {
+        String url = String.format(Constants.PUSH_GCM_MESSAGES_URL, getNotEmptyInstanceName());
+        RequestPost<PushMessage> req = new RequestPost<>(PushMessage.class, url, this, pushMessage);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
         return req;
     }
 }

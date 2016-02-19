@@ -88,4 +88,11 @@ public class Constants {
     public static final String CHANNELS_HISTORY_URL = "/v1/instances/%s/channels/%s/history/";
     public static final String CHANNELS_PUBLISH_URL = "/v1/instances/%s/channels/%s/publish/";
     public static final String CHANNELS_POLL_URL = "/v1/instances/%s/channels/%s/poll/";
+
+    // ==================== PUSH ==================== //
+    public static final String PUSH_GCM_DEVICES_URL = "/v1/instances/%s/push_notifications/gcm/devices/";
+    public static final String PUSH_GCM_DEVICE_URL = "/v1/instances/%s/push_notifications/gcm/devices/%s/";
+    public static final String PUSH_GCM_MESSAGES_URL = "/v1/instances/%s/push_notifications/gcm/messages/";
+    public static final String PUSH_GCM_MESSAGE_URL = "/v1/instances/%s/push_notifications/gcm/messages/%s/";
+
 }
