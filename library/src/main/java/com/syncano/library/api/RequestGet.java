@@ -12,6 +12,7 @@ public abstract class RequestGet<T> extends HttpRequest<T> {
 
     public RequestGet(String url, Syncano syncano) {
         super(url, syncano);
+        addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
     }
 
     @Override

@@ -19,6 +19,7 @@ public class BatchRequest extends HttpRequest<List<BatchAnswer>> {
     protected BatchRequest(String url, Syncano syncano, JsonElement data) {
         super(url, syncano);
         this.data = data;
+        addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
     }
 
     @Override

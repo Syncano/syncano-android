@@ -49,15 +49,11 @@ public class ResponseGetList<T> extends Response<List<T>> {
     }
 
     public RequestGetList<T> getNextPageRequest() {
-        RequestGetList<T> req = new RequestGetList<>(resultType, nextPageUrl, syncano);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetList<>(resultType, nextPageUrl, syncano);
     }
 
     public RequestGetList<T> getPreviousPageRequest() {
-        RequestGetList<T> req = new RequestGetList<>(resultType, previousPageUrl, syncano);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetList<>(resultType, previousPageUrl, syncano);
     }
 
     public ResponseGetList<T> getNextPage() {

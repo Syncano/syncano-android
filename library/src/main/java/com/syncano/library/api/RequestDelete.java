@@ -7,6 +7,8 @@ public class RequestDelete<T> extends ResultRequest<T> {
 
     public RequestDelete(Class<T> responseType, String url, Syncano syncano) {
         super(responseType, url, syncano);
+        addCorrectHttpResponseCode(Response.HTTP_CODE_NOT_FOUND);
+        addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
     }
 
     @Override

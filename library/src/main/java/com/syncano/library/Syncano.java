@@ -30,6 +30,7 @@ import com.syncano.library.simple.RequestBuilder;
 import com.syncano.library.utils.Encryption;
 import com.syncano.library.utils.SyncanoClassHelper;
 import com.syncano.library.utils.UserMemory;
+import com.syncano.library.utils.Validate;
 
 public class Syncano {
 
@@ -299,7 +300,6 @@ public class Syncano {
         String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_LIST_URL, getNotEmptyInstanceName(), className);
         RequestPost<T> req = new RequestPost<>(type, url, this, object);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
         req.updateGivenObject(updateGivenObject);
         return req;
     }
@@ -313,9 +313,7 @@ public class Syncano {
     public <T extends SyncanoObject> RequestGetOne<T> getObject(Class<T> type, int id) {
         String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getNotEmptyInstanceName(), className, id);
-        RequestGetOne<T> req = new RequestGetOne<>(type, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetOne<>(type, url, this);
     }
 
     /**
@@ -324,14 +322,10 @@ public class Syncano {
      * @param object Object to get. Has to have id. Other fields will be updated.
      */
     public <T extends SyncanoObject> RequestGetOne<T> getObject(T object) {
-        if (object.getId() == null) {
-            throw new RuntimeException("Can't fetch object without id");
-        }
+        Validate.checkNotNullAndZero(object.getId(), "Can't fetch object without id");
         String className = SyncanoClassHelper.getSyncanoClassName(object.getClass());
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getNotEmptyInstanceName(), className, object.getId());
-        RequestGetOne<T> req = new RequestGetOne<>(object, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetOne<>(object, url, this);
     }
 
 
@@ -343,9 +337,7 @@ public class Syncano {
      */
     public <T extends SyncanoObject> RequestGetList<T> getViewObjects(Class<T> type, String tableView) {
         String url = String.format(Constants.OBJECTS_VIEW, getNotEmptyInstanceName(), tableView);
-        RequestGetList<T> req = new RequestGetList<>(type, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetList<>(type, url, this);
     }
 
     /**
@@ -357,9 +349,7 @@ public class Syncano {
     public <T extends SyncanoObject> RequestGetList<T> getObjects(Class<T> type) {
         String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_LIST_URL, getNotEmptyInstanceName(), className);
-        RequestGetList<T> req = new RequestGetList<>(type, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetList<>(type, url, this);
     }
 
     /**
@@ -371,9 +361,7 @@ public class Syncano {
      * @param pageUrl page to request
      */
     public <T extends SyncanoObject> RequestGetList<T> getObjects(Class<T> type, String pageUrl) {
-        RequestGetList<T> req = new RequestGetList<>(type, pageUrl, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetList<>(type, pageUrl, this);
     }
 
     /**
@@ -392,14 +380,11 @@ public class Syncano {
      * @param updateGivenObject Should update the passed object. Param updatedAt will be changed for example.
      */
     public <T extends SyncanoObject> RequestPatch<T> updateObject(T object, boolean updateGivenObject) {
-        if (object.getId() == null || object.getId() == 0) {
-            throw new RuntimeException("Trying to update object without id!");
-        }
+        Validate.checkNotNullAndZero(object.getId(), "Trying to update object without id!");
         Class<T> type = (Class<T>) object.getClass();
         String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getNotEmptyInstanceName(), className, object.getId());
         RequestPatch<T> req = new RequestPatch<>(type, url, this, object);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         req.updateGivenObject(updateGivenObject);
         return req;
     }
@@ -415,11 +400,8 @@ public class Syncano {
      * @return Updated DataObject.
      */
     public <T extends SyncanoObject> RequestPatch<T> addition(T object, IncrementBuilder incrementBuilder) {
-        if (object.getId() == null || object.getId() == 0) {
-            throw new RuntimeException("Trying to update object without id!");
-        }
-        Class<T> type = (Class<T>) object.getClass();
-        return addition(type, object.getId(), incrementBuilder);
+        Validate.checkNotNullAndZero(object.getId(), "Can't addition field object without id");
+        return addition((Class<T>) object.getClass(), object.getId(), incrementBuilder);
     }
 
     /**
@@ -435,15 +417,13 @@ public class Syncano {
      */
     public <T extends SyncanoObject> RequestPatch<T> addition(Class<T> type, int id, IncrementBuilder incrementBuilder) {
         if (incrementBuilder.hasAdditionFields()) {
-            throw new RuntimeException("Cannot create increment query without specify fields to increment/decrement!");
+            throw new IllegalArgumentException("Cannot create increment query without specify fields to increment/decrement!");
         }
         String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getNotEmptyInstanceName(), className, id);
         JsonObject additionQuery = new JsonObject();
         incrementBuilder.build(additionQuery);
-        RequestPatch<T> req = new RequestPatch<>(type, url, this, additionQuery);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestPatch<>(type, url, this, additionQuery);
     }
 
     /**
@@ -455,10 +435,7 @@ public class Syncano {
     public <T extends SyncanoObject> RequestDelete<T> deleteObject(Class<T> type, int id) {
         String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getNotEmptyInstanceName(), className, id);
-        RequestDelete<T> req = new RequestDelete<>(type, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NOT_FOUND);
-        return req;
+        return new RequestDelete<>(type, url, this);
     }
 
     /**
@@ -467,9 +444,7 @@ public class Syncano {
      * @param object Object to delete. It has to have id set.
      */
     public <T extends SyncanoObject> RequestDelete<T> deleteObject(T object) {
-        if (object.getId() == null || object.getId() == 0) {
-            throw new RuntimeException("Trying to delete object without id!");
-        }
+        Validate.checkNotNullAndZero(object.getId(), "Can't delete object without id");
         return deleteObject((Class<T>) object.getClass(), object.getId());
     }
 
@@ -481,9 +456,7 @@ public class Syncano {
      */
     public RequestPost<CodeBox> createCodeBox(CodeBox codeBox) {
         String url = String.format(Constants.CODEBOXES_LIST_URL, getNotEmptyInstanceName());
-        RequestPost<CodeBox> req = new RequestPost<>(CodeBox.class, url, this, codeBox);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
-        return req;
+        return new RequestPost<>(CodeBox.class, url, this, codeBox);
     }
 
     /**
@@ -494,9 +467,7 @@ public class Syncano {
      */
     public RequestGetOne<CodeBox> getCodeBox(int id) {
         String url = String.format(Constants.CODEBOXES_DETAIL_URL, getNotEmptyInstanceName(), id);
-        RequestGetOne<CodeBox> req = new RequestGetOne<>(CodeBox.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetOne<>(CodeBox.class, url, this);
     }
 
     /**
@@ -506,9 +477,7 @@ public class Syncano {
      */
     public RequestGetList<CodeBox> getCodeBoxes() {
         String url = String.format(Constants.CODEBOXES_LIST_URL, getNotEmptyInstanceName());
-        RequestGetList<CodeBox> req = new RequestGetList<>(CodeBox.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetList<>(CodeBox.class, url, this);
     }
 
     /**
@@ -518,13 +487,9 @@ public class Syncano {
      * @return Updated CodeBox.
      */
     public RequestPatch<CodeBox> updateCodeBox(CodeBox codeBox) {
-        if (codeBox.getId() == null || codeBox.getId() == 0) {
-            throw new RuntimeException("Trying to update object without id!");
-        }
+        Validate.checkNotNullAndZero(codeBox.getId(), "Trying to update object without id!");
         String url = String.format(Constants.CODEBOXES_DETAIL_URL, getNotEmptyInstanceName(), codeBox.getId());
-        RequestPatch<CodeBox> req = new RequestPatch<>(CodeBox.class, url, this, codeBox);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestPatch<>(CodeBox.class, url, this, codeBox);
     }
 
     /**
@@ -535,10 +500,7 @@ public class Syncano {
      */
     public RequestDelete<CodeBox> deleteCodeBox(int id) {
         String url = String.format(Constants.CODEBOXES_DETAIL_URL, getNotEmptyInstanceName(), id);
-        RequestDelete<CodeBox> req = new RequestDelete<>(CodeBox.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NOT_FOUND);
-        return req;
+        return new RequestDelete<>(CodeBox.class, url, this);
     }
 
     /**
@@ -568,7 +530,6 @@ public class Syncano {
         payload.add(Constants.POST_PARAM_PAYLOAD, params);
         RequestPost<Trace> req = new RequestPost<>(Trace.class, url, this, payload);
         addCodeboxIdAfterCall(req, id);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
     }
 
@@ -594,9 +555,7 @@ public class Syncano {
      * @return Result with link do Trace.
      */
     public RequestPost<Trace> runCodeBox(final CodeBox codeBox, JsonObject params) {
-        if (codeBox.getId() == null) {
-            throw new RuntimeException("Can't run codebox without giving it's id");
-        }
+        Validate.checkNotNullAndZero(codeBox.getId(), "Can't run codebox without giving it's id");
         RequestPost<Trace> req = runCodeBox(codeBox.getId(), params);
         req.setRunAfter(new HttpRequest.RunAfter<Trace>() {
             @Override
@@ -621,7 +580,6 @@ public class Syncano {
         String url = String.format(Constants.TRACE_DETAIL_URL, getNotEmptyInstanceName(), codeboxId, traceId);
         RequestGet<Trace> req = new RequestGetOne<>(Trace.class, url, this);
         addCodeboxIdAfterCall(req, codeboxId);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
     }
 
@@ -632,13 +590,9 @@ public class Syncano {
      * @return Trace, it may be still pending, then try to get trace again.
      */
     public RequestGet<Trace> getTrace(Trace trace) {
-        if (trace.getCodeBoxId() == null) {
-            throw new RuntimeException("Fetching trace result without codebox id. If run from webhook, result is already known.");
-        }
+        Validate.checkNotNullAndZero(trace.getCodeBoxId(), "Fetching trace result without codebox id. If run from webhook, result is already known.");
         String url = String.format(Constants.TRACE_DETAIL_URL, getNotEmptyInstanceName(), trace.getCodeBoxId(), trace.getId());
-        RequestGet<Trace> req = new RequestGetOne<>(trace, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetOne<>(trace, url, this);
     }
 
     private void addCodeboxIdAfterCall(HttpRequest<Trace> req, final int codeboxId) {
@@ -663,7 +617,6 @@ public class Syncano {
         String url = String.format(Constants.WEBHOOKS_LIST_URL, getNotEmptyInstanceName());
         RequestPost<Webhook> req = new RequestPost<>(Webhook.class, url, this, webhook);
         req.updateGivenObject(true);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
         req.setRunAfter(new Request.RunAfter<Webhook>() {
             @Override
             public void run(Response<Webhook> response) {
@@ -681,9 +634,7 @@ public class Syncano {
      */
     public RequestGetOne<Webhook> getWebhook(String name) {
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getNotEmptyInstanceName(), name);
-        RequestGetOne<Webhook> req = new RequestGetOne<>(Webhook.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetOne<>(Webhook.class, url, this);
     }
 
     /**
@@ -693,9 +644,7 @@ public class Syncano {
      */
     public RequestGetList<Webhook> getWebhooks() {
         String url = String.format(Constants.WEBHOOKS_LIST_URL, getNotEmptyInstanceName());
-        RequestGetList<Webhook> req = new RequestGetList<>(Webhook.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetList<>(Webhook.class, url, this);
     }
 
     /**
@@ -705,13 +654,9 @@ public class Syncano {
      * @return Updated Webhook.
      */
     public RequestPatch<Webhook> updateWebhook(Webhook webhook) {
-        if (webhook.getName() == null || webhook.getName().isEmpty()) {
-            throw new RuntimeException("Trying to update Webhook without name!");
-        }
+        Validate.checkNotNullAndNotEmpty(webhook.getName(), "Trying to update Webhook without name!");
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getNotEmptyInstanceName(), webhook.getName());
-        RequestPatch<Webhook> req = new RequestPatch<>(Webhook.class, url, this, webhook);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestPatch<>(Webhook.class, url, this, webhook);
     }
 
     /**
@@ -722,10 +667,7 @@ public class Syncano {
      */
     public RequestDelete<Webhook> deleteWebhook(String name) {
         String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getNotEmptyInstanceName(), name);
-        RequestDelete<Webhook> req = new RequestDelete<>(Webhook.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NOT_FOUND);
-        return req;
+        return new RequestDelete<>(Webhook.class, url, this);
     }
 
     /**
@@ -789,9 +731,7 @@ public class Syncano {
      */
     public <T> RequestPost<T> runWebhookCustomResponse(String name, Class<T> type, JsonObject payload) {
         String url = String.format(Constants.WEBHOOKS_RUN_URL, getNotEmptyInstanceName(), name);
-        RequestPost<T> req = new RequestPost<>(type, url, this, payload);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestPost<>(type, url, this, payload);
     }
 
     /**
@@ -854,9 +794,7 @@ public class Syncano {
      * @return Result of executed Webhook.
      */
     public <T> RequestPost<T> runWebhookCustomResponse(final Webhook webhook, final Class<T> type, JsonObject payload) {
-        if (webhook.getName() == null) {
-            throw new RuntimeException("Can't run webhook without a name.");
-        }
+        Validate.checkNotNullAndNotEmpty(webhook.getName(), "Can't run webhook without a name.");
         RequestPost<T> req = runWebhookCustomResponse(webhook.getName(), type, payload);
         req.setRunAfter(new HttpRequest.RunAfter<T>() {
             @Override
@@ -934,7 +872,6 @@ public class Syncano {
     public <T> RequestPost<T> runWebhookUrlCustomResponse(String url, Class<T> type, JsonObject payload) {
         RequestPost<T> req = new RequestPost<>(type, null, this, payload);
         req.setCompleteCustomUrl(url);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
     }
 
@@ -946,9 +883,7 @@ public class Syncano {
      */
     public RequestPost<SyncanoClass> createSyncanoClass(SyncanoClass clazz) {
         String url = String.format(Constants.CLASSES_LIST_URL, getNotEmptyInstanceName());
-        RequestPost<SyncanoClass> req = new RequestPost<>(SyncanoClass.class, url, this, clazz);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
-        return req;
+        return new RequestPost<>(SyncanoClass.class, url, this, clazz);
     }
 
     /**
@@ -959,9 +894,7 @@ public class Syncano {
      */
     public RequestPost<SyncanoTableView> createTableView(SyncanoTableView clazz) {
         String url = String.format(Constants.OBJECTS_VIEW_CREATE, getNotEmptyInstanceName());
-        RequestPost<SyncanoTableView> req = new RequestPost<>(SyncanoTableView.class, url, this, clazz);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
-        return req;
+        return new RequestPost<>(SyncanoTableView.class, url, this, clazz);
     }
 
     /**
@@ -972,10 +905,7 @@ public class Syncano {
      */
     public RequestDelete<SyncanoTableView> deleteTableView(String name) {
         String url = String.format(Constants.OBJECTS_VIEW_REMOVE, getNotEmptyInstanceName(), name);
-        RequestDelete<SyncanoTableView> req = new RequestDelete<>(SyncanoTableView.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NOT_FOUND);
-        return req;
+        return new RequestDelete<>(SyncanoTableView.class, url, this);
     }
 
     /**
@@ -996,9 +926,7 @@ public class Syncano {
      */
     public RequestGetOne<SyncanoClass> getSyncanoClass(String name) {
         String url = String.format(Constants.CLASSES_DETAIL_URL, getNotEmptyInstanceName(), name);
-        RequestGetOne<SyncanoClass> req = new RequestGetOne<>(SyncanoClass.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetOne<>(SyncanoClass.class, url, this);
     }
 
     /**
@@ -1018,9 +946,7 @@ public class Syncano {
      */
     public RequestGetList<SyncanoClass> getSyncanoClasses() {
         String url = String.format(Constants.CLASSES_LIST_URL, getNotEmptyInstanceName());
-        RequestGetList<SyncanoClass> req = new RequestGetList<>(SyncanoClass.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetList<>(SyncanoClass.class, url, this);
     }
 
     /**
@@ -1040,13 +966,9 @@ public class Syncano {
      * @return Updated Class.
      */
     public RequestPatch<SyncanoClass> updateSyncanoClass(SyncanoClass clazz) {
-        if (clazz.getName() == null || clazz.getName().isEmpty()) {
-            throw new RuntimeException("Trying to update SyncanoClass without giving name!");
-        }
+        Validate.checkNotNullAndNotEmpty(clazz.getName(), "Trying to update SyncanoClass without giving name!");
         String url = String.format(Constants.CLASSES_DETAIL_URL, getNotEmptyInstanceName(), clazz.getName());
-        RequestPatch<SyncanoClass> req = new RequestPatch<>(SyncanoClass.class, url, this, clazz);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestPatch<>(SyncanoClass.class, url, this, clazz);
     }
 
     /**
@@ -1057,10 +979,7 @@ public class Syncano {
      */
     public RequestDelete<SyncanoClass> deleteSyncanoClass(String name) {
         String url = String.format(Constants.CLASSES_DETAIL_URL, getNotEmptyInstanceName(), name);
-        RequestDelete<SyncanoClass> req = new RequestDelete<>(SyncanoClass.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NOT_FOUND);
-        return req;
+        return new RequestDelete<>(SyncanoClass.class, url, this);
     }
 
     /**
@@ -1085,7 +1004,6 @@ public class Syncano {
         String url = String.format(Constants.USERS_LIST_URL, getNotEmptyInstanceName());
         RequestPost<T> req = new RequestPost<>(type, url, this, user);
         saveUserIfSuccess(req);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
         return req;
     }
 
@@ -1107,9 +1025,7 @@ public class Syncano {
      */
     public <T extends AbstractUser> RequestGetOne<T> getUser(Class<T> type, int id) {
         String url = String.format(Constants.USERS_DETAIL_URL, getNotEmptyInstanceName(), id);
-        RequestGetOne<T> req = new RequestGetOne<>(type, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetOne<>(type, url, this);
     }
 
     /**
@@ -1128,9 +1044,7 @@ public class Syncano {
      */
     public <T extends AbstractUser> RequestGetList<T> getUsers(Class<T> type) {
         String url = String.format(Constants.USERS_LIST_URL, getNotEmptyInstanceName());
-        RequestGetList<T> req = new RequestGetList<>(type, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetList<>(type, url, this);
     }
 
     /**
@@ -1150,14 +1064,10 @@ public class Syncano {
      * @return updated user
      */
     public <T extends AbstractUser> RequestPatch<T> updateCustomUser(T user) {
-        if (user.getId() == null || user.getId() == 0) {
-            throw new RuntimeException("Trying to update User without giving id!");
-        }
+        Validate.checkNotNullAndZero(user.getId(), "Trying to update User without giving id!");
         Class<T> type = (Class<T>) user.getClass();
         String url = String.format(Constants.USERS_DETAIL_URL, getNotEmptyInstanceName(), user.getId());
-        RequestPatch<T> req = new RequestPatch<>(type, url, this, user);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestPatch<>(type, url, this, user);
     }
 
     /**
@@ -1178,10 +1088,7 @@ public class Syncano {
      */
     public <T extends AbstractUser> RequestDelete<T> deleteUser(Class<T> type, int id) {
         String url = String.format(Constants.USERS_DETAIL_URL, getNotEmptyInstanceName(), id);
-        RequestDelete<T> req = new RequestDelete<>(type, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NOT_FOUND);
-        return req;
+        return new RequestDelete<>(type, url, this);
     }
 
     /**
@@ -1211,7 +1118,6 @@ public class Syncano {
 
         RequestPost<T> req = new RequestPost<>(type, url, this, jsonParams);
         saveUserIfSuccess(req);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
     }
 
@@ -1241,7 +1147,6 @@ public class Syncano {
 
         RequestPost<T> req = new RequestPost<>(type, url, this, jsonParams);
         saveUserIfSuccess(req);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
     }
 
@@ -1265,9 +1170,7 @@ public class Syncano {
      */
     public RequestPost<Group> createGroup(Group group) {
         String url = String.format(Constants.GROUPS_LIST_URL, getNotEmptyInstanceName());
-        RequestPost<Group> req = new RequestPost<>(Group.class, url, this, group);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
-        return req;
+        return new RequestPost<>(Group.class, url, this, group);
     }
 
     /**
@@ -1278,9 +1181,7 @@ public class Syncano {
      */
     public RequestGetOne<Group> getGroup(int id) {
         String url = String.format(Constants.GROUPS_DETAIL_URL, getNotEmptyInstanceName(), id);
-        RequestGetOne<Group> req = new RequestGetOne<>(Group.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetOne<>(Group.class, url, this);
     }
 
     /**
@@ -1290,9 +1191,7 @@ public class Syncano {
      */
     public RequestGetList<Group> getGroups() {
         String url = String.format(Constants.GROUPS_LIST_URL, getNotEmptyInstanceName());
-        RequestGetList<Group> req = new RequestGetList<>(Group.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetList<>(Group.class, url, this);
     }
 
     /**
@@ -1302,13 +1201,9 @@ public class Syncano {
      * @return updated group
      */
     public RequestPatch<Group> updateGroup(Group group) {
-        if (group.getId() == null || group.getId() == 0) {
-            throw new RuntimeException("Trying to update Group without id!");
-        }
+        Validate.checkNotNullAndZero(group.getId(), "Trying to update Group without id!");
         String url = String.format(Constants.GROUPS_DETAIL_URL, getNotEmptyInstanceName(), group.getId());
-        RequestPatch<Group> req = new RequestPatch<>(Group.class, url, this, group);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestPatch<>(Group.class, url, this, group);
     }
 
     /**
@@ -1319,10 +1214,7 @@ public class Syncano {
      */
     public RequestDelete<Group> deleteGroup(int id) {
         String url = String.format(Constants.GROUPS_DETAIL_URL, getNotEmptyInstanceName(), id);
-        RequestDelete<Group> req = new RequestDelete<>(Group.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NOT_FOUND);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
-        return req;
+        return new RequestDelete<>(Group.class, url, this);
     }
 
     /**
@@ -1334,9 +1226,7 @@ public class Syncano {
      */
     public RequestGetOne<GroupMembership> getGroupMembership(int groupId, int userId) {
         String url = String.format(Constants.GROUPS_USERS_DETAIL_URL, getNotEmptyInstanceName(), groupId, userId);
-        RequestGetOne<GroupMembership> req = new RequestGetOne<>(GroupMembership.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetOne<>(GroupMembership.class, url, this);
     }
 
     /**
@@ -1347,9 +1237,7 @@ public class Syncano {
      */
     public RequestGetList<GroupMembership> getGroupMemberships(int groupId) {
         String url = String.format(Constants.GROUPS_USERS_LIST_URL, getNotEmptyInstanceName(), groupId);
-        RequestGetList<GroupMembership> req = new RequestGetList<>(GroupMembership.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetList<>(GroupMembership.class, url, this);
     }
 
     /**
@@ -1361,13 +1249,9 @@ public class Syncano {
      */
     public RequestPost<GroupMembership> addUserToGroup(int groupId, int userId) {
         String url = String.format(Constants.GROUPS_USERS_LIST_URL, getNotEmptyInstanceName(), groupId);
-
         JsonObject jsonParams = new JsonObject();
         jsonParams.addProperty(Constants.POST_PARAM_USER, userId);
-
-        RequestPost<GroupMembership> req = new RequestPost<>(GroupMembership.class, url, this, jsonParams);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
-        return req;
+        return new RequestPost<>(GroupMembership.class, url, this, jsonParams);
     }
 
     /**
@@ -1379,10 +1263,7 @@ public class Syncano {
      */
     public RequestDelete<GroupMembership> deleteUserFromGroup(int groupId, int userId) {
         String url = String.format(Constants.GROUPS_USERS_DETAIL_URL, getNotEmptyInstanceName(), groupId, userId);
-        RequestDelete<GroupMembership> req = new RequestDelete<>(GroupMembership.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NOT_FOUND);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
-        return req;
+        return new RequestDelete<>(GroupMembership.class, url, this);
     }
 
     /**
@@ -1393,9 +1274,7 @@ public class Syncano {
      */
     public RequestPost<Channel> createChannel(Channel channel) {
         String url = String.format(Constants.CHANNELS_LIST_URL, getNotEmptyInstanceName());
-        RequestPost<Channel> req = new RequestPost<>(Channel.class, url, this, channel);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
-        return req;
+        return new RequestPost<>(Channel.class, url, this, channel);
     }
 
     /**
@@ -1406,9 +1285,7 @@ public class Syncano {
      */
     public RequestGetOne<Channel> getChannel(String channelName) {
         String url = String.format(Constants.CHANNELS_DETAIL_URL, getNotEmptyInstanceName(), channelName);
-        RequestGetOne<Channel> req = new RequestGetOne<>(Channel.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetOne<>(Channel.class, url, this);
     }
 
     /**
@@ -1418,9 +1295,7 @@ public class Syncano {
      */
     public RequestGetList<Channel> getChannels() {
         String url = String.format(Constants.CHANNELS_LIST_URL, getNotEmptyInstanceName());
-        RequestGetList<Channel> req = new RequestGetList<>(Channel.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetList<>(Channel.class, url, this);
     }
 
     /**
@@ -1430,13 +1305,9 @@ public class Syncano {
      * @return Updated Channel.
      */
     public RequestPatch<Channel> updateChannel(Channel channel) {
-        if (channel.getName() == null || channel.getName().isEmpty()) {
-            throw new RuntimeException("Trying to update Channel without name!");
-        }
+        Validate.checkNotNullAndNotEmpty(channel.getName(), "Trying to update Channel without name!");
         String url = String.format(Constants.CHANNELS_DETAIL_URL, getNotEmptyInstanceName(), channel.getName());
-        RequestPatch<Channel> req = new RequestPatch<>(Channel.class, url, this, channel);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestPatch<>(Channel.class, url, this, channel);
     }
 
     /**
@@ -1447,10 +1318,7 @@ public class Syncano {
      */
     public RequestDelete<Channel> deleteChannel(String channelName) {
         String url = String.format(Constants.CHANNELS_DETAIL_URL, getNotEmptyInstanceName(), channelName);
-        RequestDelete<Channel> req = new RequestDelete<>(Channel.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NOT_FOUND);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
-        return req;
+        return new RequestDelete<>(Channel.class, url, this);
     }
 
     /**
@@ -1476,7 +1344,6 @@ public class Syncano {
         if (room != null) {
             req.addUrlParam(Constants.URL_PARAM_ROOM, room);
         }
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
         return req;
     }
 
@@ -1492,9 +1359,7 @@ public class Syncano {
      */
     public RequestPost<Notification> publishOnChannel(String channelName, Notification notification) {
         String url = String.format(Constants.CHANNELS_PUBLISH_URL, getNotEmptyInstanceName(), channelName);
-        RequestPost<Notification> req = new RequestPost<>(Notification.class, url, this, notification);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
-        return req;
+        return new RequestPost<>(Notification.class, url, this, notification);
     }
 
     /**
@@ -1519,8 +1384,6 @@ public class Syncano {
         if (lastId != 0) {
             req.addUrlParam(Constants.URL_PARAM_LAST_ID, String.valueOf(lastId));
         }
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
         return req;
     }
 }
