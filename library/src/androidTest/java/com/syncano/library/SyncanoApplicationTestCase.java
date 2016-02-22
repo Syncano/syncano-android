@@ -17,7 +17,7 @@ import java.util.List;
 
 public class SyncanoApplicationTestCase extends ApplicationTestCase<Application> {
 
-    protected Syncano syncano;
+    protected SyncanoDashboard syncano;
 
     public SyncanoApplicationTestCase() {
         super(Application.class);
@@ -25,7 +25,7 @@ public class SyncanoApplicationTestCase extends ApplicationTestCase<Application>
 
     public void setUp() throws Exception {
         Syncano.init(BuildConfig.STAGING_SERVER_URL, BuildConfig.API_KEY, BuildConfig.INSTANCE_NAME, getContext());
-        syncano = Syncano.getInstance();
+        syncano = new SyncanoDashboard(BuildConfig.STAGING_SERVER_URL, BuildConfig.API_KEY, BuildConfig.INSTANCE_NAME, getContext());
         SyncanoLog.initLogger(new SyncanoLogger() {
             @Override
             public void d(String tag, String message) {
@@ -76,7 +76,7 @@ public class SyncanoApplicationTestCase extends ApplicationTestCase<Application>
         SyncanoLog.release();
     }
 
-    public static void deleteTestUser(Syncano syncano, String userName) {
+    public static void deleteTestUser(SyncanoDashboard syncano, String userName) {
         Response<List<User>> response = syncano.getUsers().send();
 
         if (response.getData() != null && response.getData().size() > 0) {

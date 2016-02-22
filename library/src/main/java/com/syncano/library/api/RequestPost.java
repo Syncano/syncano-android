@@ -8,6 +8,8 @@ public class RequestPost<T> extends SendRequest<T> {
     public RequestPost(Class<T> responseType, String url, Syncano syncano, Object data) {
         super(responseType, url, syncano, data);
         addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
+        addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
+        addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
     }
 
     @Override

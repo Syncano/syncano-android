@@ -21,18 +21,18 @@ import static org.junit.Assert.assertTrue;
 
 public class SyncanoApplicationTestCase {
 
-    protected Syncano syncano;
+    protected SyncanoDashboard syncano;
 
     public SyncanoApplicationTestCase() {
     }
 
-    public static void deleteTestUser(Syncano syncano, String userName) {
-        Response<List<User>> response = syncano.getUsers().send();
+    public static void deleteTestUser(SyncanoDashboard adminDashboard, String userName) {
+        Response<List<User>> response = adminDashboard.getUsers().send();
 
         if (response.getData() != null && response.getData().size() > 0) {
             for (User u : response.getData()) {
                 if (userName.equals(u.getUserName())) {
-                    syncano.deleteUser(u.getId()).send();
+                    adminDashboard.deleteUser(u.getId()).send();
                 }
             }
         }
@@ -41,7 +41,7 @@ public class SyncanoApplicationTestCase {
     public void setUp() throws Exception {
         Security.addProvider(new BouncyCastleProvider());
         Syncano.init(BuildConfig.STAGING_SERVER_URL, BuildConfig.API_KEY, BuildConfig.INSTANCE_NAME);
-        syncano = Syncano.getInstance();
+        syncano = new SyncanoDashboard(BuildConfig.STAGING_SERVER_URL, BuildConfig.API_KEY, BuildConfig.INSTANCE_NAME);
         SyncanoLog.initLogger(new SyncanoLogger() {
             @Override
             public void d(String tag, String message) {

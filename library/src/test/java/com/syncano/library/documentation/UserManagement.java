@@ -69,6 +69,7 @@ public class UserManagement extends SyncanoApplicationTestCase {
         Response<MyUser> responseRegister = newUser.register();
         assertEquals(Response.HTTP_CODE_CREATED, responseRegister.getHttpResultCode());
         MyUser user = responseRegister.getData();
+
         // ---------- Now a user has an extra avatar field in their user profile, which the user can update with an avatar picture
         MyUserProfile profile = user.getProfile();
         profile.avatar = new SyncanoFile(new File(getAssetsDir(), "blue.png"));
@@ -107,7 +108,8 @@ public class UserManagement extends SyncanoApplicationTestCase {
     @Test
     public void testSocialUserAuthentication() {
         String socialNetworkAuthToken = "";
-
+User user = new User();
+        user.loginSocialUser(SocialAuthBackend.GOOGLE_OAUTH2,"");
         // ---------- Social Login
         Response<User> response = syncano.loginSocialUser(SocialAuthBackend.FACEBOOK, socialNetworkAuthToken).send();
 

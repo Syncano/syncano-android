@@ -1,7 +1,7 @@
 package com.syncano.library.documentation;
 
-import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
+import com.syncano.library.SyncanoDashboard;
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
@@ -44,7 +44,7 @@ public class Groups extends SyncanoApplicationTestCase {
         super.tearDown();
     }
 
-    public static void deleteGroup(Syncano syncano, String label) {
+    public static void deleteGroup(SyncanoDashboard syncano, String label) {
         Response<List<Group>> r = syncano.getGroups().send();
         List<Group> groups = r.getData();
         assertNotNull(groups);

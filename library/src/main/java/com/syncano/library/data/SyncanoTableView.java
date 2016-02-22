@@ -1,7 +1,9 @@
 package com.syncano.library.data;
 
 import com.syncano.library.Constants;
+import com.syncano.library.Syncano;
 import com.syncano.library.annotation.SyncanoField;
+import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Where;
 import com.syncano.library.utils.SyncanoClassHelper;
 import com.syncano.library.utils.SyncanoHashSet;
@@ -17,8 +19,11 @@ public class SyncanoTableView {
     public static final String FIELD_EXPAND = Constants.URL_PARAM_EXPAND;
     public static final String FIELD_QUERY = Constants.URL_PARAM_QUERY;
     public static final String FIELD_CLASS_NAME = Constants.OBJECTS_VIEW_PARAM_CLASS;
+    private final Class<? extends SyncanoObject> clazz;
     @SyncanoField(name = FIELD_NAME)
-    private String name;
+    private final String name;
+    @SyncanoField(name = FIELD_CLASS_NAME)
+    private final String syncanoClassName;
     @SyncanoField(name = FIELD_DESCRIPTION)
     private String description;
     @SyncanoField(name = FIELD_ORDER_BY)
@@ -27,22 +32,18 @@ public class SyncanoTableView {
     private int pageSize;
     @SyncanoField(name = FIELD_EXPAND)
     private SyncanoHashSet expandSet = new SyncanoHashSet();
-    @SyncanoField(name = FIELD_CLASS_NAME)
-    private String syncanoClassName;
     @SyncanoField(name = FIELD_QUERY)
     private Map query;
+    private Syncano syncano;
 
     public SyncanoTableView(String name, Class<? extends SyncanoObject> clazz) {
         this.name = name;
+        this.clazz = clazz;
         this.syncanoClassName = SyncanoClassHelper.getSyncanoClassName(clazz);
     }
 
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getDescription() {
@@ -77,8 +78,24 @@ public class SyncanoTableView {
         this.orderBy = orderBy;
     }
 
-
     public void setQuery(Where query) {
         this.query = query.getQueryMap();
     }
+
+    private Syncano getSyncano() {
+        if (syncano == null) {
+            return Syncano.getInstance();
+        }
+        return syncano;
+    }
+
+    public SyncanoTableView on(Syncano syncano) {
+        this.syncano = syncano;
+        return this;
+    }
+
+    public RequestGetList<? extends SyncanoObject> please() {
+        return getSyncano().getViewObjects(clazz, syncanoClassName);
+    }
+
 }

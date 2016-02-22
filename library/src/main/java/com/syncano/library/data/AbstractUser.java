@@ -112,6 +112,10 @@ public abstract class AbstractUser<P extends Profile> {
         return getSyncano().loginSocialUser((Class<T>) getClass(), socialAuthBackend, authToken).send();
     }
 
+    public <T extends AbstractUser> void loginSocialUser(SocialAuthBackend socialAuthBackend, String authToken, SyncanoCallback<T> callback) {
+        getSyncano().loginSocialUser((Class<T>) getClass(), socialAuthBackend, authToken).sendAsync(callback);
+    }
+
     public <T extends AbstractUser> void login(SyncanoCallback<T> callback) {
         getSyncano().loginUser((Class<T>) getClass(), getUserName(), getPassword()).sendAsync(callback);
     }

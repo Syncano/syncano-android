@@ -35,6 +35,7 @@ public class GsonParser {
         gsonBuilder.registerTypeAdapter(SyncanoHashSet.class, new SyncanoHashSetSerializer());
         gsonBuilder.registerTypeAdapter(SyncanoFile.class, new FileDeserializer());
         gsonBuilder.setFieldNamingStrategy(new SyncanoFieldNamingStrategy());
+        gsonBuilder.addSerializationExclusionStrategy(new SyncanoExclusionStrategy(config.serializeReadOnlyFields));
         gsonBuilder.registerTypeHierarchyAdapter(SyncanoObject.class, new SyncanoObjectDeserializer(object));
         gsonBuilder.registerTypeHierarchyAdapter(SyncanoObject.class, new SyncanoObjectSerializer(config.serializeReadOnlyFields));
         if (object != null && !(object instanceof SyncanoObject)) {
