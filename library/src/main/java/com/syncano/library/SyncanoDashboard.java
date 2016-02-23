@@ -12,9 +12,9 @@ import com.syncano.library.api.RequestPost;
 import com.syncano.library.api.Response;
 import com.syncano.library.data.AbstractUser;
 import com.syncano.library.data.Channel;
+import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Group;
 import com.syncano.library.data.GroupMembership;
-import com.syncano.library.data.Notification;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.SyncanoTableView;
@@ -46,6 +46,61 @@ public class SyncanoDashboard extends Syncano {
 
     public SyncanoDashboard(String customServerUrl, String apiKey, String instanceName, Context androidContext) {
         super(customServerUrl, apiKey, instanceName, androidContext);
+    }
+
+    /**
+     * Create a CodeBox.
+     *
+     * @param codeBox CodeBox to create.
+     * @return New CodeBox.
+     */
+    public RequestPost<CodeBox> createCodeBox(CodeBox codeBox) {
+        String url = String.format(Constants.CODEBOXES_LIST_URL, getNotEmptyInstanceName());
+        return new RequestPost<>(CodeBox.class, url, this, codeBox);
+    }
+
+    /**
+     * Get details of previously created CodeBox.
+     *
+     * @param id CodeBox id.
+     * @return Existing CodeBox.
+     */
+    public RequestGetOne<CodeBox> getCodeBox(int id) {
+        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getNotEmptyInstanceName(), id);
+        return new RequestGetOne<>(CodeBox.class, url, this);
+    }
+
+    /**
+     * Get a list of previously created CodeBoxes.
+     *
+     * @return List of existing CodeBoxes.
+     */
+    public RequestGetList<CodeBox> getCodeBoxes() {
+        String url = String.format(Constants.CODEBOXES_LIST_URL, getNotEmptyInstanceName());
+        return new RequestGetList<>(CodeBox.class, url, this);
+    }
+
+    /**
+     * Update a CodeBox.
+     *
+     * @param codeBox CodeBox to update. It has to have id.
+     * @return Updated CodeBox.
+     */
+    public RequestPatch<CodeBox> updateCodeBox(CodeBox codeBox) {
+        Validate.checkNotNullAndZero(codeBox.getId(), "Trying to update object without id!");
+        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getNotEmptyInstanceName(), codeBox.getId());
+        return new RequestPatch<>(CodeBox.class, url, this, codeBox);
+    }
+
+    /**
+     * Delete previously created CodeBox.
+     *
+     * @param id CodeBox id.
+     * @return Deleted CodeBox
+     */
+    public RequestDelete<CodeBox> deleteCodeBox(int id) {
+        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getNotEmptyInstanceName(), id);
+        return new RequestDelete<>(CodeBox.class, url, this);
     }
 
     /**
@@ -413,31 +468,6 @@ public class SyncanoDashboard extends Syncano {
         return new RequestDelete<>(Channel.class, url, this);
     }
 
-    /**
-     * Get a list of Notifications.
-     *
-     * @param channelName Channel id.
-     * @return Notification list.
-     */
-    public RequestGetList<Notification> getChannelsHistory(String channelName) {
-        return getChannelsHistory(channelName, null);
-    }
-
-    /**
-     * Get a list of Notifications.
-     *
-     * @param channelName Channel id.
-     * @param room        Room to get history of. Might be null.
-     * @return Notification list.
-     */
-    public RequestGetList<Notification> getChannelsHistory(String channelName, String room) {
-        String url = String.format(Constants.CHANNELS_HISTORY_URL, getNotEmptyInstanceName(), channelName);
-        RequestGetList<Notification> req = new RequestGetList<>(Notification.class, url, this);
-        if (room != null) {
-            req.addUrlParam(Constants.URL_PARAM_ROOM, room);
-        }
-        return req;
-    }
 
     /**
      * Get a list of previously created Users.

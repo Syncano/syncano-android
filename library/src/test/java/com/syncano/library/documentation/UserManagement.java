@@ -82,7 +82,8 @@ public class UserManagement extends SyncanoApplicationTestCase {
     @Test
     public void testUserAuthentication() {
         // ---------- User authentication
-        Response<User> response = syncano.loginUser(userName, password).send();
+        User plainUser = new User(userName, password);
+        Response<User> response = plainUser.login();
         // All next requests will be used using apiKey and userKey.
         // -----------------------------
 
@@ -108,15 +109,13 @@ public class UserManagement extends SyncanoApplicationTestCase {
     @Test
     public void testSocialUserAuthentication() {
         String socialNetworkAuthToken = "";
-User user = new User();
-        user.loginSocialUser(SocialAuthBackend.GOOGLE_OAUTH2,"");
         // ---------- Social Login
         Response<User> response = syncano.loginSocialUser(SocialAuthBackend.FACEBOOK, socialNetworkAuthToken).send();
 
         // -----------------------------
     }
 
-     private static class MyUserProfile extends Profile {
+    private static class MyUserProfile extends Profile {
         @SyncanoField(name = "avatar")
         public SyncanoFile avatar;
     }

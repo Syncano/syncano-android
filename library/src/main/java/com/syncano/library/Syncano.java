@@ -443,61 +443,6 @@ public class Syncano {
     }
 
     /**
-     * Create a CodeBox.
-     *
-     * @param codeBox CodeBox to create.
-     * @return New CodeBox.
-     */
-    public RequestPost<CodeBox> createCodeBox(CodeBox codeBox) {
-        String url = String.format(Constants.CODEBOXES_LIST_URL, getNotEmptyInstanceName());
-        return new RequestPost<>(CodeBox.class, url, this, codeBox);
-    }
-
-    /**
-     * Get details of previously created CodeBox.
-     *
-     * @param id CodeBox id.
-     * @return Existing CodeBox.
-     */
-    public RequestGetOne<CodeBox> getCodeBox(int id) {
-        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getNotEmptyInstanceName(), id);
-        return new RequestGetOne<>(CodeBox.class, url, this);
-    }
-
-    /**
-     * Get a list of previously created CodeBoxes.
-     *
-     * @return List of existing CodeBoxes.
-     */
-    public RequestGetList<CodeBox> getCodeBoxes() {
-        String url = String.format(Constants.CODEBOXES_LIST_URL, getNotEmptyInstanceName());
-        return new RequestGetList<>(CodeBox.class, url, this);
-    }
-
-    /**
-     * Update a CodeBox.
-     *
-     * @param codeBox CodeBox to update. It has to have id.
-     * @return Updated CodeBox.
-     */
-    public RequestPatch<CodeBox> updateCodeBox(CodeBox codeBox) {
-        Validate.checkNotNullAndZero(codeBox.getId(), "Trying to update object without id!");
-        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getNotEmptyInstanceName(), codeBox.getId());
-        return new RequestPatch<>(CodeBox.class, url, this, codeBox);
-    }
-
-    /**
-     * Delete previously created CodeBox.
-     *
-     * @param id CodeBox id.
-     * @return Deleted CodeBox
-     */
-    public RequestDelete<CodeBox> deleteCodeBox(int id) {
-        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getNotEmptyInstanceName(), id);
-        return new RequestDelete<>(CodeBox.class, url, this);
-    }
-
-    /**
      * Run CodeBox asynchronously. Result of this request is not a result of the CodeBox.
      * Result will be stored in associated Trace. You need to call Trace.fetch() to check current
      * status of execution.
@@ -819,6 +764,7 @@ public class Syncano {
         Class<T> type = (Class<T>) user.getClass();
         String url = String.format(Constants.USERS_LIST_URL, getNotEmptyInstanceName());
         RequestPost<T> req = new RequestPost<>(type, url, this, user);
+        req.updateGivenObject(true);
         saveUserIfSuccess(req);
         return req;
     }
@@ -898,6 +844,24 @@ public class Syncano {
         return req;
     }
 
+
+    /**
+     * Authenticate a User.
+     * Password property will be cleared, instead of this you get token in userKey field
+     *
+     * @return user
+     */
+    public <T extends AbstractUser> RequestPost<T> loginUser(T user) {
+        Validate.checkNotNullAndNotEmpty(user.getUserName(), "Username cannot be empty.");
+        Validate.checkNotNullAndNotEmpty(user.getPassword(), "Password cannot be empty.");
+        String url = String.format(Constants.USER_AUTH, getNotEmptyInstanceName());
+        RequestPost<T> req = new RequestPost<>((Class<T>) user.getClass(), url, this, user);
+        req.updateGivenObject(true);
+        saveUserIfSuccess(req);
+        return req;
+    }
+
+
     /**
      * Authenticate a social user.
      *
@@ -926,6 +890,22 @@ public class Syncano {
         saveUserIfSuccess(req);
         return req;
     }
+
+    /**
+     * Authenticate a social user.
+     *
+     * @return user
+     */
+    public <T extends AbstractUser> RequestPost<T> loginSocialUser(T user) {
+        Validate.checkNotNullAndNotEmpty(user.getAuthToken(), "Auth token cannot be empty.");
+        Validate.checkNotNull(user.getSocialAuthBackend(), "You should specify social type backend.");
+        String url = String.format(Constants.USER_SOCIAL_AUTH, getNotEmptyInstanceName(), user.getSocialAuthBackend().toString());
+        RequestPost<T> req = new RequestPost<>((Class<T>) user.getClass(), url, this, user);
+        req.updateGivenObject(true);
+        saveUserIfSuccess(req);
+        return req;
+    }
+
 
     private <T extends AbstractUser> void saveUserIfSuccess(HttpRequest<T> request) {
         request.setRunAfter(new HttpRequest.RunAfter<T>() {
@@ -979,4 +959,31 @@ public class Syncano {
         }
         return req;
     }
+
+    /**
+     * Get a list of Notifications.
+     *
+     * @param channelName Channel id.
+     * @return Notification list.
+     */
+    public RequestGetList<Notification> getChannelsHistory(String channelName) {
+        return getChannelsHistory(channelName, null);
+    }
+
+    /**
+     * Get a list of Notifications.
+     *
+     * @param channelName Channel id.
+     * @param room        Room to get history of. Might be null.
+     * @return Notification list.
+     */
+    public RequestGetList<Notification> getChannelsHistory(String channelName, String room) {
+        String url = String.format(Constants.CHANNELS_HISTORY_URL, getNotEmptyInstanceName(), channelName);
+        RequestGetList<Notification> req = new RequestGetList<>(Notification.class, url, this);
+        if (room != null) {
+            req.addUrlParam(Constants.URL_PARAM_ROOM, room);
+        }
+        return req;
+    }
+
 }

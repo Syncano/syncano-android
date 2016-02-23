@@ -18,6 +18,7 @@ public abstract class AbstractUser<P extends Profile> {
     public static final String FIELD_PASSWORD = "password";
     public static final String FIELD_USER_KEY = "user_key";
     public static final String FIELD_PROFILE = "profile";
+    public final static String FIELD_ACCESS_TOKEN = "access_token";
 
     private Syncano syncano;
 
@@ -36,12 +37,22 @@ public abstract class AbstractUser<P extends Profile> {
     @SyncanoField(name = FIELD_PROFILE, readOnly = true)
     private P profile;
 
+    @SyncanoField(name = FIELD_ACCESS_TOKEN, readOnly = true)
+    private String authToken;
+
+    private SocialAuthBackend socialAuthBackend;
+
     public AbstractUser() {
     }
 
     public AbstractUser(String userName, String password) {
         this.userName = userName;
         this.password = password;
+    }
+
+    public AbstractUser(SocialAuthBackend socialAuthBackend, String authToken) {
+        this.socialAuthBackend = socialAuthBackend;
+        this.authToken = authToken;
     }
 
     public Integer getId() {
@@ -96,6 +107,14 @@ public abstract class AbstractUser<P extends Profile> {
         return (T) this;
     }
 
+    public Response<P> fetchProfile() {
+        return getProfile().fetch();
+    }
+
+    public void fetchProfile(SyncanoCallback<P> syncanoCallback) {
+        getProfile().fetch(syncanoCallback);
+    }
+
     public <T extends AbstractUser> Response<T> register() {
         return getSyncano().registerUser((T) this).send();
     }
@@ -105,18 +124,34 @@ public abstract class AbstractUser<P extends Profile> {
     }
 
     public <T extends AbstractUser> Response<T> login() {
-        return getSyncano().loginUser((Class<T>) getClass(), getUserName(), getPassword()).send();
+        return getSyncano().loginUser((T) this).send();
     }
 
-    public <T extends AbstractUser> Response<T> loginSocialUser(SocialAuthBackend socialAuthBackend, String authToken) {
-        return getSyncano().loginSocialUser((Class<T>) getClass(), socialAuthBackend, authToken).send();
+    public <T extends AbstractUser> Response<T> loginSocialUser() {
+        return getSyncano().loginSocialUser((T) this).send();
     }
 
-    public <T extends AbstractUser> void loginSocialUser(SocialAuthBackend socialAuthBackend, String authToken, SyncanoCallback<T> callback) {
-        getSyncano().loginSocialUser((Class<T>) getClass(), socialAuthBackend, authToken).sendAsync(callback);
+    public <T extends AbstractUser> void loginSocialUser(SyncanoCallback<T> callback) {
+        getSyncano().loginSocialUser((T) this).sendAsync(callback);
     }
 
     public <T extends AbstractUser> void login(SyncanoCallback<T> callback) {
-        getSyncano().loginUser((Class<T>) getClass(), getUserName(), getPassword()).sendAsync(callback);
+        getSyncano().loginUser((T) this).sendAsync(callback);
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
+    }
+
+    public SocialAuthBackend getSocialAuthBackend() {
+        return socialAuthBackend;
+    }
+
+    public void setSocialAuthBackend(SocialAuthBackend socialAuthBackend) {
+        this.socialAuthBackend = socialAuthBackend;
     }
 }
