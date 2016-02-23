@@ -27,9 +27,9 @@ class SyncanoObjectSerializer implements JsonSerializer<SyncanoObject> {
         Collection<Field> fields = SyncanoClassHelper.findAllSyncanoFields(localObject.getClass());
         for (Field field : fields) {
             field.setAccessible(true);
-            if (shouldSkipField(field))
-                continue;
             try {
+                if (shouldSkipField(field, localObject))
+                    continue;
                 String keyName = SyncanoClassHelper.getFieldName(field);
                 JsonElement jsonElement = toJsonObject(localObject, field, jsc);
                 jsonObject.add(keyName, jsonElement);
@@ -40,14 +40,15 @@ class SyncanoObjectSerializer implements JsonSerializer<SyncanoObject> {
         return jsonObject;
     }
 
-    private boolean shouldSkipField(Field f) {
+    private boolean shouldSkipField(Field f, SyncanoObject localObject) throws IllegalAccessException {
         SyncanoField syncanoField = f.getAnnotation(SyncanoField.class);
         // Don't serialize read only fields (like "id" or "created_at").
         // We want only to receive it, not send.
         // SyncanoFile is handled in SendRequest
         if (syncanoField == null ||
                 (!serializeReadOnlyFields && syncanoField.readOnly() && !syncanoField.required()) ||
-                f.getDeclaringClass().isAssignableFrom(SyncanoFile.class)) {
+                f.getDeclaringClass().isAssignableFrom(SyncanoFile.class) ||
+                f.get(localObject) == null) {
             return true;
         }
 

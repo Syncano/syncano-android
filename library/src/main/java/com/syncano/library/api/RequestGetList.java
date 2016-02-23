@@ -1,11 +1,13 @@
 package com.syncano.library.api;
 
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.syncano.library.Constants;
 import com.syncano.library.Syncano;
 import com.syncano.library.choice.SortOrder;
 import com.syncano.library.data.PageInternal;
+import com.syncano.library.parser.GsonParser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +19,12 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
     private String orderBy;
     private Integer pageSize;
     private boolean estimateCount;
+    private Gson gson;
 
     public RequestGetList(Class<T> resultType, String url, Syncano syncano) {
         super(url, syncano);
         this.resultType = resultType;
+        gson = GsonParser.createGson(resultType);
     }
 
     @Override

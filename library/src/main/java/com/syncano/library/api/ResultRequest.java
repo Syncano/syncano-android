@@ -1,6 +1,7 @@
 package com.syncano.library.api;
 
 import com.syncano.library.Syncano;
+import com.syncano.library.parser.GsonParser;
 
 public abstract class ResultRequest<T> extends HttpRequest<T> {
 
@@ -16,6 +17,6 @@ public abstract class ResultRequest<T> extends HttpRequest<T> {
         if (resultType.equals(String.class)) {
             return (T) json;
         }
-        return gson.fromJson(json, resultType);
+        return GsonParser.createGson(resultType, null).fromJson(json, resultType);
     }
 }

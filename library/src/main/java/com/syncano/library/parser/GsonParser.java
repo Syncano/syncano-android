@@ -13,19 +13,46 @@ import java.util.Date;
 
 public class GsonParser {
 
-    public static Gson createGson() {
-        return createGson(new GsonParseConfig());
-    }
-
-    public static Gson createGson(GsonParseConfig config) {
-        return createGson(null, config);
-    }
-
     public static <T> Gson createGson(T object) {
-        return createGson(object, new GsonParseConfig());
+        return createGson(object, null);
     }
 
     public static <T> Gson createGson(final T object, GsonParseConfig config) {
+        if (config == null) config = new GsonParseConfig();
+        if (object instanceof SyncanoObject) {
+            return createSyncanoObjectGsonBuilder(object, config).create();
+        }
+        GsonBuilder gsonBuilder = getDefaultGsonBuilder(config);
+        gsonBuilder.registerTypeAdapter(object.getClass(), new InstanceCreator<T>() {
+            @Override
+            public T createInstance(Type type) {
+                return object;
+            }
+        });
+        return gsonBuilder.create();
+    }
+
+    public static Gson createGson(Class objectType) {
+        return createGson(objectType, null);
+    }
+
+    public static Gson createGson(Class objectType, GsonParseConfig config) {
+        if (config == null) config = new GsonParseConfig();
+        if (SyncanoObject.class.isAssignableFrom(objectType)) {
+            return createSyncanoObjectGsonBuilder(null, config).create();
+        }
+        return getDefaultGsonBuilder(config).create();
+    }
+
+    private static <T> GsonBuilder createSyncanoObjectGsonBuilder(T object, GsonParseConfig config) {
+        GsonBuilder gsonBuilder = getDefaultGsonBuilder(config);
+        gsonBuilder.registerTypeHierarchyAdapter(SyncanoObject.class, new SyncanoObjectDeserializer(object));
+        gsonBuilder.registerTypeHierarchyAdapter(SyncanoObject.class, new SyncanoObjectSerializer(config.serializeReadOnlyFields));
+        gsonBuilder.serializeNulls();
+        return gsonBuilder;
+    }
+
+    private static <T> GsonBuilder getDefaultGsonBuilder(GsonParseConfig config) {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(NanosDate.class, new DateSerializer());
         gsonBuilder.registerTypeAdapter(NanosDate.class, new DateDeserializer());
@@ -35,19 +62,9 @@ public class GsonParser {
         gsonBuilder.registerTypeAdapter(SyncanoHashSet.class, new SyncanoHashSetSerializer());
         gsonBuilder.registerTypeAdapter(SyncanoFile.class, new FileDeserializer());
         gsonBuilder.setFieldNamingStrategy(new SyncanoFieldNamingStrategy());
-        gsonBuilder.addSerializationExclusionStrategy(new SyncanoExclusionStrategy(config.serializeReadOnlyFields));
-        gsonBuilder.registerTypeHierarchyAdapter(SyncanoObject.class, new SyncanoObjectDeserializer(object));
-        gsonBuilder.registerTypeHierarchyAdapter(SyncanoObject.class, new SyncanoObjectSerializer(config.serializeReadOnlyFields));
-        if (object != null && !(object instanceof SyncanoObject)) {
-            gsonBuilder.registerTypeAdapter(object.getClass(), new InstanceCreator<T>() {
-                @Override
-                public T createInstance(Type type) {
-                    return object;
-                }
-            });
-
-        }
-        return gsonBuilder.create();
+        gsonBuilder.addSerializationExclusionStrategy(
+                new SyncanoExclusionStrategy(config.serializeReadOnlyFields));
+        return gsonBuilder;
     }
 
     public static class GsonParseConfig {

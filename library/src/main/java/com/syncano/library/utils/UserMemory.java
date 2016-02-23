@@ -41,9 +41,9 @@ public class UserMemory {
         if (userJson == null || className == null) {
             return null;
         }
-        Gson gson = GsonParser.createGson();
         try {
-            return (AbstractUser) gson.fromJson(userJson, Class.forName(className));
+            Class type = Class.forName(className);
+            return (AbstractUser) GsonParser.createGson(type).fromJson(userJson, type);
         } catch (Exception e) {
             SyncanoLog.w(Syncano.class.getSimpleName(), e.getMessage());
         }

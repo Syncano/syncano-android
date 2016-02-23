@@ -1,9 +1,7 @@
 package com.syncano.library.api;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.syncano.library.Syncano;
-import com.syncano.library.parser.GsonParser;
 import com.syncano.library.utils.SyncanoHttpClient;
 
 import org.apache.http.HttpEntity;
@@ -18,7 +16,6 @@ import java.util.List;
 
 public abstract class HttpRequest<T> extends Request<T> {
 
-    protected Gson gson;
     private List<NameValuePair> urlParams = new ArrayList<>();
     private List<NameValuePair> httpHeaders = new ArrayList<>();
     private String url;
@@ -31,7 +28,6 @@ public abstract class HttpRequest<T> extends Request<T> {
         super(syncano);
         this.path = path;
         this.url = syncano.getUrl();
-        gson = GsonParser.createGson();
         if (syncano.getApiKey() != null && !syncano.getApiKey().isEmpty()) {
             setHttpHeader("X-API-KEY", syncano.getApiKey());
         }

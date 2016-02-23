@@ -1,5 +1,6 @@
 package com.syncano.library.api;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.syncano.library.Syncano;
@@ -35,6 +36,7 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
     private final static String lineEnd = "\r\n";
     private Object data;
     private boolean updateGivenData = false;
+    private Gson gson;
 
     protected SendRequest(Class<T> resultType, String url, Syncano syncano, Object data) {
         super(resultType, url, syncano);
@@ -46,7 +48,7 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
         if (data == null) {
             return null;
         }
-
+        gson = GsonParser.createGson(data);
         if (!(data instanceof SyncanoObject)) {
             return prepareStringEntity();
         }

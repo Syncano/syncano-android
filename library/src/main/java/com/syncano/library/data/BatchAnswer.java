@@ -17,7 +17,7 @@ public class BatchAnswer {
         if (content == null) {
             return null;
         }
-        return GsonParser.createGson().fromJson(content, type);
+        return GsonParser.createGson(type).fromJson(content, type);
     }
 
     public int getHttpResultCode() {
