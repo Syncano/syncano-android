@@ -21,6 +21,8 @@ android {
         buildConfigField "String", "API_KEY_USERS", api_key_users
         buildConfigField "String", "FACEBOOK_TOKEN", facebook_token
         buildConfigField "String", "GOOGLE_TOKEN", google_token
+        buildConfigField "String", "LINKEDIN_TOKEN", linkedin_token
+        buildConfigField "String", "TWITTER_TOKEN", twitter_token
     }
 
     buildTypes {

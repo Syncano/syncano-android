@@ -37,7 +37,7 @@ public abstract class AbstractUser<P extends Profile> {
     @SyncanoField(name = FIELD_PROFILE, readOnly = true)
     private P profile;
 
-    @SyncanoField(name = FIELD_ACCESS_TOKEN, readOnly = true)
+    @SyncanoField(name = FIELD_ACCESS_TOKEN, required = true)
     private String authToken;
 
     private SocialAuthBackend socialAuthBackend;

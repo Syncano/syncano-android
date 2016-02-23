@@ -1,5 +1,7 @@
 package com.syncano.library.data;
 
+import com.syncano.library.choice.SocialAuthBackend;
+
 /**
  * Default User class.
  * It's profile class contains default DataObject fields.
@@ -12,5 +14,9 @@ public class User extends AbstractUser<Profile> {
 
     public User(String userName, String password) {
         super(userName, password);
+    }
+
+    public User(SocialAuthBackend socialAuthBackend, String authToken) {
+        super(socialAuthBackend, authToken);
     }
 }

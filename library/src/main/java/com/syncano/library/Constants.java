@@ -31,6 +31,8 @@ public class Constants {
 
     public static final String SOCIAL_AUTH_FACEBOOK = "facebook";
     public static final String SOCIAL_AUTH_GOOGLE_OAUTH2 = "google-oauth2";
+    public static final String SOCIAL_AUTH_LINKEDIN = "linkedin";
+    public static final String SOCIAL_AUTH_TWITTER = "twitter";
 
     // ==================== Classes ==================== //
     public static final String FIELD_TYPE = "type";
