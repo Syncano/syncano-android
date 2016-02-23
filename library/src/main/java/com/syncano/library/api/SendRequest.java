@@ -41,6 +41,11 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
     protected SendRequest(Class<T> resultType, String url, Syncano syncano, Object data) {
         super(resultType, url, syncano);
         this.data = data;
+        if (data != null) {
+            gson = GsonParser.createGson(data);
+        } else {
+            gson = GsonParser.createGson(resultType);
+        }
     }
 
     @Override
@@ -48,7 +53,6 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
         if (data == null) {
             return null;
         }
-        gson = GsonParser.createGson(data);
         if (!(data instanceof SyncanoObject)) {
             return prepareStringEntity();
         }
