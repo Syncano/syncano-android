@@ -134,10 +134,12 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
     }
 
     private String getJsonElementAsString(JsonElement jsonElement) {
+        if (jsonElement.isJsonNull())
+            return "";
         if (jsonElement.isJsonPrimitive())
             return jsonElement.getAsString();
-        else
-            return jsonElement.toString();
+
+        return jsonElement.toString();
     }
 
     private InputStream getItemStartInputStream(String name, String filename) throws IOException {

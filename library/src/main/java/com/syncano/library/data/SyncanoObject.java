@@ -8,6 +8,8 @@ import com.syncano.library.api.Response;
 import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.choice.DataObjectPermissions;
 
+import java.util.HashSet;
+
 public abstract class SyncanoObject extends Entity {
 
     public static final String FIELD_REVISION = "revision";
@@ -49,6 +51,7 @@ public abstract class SyncanoObject extends Entity {
 
     private Syncano syncano;
     private IncrementBuilder incrementBuilder = new IncrementBuilder();
+    private HashSet<String> fieldsToClear = new HashSet<>();
 
     public String getChannelRoom() {
         return channelRoom;
@@ -120,6 +123,18 @@ public abstract class SyncanoObject extends Entity {
 
     public void setExpectedRevision(int expectedRevision) {
         this.expectedRevision = expectedRevision;
+    }
+
+    public void clearField(String fieldName) {
+        fieldsToClear.add(fieldName);
+    }
+
+    public void removeFromClearList(String fieldName) {
+        fieldsToClear.remove(fieldName);
+    }
+
+    public boolean isOnClearList(String fieldName) {
+        return fieldsToClear.contains(fieldName);
     }
 
     public IncrementBuilder getIncrementBuilder() {

@@ -28,9 +28,13 @@ class SyncanoObjectSerializer implements JsonSerializer<SyncanoObject> {
         for (Field field : fields) {
             field.setAccessible(true);
             try {
+                String keyName = SyncanoClassHelper.getFieldName(field);
+                if (localObject.isOnClearList(keyName)) {
+                    jsonObject.add(keyName, jsc.serialize(null));
+                    continue;
+                }
                 if (shouldSkipField(field, localObject))
                     continue;
-                String keyName = SyncanoClassHelper.getFieldName(field);
                 JsonElement jsonElement = toJsonObject(localObject, field, jsc);
                 jsonObject.add(keyName, jsonElement);
             } catch (IllegalAccessException e) {

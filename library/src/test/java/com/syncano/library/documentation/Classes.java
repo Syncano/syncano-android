@@ -67,7 +67,7 @@ public class Classes extends SyncanoApplicationTestCase {
         assertTrue(authorSave.isSuccess());
         Response bookSaveResponse = book.save();
         assertTrue(bookSaveResponse.isSuccess());
-        book.author = null;
+        book.clearField(Book.FIELD_AUTHOR);
         Response bookRemoveReferenceResponse = book.save();
         assertTrue(bookRemoveReferenceResponse.isSuccess());
         Response bookFetchResponse = book.fetch();
