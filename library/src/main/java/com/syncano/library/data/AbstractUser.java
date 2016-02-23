@@ -115,6 +115,14 @@ public abstract class AbstractUser<P extends Profile> {
         getProfile().fetch(syncanoCallback);
     }
 
+    public <T extends AbstractUser> Response<T> fetch() {
+        return getSyncano().fetchCurrentUser((T) this).send();
+    }
+
+    public <T extends AbstractUser> void fetch(SyncanoCallback<T> syncanoCallback) {
+        getSyncano().fetchCurrentUser((T) this).sendAsync(syncanoCallback);
+    }
+
     public <T extends AbstractUser> Response<T> register() {
         return getSyncano().registerUser((T) this).send();
     }

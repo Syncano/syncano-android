@@ -790,6 +790,28 @@ public class Syncano {
         return new RequestGetOne<>(type, url, this);
     }
 
+    /**
+     * Get details of application User.
+     *
+     * @param user user instance
+     * @return requested user
+     */
+    public <T extends AbstractUser> RequestGetOne<T> fetchCurrentUser(T user) {
+        Validate.checkNotNullAndNotEmpty(getUserKey(), "Can't fetch user without login him first.");
+        String url = String.format(Constants.USER_DETAILS, getNotEmptyInstanceName());
+        return new RequestGetOne<>(user, url, this);
+    }
+
+    /**
+     * Get details of previously created User.
+     *
+     * @return requested user
+     */
+    public <T extends AbstractUser> RequestGetOne<T> fetchCurrentUser(Class<T> type) {
+        Validate.checkNotNullAndNotEmpty(getUserKey(), "Can't fetch user without login him first.");
+        String url = String.format(Constants.USER_DETAILS, getNotEmptyInstanceName());
+        return new RequestGetOne<>(type, url, this);
+    }
 
     /**
      * Update a User.

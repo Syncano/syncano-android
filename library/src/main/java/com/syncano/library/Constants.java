@@ -77,6 +77,8 @@ public class Constants {
     public static final String USERS_DETAIL_URL = "/v1/instances/%s/users/%d/";
     public static final String USER_AUTH = "/v1/instances/%s/user/auth/";
     public static final String USER_SOCIAL_AUTH = "/v1/instances/%s/user/auth/%s/";
+    public static final String USER_DETAILS = "/v1/instances/%s/user/";
+
 
     // ==================== Groups ==================== //
     public static final String GROUPS_LIST_URL = "/v1/instances/%s/groups/";

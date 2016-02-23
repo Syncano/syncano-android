@@ -1,6 +1,7 @@
 package com.syncano.library.documentation;
 
 import com.syncano.library.BuildConfig;
+import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
@@ -83,27 +84,33 @@ public class UserManagement extends SyncanoApplicationTestCase {
 
     @Test
     public void testUserAuthentication() {
+        //syncano instance with acl enabled
+        Syncano userSyncano = new Syncano(BuildConfig.STAGING_SERVER_URL, BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME);
         // ---------- User authentication
         User plainUser = new User(userName, password);
-        Response<User> response = plainUser.login();
+
+        Response<User> response = plainUser.on(userSyncano).login();
         // All next requests will be used using apiKey and userKey.
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
         User user = response.getData();
         assertNotNull(user);
-
-
         // ---------- Acting as a user
 
         // Don't have to do it if used login method on this Syncano object
-        syncano.setUser(user);
+        userSyncano.setUser(user);
+        Response<User> fetchUserResponse = user.on(userSyncano).fetch();
+        assertTrue(fetchUserResponse.isSuccess());
+        Response<Profile> fetchUserProfile = user.on(userSyncano).fetchProfile();
+        assertTrue(fetchUserProfile.isSuccess());
+
 
         // -----------------------------
 
 
         // ---------- How to reset the User Key
-        syncano.setUser(null);
+        userSyncano.setUser(null);
 
         // -----------------------------
     }
