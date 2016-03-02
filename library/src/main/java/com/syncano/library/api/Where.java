@@ -5,6 +5,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.choice.Case;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.simple.RequestBuilder;
@@ -12,6 +13,7 @@ import com.syncano.library.utils.DateTool;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Where<T extends SyncanoObject> {
@@ -45,11 +47,51 @@ public class Where<T extends SyncanoObject> {
         this.please = please;
     }
 
+    /**
+     * Does a requests for a list of objects.
+     *
+     * @return response with a requested list
+     */
     public ResponseGetList<T> get() {
         if (please == null) {
             throw new RuntimeException("Can be called only from SyncanoObject.please(class).where().get()");
         }
         return please.get();
+    }
+
+    /**
+     * You can get limited amount of objects in one request. This method gets objects until all are
+     * downloaded. Use carefully. Will work very bad for more than a few hundreds of objects .
+     */
+    public ResponseGetList<T> getAll() {
+        if (please == null) {
+            throw new RuntimeException("Can be called only from SyncanoObject.please(class).where().get()");
+        }
+        return please.getAll();
+    }
+
+    /**
+     * Same as getAll(), but asynchronously
+     *
+     * @param callback callback
+     */
+    public void getAll(SyncanoCallback<List<T>> callback) {
+        if (please == null) {
+            throw new RuntimeException("Can be called only from SyncanoObject.please(class).where().get()");
+        }
+        please.getAll(callback);
+    }
+
+    /**
+     * Same as get(), but asynchronously
+     *
+     * @param callback callback
+     */
+    public void get(SyncanoCallback<List<T>> callback) {
+        if (please == null) {
+            throw new RuntimeException("Can be called only from SyncanoObject.please(class).where().get()");
+        }
+        please.get(callback);
     }
 
     /**

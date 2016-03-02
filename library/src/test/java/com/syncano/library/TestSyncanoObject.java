@@ -7,10 +7,13 @@ import com.syncano.library.data.SyncanoObject;
 @SyncanoClass(name = "testsyncanoclass")
 public class TestSyncanoObject extends SyncanoObject {
 
-    @SyncanoField(name = "value_one")
+    public static final String FIELD_VAL_ONE = "value_one";
+    public static final String FIELD_VAL_TWO = "value_two";
+
+    @SyncanoField(name = FIELD_VAL_ONE, filterIndex = true)
     public String valueOne;
 
-    @SyncanoField(name = "value_two")
+    @SyncanoField(name = FIELD_VAL_TWO)
     public String valueTwo;
 
     public TestSyncanoObject() {

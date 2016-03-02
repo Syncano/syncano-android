@@ -15,7 +15,6 @@ import com.syncano.library.data.SyncanoObject;
 
 import java.util.List;
 
-
 public class RequestBuilder<T extends SyncanoObject> {
     private Syncano syncano;
     private Class<T> clazz;
@@ -27,7 +26,6 @@ public class RequestBuilder<T extends SyncanoObject> {
     private String pageUrl;
     private String tableView;
     private boolean estimateCount = false;
-
 
     public RequestBuilder(Class<T> clazz) {
         this.clazz = clazz;

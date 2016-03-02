@@ -1,10 +1,13 @@
 package com.syncano.library.tests;
 
+import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.TestSyncanoObject;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
+import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.api.Where;
+import com.syncano.library.callbacks.SyncanoListCallback;
 import com.syncano.library.choice.SortOrder;
 
 import org.junit.After;
@@ -12,10 +15,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class DataObjectsTest extends SyncanoApplicationTestCase {
 
@@ -81,20 +87,70 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
     }
 
     @Test
-    public void testWhereFilter() {
-        TestSyncanoObject objectOne = syncano.createObject(new TestSyncanoObject("User", "One")).send().getData();
-        TestSyncanoObject objectTwo = syncano.createObject(new TestSyncanoObject("User", "Two")).send().getData();
+    public void testWhereFilter() throws InterruptedException {
+        final String val = "a";
+        final int itemsNum = 2;
+        new TestSyncanoObject(val, "").save();
+        new TestSyncanoObject(val, "").save();
+        new TestSyncanoObject("b", "").save();
+        new TestSyncanoObject("c", "").save();
 
+        // get item with same id, call on syncano object
         Where where = new Where();
-        where.eq(TestSyncanoObject.FIELD_ID, objectOne.getId()).neq(TestSyncanoObject.FIELD_ID, objectTwo.getId());
+        where.eq(TestSyncanoObject.FIELD_VAL_ONE, val);
 
         RequestGetList<TestSyncanoObject> requestGetList = syncano.getObjects(TestSyncanoObject.class);
         requestGetList.setWhereFilter(where);
-        Response<List<TestSyncanoObject>> response = requestGetList.send();
+        ResponseGetList<TestSyncanoObject> response = requestGetList.send();
 
         assertTrue(response.isSuccess());
         assertNotNull(response.getData());
-        assertEquals(1, response.getData().size()); // Should be only one item with given id.
+        assertEquals(itemsNum, response.getData().size()); // Should be only one item with given id.
+
+        // check all wrapped methods
+        response = Syncano.please(TestSyncanoObject.class).where().eq(TestSyncanoObject.FIELD_VAL_ONE, val).get();
+        assertTrue(response.isSuccess());
+        assertNotNull(response.getData());
+        assertEquals(itemsNum, response.getData().size());
+
+        response = Syncano.please(TestSyncanoObject.class).where().eq(TestSyncanoObject.FIELD_VAL_ONE, val).getAll();
+        assertTrue(response.isSuccess());
+        assertNotNull(response.getData());
+        assertEquals(itemsNum, response.getData().size());
+
+        // check asynchronous wrapped methods
+        final CountDownLatch countDownLatch = new CountDownLatch(2);
+        Syncano.please(TestSyncanoObject.class).where().eq(TestSyncanoObject.FIELD_VAL_ONE, val).get(new SyncanoListCallback<TestSyncanoObject>() {
+            @Override
+            public void success(ResponseGetList<TestSyncanoObject> response, List<TestSyncanoObject> result) {
+                assertTrue(response.isSuccess());
+                assertNotNull(response.getData());
+                assertEquals(itemsNum, response.getData().size());
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void failure(ResponseGetList<TestSyncanoObject> response) {
+                fail();
+            }
+        });
+
+        Syncano.please(TestSyncanoObject.class).where().eq(TestSyncanoObject.FIELD_VAL_ONE, val).getAll(new SyncanoListCallback<TestSyncanoObject>() {
+            @Override
+            public void success(ResponseGetList<TestSyncanoObject> response, List<TestSyncanoObject> result) {
+                assertTrue(response.isSuccess());
+                assertNotNull(response.getData());
+                assertEquals(itemsNum, response.getData().size());
+                countDownLatch.countDown();
+            }
+
+            @Override
+            public void failure(ResponseGetList<TestSyncanoObject> response) {
+                fail();
+            }
+        });
+
+        countDownLatch.await(5, TimeUnit.SECONDS);
     }
 
     @Test
