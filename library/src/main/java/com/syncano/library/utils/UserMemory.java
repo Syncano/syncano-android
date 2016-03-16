@@ -24,7 +24,7 @@ public class UserMemory {
         } else {
             GsonParser.GsonParseConfig config = new GsonParser.GsonParseConfig();
             config.serializeReadOnlyFields = true;
-            Gson gson = GsonParser.createGson(config);
+            Gson gson = GsonParser.createGson(user.getClass(), config);
             editor.putString(dataKey(syncano), gson.toJson(user));
             editor.putString(typeKey(syncano), user.getClass().getName());
         }
