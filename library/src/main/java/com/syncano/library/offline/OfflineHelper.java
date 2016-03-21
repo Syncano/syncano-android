@@ -18,6 +18,7 @@ import com.syncano.library.utils.SyncanoLog;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 public class OfflineHelper {
@@ -42,38 +43,36 @@ public class OfflineHelper {
     }
 
     private static <T extends SyncanoObject> void readField(T o, Cursor c, Field f) {
-        FieldType type = SyncanoClassHelper.findType(f);
-        if (type == null || type == FieldType.NOT_SET) {
-            throw new RuntimeException("Can't get type of field " + SyncanoClassHelper.getFieldName(f));
-        }
-        f.setAccessible(true);
         String name = SyncanoClassHelper.getFieldName(f);
         int index = c.getColumnIndex(name);
+        if (c.isNull(index)) {
+            return;
+        }
+        f.setAccessible(true);
         try {
-            // TODO add all supported types, example: long, byte, short
-            switch (type) {
-                case STRING:
-                case TEXT:
-                    f.set(o, c.getString(index));
-                    break;
-                case FILE:
-                    f.set(o, new SyncanoFile(c.getString(index)));
-                    break;
-                case INTEGER:
-                    f.set(o, c.getInt(index));
-                    break;
-                case REFERENCE:
-                    //TODO
-                case BOOLEAN:
-                    f.set(o, c.getInt(index) == 1);
-                    break;
-                case DATETIME:
-                    NanosDate nd = new NanosDate();
-                    nd.setFullNanos(c.getLong(index));
-                    f.set(o, nd);
-                    break;
-                case FLOAT:
-                    f.set(o, c.getFloat(index));
+            Class<?> clazz = f.getType();
+            if (clazz.equals(int.class) || clazz.equals(Integer.class)) {
+                f.set(o, c.getInt(index));
+            } else if (clazz.equals(byte.class) || clazz.equals(Byte.class)) {
+                f.set(o, (byte) c.getInt(index));
+            } else if (clazz.equals(short.class) || clazz.equals(Short.class)) {
+                f.set(o, c.getShort(index));
+            } else if (clazz.equals(String.class)) {
+                f.set(o, c.getString(index));
+            } else if (clazz.equals(Date.class) || clazz.equals(NanosDate.class)) {
+                NanosDate nd = new NanosDate();
+                nd.setFullNanos(c.getLong(index));
+                f.set(o, nd);
+            } else if (clazz.equals(boolean.class) || clazz.equals(Boolean.class)) {
+                f.set(o, c.getInt(index) == 1);
+            } else if (SyncanoObject.class.isAssignableFrom(clazz)) {
+                //TODO
+            } else if (clazz.equals(float.class) || clazz.equals(Float.class)) {
+                f.set(o, c.getFloat(index));
+            } else if (clazz.equals(double.class) || clazz.equals(Double.class)) {
+                f.set(o, c.getDouble(index));
+            } else if (clazz.equals(SyncanoFile.class)) {
+                f.set(o, new SyncanoFile(c.getString(index)));
             }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
