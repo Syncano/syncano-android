@@ -89,7 +89,7 @@ public class SyncanoObjectDeserializer implements JsonDeserializer<SyncanoObject
         return null;
     }
 
-    private SyncanoObject createSyncanoObject(Class<? extends SyncanoObject> clazz) {
+    public static SyncanoObject createSyncanoObject(Class<? extends SyncanoObject> clazz) {
         try {
             Constructor<? extends SyncanoObject> defaultConstructor = clazz.getConstructor();
             defaultConstructor.setAccessible(true);

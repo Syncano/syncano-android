@@ -11,4 +11,6 @@ import java.lang.annotation.Target;
 @Inherited
 public @interface SyncanoClass {
     String name();
+
+    int version() default 1;
 }
