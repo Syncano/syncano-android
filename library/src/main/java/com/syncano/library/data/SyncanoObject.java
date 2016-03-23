@@ -28,7 +28,7 @@ public abstract class SyncanoObject extends Entity {
     @SyncanoField(name = FIELD_OWNER_PERMISSIONS)
     private DataObjectPermissions ownerPermissions;
 
-    @SyncanoField(name = FIELD_GROUP)
+    @SyncanoField(name = FIELD_GROUP, offlineName = "_group")
     private Integer group;
 
     @SyncanoField(name = FIELD_GROUP_PERMISSIONS)

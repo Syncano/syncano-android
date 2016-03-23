@@ -130,21 +130,13 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
             os.writeBytes("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"" + lineEnd);
             os.writeBytes("Content-Type: text/plain" + lineEnd);
             os.writeBytes(lineEnd);
-            os.writeBytes(getJsonElementAsString(entry.getValue()));
+            os.writeBytes(GsonParser.getJsonElementAsString(entry.getValue()));
             os.writeBytes(lineEnd);
         }
 
         return new ByteArrayInputStream(baos.toByteArray());
     }
 
-    private String getJsonElementAsString(JsonElement jsonElement) {
-        if (jsonElement.isJsonNull())
-            return "";
-        if (jsonElement.isJsonPrimitive())
-            return jsonElement.getAsString();
-
-        return jsonElement.toString();
-    }
 
     private InputStream getItemStartInputStream(String name, String filename) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

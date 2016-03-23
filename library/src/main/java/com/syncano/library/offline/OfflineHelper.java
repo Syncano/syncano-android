@@ -1,15 +1,20 @@
 package com.syncano.library.offline;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.Entity;
 import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
+import com.syncano.library.parser.GsonParser;
 import com.syncano.library.parser.SyncanoObjectDeserializer;
 import com.syncano.library.utils.NanosDate;
 import com.syncano.library.utils.SyncanoClassHelper;
@@ -20,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class OfflineHelper {
     private final static int VERSION = 1;
@@ -38,8 +44,27 @@ public class OfflineHelper {
                 readField(o, c, f);
             }
             list.add(o);
+            c.moveToNext();
         }
         return list;
+    }
+
+    public static <T extends SyncanoObject> void writeObjects(Context ctx, List<T> objects, Class<T> type) {
+        SQLiteOpenHelper sqlHelper = getSQLiteOpenHelper(ctx, type);
+        SQLiteDatabase db = sqlHelper.getWritableDatabase();
+        GsonParser.GsonParseConfig config = new GsonParser.GsonParseConfig();
+        config.serializeReadOnlyFields = true;
+        Gson gson = GsonParser.createGson(type, config);
+        String tableName = getTableName(type);
+        for (T object : objects) {
+            JsonObject jsonized = gson.toJsonTree(object).getAsJsonObject();
+            ContentValues values = new ContentValues();
+            for (Map.Entry<String, JsonElement> entry : jsonized.entrySet()) {
+                values.put(entry.getKey(), GsonParser.getJsonElementAsString(entry.getValue()));
+            }
+            // insert requires one column that is nullable, weird but has to live with it
+            db.insert(tableName, SyncanoObject.FIELD_CHANNEL, values);
+        }
     }
 
     private static <T extends SyncanoObject> void readField(T o, Cursor c, Field f) {
@@ -80,16 +105,6 @@ public class OfflineHelper {
         }
     }
 
-
-    private static <T extends SyncanoObject> String[] getProjection(Class<T> type) {
-        Collection<Field> fields = SyncanoClassHelper.findAllSyncanoFields(type);
-        ArrayList<String> projection = new ArrayList<>();
-        for (Field f : fields) {
-            projection.add(SyncanoClassHelper.getFieldName(f));
-        }
-        return projection.toArray(new String[projection.size()]);
-    }
-
     private static <T extends SyncanoObject> SQLiteOpenHelper getSQLiteOpenHelper(Context ctx, final Class<T> type) {
         return new SQLiteOpenHelper(ctx, DB_NAME, null, VERSION) {
             @Override
@@ -111,7 +126,7 @@ public class OfflineHelper {
         sb.append(" (");
         Collection<Field> fields = SyncanoClassHelper.findAllSyncanoFields(type);
         for (Field f : fields) {
-            String fieldName = SyncanoClassHelper.getFieldName(f);
+            String fieldName = SyncanoClassHelper.getOfflineFieldName(f);
             if (fieldName.equals(Entity.FIELD_ID)) continue;
             sb.append(fieldName);
             sb.append(' ');
@@ -147,5 +162,11 @@ public class OfflineHelper {
     private static <T extends SyncanoObject> String getTableName(Class<T> type) {
         SyncanoClass syncanoClass = type.getAnnotation(SyncanoClass.class);
         return syncanoClass.name() + "_" + syncanoClass.version();
+    }
+
+    public static <T extends SyncanoObject> void clearTable(Context ctx, Class<T> type) {
+        SQLiteOpenHelper sqlHelper = getSQLiteOpenHelper(ctx, type);
+        SQLiteDatabase db = sqlHelper.getWritableDatabase();
+        db.delete(getTableName(type), null, null);
     }
 }

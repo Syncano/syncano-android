@@ -85,6 +85,15 @@ public class SyncanoClassHelper {
         return schemaArray;
     }
 
+    public static String getOfflineFieldName(Field f) {
+        SyncanoField syncanoField = f.getAnnotation(SyncanoField.class);
+        String offlineName = syncanoField.offlineName();
+        if (!offlineName.isEmpty()) {
+            return offlineName;
+        }
+        return getFieldName(f);
+    }
+
     public static String getFieldName(Field f) {
         return getFieldName(f, false);
     }
@@ -116,7 +125,7 @@ public class SyncanoClassHelper {
                 || clazz.equals(byte.class) || clazz.equals(Byte.class)
                 || clazz.equals(short.class) || clazz.equals(Short.class)) {
             return FieldType.INTEGER;
-        } else if (clazz.equals(String.class)) {
+        } else if (clazz.equals(String.class) || clazz.isEnum()) {
             return FieldType.STRING;
         } else if (clazz.equals(Date.class) || clazz.equals(NanosDate.class)) {
             return FieldType.DATETIME;

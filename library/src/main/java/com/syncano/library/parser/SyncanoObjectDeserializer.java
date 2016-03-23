@@ -20,11 +20,13 @@ import java.util.Collection;
 public class SyncanoObjectDeserializer implements JsonDeserializer<SyncanoObject> {
     private final static String FIELD_VALUE = "value";
     private SyncanoObject syncanoObject = null;
+    private GsonParser.GsonParseConfig config;
 
-    public SyncanoObjectDeserializer(Object syncanoObject) {
+    public SyncanoObjectDeserializer(Object syncanoObject, GsonParser.GsonParseConfig config) {
         if (syncanoObject != null && syncanoObject instanceof SyncanoObject) {
             this.syncanoObject = (SyncanoObject) syncanoObject;
         }
+        this.config = config;
     }
 
     public SyncanoObject deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) throws JsonParseException {
@@ -59,7 +61,12 @@ public class SyncanoObjectDeserializer implements JsonDeserializer<SyncanoObject
         Collection<Field> fields = SyncanoClassHelper.findAllSyncanoFields((Class) type);
         for (Field field : fields) {
             field.setAccessible(true);
-            String syncanoKey = SyncanoClassHelper.getFieldName(field);
+            String syncanoKey;
+            if (config.useOfflineFieldNames) {
+                syncanoKey = SyncanoClassHelper.getOfflineFieldName(field);
+            } else {
+                syncanoKey = SyncanoClassHelper.getFieldName(field);
+            }
             JsonElement syncanoElement = jo.get(syncanoKey);
             setFieldFromJsonElement(syncanoObject, field, jdc, syncanoElement);
         }

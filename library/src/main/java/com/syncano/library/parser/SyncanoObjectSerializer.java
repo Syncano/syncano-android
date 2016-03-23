@@ -16,10 +16,10 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 
 class SyncanoObjectSerializer implements JsonSerializer<SyncanoObject> {
-    final boolean serializeReadOnlyFields;
+    private GsonParser.GsonParseConfig config;
 
-    public SyncanoObjectSerializer(boolean serializeReadOnlyFields) {
-        this.serializeReadOnlyFields = serializeReadOnlyFields;
+    public SyncanoObjectSerializer(GsonParser.GsonParseConfig config) {
+        this.config = config;
     }
 
     public JsonElement serialize(SyncanoObject localObject, Type type, JsonSerializationContext jsc) {
@@ -28,7 +28,12 @@ class SyncanoObjectSerializer implements JsonSerializer<SyncanoObject> {
         for (Field field : fields) {
             field.setAccessible(true);
             try {
-                String keyName = SyncanoClassHelper.getFieldName(field);
+                String keyName;
+                if (config.useOfflineFieldNames) {
+                    keyName = SyncanoClassHelper.getOfflineFieldName(field);
+                } else {
+                    keyName = SyncanoClassHelper.getFieldName(field);
+                }
                 if (localObject.isOnClearList(keyName)) {
                     jsonObject.add(keyName, jsc.serialize(null));
                     continue;
@@ -50,7 +55,7 @@ class SyncanoObjectSerializer implements JsonSerializer<SyncanoObject> {
         // We want only to receive it, not send.
         // SyncanoFile is handled in SendRequest
         if (syncanoField == null ||
-                (!serializeReadOnlyFields && syncanoField.readOnly() && !syncanoField.required()) ||
+                (!config.serializeReadOnlyFields && syncanoField.readOnly() && !syncanoField.required()) ||
                 f.getDeclaringClass().isAssignableFrom(SyncanoFile.class) ||
                 f.get(localObject) == null) {
             return true;
