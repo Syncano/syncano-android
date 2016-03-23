@@ -12,40 +12,39 @@ import com.google.gson.JsonObject;
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.Entity;
-import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.parser.GsonParser;
-import com.syncano.library.parser.SyncanoObjectDeserializer;
-import com.syncano.library.utils.NanosDate;
 import com.syncano.library.utils.SyncanoClassHelper;
-import com.syncano.library.utils.SyncanoLog;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 public class OfflineHelper {
     private final static int VERSION = 1;
-    private final static String DB_NAME = "syncano";
+    private final static String DB_NAME = "syncano_storage";
 
     public static <T extends SyncanoObject> List<T> readObjects(Context ctx, final Class<T> type) {
         SQLiteOpenHelper sqlHelper = getSQLiteOpenHelper(ctx, type);
         SQLiteDatabase db = sqlHelper.getReadableDatabase();
-        Collection<Field> fields = SyncanoClassHelper.findAllSyncanoFields(type);
         ArrayList<T> list = new ArrayList<>();
         Cursor c = db.query(getTableName(type), null, null, null, null, null, null);
+        GsonParser.GsonParseConfig config = new GsonParser.GsonParseConfig();
+        config.useOfflineFieldNames = true;
+        Gson gson = GsonParser.createGson(type, config);
+        String[] columns = c.getColumnNames();
         c.moveToFirst();
         while (!c.isAfterLast()) {
-            T o = (T) SyncanoObjectDeserializer.createSyncanoObject(type);
-            for (Field f : fields) {
-                readField(o, c, f);
+            JsonObject json = new JsonObject();
+            for (String column : columns) {
+                json.addProperty(column, c.getString(c.getColumnIndex(column)));
             }
-            list.add(o);
+            list.add(gson.fromJson(json, type));
             c.moveToNext();
         }
+        c.close();
         return list;
     }
 
@@ -64,44 +63,6 @@ public class OfflineHelper {
             }
             // insert requires one column that is nullable, weird but has to live with it
             db.insert(tableName, SyncanoObject.FIELD_CHANNEL, values);
-        }
-    }
-
-    private static <T extends SyncanoObject> void readField(T o, Cursor c, Field f) {
-        String name = SyncanoClassHelper.getFieldName(f);
-        int index = c.getColumnIndex(name);
-        if (c.isNull(index)) {
-            return;
-        }
-        f.setAccessible(true);
-        try {
-            Class<?> clazz = f.getType();
-            if (clazz.equals(int.class) || clazz.equals(Integer.class)) {
-                f.set(o, c.getInt(index));
-            } else if (clazz.equals(byte.class) || clazz.equals(Byte.class)) {
-                f.set(o, (byte) c.getInt(index));
-            } else if (clazz.equals(short.class) || clazz.equals(Short.class)) {
-                f.set(o, c.getShort(index));
-            } else if (clazz.equals(String.class)) {
-                f.set(o, c.getString(index));
-            } else if (clazz.equals(Date.class) || clazz.equals(NanosDate.class)) {
-                NanosDate nd = new NanosDate();
-                nd.setFullNanos(c.getLong(index));
-                f.set(o, nd);
-            } else if (clazz.equals(boolean.class) || clazz.equals(Boolean.class)) {
-                f.set(o, c.getInt(index) == 1);
-            } else if (SyncanoObject.class.isAssignableFrom(clazz)) {
-                //TODO
-            } else if (clazz.equals(float.class) || clazz.equals(Float.class)) {
-                f.set(o, c.getFloat(index));
-            } else if (clazz.equals(double.class) || clazz.equals(Double.class)) {
-                f.set(o, c.getDouble(index));
-            } else if (clazz.equals(SyncanoFile.class)) {
-                f.set(o, new SyncanoFile(c.getString(index)));
-            }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-            SyncanoLog.e(OfflineHelper.class.getSimpleName(), "Error getting data from db");
         }
     }
 
