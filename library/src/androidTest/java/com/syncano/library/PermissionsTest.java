@@ -96,6 +96,14 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
         userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME);
         Response<List<Something>> respNoCtx = userSyncano.getObjects(Something.class).send();
         assertEquals(Response.HTTP_CODE_FORBIDDEN, respNoCtx.getHttpResultCode());
+
+        // check if possible to logout user
+        userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME, getContext());
+        userSyncano.setUser(null);
+
+        userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME, getContext());
+        assertNull(userSyncano.getUser());
+        assertNull(userSyncano.getUserKey());
     }
 
     @com.syncano.library.annotation.SyncanoClass(name = "just_something")
