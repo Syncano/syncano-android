@@ -56,7 +56,7 @@ class SyncanoObjectSerializer implements JsonSerializer<SyncanoObject> {
         // SyncanoFile is handled in SendRequest
         if (syncanoField == null ||
                 (!config.serializeReadOnlyFields && syncanoField.readOnly() && !syncanoField.required()) ||
-                f.getDeclaringClass().isAssignableFrom(SyncanoFile.class) ||
+                f.getType().isAssignableFrom(SyncanoFile.class) ||
                 f.get(localObject) == null) {
             return true;
         }

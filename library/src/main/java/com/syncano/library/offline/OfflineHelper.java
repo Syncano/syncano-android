@@ -108,11 +108,11 @@ public class OfflineHelper {
             case STRING:
             case TEXT:
             case FILE:
+            case DATETIME:
                 return "TEXT";
             case INTEGER:
             case REFERENCE:
             case BOOLEAN:
-            case DATETIME:
                 return "INTEGER";
             case FLOAT:
                 return "REAL";
