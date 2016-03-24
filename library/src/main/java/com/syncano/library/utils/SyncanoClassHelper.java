@@ -56,10 +56,14 @@ public class SyncanoClassHelper {
                 continue;
             }
 
-            if (type.equals(FieldType.REFERENCE)) {
+            if (type.equals(FieldType.REFERENCE) && SyncanoObject.class.isAssignableFrom(field.getType())) {
                 String target = fieldAnnotation.target();
                 if (target == null || target.isEmpty()) {
-                    target = fieldAnnotation.name();
+                    if (field.getType().equals(field.getDeclaringClass())) {
+                        target = "self";
+                    } else {
+                        target = SyncanoClassHelper.getSyncanoClassName((Class<? extends SyncanoObject>) field.getType());
+                    }
                 }
                 fieldDescription.addProperty(Constants.FIELD_TARGET, target);
             }
