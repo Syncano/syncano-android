@@ -1,5 +1,7 @@
 package com.syncano.library.parser;
 
+import android.text.TextUtils;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -41,6 +43,8 @@ class SyncanoObjectSerializer implements JsonSerializer<SyncanoObject> {
                 if (shouldSkipField(field, localObject))
                     continue;
                 JsonElement jsonElement = toJsonObject(localObject, field, jsc);
+                if (jsonElement == null)
+                    continue;
                 jsonObject.add(keyName, jsonElement);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -51,12 +55,10 @@ class SyncanoObjectSerializer implements JsonSerializer<SyncanoObject> {
 
     private boolean shouldSkipField(Field f, SyncanoObject localObject) throws IllegalAccessException {
         SyncanoField syncanoField = f.getAnnotation(SyncanoField.class);
-        // Don't serialize read only fields (like "id" or "created_at").
-        // We want only to receive it, not send.
         // SyncanoFile is handled in SendRequest
         if (syncanoField == null ||
                 (!config.serializeReadOnlyFields && syncanoField.readOnly() && !syncanoField.required()) ||
-                f.getType().isAssignableFrom(SyncanoFile.class) ||
+                (f.getType().isAssignableFrom(SyncanoFile.class) && !config.serializeUrlFileFields) ||
                 f.get(localObject) == null) {
             return true;
         }
@@ -68,6 +70,12 @@ class SyncanoObjectSerializer implements JsonSerializer<SyncanoObject> {
     private JsonElement toJsonObject(SyncanoObject localObject, Field f, JsonSerializationContext jsc) throws IllegalAccessException {
         if (SyncanoClassHelper.findType(f) == FieldType.REFERENCE) {
             return serializeReference(localObject, f);
+        } else if (f.getType().isAssignableFrom(SyncanoFile.class)) {
+            SyncanoFile file = (SyncanoFile) f.get(localObject);
+            if (file != null && !TextUtils.isEmpty(file.getLink())) {
+                return new JsonPrimitive(file.getLink());
+            }
+            return null;
         } else {
             return serializePlainObject(localObject, f, jsc);
         }
@@ -76,10 +84,10 @@ class SyncanoObjectSerializer implements JsonSerializer<SyncanoObject> {
     private JsonElement serializeReference(SyncanoObject localObject, Field f) throws IllegalAccessException {
         SyncanoObject syncanoObject = (SyncanoObject) f.get(localObject);
         if (syncanoObject == null)
-            return new JsonPrimitive("");
+            return null;
         Integer id = syncanoObject.getId();
         if (id == null) {
-            return new JsonPrimitive("");
+            return null;
         }
         return new JsonPrimitive(id);
     }

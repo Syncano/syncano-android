@@ -53,6 +53,8 @@ public class OfflineHelper {
         SQLiteDatabase db = sqlHelper.getWritableDatabase();
         GsonParser.GsonParseConfig config = new GsonParser.GsonParseConfig();
         config.serializeReadOnlyFields = true;
+        config.serializeUrlFileFields = true;
+        config.useOfflineFieldNames = true;
         Gson gson = GsonParser.createGson(type, config);
         String tableName = getTableName(type);
         for (T object : objects) {

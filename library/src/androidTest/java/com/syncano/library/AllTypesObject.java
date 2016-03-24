@@ -11,10 +11,14 @@ import com.syncano.library.utils.NanosDate;
 import java.util.Date;
 import java.util.Random;
 
+import static junit.framework.Assert.assertTrue;
+
 @SyncanoClass(name = "all_types_object")
 public class AllTypesObject extends SyncanoObject {
     @SyncanoField(name = "int")
     public int intVal;
+    @SyncanoField(name = "intother")
+    public int intOtherVal;
     @SyncanoField(name = "integerval")
     public Integer integerVal;
     @SyncanoField(name = "byte")
@@ -69,10 +73,81 @@ public class AllTypesObject extends SyncanoObject {
         @SerializedName("other")OTHER_VALUE
     }
 
-    public static AllTypesObject generateObject(boolean withReference) {
+    public void checkEquals(Object other) {
+        assertTrue(other != null);
+        assertTrue(other instanceof AllTypesObject);
+        AllTypesObject o = (AllTypesObject) other;
+        assertTrue(same(intVal, o.intVal));
+        assertTrue(same(intOtherVal, o.intOtherVal));
+        assertTrue(same(integerVal, o.integerVal));
+        assertTrue(same(byteVal, o.byteVal));
+        assertTrue(same(byteObjVal, o.byteObjVal));
+        assertTrue(same(shortVal, o.shortVal));
+        assertTrue(same(shortObjVal, o.shortObjVal));
+        assertTrue(same(someEnum, o.someEnum));
+        assertTrue(same(valuesEnum, o.valuesEnum));
+        assertTrue(same(date, o.date));
+        assertTrue(same(nanosDate, o.nanosDate));
+        assertTrue(same(stringVal, o.stringVal));
+        assertTrue(same(text, o.text));
+        assertTrue(same(yesOrNo, o.yesOrNo));
+        assertTrue(same(yesOrNoObj, o.yesOrNoObj));
+        assertTrue(sameFloat(someFloat, o.someFloat));
+        assertTrue(sameFloat(someFloatObj, o.someFloatObj));
+        assertTrue(sameDouble(someDouble, o.someDouble));
+        assertTrue(sameDouble(someDoubleObj, o.someDoubleObj));
+        assertTrue(sameReference(reference, o.reference));
+        assertTrue(sameReference(someReference, o.someReference));
+        assertTrue(sameFile(file, o.file));
+        assertTrue(sameFile(otherFile, o.otherFile));
+    }
+
+    private boolean sameDouble(double a, double b) {
+        double diff = a - b;
+        return diff / a < 0.001d;
+    }
+
+    private boolean sameFloat(float a, float b) {
+        float diff = a - b;
+        return diff / a < 0.001f;
+    }
+
+    private boolean sameFile(SyncanoFile o1, SyncanoFile o2) {
+        String link1 = null;
+        if (o1 != null) {
+            link1 = o1.getLink();
+        }
+        String link2 = null;
+        if (o2 != null) {
+            link2 = o2.getLink();
+        }
+        return same(link1, link2);
+    }
+
+    private boolean sameReference(SyncanoObject o1, SyncanoObject o2) {
+        Integer id1 = null;
+        if (o1 != null) {
+            id1 = o1.getId();
+        }
+        Integer id2 = null;
+        if (o2 != null) {
+            id2 = o2.getId();
+        }
+        return same(id1, id2);
+    }
+
+    private boolean same(Object o1, Object o2) {
+        if (o1 == o2) return true;
+        if (o1 == null) return false;
+        return o1.equals(o2);
+    }
+
+    public static AllTypesObject generateObject(Integer id, boolean withReference) {
         Random rnd = new Random();
         AllTypesObject o = new AllTypesObject();
+        o.setId(id);
         o.intVal = rnd.nextInt();
+        o.intOtherVal = 0;
         o.integerVal = rnd.nextInt();
         o.byteVal = (byte) rnd.nextInt();
         o.byteObjVal = (byte) rnd.nextInt();
@@ -85,7 +160,7 @@ public class AllTypesObject extends SyncanoObject {
         o.stringVal = generateString(rnd.nextInt(128));
         o.text = generateString(rnd.nextInt(32000));
         if (withReference) {
-            o.reference = generateObject(false);
+            o.reference = generateObject(null, false);
         } else {
             o.reference = null;
         }
@@ -101,8 +176,8 @@ public class AllTypesObject extends SyncanoObject {
         return o;
     }
 
-    public static AllTypesObject generateObject() {
-        return generateObject(true);
+    public static AllTypesObject generateObject(Integer id) {
+        return generateObject(id, true);
     }
 
     public static String generateString(int len) {

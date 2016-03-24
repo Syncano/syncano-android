@@ -71,6 +71,7 @@ public class GsonParser {
     public static class GsonParseConfig {
         public boolean serializeReadOnlyFields = false;
         public boolean useOfflineFieldNames = false;
+        public boolean serializeUrlFileFields = false;
     }
 
     public static String getJsonElementAsString(JsonElement jsonElement) {
