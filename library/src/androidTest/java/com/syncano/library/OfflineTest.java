@@ -11,6 +11,8 @@ public class OfflineTest extends SyncanoApplicationTestCase {
         super.setUp();
         createClass(SomeObject.class);
         createClass(AllTypesObject.class);
+        OfflineHelper.clearTable(getContext(), AllTypesObject.class);
+        OfflineHelper.clearTable(getContext(), SomeObject.class);
     }
 
     public void tearDown() throws Exception {
@@ -21,16 +23,20 @@ public class OfflineTest extends SyncanoApplicationTestCase {
 
     public void testOffline() throws InterruptedException {
         ArrayList<AllTypesObject> list = new ArrayList<>();
+        ArrayList<SomeObject> someList = new ArrayList<>();
         for (int i = 1; i <= 3; i++) {
             AllTypesObject o = AllTypesObject.generateObject();
-            assertTrue(o.reference.save().isSuccess());
-            assertTrue(o.someReference.save().isSuccess());
+            Response<AllTypesObject> respRef = o.reference.save();
+            assertTrue(respRef.isSuccess());
+            list.add(respRef.getData());
+            Response<SomeObject> respSomeRef = o.someReference.save();
+            assertTrue(respSomeRef.isSuccess());
+            someList.add(respSomeRef.getData());
             Response<AllTypesObject> resp = o.save();
             assertTrue(resp.isSuccess());
             list.add(resp.getData());
         }
 
-        OfflineHelper.clearTable(getContext(), AllTypesObject.class);
         OfflineHelper.writeObjects(getContext(), list, AllTypesObject.class);
         List<AllTypesObject> got = OfflineHelper.readObjects(getContext(), AllTypesObject.class);
         assertEquals(list.size(), got.size());
@@ -42,6 +48,10 @@ public class OfflineTest extends SyncanoApplicationTestCase {
                 }
             }
         }
+
+        OfflineHelper.writeObjects(getContext(), someList, SomeObject.class);
+        List<SomeObject> gotSome = OfflineHelper.readObjects(getContext(), SomeObject.class);
+        assertEquals(someList.size(), gotSome.size());
     }
 
 

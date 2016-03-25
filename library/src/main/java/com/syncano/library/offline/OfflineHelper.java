@@ -24,13 +24,13 @@ import java.util.Map;
 
 public class OfflineHelper {
     private final static int VERSION = 1;
-    private final static String DB_NAME = "syncano_storage";
+    private final static String TABLE_NAME = "syncano";
 
     public static <T extends SyncanoObject> List<T> readObjects(Context ctx, final Class<T> type) {
         SQLiteOpenHelper sqlHelper = getSQLiteOpenHelper(ctx, type);
         SQLiteDatabase db = sqlHelper.getReadableDatabase();
         ArrayList<T> list = new ArrayList<>();
-        Cursor c = db.query(getTableName(type), null, null, null, null, null, null);
+        Cursor c = db.query(TABLE_NAME, null, null, null, null, null, null);
         GsonParser.GsonParseConfig config = new GsonParser.GsonParseConfig();
         config.useOfflineFieldNames = true;
         Gson gson = GsonParser.createGson(type, config);
@@ -56,7 +56,6 @@ public class OfflineHelper {
         config.serializeUrlFileFields = true;
         config.useOfflineFieldNames = true;
         Gson gson = GsonParser.createGson(type, config);
-        String tableName = getTableName(type);
         for (T object : objects) {
             JsonObject jsonized = gson.toJsonTree(object).getAsJsonObject();
             ContentValues values = new ContentValues();
@@ -64,12 +63,12 @@ public class OfflineHelper {
                 values.put(entry.getKey(), GsonParser.getJsonElementAsString(entry.getValue()));
             }
             // insert requires one column that is nullable, weird but has to live with it
-            db.insert(tableName, SyncanoObject.FIELD_CHANNEL, values);
+            db.insert(TABLE_NAME, SyncanoObject.FIELD_CHANNEL, values);
         }
     }
 
     private static <T extends SyncanoObject> SQLiteOpenHelper getSQLiteOpenHelper(Context ctx, final Class<T> type) {
-        return new SQLiteOpenHelper(ctx, DB_NAME, null, VERSION) {
+        return new SQLiteOpenHelper(ctx, getDbName(type), null, VERSION) {
             @Override
             public void onCreate(SQLiteDatabase db) {
                 String createSql = generateCreateSql(type);
@@ -85,7 +84,7 @@ public class OfflineHelper {
     private static <T extends SyncanoObject> String generateCreateSql(Class<T> type) {
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE ");
-        sb.append(getTableName(type));
+        sb.append(TABLE_NAME);
         sb.append(" (");
         Collection<Field> fields = SyncanoClassHelper.findAllSyncanoFields(type);
         for (Field f : fields) {
@@ -122,7 +121,7 @@ public class OfflineHelper {
         throw new RuntimeException("Can't get type of field " + SyncanoClassHelper.getFieldName(f));
     }
 
-    private static <T extends SyncanoObject> String getTableName(Class<T> type) {
+    private static <T extends SyncanoObject> String getDbName(Class<T> type) {
         SyncanoClass syncanoClass = type.getAnnotation(SyncanoClass.class);
         return syncanoClass.name() + "_" + syncanoClass.version();
     }
@@ -130,6 +129,6 @@ public class OfflineHelper {
     public static <T extends SyncanoObject> void clearTable(Context ctx, Class<T> type) {
         SQLiteOpenHelper sqlHelper = getSQLiteOpenHelper(ctx, type);
         SQLiteDatabase db = sqlHelper.getWritableDatabase();
-        db.delete(getTableName(type), null, null);
+        db.delete(TABLE_NAME, null, null);
     }
 }
