@@ -180,6 +180,10 @@ public class AllTypesObject extends SyncanoObject {
         return generateObject(id, true);
     }
 
+    public static AllTypesObject generateObject() {
+        return generateObject(null);
+    }
+
     public static String generateString(int len) {
         String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz       ";
         Random rnd = new Random();

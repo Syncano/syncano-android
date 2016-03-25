@@ -30,7 +30,7 @@ public class SyncanoObjectDeserializer implements JsonDeserializer<SyncanoObject
     }
 
     public SyncanoObject deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) throws JsonParseException {
-        return parseSyncanoObject(syncanoObject, type, je.getAsJsonObject(), jdc);
+        return parseSyncanoObject(syncanoObject, type, je, jdc);
     }
 
     private void setFieldFromJsonElement(SyncanoObject o, Field f, JsonDeserializationContext jdc, JsonElement je) {
@@ -39,7 +39,7 @@ public class SyncanoObjectDeserializer implements JsonDeserializer<SyncanoObject
                 f.set(o, null);
             } else {
                 if (SyncanoClassHelper.findType(f) == FieldType.REFERENCE) {
-                    f.set(o, parseSyncanoObject((SyncanoObject) f.get(o), f.getType(), je.getAsJsonObject(), jdc));
+                    f.set(o, parseSyncanoObject((SyncanoObject) f.get(o), f.getType(), je, jdc));
                 } else {
                     f.set(o, jdc.deserialize(je, f.getType()));
                 }
@@ -49,15 +49,22 @@ public class SyncanoObjectDeserializer implements JsonDeserializer<SyncanoObject
         }
     }
 
-    private SyncanoObject parseSyncanoObject(SyncanoObject syncanoObject, Type type, JsonObject jo, JsonDeserializationContext jdc) {
-        // if received only reference id, replace old object by created
-        SyncanoObject referenceSyncanoObject = getReferenceSyncanoObject(syncanoObject, type, jo);
-        if (referenceSyncanoObject != null) return referenceSyncanoObject;
+    private SyncanoObject parseSyncanoObject(SyncanoObject syncanoObject, Type type, JsonElement je, JsonDeserializationContext jdc) {
+        // when received only reference id as a json primitive
+        if (je.isJsonPrimitive() && !je.isJsonNull()) {
+            return createSyncanoObjectWithId(syncanoObject, type, je.getAsInt());
+        }
 
+        // when received only reference id in a json object
+        JsonObject jo = je.getAsJsonObject();
+        if (!jo.has(Entity.FIELD_ID) && jo.has(FIELD_VALUE)) {
+            return createSyncanoObjectWithId(syncanoObject, type, jo.get(FIELD_VALUE).getAsInt());
+        }
+
+        // when received full syncano object parse it
         if (syncanoObject == null) {
             syncanoObject = createSyncanoObject((Class<? extends SyncanoObject>) type);
         }
-        // if received full syncano object parse it
         Collection<Field> fields = SyncanoClassHelper.findAllSyncanoFields((Class) type);
         for (Field field : fields) {
             field.setAccessible(true);
@@ -73,27 +80,13 @@ public class SyncanoObjectDeserializer implements JsonDeserializer<SyncanoObject
         return syncanoObject;
     }
 
-    private SyncanoObject getReferenceSyncanoObject(SyncanoObject syncanoObject, Type type, JsonObject jo) {
-        Integer referenceId = getIdFromReference(jo);
-        if (referenceId != null) {
-            return parseSyncanoReference(syncanoObject, type, referenceId);
+    private SyncanoObject createSyncanoObjectWithId(SyncanoObject oldObject, Type type, int id) {
+        if (oldObject == null || oldObject.getId() == null || id != oldObject.getId()) {
+            SyncanoObject newObject = createSyncanoObject((Class<? extends SyncanoObject>) type);
+            newObject.setId(id);
+            return newObject;
         }
-        return null;
-    }
-
-    private SyncanoObject parseSyncanoReference(SyncanoObject syncanoObject, Type type, Integer referenceId) {
-        if (syncanoObject == null || !referenceId.equals(syncanoObject.getId())) {
-            syncanoObject = createSyncanoObject((Class<? extends SyncanoObject>) type);
-            syncanoObject.setId(referenceId);
-        }
-        return syncanoObject;
-    }
-
-    private Integer getIdFromReference(JsonObject jo) {
-        if (!jo.has(Entity.FIELD_ID) && jo.has(FIELD_VALUE)) {
-            return jo.get(FIELD_VALUE).getAsInt();
-        }
-        return null;
+        return oldObject;
     }
 
     public static SyncanoObject createSyncanoObject(Class<? extends SyncanoObject> clazz) {

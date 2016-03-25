@@ -20,17 +20,18 @@ public class OfflineTest extends SyncanoApplicationTestCase {
     }
 
     public void testOffline() throws InterruptedException {
-
         ArrayList<AllTypesObject> list = new ArrayList<>();
         for (int i = 1; i <= 3; i++) {
-            Response<AllTypesObject> resp = AllTypesObject.generateObject(null).save();
+            AllTypesObject o = AllTypesObject.generateObject();
+            assertTrue(o.reference.save().isSuccess());
+            assertTrue(o.someReference.save().isSuccess());
+            Response<AllTypesObject> resp = o.save();
             assertTrue(resp.isSuccess());
             list.add(resp.getData());
         }
 
         OfflineHelper.clearTable(getContext(), AllTypesObject.class);
         OfflineHelper.writeObjects(getContext(), list, AllTypesObject.class);
-
         List<AllTypesObject> got = OfflineHelper.readObjects(getContext(), AllTypesObject.class);
         assertEquals(list.size(), got.size());
 
