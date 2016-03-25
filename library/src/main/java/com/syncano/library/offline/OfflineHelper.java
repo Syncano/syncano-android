@@ -19,12 +19,14 @@ import com.syncano.library.utils.SyncanoClassHelper;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 public class OfflineHelper {
     private final static int VERSION = 1;
     private final static String TABLE_NAME = "syncano";
+    private static HashSet<String> checkedUpdates = new HashSet<>();
 
     public static <T extends SyncanoObject> List<T> readObjects(Context ctx, final Class<T> type) {
         SQLiteOpenHelper sqlHelper = getSQLiteOpenHelper(ctx, type);
@@ -65,6 +67,15 @@ public class OfflineHelper {
             // insert requires one column that is nullable, weird but has to live with it
             db.insert(TABLE_NAME, SyncanoObject.FIELD_CHANNEL, values);
         }
+    }
+
+    private static <T extends SyncanoObject> SQLiteOpenHelper initDb(Context ctx, Class<T> type) {
+        String dbName = getDbName(type);
+        SQLiteOpenHelper sqlite = getSQLiteOpenHelper(ctx, type);
+        if (checkedUpdates.contains(dbName)) {
+            return sqlite;
+        }
+        
     }
 
     private static <T extends SyncanoObject> SQLiteOpenHelper getSQLiteOpenHelper(Context ctx, final Class<T> type) {

@@ -1,5 +1,7 @@
 package com.syncano.library;
 
+import com.syncano.library.Model.AllTypesObject;
+import com.syncano.library.Model.SomeObjectVersion1;
 import com.syncano.library.api.Response;
 import com.syncano.library.offline.OfflineHelper;
 
@@ -9,27 +11,28 @@ import java.util.List;
 public class OfflineTest extends SyncanoApplicationTestCase {
     public void setUp() throws Exception {
         super.setUp();
-        createClass(SomeObject.class);
+        createClass(SomeObjectVersion1.class);
         createClass(AllTypesObject.class);
-        OfflineHelper.clearTable(getContext(), AllTypesObject.class);
-        OfflineHelper.clearTable(getContext(), SomeObject.class);
     }
 
     public void tearDown() throws Exception {
         removeClass(AllTypesObject.class);
-        removeClass(SomeObject.class);
+        removeClass(SomeObjectVersion1.class);
         super.tearDown();
     }
 
-    public void testOffline() throws InterruptedException {
+    public void testReadWrite() throws InterruptedException {
+        OfflineHelper.clearTable(getContext(), AllTypesObject.class);
+        OfflineHelper.clearTable(getContext(), SomeObjectVersion1.class);
+
         ArrayList<AllTypesObject> list = new ArrayList<>();
-        ArrayList<SomeObject> someList = new ArrayList<>();
+        ArrayList<SomeObjectVersion1> someList = new ArrayList<>();
         for (int i = 1; i <= 3; i++) {
             AllTypesObject o = AllTypesObject.generateObject();
             Response<AllTypesObject> respRef = o.reference.save();
             assertTrue(respRef.isSuccess());
             list.add(respRef.getData());
-            Response<SomeObject> respSomeRef = o.someReference.save();
+            Response<SomeObjectVersion1> respSomeRef = o.someReference.save();
             assertTrue(respSomeRef.isSuccess());
             someList.add(respSomeRef.getData());
             Response<AllTypesObject> resp = o.save();
@@ -49,10 +52,12 @@ public class OfflineTest extends SyncanoApplicationTestCase {
             }
         }
 
-        OfflineHelper.writeObjects(getContext(), someList, SomeObject.class);
-        List<SomeObject> gotSome = OfflineHelper.readObjects(getContext(), SomeObject.class);
+        OfflineHelper.writeObjects(getContext(), someList, SomeObjectVersion1.class);
+        List<SomeObjectVersion1> gotSome = OfflineHelper.readObjects(getContext(), SomeObjectVersion1.class);
         assertEquals(someList.size(), gotSome.size());
     }
 
+    public void testMigration() {
 
+    }
 }
