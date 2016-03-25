@@ -10,7 +10,12 @@ import java.lang.reflect.Type;
 
 class FileDeserializer implements JsonDeserializer<SyncanoFile> {
     public SyncanoFile deserialize(JsonElement json, Type type, JsonDeserializationContext jdc) throws JsonParseException {
-        String link = json.getAsJsonObject().get("value").getAsString();
-        return new SyncanoFile(link);
+        String linkString;
+        if (json.isJsonPrimitive()) {
+            linkString = json.getAsJsonPrimitive().getAsString();
+        } else {
+            linkString = json.getAsJsonObject().get("value").getAsString();
+        }
+        return new SyncanoFile(linkString);
     }
 }
