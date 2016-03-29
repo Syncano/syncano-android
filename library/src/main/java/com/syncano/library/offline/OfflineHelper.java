@@ -17,6 +17,7 @@ import com.syncano.library.parser.GsonParser;
 import com.syncano.library.utils.SyncanoClassHelper;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -26,10 +27,11 @@ import java.util.Map;
 public class OfflineHelper {
     private final static int VERSION = 1;
     private final static String TABLE_NAME = "syncano";
+    private final static String MIGRATE_METHOD_NAME = "migrate";
     private static HashSet<String> checkedUpdates = new HashSet<>();
 
     public static <T extends SyncanoObject> List<T> readObjects(Context ctx, final Class<T> type) {
-        SQLiteOpenHelper sqlHelper = getSQLiteOpenHelper(ctx, type);
+        SQLiteOpenHelper sqlHelper = initDb(ctx, type);
         SQLiteDatabase db = sqlHelper.getReadableDatabase();
         ArrayList<T> list = new ArrayList<>();
         Cursor c = db.query(TABLE_NAME, null, null, null, null, null, null);
@@ -51,7 +53,7 @@ public class OfflineHelper {
     }
 
     public static <T extends SyncanoObject> void writeObjects(Context ctx, List<T> objects, Class<T> type) {
-        SQLiteOpenHelper sqlHelper = getSQLiteOpenHelper(ctx, type);
+        SQLiteOpenHelper sqlHelper = initDb(ctx, type);
         SQLiteDatabase db = sqlHelper.getWritableDatabase();
         GsonParser.GsonParseConfig config = new GsonParser.GsonParseConfig();
         config.serializeReadOnlyFields = true;
@@ -69,16 +71,44 @@ public class OfflineHelper {
         }
     }
 
-    private static <T extends SyncanoObject> SQLiteOpenHelper initDb(Context ctx, Class<T> type) {
+    private static SQLiteOpenHelper initDb(Context ctx, Class<? extends SyncanoObject> type) {
         String dbName = getDbName(type);
-        SQLiteOpenHelper sqlite = getSQLiteOpenHelper(ctx, type);
-        if (checkedUpdates.contains(dbName)) {
-            return sqlite;
+        if (type.getAnnotation(SyncanoClass.class).version() == 1 || checkedUpdates.contains(dbName)) {
+            return getSQLiteOpenHelper(ctx, type);
         }
-        
+
+        Class<? extends SyncanoObject> typeToCheck = type.getAnnotation(SyncanoClass.class).previousVersion();
+        while (!migrate(ctx, typeToCheck, type)) {
+            if (SyncanoClass.NOT_SET.class.equals(typeToCheck)) {
+                break;
+            }
+            typeToCheck = typeToCheck.getAnnotation(SyncanoClass.class).previousVersion();
+        }
+
+        return getSQLiteOpenHelper(ctx, type);
     }
 
-    private static <T extends SyncanoObject> SQLiteOpenHelper getSQLiteOpenHelper(Context ctx, final Class<T> type) {
+    private static boolean migrate(Context ctx, Class<? extends SyncanoObject> oldType, Class<? extends SyncanoObject> type) {
+        if (SyncanoClass.NOT_SET.class.equals(oldType)) {
+            return false;
+        }
+        String oldDbName = getDbName(oldType);
+        if (!dbExists(ctx, oldDbName)) {
+            return false;
+        }
+        checkedUpdates.add(oldDbName);
+        checkedUpdates.add(getDbName(type));
+        try {
+            Method m = type.getMethod(MIGRATE_METHOD_NAME, int.class);
+            m.invoke(null, oldType.getAnnotation(SyncanoClass.class).version());
+        } catch (Exception e) {
+            // ignored, can be missing
+        }
+        ctx.deleteDatabase(oldDbName);
+        return true;
+    }
+
+    private static SQLiteOpenHelper getSQLiteOpenHelper(Context ctx, final Class<? extends SyncanoObject> type) {
         return new SQLiteOpenHelper(ctx, getDbName(type), null, VERSION) {
             @Override
             public void onCreate(SQLiteDatabase db) {
@@ -92,7 +122,19 @@ public class OfflineHelper {
         };
     }
 
-    private static <T extends SyncanoObject> String generateCreateSql(Class<T> type) {
+    private static boolean dbExists(Context ctx, String dbName) {
+        SQLiteDatabase checkDB = null;
+        try {
+            checkDB = SQLiteDatabase.openDatabase(ctx.getDatabasePath(dbName).getPath(), null,
+                    SQLiteDatabase.OPEN_READONLY);
+            checkDB.close();
+        } catch (Exception e) {
+            // database doesn't exist yet.
+        }
+        return checkDB != null;
+    }
+
+    private static String generateCreateSql(Class<? extends SyncanoObject> type) {
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE ");
         sb.append(TABLE_NAME);
@@ -132,14 +174,18 @@ public class OfflineHelper {
         throw new RuntimeException("Can't get type of field " + SyncanoClassHelper.getFieldName(f));
     }
 
-    private static <T extends SyncanoObject> String getDbName(Class<T> type) {
+    private static String getDbName(Class<? extends SyncanoObject> type) {
         SyncanoClass syncanoClass = type.getAnnotation(SyncanoClass.class);
         return syncanoClass.name() + "_" + syncanoClass.version();
     }
 
-    public static <T extends SyncanoObject> void clearTable(Context ctx, Class<T> type) {
-        SQLiteOpenHelper sqlHelper = getSQLiteOpenHelper(ctx, type);
+    public static void clearTable(Context ctx, Class<? extends SyncanoObject> type) {
+        SQLiteOpenHelper sqlHelper = initDb(ctx, type);
         SQLiteDatabase db = sqlHelper.getWritableDatabase();
         db.delete(TABLE_NAME, null, null);
+    }
+
+    public static void deleteDatabase(Context ctx, Class<? extends SyncanoObject> type) {
+        ctx.deleteDatabase(getDbName(type));
     }
 }

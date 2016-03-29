@@ -157,22 +157,22 @@ public class AllTypesObject extends SyncanoObject {
         o.valuesEnum = EnumWithValues.OTHER_VALUE;
         o.date = new Date();
         o.nanosDate = new NanosDate(o.date.getTime(), rnd.nextInt(999));
-        o.stringVal = generateString(rnd.nextInt(128));
-        o.text = generateString(rnd.nextInt(32000));
+        o.stringVal = StringGenerator.generate(rnd.nextInt(128));
+        o.text = StringGenerator.generate(rnd.nextInt(32000));
         if (withReference) {
             o.reference = generateObject(null, false);
         } else {
             o.reference = null;
         }
-        o.someReference = new SomeObjectVersion1(generateString(20), rnd.nextInt(), (byte) rnd.nextInt());
+        o.someReference = new SomeObjectVersion1(StringGenerator.generate(20), rnd.nextInt(), (byte) rnd.nextInt());
         o.yesOrNo = rnd.nextBoolean();
         o.yesOrNoObj = rnd.nextBoolean();
         o.someFloat = rnd.nextFloat();
         o.someFloatObj = rnd.nextFloat();
         o.someDouble = rnd.nextDouble();
         o.someDoubleObj = rnd.nextDouble();
-        o.file = new SyncanoFile(generateString(50000).getBytes());
-        o.otherFile = new SyncanoFile(generateString(50000).getBytes());
+        o.file = new SyncanoFile(StringGenerator.generate(50000).getBytes());
+        o.otherFile = new SyncanoFile(StringGenerator.generate(50000).getBytes());
         return o;
     }
 
@@ -182,16 +182,6 @@ public class AllTypesObject extends SyncanoObject {
 
     public static AllTypesObject generateObject() {
         return generateObject(null);
-    }
-
-    public static String generateString(int len) {
-        String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz       ";
-        Random rnd = new Random();
-        StringBuilder sb = new StringBuilder(len);
-        for (int i = 0; i < len; i++) {
-            sb.append(AB.charAt(rnd.nextInt(AB.length())));
-        }
-        return sb.toString();
     }
 }
 
