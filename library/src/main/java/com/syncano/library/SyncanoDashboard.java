@@ -48,6 +48,10 @@ public class SyncanoDashboard extends Syncano {
         super(customServerUrl, apiKey, instanceName, androidContext);
     }
 
+    public SyncanoDashboard(String customServerUrl, String apiKey, String instanceName, Context androidContext, boolean useLoggedUserStorage) {
+        super(customServerUrl, apiKey, instanceName, androidContext, useLoggedUserStorage);
+    }
+
     /**
      * Create a CodeBox.
      *

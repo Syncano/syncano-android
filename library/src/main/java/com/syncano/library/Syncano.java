@@ -21,7 +21,6 @@ import com.syncano.library.data.Trace;
 import com.syncano.library.data.User;
 import com.syncano.library.data.Webhook;
 import com.syncano.library.simple.RequestBuilder;
-import com.syncano.library.utils.Encryption;
 import com.syncano.library.utils.SyncanoClassHelper;
 import com.syncano.library.utils.UserMemory;
 import com.syncano.library.utils.Validate;
@@ -34,6 +33,8 @@ public class Syncano {
     protected AbstractUser user;
     protected String instanceName;
     private Context androidContext = null;
+    private boolean strictCheckCertificate = false;
+    private boolean useLoggedUserStorage = true;
 
     /**
      * Create Syncano object. When using this constructor most functions will not work, because api key
@@ -93,11 +94,25 @@ public class Syncano {
      * @param androidContext  Used for android specific functions, for example saving logged in user data
      */
     public Syncano(String customServerUrl, String apiKey, String instanceName, Context androidContext) {
+        this(customServerUrl, apiKey, instanceName, androidContext, null);
+    }
+
+    /**
+     * Create Syncano object.
+     *
+     * @param customServerUrl      If not set, production URL will be used.
+     * @param apiKey               Api key.
+     * @param instanceName         Syncano instanceName related with apiKey.
+     * @param androidContext       Used for android specific functions, for example saving logged in user data
+     * @param useLoggedUserStorage Will save logged user credentials to storage and keep his user key
+     */
+    public Syncano(String customServerUrl, String apiKey, String instanceName, Context androidContext, Boolean useLoggedUserStorage) {
         this.customServerUrl = customServerUrl;
         this.apiKey = apiKey;
         this.instanceName = instanceName;
         this.androidContext = androidContext;
-        this.user = UserMemory.getUserFromStorage(this);
+        if (useLoggedUserStorage != null) this.useLoggedUserStorage = useLoggedUserStorage;
+        if (this.useLoggedUserStorage) this.user = UserMemory.getUserFromStorage(this);
     }
 
     /**
@@ -153,15 +168,21 @@ public class Syncano {
         return init(null, apiKey, instanceName);
     }
 
+
+    public boolean isStrictCheckedCertificate() {
+        return strictCheckCertificate;
+    }
+
     /**
      * By default this library checks if certificate that is used for https encryption is exactly
      * the right one.
      *
-     * @param strictCheck If set to false, https certificate will be still checked, if it's trusted.
-     *                    It will not check if it's exactly the one built into this library.
+     * @param strictCheckCertificate If set to false, https certificate will be still checked, if it's trusted.
+     *                               It will not check if it's exactly the one built into this library.
      */
-    public static void setStrictCheckCertificate(boolean strictCheck) {
-        Encryption.setStrictCheckCertificate(strictCheck);
+    public Syncano setStrictCheckCertificate(boolean strictCheckCertificate) {
+        this.strictCheckCertificate = strictCheckCertificate;
+        return this;
     }
 
     /**
@@ -243,6 +264,13 @@ public class Syncano {
         return user.getUserKey();
     }
 
+    public Syncano setUserKey(String userKey) {
+        User user = new User();
+        user.setUserKey(userKey);
+        setUser(user);
+        return this;
+    }
+
     /**
      * @return User. It will be set, when user logged in using this instance or if it was set in setUser().
      * If not null, its user key will be added automatically to requests.
@@ -254,9 +282,11 @@ public class Syncano {
     /**
      * If set, this instance will behave as this user is logged in. Its user key will be added automatically to requests.
      */
-    public void setUser(AbstractUser user) {
+    public Syncano setUser(AbstractUser user) {
         this.user = user;
-        UserMemory.saveUserToStorage(this, user);
+        if (useLoggedUserStorage)
+            UserMemory.saveUserToStorage(this, user);
+        return this;
     }
 
     /**
@@ -270,8 +300,9 @@ public class Syncano {
      * @param ctx Connect context to this instance. Functions that require context will work.
      *            For example saving logged in user to persistent memory.
      */
-    public void setAndroidContext(Context ctx) {
+    public Syncano setAndroidContext(Context ctx) {
         androidContext = ctx;
+        return this;
     }
 
     /**
@@ -1007,5 +1038,6 @@ public class Syncano {
         }
         return req;
     }
+
 
 }

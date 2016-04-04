@@ -3,12 +3,14 @@ package com.syncano.library.tests;
 import com.syncano.library.BuildConfig;
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
+import com.syncano.library.SyncanoBuilder;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.DataObjectPermissions;
 import com.syncano.library.choice.SyncanoClassPermissions;
 import com.syncano.library.data.Group;
 import com.syncano.library.data.GroupMembership;
+import com.syncano.library.data.Profile;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.User;
@@ -20,6 +22,7 @@ import org.junit.Test;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -187,6 +190,48 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
         List<Something> soms2 = respGetObjWithPerm.getData();
         assertNotNull(soms2);
         assertTrue(soms2.size() > 0);
+    }
+
+    @Test
+    public void testManualUserKey() {
+        // create user syncano
+        Syncano s = new SyncanoBuilder().apiKey(BuildConfig.API_KEY_USERS).instanceName(BuildConfig.INSTANCE_NAME)
+                .useLoggedUserStorage(false).build();
+        // register user
+        User newUser = new User(USER_NAME, PASSWORD);
+        Response<User> responseCreateUser = s.registerUser(newUser).send();
+
+        assertTrue(responseCreateUser.isSuccess());
+        assertNotNull(responseCreateUser.getData());
+        User user = responseCreateUser.getData();
+        String userKey = responseCreateUser.getData().getUserKey();
+
+        // create new class
+        SyncanoClass newClazz = new SyncanoClass(Something.class);
+        Response<SyncanoClass> classResp = syncano.createSyncanoClass(newClazz).send();
+        assertTrue(classResp.isSuccess());
+        // create object
+        Something newSom = new Something();
+        newSom.someText = "some text";
+        newSom.setOwnerPermissions(DataObjectPermissions.WRITE);
+        newSom.setOtherPermissions(DataObjectPermissions.NONE);
+        newSom.setOwner(user.getId());
+        Response<Something> respCreateObj = syncano.createObject(newSom).send();
+        assertTrue(respCreateObj.isSuccess());
+        Something som = respCreateObj.getData();
+        assertNotNull(som);
+
+        // get object on new clean syncano should fail
+        Response<Something> respGet = new SyncanoBuilder().apiKey(BuildConfig.API_KEY_USERS).instanceName(BuildConfig.INSTANCE_NAME)
+                .useLoggedUserStorage(false).build().getObject(Something.class, som.getId()).send();
+        assertFalse(respGet.isSuccess());
+
+        // get profile on syncano with user key set, should return success
+        s = new SyncanoBuilder().apiKey(BuildConfig.API_KEY_USERS).instanceName(BuildConfig.INSTANCE_NAME)
+                .useLoggedUserStorage(false).build().setUserKey(userKey);
+        respGet = s.getObject(Something.class, som.getId()).send();
+        assertTrue(respGet.isSuccess());
+        assertNotNull(respGet.getData());
     }
 
     @com.syncano.library.annotation.SyncanoClass(name = "just_something")

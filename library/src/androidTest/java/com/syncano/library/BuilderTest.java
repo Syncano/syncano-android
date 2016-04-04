@@ -9,10 +9,9 @@ import com.syncano.library.data.User;
 
 import java.util.List;
 
-public class PermissionsTest extends SyncanoApplicationTestCase {
+public class BuilderTest extends SyncanoApplicationTestCase {
     private static final String USER_NAME = "testuser";
     private static final String PASSWORD = "password";
-    private Syncano userSyncano;
 
     public void setUp() throws Exception {
         super.setUp();
@@ -22,8 +21,6 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
 
         //delete class
         removeClass(Something.class);
-
-        userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME, getContext());
     }
 
 
@@ -31,7 +28,10 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
         super.tearDown();
     }
 
-    public void testUserPermissionOnObject() {
+    public void testBuilder() {
+        Syncano userSyncano = new SyncanoBuilder().useLoggedUserStorage(false).androidContext(getContext()).
+                apiKey(BuildConfig.API_KEY_USERS).instanceName(BuildConfig.INSTANCE_NAME).build();
+
         // register user
         User newUser = new User(USER_NAME, PASSWORD);
         Response<User> response = userSyncano.registerUser(newUser).send();
@@ -77,25 +77,21 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
         assertTrue(soms2.size() > 0);
 
         // check if user configuration will survive creating new syncano object
-        userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME, getContext());
+        userSyncano = new SyncanoBuilder().useLoggedUserStorage(true).androidContext(getContext()).
+                apiKey(BuildConfig.API_KEY_USERS).instanceName(BuildConfig.INSTANCE_NAME).build();
         Response<List<Something>> respNewSyn = userSyncano.getObjects(Something.class).send();
+        assertFalse(respNewSyn.isSuccess());
+        userSyncano.setUser(newUser);
+
+        // again check if user configuration will survive creating new syncano object
+        new SyncanoBuilder().useLoggedUserStorage(true).androidContext(getContext()).
+                apiKey(BuildConfig.API_KEY_USERS).instanceName(BuildConfig.INSTANCE_NAME).setAsGlobalInstance(true).build();
+
+        respNewSyn = Syncano.getInstance().getObjects(Something.class).send();
         assertTrue(respNewSyn.isSuccess());
         soms2 = respNewSyn.getData();
         assertNotNull(respNewSyn);
         assertTrue(soms2.size() > 0);
-
-        // user configuration not available without context
-        userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME);
-        Response<List<Something>> respNoCtx = userSyncano.getObjects(Something.class).send();
-        assertEquals(Response.HTTP_CODE_FORBIDDEN, respNoCtx.getHttpResultCode());
-
-        // check if possible to logout user
-        userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME, getContext());
-        userSyncano.setUser(null);
-
-        userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME, getContext());
-        assertNull(userSyncano.getUser());
-        assertNull(userSyncano.getUserKey());
     }
 
     @com.syncano.library.annotation.SyncanoClass(name = "just_something")
