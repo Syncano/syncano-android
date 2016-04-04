@@ -180,8 +180,9 @@ public class Syncano {
      * @param strictCheckCertificate If set to false, https certificate will be still checked, if it's trusted.
      *                               It will not check if it's exactly the one built into this library.
      */
-    public void setStrictCheckCertificate(boolean strictCheckCertificate) {
+    public Syncano setStrictCheckCertificate(boolean strictCheckCertificate) {
         this.strictCheckCertificate = strictCheckCertificate;
+        return this;
     }
 
     /**
@@ -263,6 +264,13 @@ public class Syncano {
         return user.getUserKey();
     }
 
+    public Syncano setUserKey(String userKey) {
+        User user = new User();
+        user.setUserKey(userKey);
+        setUser(user);
+        return this;
+    }
+
     /**
      * @return User. It will be set, when user logged in using this instance or if it was set in setUser().
      * If not null, its user key will be added automatically to requests.
@@ -274,10 +282,11 @@ public class Syncano {
     /**
      * If set, this instance will behave as this user is logged in. Its user key will be added automatically to requests.
      */
-    public void setUser(AbstractUser user) {
+    public Syncano setUser(AbstractUser user) {
         this.user = user;
         if (useLoggedUserStorage)
             UserMemory.saveUserToStorage(this, user);
+        return this;
     }
 
     /**
@@ -291,8 +300,9 @@ public class Syncano {
      * @param ctx Connect context to this instance. Functions that require context will work.
      *            For example saving logged in user to persistent memory.
      */
-    public void setAndroidContext(Context ctx) {
+    public Syncano setAndroidContext(Context ctx) {
         androidContext = ctx;
+        return this;
     }
 
     /**
@@ -1028,4 +1038,6 @@ public class Syncano {
         }
         return req;
     }
+
+
 }
