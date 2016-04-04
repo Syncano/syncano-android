@@ -49,6 +49,7 @@ public class OfflineHelper {
             c.moveToNext();
         }
         c.close();
+        db.close();
         return list;
     }
 
@@ -69,6 +70,7 @@ public class OfflineHelper {
             // insert requires one column that is nullable, weird but has to live with it
             db.insert(TABLE_NAME, SyncanoObject.FIELD_CHANNEL, values);
         }
+        db.close();
     }
 
     private static SQLiteOpenHelper initDb(Context ctx, Class<? extends SyncanoObject> type) {
@@ -88,15 +90,21 @@ public class OfflineHelper {
         return getSQLiteOpenHelper(ctx, type);
     }
 
+    public static void reinitHelper() {
+        checkedUpdates = new HashSet<>();
+    }
+
     private static boolean migrate(Context ctx, Class<? extends SyncanoObject> oldType, Class<? extends SyncanoObject> type) {
         if (SyncanoClass.NOT_SET.class.equals(oldType)) {
             return false;
         }
+
         String oldDbName = getDbName(oldType);
+        checkedUpdates.add(oldDbName);
         if (!dbExists(ctx, oldDbName)) {
             return false;
         }
-        checkedUpdates.add(oldDbName);
+
         checkedUpdates.add(getDbName(type));
         try {
             Method m = type.getMethod(MIGRATE_METHOD_NAME, int.class);
@@ -128,10 +136,14 @@ public class OfflineHelper {
             checkDB = SQLiteDatabase.openDatabase(ctx.getDatabasePath(dbName).getPath(), null,
                     SQLiteDatabase.OPEN_READONLY);
             checkDB.close();
+            return true;
         } catch (Exception e) {
-            // database doesn't exist yet.
+            if (checkDB != null) {
+                checkDB.close();
+            }
+            // database doesn't exist yet
+            return false;
         }
-        return checkDB != null;
     }
 
     private static String generateCreateSql(Class<? extends SyncanoObject> type) {

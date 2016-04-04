@@ -14,6 +14,7 @@ import java.util.List;
 public class OfflineTest extends SyncanoApplicationTestCase {
     public void setUp() throws Exception {
         super.setUp();
+        OfflineHelper.reinitHelper();
     }
 
     public void tearDown() throws Exception {
@@ -89,6 +90,7 @@ public class OfflineTest extends SyncanoApplicationTestCase {
     }
 
     public void testMigration2To3() throws InterruptedException {
+        OfflineHelper.deleteDatabase(getContext(), SomeObjectVersion1.class);
         OfflineHelper.deleteDatabase(getContext(), SomeObjectVersion2.class);
         OfflineHelper.deleteDatabase(getContext(), SomeObjectVersion3.class);
 
@@ -114,6 +116,7 @@ public class OfflineTest extends SyncanoApplicationTestCase {
     }
 
     public void testMigration3To4() throws InterruptedException {
+        OfflineHelper.deleteDatabase(getContext(), SomeObjectVersion2.class);
         OfflineHelper.deleteDatabase(getContext(), SomeObjectVersion3.class);
         OfflineHelper.deleteDatabase(getContext(), SomeObjectVersion4.class);
 
