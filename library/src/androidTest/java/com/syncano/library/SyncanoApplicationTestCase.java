@@ -24,8 +24,8 @@ public class SyncanoApplicationTestCase extends ApplicationTestCase<Application>
     }
 
     public void setUp() throws Exception {
-        Syncano.init(BuildConfig.STAGING_SERVER_URL, BuildConfig.API_KEY, BuildConfig.INSTANCE_NAME, getContext());
         syncano = new SyncanoDashboard(BuildConfig.STAGING_SERVER_URL, BuildConfig.API_KEY, BuildConfig.INSTANCE_NAME, getContext());
+        Syncano.setInstance(syncano);
         SyncanoLog.initLogger(new SyncanoLogger() {
             @Override
             public void d(String tag, String message) {
@@ -83,6 +83,7 @@ public class SyncanoApplicationTestCase extends ApplicationTestCase<Application>
             for (User u : response.getData()) {
                 if (userName.equals(u.getUserName())) {
                     syncano.deleteUser(u.getId()).send();
+                    break;
                 }
             }
         }

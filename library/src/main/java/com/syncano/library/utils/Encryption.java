@@ -26,7 +26,7 @@ public class Encryption {
      *
      * @return new http client
      */
-    public static DefaultHttpClient getHttpClient() {
+    public static DefaultHttpClient getHttpClient(boolean strictCheckCertificate) {
         HttpParams params = new BasicHttpParams();
         HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
         HttpProtocolParams.setContentCharset(params, "utf-8");
@@ -69,9 +69,5 @@ public class Encryption {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public static void setStrictCheckCertificate(boolean strictCheck) {
-        strictCheckCertificate = strictCheck;
     }
 }

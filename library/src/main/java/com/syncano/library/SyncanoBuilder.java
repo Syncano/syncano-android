@@ -7,7 +7,7 @@ public class SyncanoBuilder {
     private String instanceName = null;
     private String apiKey = null;
     private String customServerUrl = null;
-    private boolean rememberLoggedUser = true;
+    private boolean useLoggedUserStorage = true;
     private boolean strictCheckCertificate = false;
     private Context androidContext = null;
     private boolean global = true;
@@ -28,7 +28,7 @@ public class SyncanoBuilder {
     }
 
     public SyncanoBuilder useLoggedUserStorage(boolean rememberUser) {
-        this.rememberLoggedUser = rememberUser;
+        this.useLoggedUserStorage = rememberUser;
         return this;
     }
 
@@ -42,14 +42,17 @@ public class SyncanoBuilder {
         return this;
     }
 
-    public SyncanoBuilder globalInstance(boolean global) {
+    public SyncanoBuilder setAsGlobalInstance(boolean global) {
         this.global = global;
         return this;
     }
 
     public Syncano build() {
-        Syncano s = new Syncano();
-        s.set
+        SyncanoDashboard s = new SyncanoDashboard(customServerUrl, apiKey, instanceName, androidContext, useLoggedUserStorage);
+        s.setStrictCheckCertificate(strictCheckCertificate);
+        if (global) {
+            Syncano.setInstance(s);
+        }
         return s;
     }
 }

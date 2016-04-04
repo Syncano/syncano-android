@@ -23,11 +23,13 @@ public abstract class HttpRequest<T> extends Request<T> {
     private String completeCustomUrl;
     private HashSet<Integer> correctHttpResponse = new HashSet<>();
     private boolean longConnectionTimeout = false;
+    private boolean strictCheckCertificate = false;
 
     protected HttpRequest(String path, Syncano syncano) {
         super(syncano);
         this.path = path;
         this.url = syncano.getUrl();
+        this.strictCheckCertificate = syncano.isStrictCheckedCertificate();
         if (syncano.getApiKey() != null && !syncano.getApiKey().isEmpty()) {
             setHttpHeader("X-API-KEY", syncano.getApiKey());
         }
@@ -53,6 +55,10 @@ public abstract class HttpRequest<T> extends Request<T> {
      */
     public JsonElement prepareJsonParams() {
         return null;
+    }
+
+    public boolean isStrictCheckedCertificate() {
+        return strictCheckCertificate;
     }
 
     /**

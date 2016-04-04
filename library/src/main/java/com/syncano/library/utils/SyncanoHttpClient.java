@@ -82,7 +82,7 @@ public class SyncanoHttpClient {
             request.setHeader(header.getName(), header.getValue());
         }
 
-        DefaultHttpClient httpclient = Encryption.getHttpClient();
+        DefaultHttpClient httpclient = Encryption.getHttpClient(syncanoRequest.isStrictCheckedCertificate());
         httpclient.getParams().setParameter(CoreProtocolPNames.USER_AGENT, Constants.USER_AGENT);
         HttpParams httpParameters = httpclient.getParams();
         if (timeout != NOT_SET) {
