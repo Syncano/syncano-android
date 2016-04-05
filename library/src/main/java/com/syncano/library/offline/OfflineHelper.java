@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ public class OfflineHelper {
     private final static int VERSION = 1;
     private final static String TABLE_NAME = "syncano";
     private final static String MIGRATE_METHOD_NAME = "migrate";
-    private static HashSet<String> checkedUpdates = new HashSet<>();
+    private static HashSet<String> checkedMigrations = new HashSet<>();
 
     public static <T extends SyncanoObject> List<T> readObjects(Context ctx, final Class<T> type) {
         SQLiteOpenHelper sqlHelper = initDb(ctx, type);
@@ -75,45 +76,56 @@ public class OfflineHelper {
 
     private static SQLiteOpenHelper initDb(Context ctx, Class<? extends SyncanoObject> type) {
         String dbName = getDbName(type);
-        if (type.getAnnotation(SyncanoClass.class).version() == 1 || checkedUpdates.contains(dbName)) {
+        if (type.getAnnotation(SyncanoClass.class).version() == 1 || checkedMigrations.contains(dbName)) {
             return getSQLiteOpenHelper(ctx, type);
         }
 
-        Class<? extends SyncanoObject> typeToCheck = type.getAnnotation(SyncanoClass.class).previousVersion();
-        while (!migrate(ctx, typeToCheck, type)) {
-            if (SyncanoClass.NOT_SET.class.equals(typeToCheck)) {
-                break;
-            }
-            typeToCheck = typeToCheck.getAnnotation(SyncanoClass.class).previousVersion();
-        }
+        LinkedList<Class<? extends SyncanoObject>> versions = new LinkedList<>();
+        Class<? extends SyncanoObject> typeToCheck = type;
+        do {
+            versions.push(typeToCheck);
+            typeToCheck = versions.peek().getAnnotation(SyncanoClass.class).previousVersion();
+        } while (!migrate(ctx, versions, typeToCheck));
 
         return getSQLiteOpenHelper(ctx, type);
     }
 
     public static void reinitHelper() {
-        checkedUpdates = new HashSet<>();
+        checkedMigrations = new HashSet<>();
     }
 
-    private static boolean migrate(Context ctx, Class<? extends SyncanoObject> oldType, Class<? extends SyncanoObject> type) {
-        if (SyncanoClass.NOT_SET.class.equals(oldType)) {
-            return false;
+    private static boolean migrate(Context ctx, LinkedList<Class<? extends SyncanoObject>> versions, Class<? extends SyncanoObject> oldTypeToCheck) {
+        if (SyncanoClass.NOT_SET.class.equals(oldTypeToCheck)) {
+            return true;
         }
 
-        String oldDbName = getDbName(oldType);
-        checkedUpdates.add(oldDbName);
+        String oldDbName = getDbName(oldTypeToCheck);
+        checkedMigrations.add(oldDbName);
         if (!dbExists(ctx, oldDbName)) {
             return false;
         }
+        performMigration(ctx, versions, oldTypeToCheck);
+        return true;
+    }
 
-        checkedUpdates.add(getDbName(type));
+    private static void performMigration(Context ctx, LinkedList<Class<? extends SyncanoObject>> versions, Class<? extends SyncanoObject> foundOldVersion) {
+        Class<? extends SyncanoObject> type = versions.pollLast();
+        checkedMigrations.add(getDbName(type));
         try {
             Method m = type.getMethod(MIGRATE_METHOD_NAME, int.class);
-            m.invoke(null, oldType.getAnnotation(SyncanoClass.class).version());
-        } catch (Exception e) {
-            // ignored, can be missing
+            m.invoke(null, foundOldVersion.getAnnotation(SyncanoClass.class).version());
+        } catch (Exception e1) {
+            // no migrate(int version) method so calling migrate()
+            try {
+                Method m = type.getMethod(MIGRATE_METHOD_NAME);
+                if (!versions.isEmpty())
+                    performMigration(ctx, versions, foundOldVersion);
+                m.invoke(null);
+            } catch (Exception e2) {
+                // ignored, can be missing
+            }
         }
-        ctx.deleteDatabase(oldDbName);
-        return true;
+        ctx.deleteDatabase(getDbName(foundOldVersion));
     }
 
     private static SQLiteOpenHelper getSQLiteOpenHelper(Context ctx, final Class<? extends SyncanoObject> type) {

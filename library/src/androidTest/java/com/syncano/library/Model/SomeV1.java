@@ -7,11 +7,11 @@ import com.syncano.library.data.SyncanoObject;
 import java.util.Random;
 
 @SyncanoClass(name = "something")
-public class SomeObjectVersion1 extends SyncanoObject {
-    public SomeObjectVersion1() {
+public class SomeV1 extends SyncanoObject {
+    public SomeV1() {
     }
 
-    public SomeObjectVersion1(String text, int number, byte byteNumber) {
+    public SomeV1(String text, int number, byte byteNumber) {
         someText = text;
         someInt = number;
         someByte = byteNumber;
@@ -24,9 +24,9 @@ public class SomeObjectVersion1 extends SyncanoObject {
     @SyncanoField(name = "some_byte")
     public byte someByte;
 
-    public static SomeObjectVersion1 generateObject() {
+    public static SomeV1 generateObject() {
         Random rnd = new Random();
-        SomeObjectVersion1 o = new SomeObjectVersion1();
+        SomeV1 o = new SomeV1();
         o.someText = StringGenerator.generate(20);
         o.someInt = rnd.nextInt();
         o.someByte = (byte) rnd.nextInt();

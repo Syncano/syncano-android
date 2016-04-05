@@ -13,12 +13,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-@SyncanoClass(name = "something", version = 2, previousVersion = SomeObjectVersion1.class)
-public class SomeObjectVersion2 extends SyncanoObject {
-    public SomeObjectVersion2() {
+@SyncanoClass(name = "something", version = 2, previousVersion = SomeV1.class)
+public class SomeV2 extends SyncanoObject {
+    public SomeV2() {
     }
 
-    public SomeObjectVersion2(String text, int number, Date date) {
+    public SomeV2(String text, int number, Date date) {
         someText = text;
         someInt = number;
         someDate = date;
@@ -31,9 +31,9 @@ public class SomeObjectVersion2 extends SyncanoObject {
     @SyncanoField(name = "some_date")
     public Date someDate;
 
-    public static SomeObjectVersion2 generateObject() {
+    public static SomeV2 generateObject() {
         Random rnd = new Random();
-        SomeObjectVersion2 o = new SomeObjectVersion2();
+        SomeV2 o = new SomeV2();
         o.someText = StringGenerator.generate(20);
         o.someInt = rnd.nextInt();
         o.someDate = new Date();
@@ -43,14 +43,14 @@ public class SomeObjectVersion2 extends SyncanoObject {
     public static void migrate(int version) {
         if (version == 1) {
             Context ctx = Syncano.getInstance().getAndroidContext();
-            List<SomeObjectVersion1> v1List = OfflineHelper.readObjects(ctx, SomeObjectVersion1.class);
-            ArrayList<SomeObjectVersion2> v2List = new ArrayList<>();
-            for (SomeObjectVersion1 v1 : v1List) {
-                SomeObjectVersion2 v2 = new SomeObjectVersion2(v1.someText, v1.someInt, null);
+            List<SomeV1> v1List = OfflineHelper.readObjects(ctx, SomeV1.class);
+            ArrayList<SomeV2> v2List = new ArrayList<>();
+            for (SomeV1 v1 : v1List) {
+                SomeV2 v2 = new SomeV2(v1.someText, v1.someInt, null);
                 v2.setId(v1.getId());
                 v2List.add(v2);
             }
-            OfflineHelper.writeObjects(ctx, v2List, SomeObjectVersion2.class);
+            OfflineHelper.writeObjects(ctx, v2List, SomeV2.class);
         }
     }
 }

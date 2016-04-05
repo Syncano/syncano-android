@@ -12,12 +12,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-@SyncanoClass(name = "something", version = 3, previousVersion = SomeObjectVersion2.class)
-public class SomeObjectVersion3 extends SyncanoObject {
-    public SomeObjectVersion3() {
+@SyncanoClass(name = "something", version = 3, previousVersion = SomeV2.class)
+public class SomeV3 extends SyncanoObject {
+    public SomeV3() {
     }
 
-    public SomeObjectVersion3(String text, int number, Boolean bool) {
+    public SomeV3(String text, int number, Boolean bool) {
         someText = text;
         someInt = number;
         someBoolean = bool;
@@ -31,9 +31,9 @@ public class SomeObjectVersion3 extends SyncanoObject {
     public Boolean someBoolean;
 
 
-    public static SomeObjectVersion3 generateObject() {
+    public static SomeV3 generateObject() {
         Random rnd = new Random();
-        SomeObjectVersion3 o = new SomeObjectVersion3();
+        SomeV3 o = new SomeV3();
         o.someText = StringGenerator.generate(20);
         o.someInt = rnd.nextInt();
         o.someBoolean = rnd.nextBoolean();
@@ -43,17 +43,18 @@ public class SomeObjectVersion3 extends SyncanoObject {
     public static void migrate(int version) {
         switch (version) {
             case 1:
-                SomeObjectVersion2.migrate(1);
+                SomeV2.migrate(1);
             case 2:
                 Context ctx = Syncano.getInstance().getAndroidContext();
-                List<SomeObjectVersion2> v2List = OfflineHelper.readObjects(ctx, SomeObjectVersion2.class);
-                ArrayList<SomeObjectVersion3> v3List = new ArrayList<>();
-                for (SomeObjectVersion2 v2 : v2List) {
-                    SomeObjectVersion3 v3 = new SomeObjectVersion3(v2.someText, v2.someInt, null);
+                List<SomeV2> v2List = OfflineHelper.readObjects(ctx, SomeV2.class);
+                ArrayList<SomeV3> v3List = new ArrayList<>();
+                for (SomeV2 v2 : v2List) {
+                    SomeV3 v3 = new SomeV3(v2.someText, v2.someInt, null);
                     v3.setId(v2.getId());
                     v3List.add(v3);
                 }
-                OfflineHelper.writeObjects(ctx, v3List, SomeObjectVersion3.class);
+                OfflineHelper.writeObjects(ctx, v3List, SomeV3.class);
+                OfflineHelper.deleteDatabase(ctx, SomeV2.class);
         }
     }
 }

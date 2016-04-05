@@ -44,7 +44,7 @@ public class AllTypesObject extends SyncanoObject {
     @SyncanoField(name = "reference")
     public AllTypesObject reference;
     @SyncanoField(name = "other_reference")
-    public SomeObjectVersion1 someReference;
+    public SomeV1 someReference;
     @SyncanoField(name = "yesorno")
     public boolean yesOrNo;
     @SyncanoField(name = "yesornobject")
@@ -164,7 +164,7 @@ public class AllTypesObject extends SyncanoObject {
         } else {
             o.reference = null;
         }
-        o.someReference = new SomeObjectVersion1(StringGenerator.generate(20), rnd.nextInt(), (byte) rnd.nextInt());
+        o.someReference = new SomeV1(StringGenerator.generate(20), rnd.nextInt(), (byte) rnd.nextInt());
         o.yesOrNo = rnd.nextBoolean();
         o.yesOrNoObj = rnd.nextBoolean();
         o.someFloat = rnd.nextFloat();
