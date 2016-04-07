@@ -15,6 +15,7 @@ import com.syncano.library.data.Channel;
 import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Group;
 import com.syncano.library.data.GroupMembership;
+import com.syncano.library.data.Script;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.SyncanoTableView;
@@ -58,9 +59,21 @@ public class SyncanoDashboard extends Syncano {
      * @param codeBox CodeBox to create.
      * @return New CodeBox.
      */
+    @Deprecated
     public RequestPost<CodeBox> createCodeBox(CodeBox codeBox) {
-        String url = String.format(Constants.CODEBOXES_LIST_URL, getNotEmptyInstanceName());
+        String url = String.format(Constants.SCRIPTS_LIST_URL, getNotEmptyInstanceName());
         return new RequestPost<>(CodeBox.class, url, this, codeBox);
+    }
+
+    /**
+     * Create a Script.
+     *
+     * @param script Script to create.
+     * @return New script.
+     */
+    public RequestPost<Script> createScript(Script script) {
+        String url = String.format(Constants.SCRIPTS_LIST_URL, getNotEmptyInstanceName());
+        return new RequestPost<>(Script.class, url, this, script);
     }
 
     /**
@@ -70,7 +83,7 @@ public class SyncanoDashboard extends Syncano {
      * @return Existing CodeBox.
      */
     public RequestGetOne<CodeBox> getCodeBox(int id) {
-        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getNotEmptyInstanceName(), id);
+        String url = String.format(Constants.SCRIPTS_DETAIL_URL, getNotEmptyInstanceName(), id);
         return new RequestGetOne<>(CodeBox.class, url, this);
     }
 
@@ -80,7 +93,7 @@ public class SyncanoDashboard extends Syncano {
      * @return List of existing CodeBoxes.
      */
     public RequestGetList<CodeBox> getCodeBoxes() {
-        String url = String.format(Constants.CODEBOXES_LIST_URL, getNotEmptyInstanceName());
+        String url = String.format(Constants.SCRIPTS_LIST_URL, getNotEmptyInstanceName());
         return new RequestGetList<>(CodeBox.class, url, this);
     }
 
@@ -92,7 +105,7 @@ public class SyncanoDashboard extends Syncano {
      */
     public RequestPatch<CodeBox> updateCodeBox(CodeBox codeBox) {
         Validate.checkNotNullAndZero(codeBox.getId(), "Trying to update object without id!");
-        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getNotEmptyInstanceName(), codeBox.getId());
+        String url = String.format(Constants.SCRIPTS_DETAIL_URL, getNotEmptyInstanceName(), codeBox.getId());
         return new RequestPatch<>(CodeBox.class, url, this, codeBox);
     }
 
@@ -103,7 +116,7 @@ public class SyncanoDashboard extends Syncano {
      * @return Deleted CodeBox
      */
     public RequestDelete<CodeBox> deleteCodeBox(int id) {
-        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getNotEmptyInstanceName(), id);
+        String url = String.format(Constants.SCRIPTS_DETAIL_URL, getNotEmptyInstanceName(), id);
         return new RequestDelete<>(CodeBox.class, url, this);
     }
 
@@ -114,7 +127,7 @@ public class SyncanoDashboard extends Syncano {
      * @return New Webhook.
      */
     public RequestPost<Webhook> createWebhook(final Webhook webhook) {
-        String url = String.format(Constants.WEBHOOKS_LIST_URL, getNotEmptyInstanceName());
+        String url = String.format(Constants.ENDPOINTS_LIST_URL, getNotEmptyInstanceName());
         RequestPost<Webhook> req = new RequestPost<>(Webhook.class, url, this, webhook);
         req.updateGivenObject(true);
         req.setRunAfter(new Request.RunAfter<Webhook>() {
@@ -134,7 +147,7 @@ public class SyncanoDashboard extends Syncano {
      * @return Existing Webhook.
      */
     public RequestGetOne<Webhook> getWebhook(String name) {
-        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getNotEmptyInstanceName(), name);
+        String url = String.format(Constants.ENDPOINTS_DETAIL_URL, getNotEmptyInstanceName(), name);
         return new RequestGetOne<>(Webhook.class, url, this);
     }
 
@@ -144,7 +157,7 @@ public class SyncanoDashboard extends Syncano {
      * @return List of existing Webhooks.
      */
     public RequestGetList<Webhook> getWebhooks() {
-        String url = String.format(Constants.WEBHOOKS_LIST_URL, getNotEmptyInstanceName());
+        String url = String.format(Constants.ENDPOINTS_LIST_URL, getNotEmptyInstanceName());
         return new RequestGetList<>(Webhook.class, url, this);
     }
 
@@ -156,7 +169,7 @@ public class SyncanoDashboard extends Syncano {
      */
     public RequestPatch<Webhook> updateWebhook(Webhook webhook) {
         Validate.checkNotNullAndNotEmpty(webhook.getName(), "Trying to update Webhook without name!");
-        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getNotEmptyInstanceName(), webhook.getName());
+        String url = String.format(Constants.ENDPOINTS_DETAIL_URL, getNotEmptyInstanceName(), webhook.getName());
         return new RequestPatch<>(Webhook.class, url, this, webhook);
     }
 
@@ -167,7 +180,7 @@ public class SyncanoDashboard extends Syncano {
      * @return Deleted webhook
      */
     public RequestDelete<Webhook> deleteWebhook(String name) {
-        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getNotEmptyInstanceName(), name);
+        String url = String.format(Constants.ENDPOINTS_DETAIL_URL, getNotEmptyInstanceName(), name);
         return new RequestDelete<>(Webhook.class, url, this);
     }
 

@@ -16,6 +16,8 @@ import com.syncano.library.choice.SocialAuthBackend;
 import com.syncano.library.data.AbstractUser;
 import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Notification;
+import com.syncano.library.data.Script;
+import com.syncano.library.data.ScriptEndpoint;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.Trace;
 import com.syncano.library.data.User;
@@ -495,7 +497,7 @@ public class Syncano {
      * @return Result with link do Trace.
      */
     public RequestPost<Trace> runCodeBox(int id, JsonObject params) {
-        String url = String.format(Constants.CODEBOXES_RUN_URL, getNotEmptyInstanceName(), id);
+        String url = String.format(Constants.SCRIPTS_RUN_URL, getNotEmptyInstanceName(), id);
         JsonObject payload = new JsonObject();
         payload.add(Constants.POST_PARAM_PAYLOAD, params);
         RequestPost<Trace> req = new RequestPost<>(Trace.class, url, this, payload);
@@ -511,7 +513,7 @@ public class Syncano {
      * @param codeBox CodeBox to run.
      * @return Result with link do Trace.
      */
-    public RequestPost<Trace> runCodeBox(final CodeBox codeBox) {
+    public RequestPost<Trace> runCodeBox(final Script codeBox) {
         return runCodeBox(codeBox, null);
     }
 
@@ -524,7 +526,7 @@ public class Syncano {
      * @param params  CodeBox params.
      * @return Result with link do Trace.
      */
-    public RequestPost<Trace> runCodeBox(final CodeBox codeBox, JsonObject params) {
+    public RequestPost<Trace> runCodeBox(final Script codeBox, JsonObject params) {
         Validate.checkNotNullAndZero(codeBox.getId(), "Can't run codebox without giving it's id");
         RequestPost<Trace> req = runCodeBox(codeBox.getId(), params);
         req.setRunAfter(new HttpRequest.RunAfter<Trace>() {
@@ -577,15 +579,25 @@ public class Syncano {
         });
     }
 
-
     /**
      * Run a Webhook.
      *
      * @param name Webhook name.
      * @return Result of executed Webhook.
      */
+    @Deprecated
     public RequestPost<Trace> runWebhook(String name) {
-        return runWebhook(name, null);
+        return runScriptEndpoint(name);
+    }
+
+    /**
+     * Run a ScriptEndpoint.
+     *
+     * @param name ScriptEndpoint name.
+     * @return Result of executed ScriptEndpoint.
+     */
+    public RequestPost<Trace> runScriptEndpoint(String name) {
+        return runScriptEndpoint(name, null);
     }
 
     /**
@@ -594,8 +606,19 @@ public class Syncano {
      * @param name Webhook name.
      * @return Result of executed Webhook.
      */
+    @Deprecated
     public RequestPost<String> runWebhookCustomResponse(String name) {
-        return runWebhookCustomResponse(name, String.class);
+        return runScriptEndpointCustomResponse(name);
+    }
+
+    /**
+     * Run a ScriptEndpoint.
+     *
+     * @param name ScriptEndpoint name.
+     * @return Result of executed ScriptEndpoint.
+     */
+    public RequestPost<String> runScriptEndpointCustomResponse(String name) {
+        return runScriptEndpointCustomResponse(name, String.class);
     }
 
     /**
@@ -604,8 +627,19 @@ public class Syncano {
      * @param name Webhook name.
      * @return Result of executed Webhook.
      */
+    @Deprecated
     public <T> RequestPost<T> runWebhookCustomResponse(String name, Class<T> type) {
-        return runWebhookCustomResponse(name, type, null);
+        return runScriptEndpointCustomResponse(name, type);
+    }
+
+    /**
+     * Run a ScriptEndpoint.
+     *
+     * @param name ScriptEndpoint name.
+     * @return Result of executed ScriptEndpoint.
+     */
+    public <T> RequestPost<T> runScriptEndpointCustomResponse(String name, Class<T> type) {
+        return runScriptEndpointCustomResponse(name, type, null);
     }
 
     /**
@@ -615,8 +649,20 @@ public class Syncano {
      * @param payload Params to pass to webhook.
      * @return Result of executed Webhook.
      */
+    @Deprecated
     public RequestPost<Trace> runWebhook(String name, JsonObject payload) {
-        return runWebhookCustomResponse(name, Trace.class, payload);
+        return runScriptEndpoint(name, payload);
+    }
+
+    /**
+     * Run a ScriptEndpoint.
+     *
+     * @param name    ScriptEndpoint name.
+     * @param payload Params to pass to ScriptEndpoint.
+     * @return Result of executed ScriptEndpoint.
+     */
+    public RequestPost<Trace> runScriptEndpoint(String name, JsonObject payload) {
+        return runScriptEndpointCustomResponse(name, Trace.class, payload);
     }
 
     /**
@@ -626,8 +672,20 @@ public class Syncano {
      * @param payload Params to pass to webhook.
      * @return Result of executed Webhook.
      */
+    @Deprecated
     public RequestPost<String> runWebhookCustomResponse(String name, JsonObject payload) {
-        return runWebhookCustomResponse(name, String.class, payload);
+        return runScriptEndpointCustomResponse(name, payload);
+    }
+
+    /**
+     * Run a ScriptEndpoint.
+     *
+     * @param name    ScriptEndpoint name.
+     * @param payload Params to pass to ScriptEndpoint.
+     * @return Result of executed ScriptEndpoint.
+     */
+    public RequestPost<String> runScriptEndpointCustomResponse(String name, JsonObject payload) {
+        return runScriptEndpointCustomResponse(name, String.class, payload);
     }
 
     /**
@@ -637,8 +695,20 @@ public class Syncano {
      * @param payload Params to pass to webhook.
      * @return Result of executed Webhook.
      */
+    @Deprecated
     public <T> RequestPost<T> runWebhookCustomResponse(String name, Class<T> type, JsonObject payload) {
-        String url = String.format(Constants.WEBHOOKS_RUN_URL, getNotEmptyInstanceName(), name);
+        return runScriptEndpointCustomResponse(name, type, payload);
+    }
+
+    /**
+     * Run a ScriptEndpoint.
+     *
+     * @param name    ScriptEndpoint name.
+     * @param payload Params to pass to ScriptEndpoint.
+     * @return Result of executed ScriptEndpoint.
+     */
+    public <T> RequestPost<T> runScriptEndpointCustomResponse(String name, Class<T> type, JsonObject payload) {
+        String url = String.format(Constants.ENDPOINTS_RUN_URL, getNotEmptyInstanceName(), name);
         return new RequestPost<>(type, url, this, payload);
     }
 
@@ -648,8 +718,19 @@ public class Syncano {
      * @param webhook Webhook to run.
      * @return Result of executed Webhook.
      */
+    @Deprecated
     public RequestPost<Trace> runWebhook(Webhook webhook) {
-        return runWebhook(webhook, null);
+        return runScriptEndpoint(webhook);
+    }
+
+    /**
+     * Run a ScriptEndpoint.
+     *
+     * @param scriptEndpoint ScriptEndpoint to run.
+     * @return Result of executed ScriptEndpoint.
+     */
+    public RequestPost<Trace> runScriptEndpoint(ScriptEndpoint scriptEndpoint) {
+        return runScriptEndpoint(scriptEndpoint, null);
     }
 
     /**
@@ -658,8 +739,19 @@ public class Syncano {
      * @param webhook Webhook to run.
      * @return Result of executed Webhook.
      */
+    @Deprecated
     public RequestPost<String> runWebhookCustomResponse(Webhook webhook) {
-        return runWebhookCustomResponse(webhook, String.class);
+        return runScriptEndpointCustomResponse(webhook);
+    }
+
+    /**
+     * Run a ScriptEndpoint.
+     *
+     * @param scriptEndpoint ScriptEndpoint to run.
+     * @return Result of executed ScriptEndpoint.
+     */
+    public RequestPost<String> runScriptEndpointCustomResponse(ScriptEndpoint scriptEndpoint) {
+        return runScriptEndpointCustomResponse(scriptEndpoint, String.class);
     }
 
     /**
@@ -668,8 +760,19 @@ public class Syncano {
      * @param webhook Webhook to run.
      * @return Result of executed Webhook.
      */
+    @Deprecated
     public <T> RequestPost<T> runWebhookCustomResponse(Webhook webhook, Class<T> type) {
-        return runWebhookCustomResponse(webhook, type, null);
+        return runScriptEndpointCustomResponse(webhook, type);
+    }
+
+    /**
+     * Run a ScriptEndpoint.
+     *
+     * @param scriptEndpoint ScriptEndpoint to run.
+     * @return Result of executed ScriptEndpoint.
+     */
+    public <T> RequestPost<T> runScriptEndpointCustomResponse(ScriptEndpoint scriptEndpoint, Class<T> type) {
+        return runScriptEndpointCustomResponse(scriptEndpoint, type, null);
     }
 
     /**
@@ -679,8 +782,20 @@ public class Syncano {
      * @param payload Params to pass to webhook.
      * @return Result of executed Webhook.
      */
+    @Deprecated
     public RequestPost<Trace> runWebhook(Webhook webhook, JsonObject payload) {
-        return runWebhookCustomResponse(webhook, Trace.class, payload);
+        return runScriptEndpoint(webhook, payload);
+    }
+
+    /**
+     * Run a ScriptEndpoint.
+     *
+     * @param scriptEndpoint ScriptEndpoint to run.
+     * @param payload        Params to pass to ScriptEndpoint.
+     * @return Result of executed ScriptEndpoint.
+     */
+    public RequestPost<Trace> runScriptEndpoint(ScriptEndpoint scriptEndpoint, JsonObject payload) {
+        return runScriptEndpointCustomResponse(scriptEndpoint, Trace.class, payload);
     }
 
     /**
@@ -691,7 +806,18 @@ public class Syncano {
      * @return Result of executed Webhook.
      */
     public RequestPost<String> runWebhookCustomResponse(Webhook webhook, JsonObject payload) {
-        return runWebhookCustomResponse(webhook, String.class, payload);
+        return runScriptEndpointCustomResponse(webhook, payload);
+    }
+
+    /**
+     * Run a ScriptEndpoint.
+     *
+     * @param scriptEndpoint ScriptEndpoint to run.
+     * @param payload        Params to pass to ScriptEndpoint.
+     * @return Result of executed ScriptEndpoint.
+     */
+    public RequestPost<String> runScriptEndpointCustomResponse(ScriptEndpoint scriptEndpoint, JsonObject payload) {
+        return runScriptEndpointCustomResponse(scriptEndpoint, String.class, payload);
     }
 
     /**
@@ -701,31 +827,53 @@ public class Syncano {
      * @param payload Params to pass to webhook.
      * @return Result of executed Webhook.
      */
+    @Deprecated
     public <T> RequestPost<T> runWebhookCustomResponse(final Webhook webhook, final Class<T> type, JsonObject payload) {
-        Validate.checkNotNullAndNotEmpty(webhook.getName(), "Can't run webhook without a name.");
-        RequestPost<T> req = runWebhookCustomResponse(webhook.getName(), type, payload);
+        return runScriptEndpointCustomResponse(webhook, type, payload);
+    }
+
+    /**
+     * Run a ScriptEndpoint.
+     *
+     * @param scriptEndpoint ScriptEndpoint to run.
+     * @param payload        Params to pass to ScriptEndpoint.
+     * @return Result of executed ScriptEndpoint.
+     */
+    public <T> RequestPost<T> runScriptEndpointCustomResponse(final ScriptEndpoint scriptEndpoint, final Class<T> type, JsonObject payload) {
+        Validate.checkNotNullAndNotEmpty(scriptEndpoint.getName(), "Can't run scriptEndpoint without a name.");
+        RequestPost<T> req = runScriptEndpointCustomResponse(scriptEndpoint.getName(), type, payload);
         req.setRunAfter(new HttpRequest.RunAfter<T>() {
             @Override
             public void run(Response<T> response) {
                 if (type.equals(Trace.class)) {
-                    webhook.setTrace((Trace) response.getData());
+                    scriptEndpoint.setTrace((Trace) response.getData());
                 } else {
-                    webhook.setCustomResponse(response.getData());
+                    scriptEndpoint.setCustomResponse(response.getData());
                 }
             }
         });
         return req;
     }
 
-
     /**
      * Run a public Webhook.
      *
      * @param url Public webhook url.
      * @return Result of executed Webhook.
      */
+    @Deprecated
     public RequestPost<Trace> runWebhookUrl(String url) {
-        return runWebhookUrl(url, null);
+        return runScriptEndpointUrl(url);
+    }
+
+    /**
+     * Run a public ScriptEndpoint.
+     *
+     * @param url Public ScriptEndpoint url.
+     * @return Result of executed ScriptEndpoint.
+     */
+    public RequestPost<Trace> runScriptEndpointUrl(String url) {
+        return runScriptEndpointUrl(url, null);
     }
 
     /**
@@ -734,8 +882,19 @@ public class Syncano {
      * @param url Public webhook url.
      * @return Result of executed Webhook.
      */
+    @Deprecated
     public RequestPost<String> runWebhookUrlCustomResponse(String url) {
-        return runWebhookUrlCustomResponse(url, String.class);
+        return runScriptEndpointUrlCustomResponse(url);
+    }
+
+    /**
+     * Run a public ScriptEndpoint.
+     *
+     * @param url Public ScriptEndpoint url.
+     * @return Result of executed ScriptEndpoint.
+     */
+    public RequestPost<String> runScriptEndpointUrlCustomResponse(String url) {
+        return runScriptEndpointUrlCustomResponse(url, String.class);
     }
 
     /**
@@ -744,8 +903,19 @@ public class Syncano {
      * @param url Public webhook url.
      * @return Result of executed Webhook.
      */
+    @Deprecated
     public <T> RequestPost<T> runWebhookUrlCustomResponse(String url, Class<T> type) {
-        return runWebhookUrlCustomResponse(url, type, null);
+        return runScriptEndpointUrlCustomResponse(url, type);
+    }
+
+    /**
+     * Run a public ScriptEndpoint.
+     *
+     * @param url Public ScriptEndpoint url.
+     * @return Result of executed ScriptEndpoint.
+     */
+    public <T> RequestPost<T> runScriptEndpointUrlCustomResponse(String url, Class<T> type) {
+        return runScriptEndpointUrlCustomResponse(url, type, null);
     }
 
     /**
@@ -755,8 +925,20 @@ public class Syncano {
      * @param payload Params to pass to webhook.
      * @return Result of executed Webhook.
      */
+    @Deprecated
     public RequestPost<Trace> runWebhookUrl(String url, JsonObject payload) {
-        return runWebhookUrlCustomResponse(url, Trace.class, payload);
+        return runScriptEndpointUrl(url, payload);
+    }
+
+    /**
+     * Run a public ScriptEndpoint.
+     *
+     * @param url     Public ScriptEndpoint url.
+     * @param payload Params to pass to ScriptEndpoint.
+     * @return Result of executed ScriptEndpoint.
+     */
+    public RequestPost<Trace> runScriptEndpointUrl(String url, JsonObject payload) {
+        return runScriptEndpointUrlCustomResponse(url, Trace.class, payload);
     }
 
     /**
@@ -766,8 +948,20 @@ public class Syncano {
      * @param payload Params to pass to webhook.
      * @return Result of executed Webhook.
      */
+    @Deprecated
     public RequestPost<String> runWebhookUrlCustomResponse(String url, JsonObject payload) {
-        return runWebhookUrlCustomResponse(url, String.class, payload);
+        return runScriptEndpointUrlCustomResponse(url, payload);
+    }
+
+    /**
+     * Run a public ScriptEndpoint.
+     *
+     * @param url     Public ScriptEndpoint url.
+     * @param payload Params to pass to ScriptEndpoint.
+     * @return Result of executed ScriptEndpoint.
+     */
+    public RequestPost<String> runScriptEndpointUrlCustomResponse(String url, JsonObject payload) {
+        return runScriptEndpointUrlCustomResponse(url, String.class, payload);
     }
 
     /**
@@ -777,8 +971,21 @@ public class Syncano {
      * @param payload Params to pass to webhook.
      * @return Result of executed Webhook.
      */
+    @Deprecated
     public <T> RequestPost<T> runWebhookUrlCustomResponse(String url, Class<T> type, JsonObject payload) {
-        RequestPost<T> req = new RequestPost<>(type, null, this, payload);
+        return runScriptEndpointUrlCustomResponse(url, type, payload);
+    }
+
+    /**
+     * Run a public ScriptEndpoint.
+     *
+     * @param url          Public ScriptEndpoint url.
+     * @param responseType Response type
+     * @param payload      Params to pass to ScriptEndpoint.
+     * @return Result of executed ScriptEndpoint.
+     */
+    public <T> RequestPost<T> runScriptEndpointUrlCustomResponse(String url, Class<T> responseType, JsonObject payload) {
+        RequestPost<T> req = new RequestPost<>(responseType, null, this, payload);
         req.setCompleteCustomUrl(url);
         return req;
     }

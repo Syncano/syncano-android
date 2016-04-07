@@ -10,6 +10,7 @@ import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.choice.RuntimeName;
 import com.syncano.library.data.CodeBox;
+import com.syncano.library.data.Script;
 import com.syncano.library.data.Trace;
 import com.syncano.library.data.Webhook;
 
@@ -22,43 +23,42 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public class WebhooksTest extends SyncanoApplicationTestCase {
+public class ScriptEndpointsTest extends SyncanoApplicationTestCase {
 
-    private static final String WEBHOOK_NAME = "webhook_test";
-    private static final String PUBLIC_WEBHOOK_NAME = "public_webhook";
-    private static final String EXPECTED_RESULT = "This is message from our Codebox";
+    private static final String ENDPOINT_NAME = "endpoint_test";
+    private static final String PUBLIC_ENDPOINT_NAME = "public_endpoint";
+    private static final String EXPECTED_RESULT = "This is message from our script";
     private static final String ARGUMENT_NAME = "argument";
     private static final String ARGUMENT_VALUE = "GRrr";
-    private CodeBox codeBox;
+    private Script script;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
 
-        String codeBoxLabel = "CodeBox Test";
         RuntimeName runtime = RuntimeName.NODEJS;
         String source = "var msg = '" + EXPECTED_RESULT + "'; console.log(msg); console.log(ARGS);";
-        CodeBox newCodeBox = new CodeBox(codeBoxLabel, source, runtime);
+        Script newScript = new Script("Script Test", source, runtime);
 
         // ----------------- Create CodeBox -----------------
-        Response<CodeBox> responseCodeBoxCreate = syncano.createCodeBox(newCodeBox).send();
+        Response<Script> responseCreate = syncano.createScript(newScript).send();
 
-        assertTrue(responseCodeBoxCreate.isSuccess());
-        assertNotNull(responseCodeBoxCreate.getData());
-        codeBox = responseCodeBoxCreate.getData();
+        assertTrue(responseCreate.isSuccess());
+        assertNotNull(responseCreate.getData());
+        script = responseCreate.getData();
 
         // ----------------- Delete Webhook -----------------
-        RequestDelete<Webhook> deleteRequest = syncano.deleteWebhook(WEBHOOK_NAME);
+        RequestDelete<Webhook> deleteRequest = syncano.deleteWebhook(ENDPOINT_NAME);
         Response<Webhook> delResp = deleteRequest.send();
         assertTrue(delResp.isSuccess());
 
-        deleteRequest = syncano.deleteWebhook(PUBLIC_WEBHOOK_NAME);
+        deleteRequest = syncano.deleteWebhook(PUBLIC_ENDPOINT_NAME);
         delResp = deleteRequest.send();
         assertTrue(delResp.isSuccess());
 
 
         // ----------------- Create Webhook -----------------
-        Webhook newWebhook = new Webhook(WEBHOOK_NAME, codeBox.getId());
+        Webhook newWebhook = new Webhook(ENDPOINT_NAME, script.getId());
         Response<Webhook> responseCreateWebhook = syncano.createWebhook(newWebhook).send();
         assertTrue(responseCreateWebhook.isSuccess());
         assertNotNull(responseCreateWebhook.getData());
@@ -67,11 +67,11 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
     @After
     public void tearDown() throws Exception {
         // ----------------- Delete CodeBox -----------------
-        Response<CodeBox> responseCodeBoxDelete = syncano.deleteCodeBox(codeBox.getId()).send();
+        Response<CodeBox> responseCodeBoxDelete = syncano.deleteCodeBox(script.getId()).send();
         assertTrue(responseCodeBoxDelete.isSuccess());
 
         // ----------------- Delete Webhook -----------------
-        RequestDelete<Webhook> deleteWebhookRequest = syncano.deleteWebhook(WEBHOOK_NAME);
+        RequestDelete<Webhook> deleteWebhookRequest = syncano.deleteWebhook(ENDPOINT_NAME);
         Response<Webhook> delResp = deleteWebhookRequest.send();
         assertTrue(delResp.isSuccess());
 
@@ -81,7 +81,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
     @Test
     public void testWebhooks() throws InterruptedException {
         // ----------------- Get One -----------------
-        RequestGetOne<Webhook> requestGetWebHook = syncano.getWebhook(WEBHOOK_NAME);
+        RequestGetOne<Webhook> requestGetWebHook = syncano.getWebhook(ENDPOINT_NAME);
         Response<Webhook> responseGetWebhook = requestGetWebHook.send();
 
         assertTrue(responseGetWebhook.isSuccess());
@@ -93,7 +93,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
         assertEquals(webhook.isPublic(), responseGetWebhook.getData().isPublic());
 
         // ----------------- Update -----------------
-        webhook.setCodebox(codeBox.getId());
+        webhook.setCodebox(script.getId());
         Response<Webhook> responseUpdateWebhook = syncano.updateWebhook(webhook).send();
 
         assertTrue(responseUpdateWebhook.isSuccess());
@@ -111,24 +111,24 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
 
         // ----------------- Run without key-----------------
         Syncano noKeySyncano = new Syncano(BuildConfig.INSTANCE_NAME);
-        Response<Trace> responseRunNoKey = noKeySyncano.runWebhook(WEBHOOK_NAME).send();
+        Response<Trace> responseRunNoKey = noKeySyncano.runWebhook(ENDPOINT_NAME).send();
 
         assertEquals(responseRunNoKey.getHttpReasonPhrase(), Response.HTTP_CODE_FORBIDDEN, responseRunNoKey.getHttpResultCode());
 
         // ----------------- Run -----------------
-        Response<Trace> responseRunWebhook = syncano.runWebhook(WEBHOOK_NAME).send();
+        Response<Trace> responseRunWebhook = syncano.runWebhook(ENDPOINT_NAME).send();
 
         assertTrue(responseRunWebhook.isSuccess());
         assertNotNull(responseRunWebhook.getData());
 
         // ----------------- Delete -----------------
-        RequestDelete<Webhook> deleteWebhookRequest = syncano.deleteWebhook(WEBHOOK_NAME);
+        RequestDelete<Webhook> deleteWebhookRequest = syncano.deleteWebhook(ENDPOINT_NAME);
         Response<Webhook> responseDeleteWebhook = deleteWebhookRequest.send();
 
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteWebhook.getHttpResultCode());
 
         // ----------------- Get One -----------------
-        RequestGetOne<Webhook> requestGetOne = syncano.getWebhook(WEBHOOK_NAME);
+        RequestGetOne<Webhook> requestGetOne = syncano.getWebhook(ENDPOINT_NAME);
         Response<Webhook> responseGetOneWebhook = requestGetOne.send();
 
         // After delete, Webhook should not be found.
@@ -137,7 +137,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
 
     @Test
     public void testWebHooksSimpleCalls() {
-        Webhook webhook = new Webhook(WEBHOOK_NAME);
+        Webhook webhook = new Webhook(ENDPOINT_NAME);
         Response<Trace> respRun = webhook.run();
 
         assertTrue(respRun.isSuccess());
@@ -161,7 +161,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
     @Test
     public void testPublicWebhook() {
         // ----------------- Create public webhook -----------------
-        Webhook webhook = new Webhook(PUBLIC_WEBHOOK_NAME, codeBox.getId());
+        Webhook webhook = new Webhook(PUBLIC_ENDPOINT_NAME, script.getId());
         webhook.setPublic(true);
         assertNull(webhook.getPublicLink());
 
