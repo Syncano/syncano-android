@@ -49,12 +49,12 @@ public class Constants {
     public static final String OBJECTS_LIST_URL = "/v1.1/instances/%s/classes/%s/objects/";
     public static final String OBJECTS_DETAIL_URL = "/v1.1/instances/%s/classes/%s/objects/%d/";
 
-    // ==================== Views ==================== //
-    public static final String OBJECTS_VIEW = "/v1.1/instances/%s/api/objects/%s/get/";
-    public static final String OBJECTS_VIEW_CREATE = "/v1.1/instances/%s/api/objects/";
-    public static final String OBJECTS_VIEW_REMOVE = "/v1.1/instances/%s/api/objects/%s/";
+    // ==================== Data Endpoints ==================== //
+    public static final String DATA_ENDPOINT = "/v1.1/instances/%s/endpoints/data/%s/get/";
+    public static final String DATA_ENDPOINT_CREATE = "/v1.1/instances/%s/endpoints/data/";
+    public static final String DATA_ENDPOINT_REMOVE = "/v1.1/instances/%s/endpoints/data/%s/";
 
-    public static final String OBJECTS_VIEW_PARAM_CLASS = "class";
+    public static final String DATA_ENDPOINT_PARAM_CLASS = "class";
 
     // ==================== Scripts ==================== //
     public static final String SCRIPTS_LIST_URL = "/v1.1/instances/%s/snippets/scripts/";
@@ -62,10 +62,10 @@ public class Constants {
     public static final String SCRIPTS_RUN_URL = "/v1.1/instances/%s/snippets/scripts/%d/run/";
     public static final String TRACE_DETAIL_URL = "/v1.1/instances/%s/snippets/scripts/%d/traces/%d/";
 
-    // ==================== Endpoints ==================== //
-    public static final String ENDPOINTS_LIST_URL = "/v1.1/instances/%s/endpoints/scripts/";
-    public static final String ENDPOINTS_DETAIL_URL = "/v1.1/instances/%s/endpoints/scripts/%s/";
-    public static final String ENDPOINTS_RUN_URL = "/v1.1/instances/%s/endpoints/scripts/%s/run/";
+    // ==================== Script Endpoints ==================== //
+    public static final String SCRIPT_ENDPOINTS_LIST_URL = "/v1.1/instances/%s/endpoints/scripts/";
+    public static final String SCRIPT_ENDPOINTS_DETAIL_URL = "/v1.1/instances/%s/endpoints/scripts/%s/";
+    public static final String SCRIPT_ENDPOINTS_RUN_URL = "/v1.1/instances/%s/endpoints/scripts/%s/run/";
 
     // ==================== Classes ==================== //
     public static final String USER_PROFILE_CLASS_NAME = "user_profile";

@@ -362,8 +362,19 @@ public class Syncano {
      * @param type Type for result List item.
      * @param <T>  Result type.
      */
+    @Deprecated
     public <T extends SyncanoObject> RequestGetList<T> getViewObjects(Class<T> type, String tableView) {
-        String url = String.format(Constants.OBJECTS_VIEW, getNotEmptyInstanceName(), tableView);
+        return getObjectsDataEndpoint(type, tableView);
+    }
+
+    /**
+     * Get a list of Data Objects associated with a given Class.
+     *
+     * @param type Type for result List item.
+     * @param <T>  Result type.
+     */
+    public <T extends SyncanoObject> RequestGetList<T> getObjectsDataEndpoint(Class<T> type, String tableView) {
+        String url = String.format(Constants.DATA_ENDPOINT, getNotEmptyInstanceName(), tableView);
         return new RequestGetList<>(type, url, this);
     }
 
@@ -762,7 +773,7 @@ public class Syncano {
      * @return Result of executed ScriptEndpoint.
      */
     public <T> RequestPost<T> runScriptEndpointCustomResponse(String name, Class<T> type, JsonObject payload) {
-        String url = String.format(Constants.ENDPOINTS_RUN_URL, getNotEmptyInstanceName(), name);
+        String url = String.format(Constants.SCRIPT_ENDPOINTS_RUN_URL, getNotEmptyInstanceName(), name);
         return new RequestPost<>(type, url, this, payload);
     }
 
