@@ -1,4 +1,4 @@
-package com.syncano.library.tests;
+package com.syncano.library.testsv1;
 
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;

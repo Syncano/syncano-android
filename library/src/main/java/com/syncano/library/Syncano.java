@@ -483,8 +483,21 @@ public class Syncano {
      * @param id CodeBox id.
      * @return Result with link do Trace.
      */
+    @Deprecated
     public RequestPost<Trace> runCodeBox(int id) {
-        return runCodeBox(id, null);
+        return runScript(id);
+    }
+
+    /**
+     * Run Script asynchronously. Result of this request is not a result of the Script.
+     * Result will be stored in associated Trace. You need to call Trace.fetch() to check current
+     * status of execution.
+     *
+     * @param id Script id.
+     * @return Result with link do Trace.
+     */
+    public RequestPost<Trace> runScript(int id) {
+        return runScript(id, null);
     }
 
     /**
@@ -496,12 +509,26 @@ public class Syncano {
      * @param params CodeBox params.
      * @return Result with link do Trace.
      */
+    @Deprecated
     public RequestPost<Trace> runCodeBox(int id, JsonObject params) {
+        return runScript(id, params);
+    }
+
+    /**
+     * Run Script asynchronously. Result of this request is not a result of the Script.
+     * Result will be stored in associated Trace. You need to call Trace.fetch() to check current
+     * status of execution.
+     *
+     * @param id     Script id.
+     * @param params Script params.
+     * @return Result with link do Trace.
+     */
+    public RequestPost<Trace> runScript(int id, JsonObject params) {
         String url = String.format(Constants.SCRIPTS_RUN_URL, getNotEmptyInstanceName(), id);
         JsonObject payload = new JsonObject();
         payload.add(Constants.POST_PARAM_PAYLOAD, params);
         RequestPost<Trace> req = new RequestPost<>(Trace.class, url, this, payload);
-        addCodeboxIdAfterCall(req, id);
+        addScriptIdAfterCall(req, id);
         return req;
     }
 
@@ -513,8 +540,21 @@ public class Syncano {
      * @param codeBox CodeBox to run.
      * @return Result with link do Trace.
      */
-    public RequestPost<Trace> runCodeBox(final Script codeBox) {
-        return runCodeBox(codeBox, null);
+    @Deprecated
+    public RequestPost<Trace> runCodeBox(final CodeBox codeBox) {
+        return runScript(codeBox);
+    }
+
+    /**
+     * Run Script asynchronously. Result of this request is not a result of the Script.
+     * Result will be stored in associated Trace. You need to call Trace.fetch() to check current
+     * status of execution.
+     *
+     * @param script Script to run.
+     * @return Result with link do Trace.
+     */
+    public RequestPost<Trace> runScript(final Script script) {
+        return runScript(script, null);
     }
 
     /**
@@ -526,54 +566,68 @@ public class Syncano {
      * @param params  CodeBox params.
      * @return Result with link do Trace.
      */
-    public RequestPost<Trace> runCodeBox(final Script codeBox, JsonObject params) {
-        Validate.checkNotNullAndZero(codeBox.getId(), "Can't run codebox without giving it's id");
-        RequestPost<Trace> req = runCodeBox(codeBox.getId(), params);
+    @Deprecated
+    public RequestPost<Trace> runCodeBox(final CodeBox codeBox, JsonObject params) {
+        return runScript(codeBox, params);
+    }
+
+    /**
+     * Run Script asynchronously. Result of this request is not a result of the Script.
+     * Result will be stored in associated Trace. You need to call Trace.fetch() to check current
+     * status of execution.
+     *
+     * @param script Script to run.
+     * @param params Script params.
+     * @return Result with link do Trace.
+     */
+    public RequestPost<Trace> runScript(final Script script, JsonObject params) {
+        Validate.checkNotNullAndZero(script.getId(), "Can't run script without giving it's id");
+        RequestPost<Trace> req = runCodeBox(script.getId(), params);
         req.setRunAfter(new HttpRequest.RunAfter<Trace>() {
             @Override
             public void run(Response<Trace> response) {
                 Trace trace = response.getData();
                 if (trace == null) return;
-                trace.setCodeBoxId(codeBox.getId());
-                codeBox.setTrace(trace);
+                trace.setScriptId(script.getId());
+                script.setTrace(trace);
             }
         });
         return req;
     }
 
     /**
-     * Get trace, result of asynchronous CodeBox execution.
+     * Get trace, result of asynchronous Script execution.
      *
-     * @param codeboxId CodeBox id.
-     * @param traceId   Trace id.
+     * @param scriptId Script id.
+     * @param traceId  Trace id.
      * @return Trace, it may be still pending, then try to get trace again.
      */
-    public RequestGet<Trace> getTrace(int codeboxId, int traceId) {
-        String url = String.format(Constants.TRACE_DETAIL_URL, getNotEmptyInstanceName(), codeboxId, traceId);
+    public RequestGet<Trace> getTrace(int scriptId, int traceId) {
+        String url = String.format(Constants.TRACE_DETAIL_URL, getNotEmptyInstanceName(), scriptId, traceId);
         RequestGet<Trace> req = new RequestGetOne<>(Trace.class, url, this);
-        addCodeboxIdAfterCall(req, codeboxId);
+        addScriptIdAfterCall(req, scriptId);
         return req;
     }
 
     /**
-     * Get trace, result of CodeBox execution. Refreshes values in given trace object.
+     * Get trace, result of Script execution. Refreshes values in given trace object.
      *
-     * @param trace Trace that should be refreshed. It has to have id and codebox id set.
+     * @param trace Trace that should be refreshed. It has to have id and script id set.
      * @return Trace, it may be still pending, then try to get trace again.
      */
     public RequestGet<Trace> getTrace(Trace trace) {
-        Validate.checkNotNullAndZero(trace.getCodeBoxId(), "Fetching trace result without codebox id. If run from webhook, result is already known.");
-        String url = String.format(Constants.TRACE_DETAIL_URL, getNotEmptyInstanceName(), trace.getCodeBoxId(), trace.getId());
+        Validate.checkNotNullAndZero(trace.getScriptId(), "Fetching trace result without script id. If run from ScriptEndpoint, result is already known.");
+        String url = String.format(Constants.TRACE_DETAIL_URL, getNotEmptyInstanceName(), trace.getScriptId(), trace.getId());
         return new RequestGetOne<>(trace, url, this);
     }
 
-    private void addCodeboxIdAfterCall(HttpRequest<Trace> req, final int codeboxId) {
+    private void addScriptIdAfterCall(HttpRequest<Trace> req, final int scriptId) {
         req.setRunAfter(new HttpRequest.RunAfter<Trace>() {
             @Override
             public void run(Response<Trace> response) {
                 Trace trace = response.getData();
                 if (trace != null) {
-                    trace.setCodeBoxId(codeboxId);
+                    trace.setScriptId(scriptId);
                 }
             }
         });

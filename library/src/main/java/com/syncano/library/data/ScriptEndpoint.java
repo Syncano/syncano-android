@@ -207,10 +207,22 @@ public class ScriptEndpoint {
     }
 
     public static class Links {
+        public Links() {
+        }
+
+        public Links(Links l) {
+            resetLink = l.resetLink;
+            script = l.script;
+            run = l.run;
+            publicLink = l.publicLink;
+            self = l.self;
+            traces = l.traces;
+        }
+
         @SyncanoField(name = "reset-link")
         public String resetLink;
         @SyncanoField(name = "script")
-        public String codebox;
+        public String script;
         @SyncanoField(name = "run")
         public String run;
         @SyncanoField(name = "public-link")

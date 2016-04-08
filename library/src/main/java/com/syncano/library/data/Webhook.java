@@ -1,12 +1,7 @@
 package com.syncano.library.data;
 
-import com.syncano.library.annotation.SyncanoField;
-
 @Deprecated
 public class Webhook extends ScriptEndpoint {
-
-    @SyncanoField(name = FIELD_LINKS, readOnly = true)
-    private WebHookLinks links;
 
     @Deprecated
     public Webhook() {
@@ -24,15 +19,38 @@ public class Webhook extends ScriptEndpoint {
 
     @Deprecated
     public WebHookLinks getLinks() {
-        return links;
+        Links links = super.getLinks();
+        if (links != null) {
+            WebHookLinks webHookLinks = new WebHookLinks(links);
+            webHookLinks.codebox = links.script;
+            return webHookLinks;
+        }
+        return null;
     }
 
     @Deprecated
     public void setLinks(WebHookLinks links) {
-        this.links = links;
+        if (links == null) {
+            super.setLinks(null);
+        } else {
+            if (links.script != null) {
+                links.codebox = links.script;
+            } else if (links.codebox != null) {
+                links.script = links.codebox;
+            }
+            super.setLinks(links);
+        }
     }
 
     @Deprecated
-    public static class WebHookLinks extends ScriptEndpoint.Links {
+    public static class WebHookLinks extends Links {
+        public String codebox;
+
+        public WebHookLinks() {
+        }
+
+        public WebHookLinks(Links l) {
+            super(l);
+        }
     }
 }

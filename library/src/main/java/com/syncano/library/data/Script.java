@@ -107,18 +107,18 @@ public class Script extends Entity {
     }
 
     public Response<Trace> run() {
-        return getSyncano().runCodeBox(this).send();
+        return getSyncano().runScript(this).send();
     }
 
     public Response<Trace> run(JsonObject payload) {
-        return getSyncano().runCodeBox(this, payload).send();
+        return getSyncano().runScript(this, payload).send();
     }
 
     public void run(SyncanoCallback<Trace> callback) {
-        getSyncano().runCodeBox(this).sendAsync(callback);
+        getSyncano().runScript(this).sendAsync(callback);
     }
 
     public void run(SyncanoCallback<Trace> callback, JsonObject payload) {
-        getSyncano().runCodeBox(this, payload).sendAsync(callback);
+        getSyncano().runScript(this, payload).sendAsync(callback);
     }
 }

@@ -9,10 +9,9 @@ import com.syncano.library.api.RequestGetOne;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.choice.RuntimeName;
-import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.Script;
+import com.syncano.library.data.ScriptEndpoint;
 import com.syncano.library.data.Trace;
-import com.syncano.library.data.Webhook;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,142 +39,142 @@ public class ScriptEndpointsTest extends SyncanoApplicationTestCase {
         String source = "var msg = '" + EXPECTED_RESULT + "'; console.log(msg); console.log(ARGS);";
         Script newScript = new Script("Script Test", source, runtime);
 
-        // ----------------- Create CodeBox -----------------
+        // ----------------- Create Script -----------------
         Response<Script> responseCreate = syncano.createScript(newScript).send();
 
         assertTrue(responseCreate.isSuccess());
         assertNotNull(responseCreate.getData());
         script = responseCreate.getData();
 
-        // ----------------- Delete Webhook -----------------
-        RequestDelete<Webhook> deleteRequest = syncano.deleteWebhook(ENDPOINT_NAME);
-        Response<Webhook> delResp = deleteRequest.send();
+        // ----------------- Delete ScriptEndpoint -----------------
+        RequestDelete<ScriptEndpoint> deleteRequest = syncano.deleteScriptEndpoint(ENDPOINT_NAME);
+        Response<ScriptEndpoint> delResp = deleteRequest.send();
         assertTrue(delResp.isSuccess());
 
-        deleteRequest = syncano.deleteWebhook(PUBLIC_ENDPOINT_NAME);
+        deleteRequest = syncano.deleteScriptEndpoint(PUBLIC_ENDPOINT_NAME);
         delResp = deleteRequest.send();
         assertTrue(delResp.isSuccess());
 
 
-        // ----------------- Create Webhook -----------------
-        Webhook newWebhook = new Webhook(ENDPOINT_NAME, script.getId());
-        Response<Webhook> responseCreateWebhook = syncano.createWebhook(newWebhook).send();
-        assertTrue(responseCreateWebhook.isSuccess());
-        assertNotNull(responseCreateWebhook.getData());
+        // ----------------- Create ScriptEndpoint -----------------
+        ScriptEndpoint newEndpoint = new ScriptEndpoint(ENDPOINT_NAME, script.getId());
+        Response<ScriptEndpoint> responseCreateEndpoint = syncano.createScriptEndpoint(newEndpoint).send();
+        assertTrue(responseCreateEndpoint.isSuccess());
+        assertNotNull(responseCreateEndpoint.getData());
     }
 
     @After
     public void tearDown() throws Exception {
-        // ----------------- Delete CodeBox -----------------
-        Response<CodeBox> responseCodeBoxDelete = syncano.deleteCodeBox(script.getId()).send();
-        assertTrue(responseCodeBoxDelete.isSuccess());
+        // ----------------- Delete Script -----------------
+        Response<Script> responseScriptDelete = syncano.deleteScript(script.getId()).send();
+        assertTrue(responseScriptDelete.isSuccess());
 
-        // ----------------- Delete Webhook -----------------
-        RequestDelete<Webhook> deleteWebhookRequest = syncano.deleteWebhook(ENDPOINT_NAME);
-        Response<Webhook> delResp = deleteWebhookRequest.send();
+        // ----------------- Delete ScriptEndpoint -----------------
+        RequestDelete<ScriptEndpoint> deleteEndpointRequest = syncano.deleteScriptEndpoint(ENDPOINT_NAME);
+        Response<ScriptEndpoint> delResp = deleteEndpointRequest.send();
         assertTrue(delResp.isSuccess());
 
         super.tearDown();
     }
 
     @Test
-    public void testWebhooks() throws InterruptedException {
+    public void testEndpoints() throws InterruptedException {
         // ----------------- Get One -----------------
-        RequestGetOne<Webhook> requestGetWebHook = syncano.getWebhook(ENDPOINT_NAME);
-        Response<Webhook> responseGetWebhook = requestGetWebHook.send();
+        RequestGetOne<ScriptEndpoint> requestGetScriptEndpoint = syncano.getScriptEndpoint(ENDPOINT_NAME);
+        Response<ScriptEndpoint> responseGetScriptEndpoint = requestGetScriptEndpoint.send();
 
-        assertTrue(responseGetWebhook.isSuccess());
-        assertNotNull(responseGetWebhook.getData());
-        Webhook webhook = responseGetWebhook.getData();
-        assertEquals(webhook.getName(), responseGetWebhook.getData().getName());
-        assertEquals(webhook.getCodebox(), responseGetWebhook.getData().getCodebox());
-        assertEquals(webhook.getPublicLink(), responseGetWebhook.getData().getPublicLink());
-        assertEquals(webhook.isPublic(), responseGetWebhook.getData().isPublic());
+        assertTrue(responseGetScriptEndpoint.isSuccess());
+        assertNotNull(responseGetScriptEndpoint.getData());
+        ScriptEndpoint endpoint = responseGetScriptEndpoint.getData();
+        assertEquals(endpoint.getName(), responseGetScriptEndpoint.getData().getName());
+        assertEquals(endpoint.getScript(), responseGetScriptEndpoint.getData().getScript());
+        assertEquals(endpoint.getPublicLink(), responseGetScriptEndpoint.getData().getPublicLink());
+        assertEquals(endpoint.isPublic(), responseGetScriptEndpoint.getData().isPublic());
 
         // ----------------- Update -----------------
-        webhook.setCodebox(script.getId());
-        Response<Webhook> responseUpdateWebhook = syncano.updateWebhook(webhook).send();
+        endpoint.setScript(script.getId());
+        Response<ScriptEndpoint> responseUpdateEndpoint = syncano.updateScriptEndpoint(endpoint).send();
 
-        assertTrue(responseUpdateWebhook.isSuccess());
-        assertNotNull(responseUpdateWebhook.getData());
-        assertEquals(webhook.getName(), responseUpdateWebhook.getData().getName());
-        assertEquals(webhook.getCodebox(), responseUpdateWebhook.getData().getCodebox());
-        assertEquals(webhook.getPublicLink(), responseUpdateWebhook.getData().getPublicLink());
-        assertEquals(webhook.isPublic(), responseUpdateWebhook.getData().isPublic());
+        assertTrue(responseUpdateEndpoint.isSuccess());
+        assertNotNull(responseUpdateEndpoint.getData());
+        assertEquals(endpoint.getName(), responseUpdateEndpoint.getData().getName());
+        assertEquals(endpoint.getScript(), responseUpdateEndpoint.getData().getScript());
+        assertEquals(endpoint.getPublicLink(), responseUpdateEndpoint.getData().getPublicLink());
+        assertEquals(endpoint.isPublic(), responseUpdateEndpoint.getData().isPublic());
 
         // ----------------- Get List -----------------
-        ResponseGetList<Webhook> responseGetWebhooks = syncano.getWebhooks().send();
+        ResponseGetList<ScriptEndpoint> responseGetScriptEndpoints = syncano.getScriptEndpoints().send();
 
-        assertNotNull(responseGetWebhooks.getData());
-        assertTrue("List should contain at least one item.", responseGetWebhooks.getData().size() > 0);
+        assertNotNull(responseGetScriptEndpoints.getData());
+        assertTrue("List should contain at least one item.", responseGetScriptEndpoints.getData().size() > 0);
 
         // ----------------- Run without key-----------------
         Syncano noKeySyncano = new Syncano(BuildConfig.INSTANCE_NAME);
-        Response<Trace> responseRunNoKey = noKeySyncano.runWebhook(ENDPOINT_NAME).send();
+        Response<Trace> responseRunNoKey = noKeySyncano.runScriptEndpoint(ENDPOINT_NAME).send();
 
         assertEquals(responseRunNoKey.getHttpReasonPhrase(), Response.HTTP_CODE_FORBIDDEN, responseRunNoKey.getHttpResultCode());
 
         // ----------------- Run -----------------
-        Response<Trace> responseRunWebhook = syncano.runWebhook(ENDPOINT_NAME).send();
+        Response<Trace> responseRunEndpoint = syncano.runScriptEndpoint(ENDPOINT_NAME).send();
 
-        assertTrue(responseRunWebhook.isSuccess());
-        assertNotNull(responseRunWebhook.getData());
+        assertTrue(responseRunEndpoint.isSuccess());
+        assertNotNull(responseRunEndpoint.getData());
 
         // ----------------- Delete -----------------
-        RequestDelete<Webhook> deleteWebhookRequest = syncano.deleteWebhook(ENDPOINT_NAME);
-        Response<Webhook> responseDeleteWebhook = deleteWebhookRequest.send();
+        RequestDelete<ScriptEndpoint> deleteScriptEndpoint = syncano.deleteScriptEndpoint(ENDPOINT_NAME);
+        Response<ScriptEndpoint> responseDeleteScriptEndpoint = deleteScriptEndpoint.send();
 
-        assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteWebhook.getHttpResultCode());
+        assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteScriptEndpoint.getHttpResultCode());
 
         // ----------------- Get One -----------------
-        RequestGetOne<Webhook> requestGetOne = syncano.getWebhook(ENDPOINT_NAME);
-        Response<Webhook> responseGetOneWebhook = requestGetOne.send();
+        RequestGetOne<ScriptEndpoint> requestGetOne = syncano.getScriptEndpoint(ENDPOINT_NAME);
+        Response<ScriptEndpoint> responseGetOneScriptEndpoint = requestGetOne.send();
 
-        // After delete, Webhook should not be found.
-        assertEquals(Response.HTTP_CODE_NOT_FOUND, responseGetOneWebhook.getHttpResultCode());
+        // After delete, ScriptEndpoint should not be found.
+        assertEquals(Response.HTTP_CODE_NOT_FOUND, responseGetOneScriptEndpoint.getHttpResultCode());
     }
 
     @Test
-    public void testWebHooksSimpleCalls() {
-        Webhook webhook = new Webhook(ENDPOINT_NAME);
-        Response<Trace> respRun = webhook.run();
+    public void testEndpointsSimpleCalls() {
+        ScriptEndpoint endpoint = new ScriptEndpoint(ENDPOINT_NAME);
+        Response<Trace> respRun = endpoint.run();
 
         assertTrue(respRun.isSuccess());
-        assertNotNull(webhook.getTrace());
-        assertNotNull(webhook.getOutput());
-        assertTrue(webhook.getOutput().contains(EXPECTED_RESULT));
+        assertNotNull(endpoint.getTrace());
+        assertNotNull(endpoint.getOutput());
+        assertTrue(endpoint.getOutput().contains(EXPECTED_RESULT));
 
-        // test webhook run with payload
+        // test endpoint run with payload
         JsonObject json = new JsonObject();
         json.addProperty(ARGUMENT_NAME, ARGUMENT_VALUE);
-        respRun = webhook.run(json);
+        respRun = endpoint.run(json);
 
         assertTrue(respRun.isSuccess());
-        assertNotNull(webhook.getTrace());
-        String output = webhook.getOutput();
+        assertNotNull(endpoint.getTrace());
+        String output = endpoint.getOutput();
         assertNotNull(output);
         assertTrue(output.contains(EXPECTED_RESULT));
         assertTrue(output.contains(ARGUMENT_VALUE));
     }
 
     @Test
-    public void testPublicWebhook() {
-        // ----------------- Create public webhook -----------------
-        Webhook webhook = new Webhook(PUBLIC_ENDPOINT_NAME, script.getId());
-        webhook.setPublic(true);
-        assertNull(webhook.getPublicLink());
+    public void testPublicEndpoint() {
+        // ----------------- Create public endpoint -----------------
+        ScriptEndpoint endpoint = new ScriptEndpoint(PUBLIC_ENDPOINT_NAME, script.getId());
+        endpoint.setPublic(true);
+        assertNull(endpoint.getPublicLink());
 
-        Response<Webhook> responseCreateWebhook = syncano.createWebhook(webhook).send();
-        assertTrue(responseCreateWebhook.isSuccess());
-        assertNotNull(webhook.getPublicLink());
+        Response<ScriptEndpoint> responseCreateEndpoint = syncano.createScriptEndpoint(endpoint).send();
+        assertTrue(responseCreateEndpoint.isSuccess());
+        assertNotNull(endpoint.getPublicLink());
 
 
         // ----------------- Run without key-----------------
         Syncano noKeySyncano = new Syncano();
-        Response<Trace> responseRunWebhook = noKeySyncano.runWebhookUrl(webhook.getPublicLink()).send();
-        assertTrue(responseRunWebhook.isSuccess());
+        Response<Trace> responseRunEndpoint = noKeySyncano.runScriptEndpointUrl(endpoint.getPublicLink()).send();
+        assertTrue(responseRunEndpoint.isSuccess());
 
-        Trace trace = responseRunWebhook.getData();
+        Trace trace = responseRunEndpoint.getData();
         assertNotNull(trace);
         assertNotNull(trace.getOutput());
         assertTrue(trace.getOutput().contains(EXPECTED_RESULT));
