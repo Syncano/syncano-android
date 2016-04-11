@@ -21,6 +21,7 @@ import com.syncano.library.data.ScriptEndpoint;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.SyncanoTableView;
+import com.syncano.library.data.Template;
 import com.syncano.library.data.User;
 import com.syncano.library.data.Webhook;
 import com.syncano.library.utils.SyncanoClassHelper;
@@ -627,7 +628,6 @@ public class SyncanoDashboard extends Syncano {
         return new RequestDelete<>(Channel.class, url, this);
     }
 
-
     /**
      * Get a list of previously created Users.
      *
@@ -645,5 +645,26 @@ public class SyncanoDashboard extends Syncano {
     public <T extends AbstractUser> RequestGetList<T> getUsers(Class<T> type) {
         String url = String.format(Constants.USERS_LIST_URL, getNotEmptyInstanceName());
         return new RequestGetList<>(type, url, this);
+    }
+
+    /**
+     * Get a list of existing templates
+     *
+     * @return List of existing templates.
+     */
+    public RequestGetList<Template> getTemplates() {
+        String url = String.format(Constants.TEMPLATES_LIST_URL, getNotEmptyInstanceName());
+        return new RequestGetList<>(Template.class, url, this);
+    }
+
+    /**
+     * Get details about a template
+     *
+     * @param name Name of template to be downloaded
+     * @return Template details
+     */
+    public RequestGetOne<Template> getTemplate(String name) {
+        String url = String.format(Constants.TEMPLATE_DETAIL_URL, getNotEmptyInstanceName(), name);
+        return new RequestGetOne<>(Template.class, url, this);
     }
 }

@@ -92,4 +92,9 @@ public class Constants {
     public static final String CHANNELS_HISTORY_URL = "/v1.1/instances/%s/channels/%s/history/";
     public static final String CHANNELS_PUBLISH_URL = "/v1.1/instances/%s/channels/%s/publish/";
     public static final String CHANNELS_POLL_URL = "/v1.1/instances/%s/channels/%s/poll/";
+
+    // ==================== Templates ==================== //
+    public static final String TEMPLATES_LIST_URL = "/v1.1/instances/%s/snippets/templates/";
+    public static final String TEMPLATE_DETAIL_URL = "/v1.1/instances/%s/snippets/templates/%s/";
+    public static final String TEMPLATE_RENDER_URL = "/v1.1/instances/%s/snippets/templates/%s/render/";
 }
