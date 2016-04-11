@@ -660,11 +660,59 @@ public class SyncanoDashboard extends Syncano {
     /**
      * Get details about a template
      *
-     * @param name Name of template to be downloaded
+     * @param templateName Name of template to be downloaded
      * @return Template details
      */
-    public RequestGetOne<Template> getTemplate(String name) {
-        String url = String.format(Constants.TEMPLATE_DETAIL_URL, getNotEmptyInstanceName(), name);
+    public RequestGetOne<Template> getTemplate(String templateName) {
+        String url = String.format(Constants.TEMPLATE_DETAIL_URL, getNotEmptyInstanceName(), templateName);
         return new RequestGetOne<>(Template.class, url, this);
+    }
+
+    /**
+     * Creates template
+     *
+     * @param template Template to create
+     * @return Created template
+     */
+    public RequestPost<Template> createTemplate(Template template) {
+        String url = String.format(Constants.TEMPLATES_LIST_URL, getNotEmptyInstanceName());
+        return new RequestPost<>(Template.class, url, this, template);
+    }
+
+    /**
+     * Deletes a Template
+     *
+     * @param templateName Name of template to be deleted
+     * @return Request returns only success information
+     */
+    public RequestDelete<Void> deleteTemplate(String templateName) {
+        String url = String.format(Constants.TEMPLATE_DETAIL_URL, getNotEmptyInstanceName(), templateName);
+        return new RequestDelete<>(Void.class, url, this);
+    }
+
+    /**
+     * Update a Template.
+     *
+     * @param template Template to update. It need to have name.
+     * @return Updated Template.
+     */
+    public RequestPatch<Template> updateTemplate(Template template) {
+        Validate.checkNotNullAndNotEmpty(template.getName(), "Trying to update Template without a name!");
+        String url = String.format(Constants.TEMPLATE_DETAIL_URL, getNotEmptyInstanceName(), template.getName());
+        return new RequestPatch<>(Template.class, url, this, template);
+    }
+
+    /**
+     * Renames a Template.
+     *
+     * @param oldName Old name
+     * @param newName New name
+     * @return Updated Template.
+     */
+    public RequestPost<Template> renameTemplate(String oldName, String newName) {
+        String url = String.format(Constants.TEMPLATE_RENAME_URL, getNotEmptyInstanceName(), oldName);
+        JsonObject jsonParams = new JsonObject();
+        jsonParams.addProperty(Constants.POST_PARAM_TEMPLATE_NEW_NAME, newName);
+        return new RequestPost<>(Template.class, url, this, jsonParams);
     }
 }

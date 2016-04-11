@@ -1311,5 +1311,14 @@ public class Syncano {
         return req;
     }
 
-
+    /**
+     * Renders a templete with only context data as input data
+     *
+     * @param templateName name of a template that will be rendered
+     * @return rendered result
+     */
+    public RequestPost<String> renderTemplate(String templateName) {
+        String url = String.format(Constants.TEMPLATE_RENDER_URL, getNotEmptyInstanceName(), templateName);
+        return new RequestPost<>(String.class, url, this, null);
+    }
 }

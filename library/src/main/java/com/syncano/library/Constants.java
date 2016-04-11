@@ -28,6 +28,7 @@ public class Constants {
     public final static String POST_PARAM_SOCIAL_TOKEN = "access_token";
     public final static String POST_PARAM_ROOM = "room";
     public final static String POST_PARAM_PAYLOAD = "payload";
+    public final static String POST_PARAM_TEMPLATE_NEW_NAME = "new_name";
 
     public static final String SOCIAL_AUTH_FACEBOOK = "facebook";
     public static final String SOCIAL_AUTH_GOOGLE_OAUTH2 = "google-oauth2";
@@ -96,5 +97,6 @@ public class Constants {
     // ==================== Templates ==================== //
     public static final String TEMPLATES_LIST_URL = "/v1.1/instances/%s/snippets/templates/";
     public static final String TEMPLATE_DETAIL_URL = "/v1.1/instances/%s/snippets/templates/%s/";
+    public static final String TEMPLATE_RENAME_URL = "/v1.1/instances/%s/snippets/templates/%s/rename/";
     public static final String TEMPLATE_RENDER_URL = "/v1.1/instances/%s/snippets/templates/%s/render/";
 }
