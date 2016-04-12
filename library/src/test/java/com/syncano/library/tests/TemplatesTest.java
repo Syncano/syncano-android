@@ -1,10 +1,13 @@
 package com.syncano.library.tests;
 
 import com.google.gson.JsonObject;
+import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
+import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.data.Template;
+import com.syncano.library.model.Author;
 
 import org.junit.After;
 import org.junit.Before;
@@ -28,6 +31,14 @@ public class TemplatesTest extends SyncanoApplicationTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        // delete old templates
+
+        ResponseGetList<Template> resp = syncano.getTemplates().send();
+        assertTrue(resp.isSuccess());
+        List<Template> temps = resp.getData();
+        for (Template t : temps) {
+            assertTrue(syncano.deleteTemplate(t.getName()).send().isSuccess());
+        }
     }
 
     @After
@@ -36,15 +47,47 @@ public class TemplatesTest extends SyncanoApplicationTestCase {
     }
 
     @Test
-    public void testTemplates() {
-        // delete old templates
-        ResponseGetList<Template> resp = syncano.getTemplates().send();
-        assertTrue(resp.isSuccess());
-        List<Template> temps = resp.getData();
-        for (Template t : temps) {
-            assertTrue(syncano.deleteTemplate(t.getName()).send().isSuccess());
-        }
+    public void testGetObjectsWithTemplate() throws InterruptedException {
+        // make objects
+        createClass(Author.class);
+        String name1 = "John Smith";
+        String name2 = "Adam Adam";
+        assertTrue(new Author(name1).save().isSuccess());
+        assertTrue(new Author(name2).save().isSuccess());
 
+        // make template
+        Template t1 = makeTemplate(NAME1);
+        t1.setContent("{% set objects = response.objects %}" +
+                "{% if objects %}" +
+                "{% for object in objects %}" +
+                "{{ object['name'] }}," +
+                "{% endfor %}" +
+                "{% endif %}");
+        Response<Template> respCreate = syncano.createTemplate(t1).send();
+        assertTrue(respCreate.isSuccess());
+
+        String expectedResult = name1 + "," + name2 + ",";
+        // request objects with syncano plain call
+        RequestGetList<Author> getReq = Syncano.please(Author.class).prepareGetRequest();
+        Response<String> resp = syncano.getObjectsWithTemplate(getReq, NAME1).send();
+        assertTrue(resp.isSuccess());
+        assertEquals(expectedResult, resp.getData());
+
+        // request objects with please helper
+        resp = Syncano.please(Author.class).getWithTemplate(NAME1);
+        assertTrue(resp.isSuccess());
+        assertEquals(expectedResult, resp.getData());
+
+        // request objects with where
+        resp = Syncano.please(Author.class).where().eq(Author.FIELD_NAME, name1).getWithTemplate(NAME1);
+        assertTrue(resp.isSuccess());
+        assertEquals(name1 + ",", resp.getData());
+
+        // TODO add test with data endpoint
+    }
+
+    @Test
+    public void testManagingTemplates() {
         // create new template
         Template t1 = makeTemplate(NAME1);
         Response<Template> respCreate = syncano.createTemplate(makeTemplate(NAME1)).send();
@@ -64,7 +107,7 @@ public class TemplatesTest extends SyncanoApplicationTestCase {
         assertEquals(t1.getContext(), respOne.getData().getContext());
 
         // get it as list
-        resp = syncano.getTemplates().send();
+        ResponseGetList<Template> resp = syncano.getTemplates().send();
         assertNotNull(resp.getData());
         assertTrue(resp.isSuccess());
         assertEquals(1, resp.getData().size());

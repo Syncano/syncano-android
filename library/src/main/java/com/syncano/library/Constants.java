@@ -23,6 +23,7 @@ public class Constants {
     public final static String URL_PARAM_EXPAND = "expand";
     public final static String URL_PARAM_LAST_ID = "last_id";
     public final static String URL_PARAM_INCLUDE_COUNT = "include_count";
+    public final static String URL_PARAM_TEMPLATE = "template_response";
 
     public final static String POST_PARAM_USER = "user";
     public final static String POST_PARAM_SOCIAL_TOKEN = "access_token";

@@ -9,7 +9,7 @@ import com.syncano.library.data.User;
 
 import java.util.List;
 
-public class BuilderTest extends SyncanoApplicationTestCase {
+public class BuilderTest extends SyncanoAndroidTestCase {
     private static final String USER_NAME = "testuser";
     private static final String PASSWORD = "password";
 
