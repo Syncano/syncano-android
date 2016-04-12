@@ -36,7 +36,7 @@ public class Trace {
     @SyncanoField(name = FIELD_EXECUTED_AT, readOnly = true)
     private Date executedAt;
 
-    private Integer codeBoxId = null;
+    private Integer scriptId = null;
     private Syncano syncano;
 
     public int getId() {
@@ -47,12 +47,22 @@ public class Trace {
         this.id = id;
     }
 
+    @Deprecated
     public Integer getCodeBoxId() {
-        return codeBoxId;
+        return getScriptId();
     }
 
+    @Deprecated
     public void setCodeBoxId(int id) {
-        this.codeBoxId = id;
+        setScriptId(id);
+    }
+
+    public Integer getScriptId() {
+        return scriptId;
+    }
+
+    public void setScriptId(int id) {
+        this.scriptId = id;
     }
 
     public TraceStatus getStatus() {

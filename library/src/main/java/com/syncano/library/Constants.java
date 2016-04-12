@@ -28,6 +28,7 @@ public class Constants {
     public final static String POST_PARAM_SOCIAL_TOKEN = "access_token";
     public final static String POST_PARAM_ROOM = "room";
     public final static String POST_PARAM_PAYLOAD = "payload";
+    public final static String POST_PARAM_TEMPLATE_NEW_NAME = "new_name";
 
     public static final String SOCIAL_AUTH_FACEBOOK = "facebook";
     public static final String SOCIAL_AUTH_GOOGLE_OAUTH2 = "google-oauth2";
@@ -44,52 +45,58 @@ public class Constants {
     public static final String FIELD_TARGET = "target";
     public static final String FIELD_TARGET_SELF = "self";
 
-    public static final String BATCH_URL = "/v1/instances/%s/batch/";
+    public static final String BATCH_URL = "/v1.1/instances/%s/batch/";
     // ==================== Objects ==================== //
-    public static final String OBJECTS_LIST_URL = "/v1/instances/%s/classes/%s/objects/";
-    public static final String OBJECTS_DETAIL_URL = "/v1/instances/%s/classes/%s/objects/%d/";
+    public static final String OBJECTS_LIST_URL = "/v1.1/instances/%s/classes/%s/objects/";
+    public static final String OBJECTS_DETAIL_URL = "/v1.1/instances/%s/classes/%s/objects/%d/";
 
-    // ==================== Views ==================== //
-    public static final String OBJECTS_VIEW = "/v1/instances/%s/api/objects/%s/get/";
-    public static final String OBJECTS_VIEW_CREATE = "/v1/instances/%s/api/objects/";
-    public static final String OBJECTS_VIEW_REMOVE = "/v1/instances/%s/api/objects/%s/";
+    // ==================== Data Endpoints ==================== //
+    public static final String DATA_ENDPOINT = "/v1.1/instances/%s/endpoints/data/%s/get/";
+    public static final String DATA_ENDPOINT_CREATE = "/v1.1/instances/%s/endpoints/data/";
+    public static final String DATA_ENDPOINT_REMOVE = "/v1.1/instances/%s/endpoints/data/%s/";
 
-    public static final String OBJECTS_VIEW_PARAM_CLASS = "class";
+    public static final String DATA_ENDPOINT_PARAM_CLASS = "class";
 
-    // ==================== CodeBoxes ==================== //
-    public static final String CODEBOXES_LIST_URL = "/v1/instances/%s/codeboxes/";
-    public static final String CODEBOXES_DETAIL_URL = "/v1/instances/%s/codeboxes/%d/";
-    public static final String CODEBOXES_RUN_URL = "/v1/instances/%s/codeboxes/%d/run/";
-    public static final String TRACE_DETAIL_URL = "/v1/instances/%s/codeboxes/%d/traces/%d/";
+    // ==================== Scripts ==================== //
+    public static final String SCRIPTS_LIST_URL = "/v1.1/instances/%s/snippets/scripts/";
+    public static final String SCRIPTS_DETAIL_URL = "/v1.1/instances/%s/snippets/scripts/%d/";
+    public static final String SCRIPTS_RUN_URL = "/v1.1/instances/%s/snippets/scripts/%d/run/";
+    public static final String TRACE_DETAIL_URL = "/v1.1/instances/%s/snippets/scripts/%d/traces/%d/";
 
-    // ==================== Webhooks ==================== //
-    public static final String WEBHOOKS_LIST_URL = "/v1/instances/%s/webhooks/";
-    public static final String WEBHOOKS_DETAIL_URL = "/v1/instances/%s/webhooks/%s/";
-    public static final String WEBHOOKS_RUN_URL = "/v1/instances/%s/webhooks/%s/run/";
+    // ==================== Script Endpoints ==================== //
+    public static final String SCRIPT_ENDPOINTS_LIST_URL = "/v1.1/instances/%s/endpoints/scripts/";
+    public static final String SCRIPT_ENDPOINTS_DETAIL_URL = "/v1.1/instances/%s/endpoints/scripts/%s/";
+    public static final String SCRIPT_ENDPOINTS_RUN_URL = "/v1.1/instances/%s/endpoints/scripts/%s/run/";
 
     // ==================== Classes ==================== //
     public static final String USER_PROFILE_CLASS_NAME = "user_profile";
-    public static final String CLASSES_LIST_URL = "/v1/instances/%s/classes/";
-    public static final String CLASSES_DETAIL_URL = "/v1/instances/%s/classes/%s/";
+    public static final String CLASSES_LIST_URL = "/v1.1/instances/%s/classes/";
+    public static final String CLASSES_DETAIL_URL = "/v1.1/instances/%s/classes/%s/";
 
     // ==================== Users ==================== //
-    public static final String USERS_LIST_URL = "/v1/instances/%s/users/";
-    public static final String USERS_DETAIL_URL = "/v1/instances/%s/users/%d/";
-    public static final String USER_AUTH = "/v1/instances/%s/user/auth/";
-    public static final String USER_SOCIAL_AUTH = "/v1/instances/%s/user/auth/%s/";
-    public static final String USER_DETAILS = "/v1/instances/%s/user/";
+    public static final String USERS_LIST_URL = "/v1.1/instances/%s/users/";
+    public static final String USERS_DETAIL_URL = "/v1.1/instances/%s/users/%d/";
+    public static final String USER_AUTH = "/v1.1/instances/%s/user/auth/";
+    public static final String USER_SOCIAL_AUTH = "/v1.1/instances/%s/user/auth/%s/";
+    public static final String USER_DETAILS = "/v1.1/instances/%s/user/";
 
 
     // ==================== Groups ==================== //
-    public static final String GROUPS_LIST_URL = "/v1/instances/%s/groups/";
-    public static final String GROUPS_DETAIL_URL = "/v1/instances/%s/groups/%d/";
-    public static final String GROUPS_USERS_LIST_URL = "/v1/instances/%s/groups/%d/users/";
-    public static final String GROUPS_USERS_DETAIL_URL = "/v1/instances/%s/groups/%d/users/%d/";
+    public static final String GROUPS_LIST_URL = "/v1.1/instances/%s/groups/";
+    public static final String GROUPS_DETAIL_URL = "/v1.1/instances/%s/groups/%d/";
+    public static final String GROUPS_USERS_LIST_URL = "/v1.1/instances/%s/groups/%d/users/";
+    public static final String GROUPS_USERS_DETAIL_URL = "/v1.1/instances/%s/groups/%d/users/%d/";
 
     // ==================== Channels ==================== //
-    public static final String CHANNELS_LIST_URL = "/v1/instances/%s/channels/";
-    public static final String CHANNELS_DETAIL_URL = "/v1/instances/%s/channels/%s/";
-    public static final String CHANNELS_HISTORY_URL = "/v1/instances/%s/channels/%s/history/";
-    public static final String CHANNELS_PUBLISH_URL = "/v1/instances/%s/channels/%s/publish/";
-    public static final String CHANNELS_POLL_URL = "/v1/instances/%s/channels/%s/poll/";
+    public static final String CHANNELS_LIST_URL = "/v1.1/instances/%s/channels/";
+    public static final String CHANNELS_DETAIL_URL = "/v1.1/instances/%s/channels/%s/";
+    public static final String CHANNELS_HISTORY_URL = "/v1.1/instances/%s/channels/%s/history/";
+    public static final String CHANNELS_PUBLISH_URL = "/v1.1/instances/%s/channels/%s/publish/";
+    public static final String CHANNELS_POLL_URL = "/v1.1/instances/%s/channels/%s/poll/";
+
+    // ==================== Templates ==================== //
+    public static final String TEMPLATES_LIST_URL = "/v1.1/instances/%s/snippets/templates/";
+    public static final String TEMPLATE_DETAIL_URL = "/v1.1/instances/%s/snippets/templates/%s/";
+    public static final String TEMPLATE_RENAME_URL = "/v1.1/instances/%s/snippets/templates/%s/rename/";
+    public static final String TEMPLATE_RENDER_URL = "/v1.1/instances/%s/snippets/templates/%s/render/";
 }

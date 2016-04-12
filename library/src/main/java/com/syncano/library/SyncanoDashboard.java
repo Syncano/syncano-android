@@ -13,11 +13,15 @@ import com.syncano.library.api.Response;
 import com.syncano.library.data.AbstractUser;
 import com.syncano.library.data.Channel;
 import com.syncano.library.data.CodeBox;
+import com.syncano.library.data.DataEndpoint;
 import com.syncano.library.data.Group;
 import com.syncano.library.data.GroupMembership;
+import com.syncano.library.data.Script;
+import com.syncano.library.data.ScriptEndpoint;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.SyncanoTableView;
+import com.syncano.library.data.Template;
 import com.syncano.library.data.User;
 import com.syncano.library.data.Webhook;
 import com.syncano.library.utils.SyncanoClassHelper;
@@ -58,9 +62,21 @@ public class SyncanoDashboard extends Syncano {
      * @param codeBox CodeBox to create.
      * @return New CodeBox.
      */
+    @Deprecated
     public RequestPost<CodeBox> createCodeBox(CodeBox codeBox) {
-        String url = String.format(Constants.CODEBOXES_LIST_URL, getNotEmptyInstanceName());
+        String url = String.format(Constants.SCRIPTS_LIST_URL, getNotEmptyInstanceName());
         return new RequestPost<>(CodeBox.class, url, this, codeBox);
+    }
+
+    /**
+     * Create a Script.
+     *
+     * @param script Script to create.
+     * @return New script.
+     */
+    public RequestPost<Script> createScript(Script script) {
+        String url = String.format(Constants.SCRIPTS_LIST_URL, getNotEmptyInstanceName());
+        return new RequestPost<>(Script.class, url, this, script);
     }
 
     /**
@@ -69,9 +85,21 @@ public class SyncanoDashboard extends Syncano {
      * @param id CodeBox id.
      * @return Existing CodeBox.
      */
+    @Deprecated
     public RequestGetOne<CodeBox> getCodeBox(int id) {
-        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getNotEmptyInstanceName(), id);
+        String url = String.format(Constants.SCRIPTS_DETAIL_URL, getNotEmptyInstanceName(), id);
         return new RequestGetOne<>(CodeBox.class, url, this);
+    }
+
+    /**
+     * Get details of previously created Script.
+     *
+     * @param id Script id.
+     * @return Existing Script.
+     */
+    public RequestGetOne<Script> getScript(int id) {
+        String url = String.format(Constants.SCRIPTS_DETAIL_URL, getNotEmptyInstanceName(), id);
+        return new RequestGetOne<>(Script.class, url, this);
     }
 
     /**
@@ -79,9 +107,20 @@ public class SyncanoDashboard extends Syncano {
      *
      * @return List of existing CodeBoxes.
      */
+    @Deprecated
     public RequestGetList<CodeBox> getCodeBoxes() {
-        String url = String.format(Constants.CODEBOXES_LIST_URL, getNotEmptyInstanceName());
+        String url = String.format(Constants.SCRIPTS_LIST_URL, getNotEmptyInstanceName());
         return new RequestGetList<>(CodeBox.class, url, this);
+    }
+
+    /**
+     * Get a list of previously created Scripts.
+     *
+     * @return List of existing Scripts.
+     */
+    public RequestGetList<Script> getScripts() {
+        String url = String.format(Constants.SCRIPTS_LIST_URL, getNotEmptyInstanceName());
+        return new RequestGetList<>(Script.class, url, this);
     }
 
     /**
@@ -90,10 +129,23 @@ public class SyncanoDashboard extends Syncano {
      * @param codeBox CodeBox to update. It has to have id.
      * @return Updated CodeBox.
      */
+    @Deprecated
     public RequestPatch<CodeBox> updateCodeBox(CodeBox codeBox) {
         Validate.checkNotNullAndZero(codeBox.getId(), "Trying to update object without id!");
-        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getNotEmptyInstanceName(), codeBox.getId());
+        String url = String.format(Constants.SCRIPTS_DETAIL_URL, getNotEmptyInstanceName(), codeBox.getId());
         return new RequestPatch<>(CodeBox.class, url, this, codeBox);
+    }
+
+    /**
+     * Update a Script.
+     *
+     * @param script Script to update. It has to have id.
+     * @return Updated Script.
+     */
+    public RequestPatch<Script> updateScript(Script script) {
+        Validate.checkNotNullAndZero(script.getId(), "Trying to update object without id!");
+        String url = String.format(Constants.SCRIPTS_DETAIL_URL, getNotEmptyInstanceName(), script.getId());
+        return new RequestPatch<>(Script.class, url, this, script);
     }
 
     /**
@@ -102,9 +154,21 @@ public class SyncanoDashboard extends Syncano {
      * @param id CodeBox id.
      * @return Deleted CodeBox
      */
+    @Deprecated
     public RequestDelete<CodeBox> deleteCodeBox(int id) {
-        String url = String.format(Constants.CODEBOXES_DETAIL_URL, getNotEmptyInstanceName(), id);
+        String url = String.format(Constants.SCRIPTS_DETAIL_URL, getNotEmptyInstanceName(), id);
         return new RequestDelete<>(CodeBox.class, url, this);
+    }
+
+    /**
+     * Delete previously created Script.
+     *
+     * @param id Script id.
+     * @return Deleted Script
+     */
+    public RequestDelete<Script> deleteScript(int id) {
+        String url = String.format(Constants.SCRIPTS_DETAIL_URL, getNotEmptyInstanceName(), id);
+        return new RequestDelete<>(Script.class, url, this);
     }
 
     /**
@@ -113,14 +177,34 @@ public class SyncanoDashboard extends Syncano {
      * @param webhook Webhook to create. It's params will be updated.
      * @return New Webhook.
      */
+    @Deprecated
     public RequestPost<Webhook> createWebhook(final Webhook webhook) {
-        String url = String.format(Constants.WEBHOOKS_LIST_URL, getNotEmptyInstanceName());
+        String url = String.format(Constants.SCRIPT_ENDPOINTS_LIST_URL, getNotEmptyInstanceName());
         RequestPost<Webhook> req = new RequestPost<>(Webhook.class, url, this, webhook);
         req.updateGivenObject(true);
         req.setRunAfter(new Request.RunAfter<Webhook>() {
             @Override
             public void run(Response<Webhook> response) {
                 webhook.on(SyncanoDashboard.this);
+            }
+        });
+        return req;
+    }
+
+    /**
+     * Create a new ScriptEndpoint
+     *
+     * @param scriptEndpoint ScriptEndpoint to create. It's params will be updated.
+     * @return New ScriptEndpoint.
+     */
+    public RequestPost<ScriptEndpoint> createScriptEndpoint(final ScriptEndpoint scriptEndpoint) {
+        String url = String.format(Constants.SCRIPT_ENDPOINTS_LIST_URL, getNotEmptyInstanceName());
+        RequestPost<ScriptEndpoint> req = new RequestPost<>(ScriptEndpoint.class, url, this, scriptEndpoint);
+        req.updateGivenObject(true);
+        req.setRunAfter(new Request.RunAfter<ScriptEndpoint>() {
+            @Override
+            public void run(Response<ScriptEndpoint> response) {
+                scriptEndpoint.on(SyncanoDashboard.this);
             }
         });
         return req;
@@ -133,9 +217,21 @@ public class SyncanoDashboard extends Syncano {
      * @param name Webhook id.
      * @return Existing Webhook.
      */
+    @Deprecated
     public RequestGetOne<Webhook> getWebhook(String name) {
-        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getNotEmptyInstanceName(), name);
+        String url = String.format(Constants.SCRIPT_ENDPOINTS_DETAIL_URL, getNotEmptyInstanceName(), name);
         return new RequestGetOne<>(Webhook.class, url, this);
+    }
+
+    /**
+     * Get details of previously created ScriptEndpoint.
+     *
+     * @param name ScriptEndpoint id.
+     * @return Existing ScriptEndpoint.
+     */
+    public RequestGetOne<ScriptEndpoint> getScriptEndpoint(String name) {
+        String url = String.format(Constants.SCRIPT_ENDPOINTS_DETAIL_URL, getNotEmptyInstanceName(), name);
+        return new RequestGetOne<>(ScriptEndpoint.class, url, this);
     }
 
     /**
@@ -143,9 +239,20 @@ public class SyncanoDashboard extends Syncano {
      *
      * @return List of existing Webhooks.
      */
+    @Deprecated
     public RequestGetList<Webhook> getWebhooks() {
-        String url = String.format(Constants.WEBHOOKS_LIST_URL, getNotEmptyInstanceName());
+        String url = String.format(Constants.SCRIPT_ENDPOINTS_LIST_URL, getNotEmptyInstanceName());
         return new RequestGetList<>(Webhook.class, url, this);
+    }
+
+    /**
+     * Get a list of previously created ScriptEndpoints.
+     *
+     * @return List of existing ScriptEndpoints.
+     */
+    public RequestGetList<ScriptEndpoint> getScriptEndpoints() {
+        String url = String.format(Constants.SCRIPT_ENDPOINTS_LIST_URL, getNotEmptyInstanceName());
+        return new RequestGetList<>(ScriptEndpoint.class, url, this);
     }
 
     /**
@@ -154,10 +261,23 @@ public class SyncanoDashboard extends Syncano {
      * @param webhook Webhook to update. It has to have a name.
      * @return Updated Webhook.
      */
+    @Deprecated
     public RequestPatch<Webhook> updateWebhook(Webhook webhook) {
         Validate.checkNotNullAndNotEmpty(webhook.getName(), "Trying to update Webhook without name!");
-        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getNotEmptyInstanceName(), webhook.getName());
+        String url = String.format(Constants.SCRIPT_ENDPOINTS_DETAIL_URL, getNotEmptyInstanceName(), webhook.getName());
         return new RequestPatch<>(Webhook.class, url, this, webhook);
+    }
+
+    /**
+     * Update a ScriptEndpoint.
+     *
+     * @param scriptEndpoint ScriptEndpoint to update. It has to have a name.
+     * @return Updated ScriptEndpoint.
+     */
+    public RequestPatch<ScriptEndpoint> updateScriptEndpoint(ScriptEndpoint scriptEndpoint) {
+        Validate.checkNotNullAndNotEmpty(scriptEndpoint.getName(), "Trying to update ScriptEndpoint without name!");
+        String url = String.format(Constants.SCRIPT_ENDPOINTS_DETAIL_URL, getNotEmptyInstanceName(), scriptEndpoint.getName());
+        return new RequestPatch<>(ScriptEndpoint.class, url, this, scriptEndpoint);
     }
 
     /**
@@ -166,9 +286,21 @@ public class SyncanoDashboard extends Syncano {
      * @param name Webhook name.
      * @return Deleted webhook
      */
+    @Deprecated
     public RequestDelete<Webhook> deleteWebhook(String name) {
-        String url = String.format(Constants.WEBHOOKS_DETAIL_URL, getNotEmptyInstanceName(), name);
+        String url = String.format(Constants.SCRIPT_ENDPOINTS_DETAIL_URL, getNotEmptyInstanceName(), name);
         return new RequestDelete<>(Webhook.class, url, this);
+    }
+
+    /**
+     * Delete a ScriptEndpoint.
+     *
+     * @param name ScriptEndpoint name.
+     * @return Deleted ScriptEndpoint
+     */
+    public RequestDelete<ScriptEndpoint> deleteScriptEndpoint(String name) {
+        String url = String.format(Constants.SCRIPT_ENDPOINTS_DETAIL_URL, getNotEmptyInstanceName(), name);
+        return new RequestDelete<>(ScriptEndpoint.class, url, this);
     }
 
     /**
@@ -188,9 +320,21 @@ public class SyncanoDashboard extends Syncano {
      * @param clazz View class to create.
      * @return Created class.
      */
+    @Deprecated
     public RequestPost<SyncanoTableView> createTableView(SyncanoTableView clazz) {
-        String url = String.format(Constants.OBJECTS_VIEW_CREATE, getNotEmptyInstanceName());
+        String url = String.format(Constants.DATA_ENDPOINT_CREATE, getNotEmptyInstanceName());
         return new RequestPost<>(SyncanoTableView.class, url, this, clazz);
+    }
+
+    /**
+     * Create a data endpoint
+     *
+     * @param clazz Data endpoint to create.
+     * @return Created endpoint.
+     */
+    public RequestPost<DataEndpoint> createDataEndpoint(DataEndpoint clazz) {
+        String url = String.format(Constants.DATA_ENDPOINT_CREATE, getNotEmptyInstanceName());
+        return new RequestPost<>(DataEndpoint.class, url, this, clazz);
     }
 
     /**
@@ -199,9 +343,21 @@ public class SyncanoDashboard extends Syncano {
      * @param name View to delete.
      * @return RequestDelete<SyncanoTableView>
      */
+    @Deprecated
     public RequestDelete<SyncanoTableView> deleteTableView(String name) {
-        String url = String.format(Constants.OBJECTS_VIEW_REMOVE, getNotEmptyInstanceName(), name);
+        String url = String.format(Constants.DATA_ENDPOINT_REMOVE, getNotEmptyInstanceName(), name);
         return new RequestDelete<>(SyncanoTableView.class, url, this);
+    }
+
+    /**
+     * Delete a data endpoint.
+     *
+     * @param name Data endpoint to delete.
+     * @return RequestDelete<DataEndpoint>
+     */
+    public RequestDelete<DataEndpoint> deleteDataEndpoint(String name) {
+        String url = String.format(Constants.DATA_ENDPOINT_REMOVE, getNotEmptyInstanceName(), name);
+        return new RequestDelete<>(DataEndpoint.class, url, this);
     }
 
     /**
@@ -472,7 +628,6 @@ public class SyncanoDashboard extends Syncano {
         return new RequestDelete<>(Channel.class, url, this);
     }
 
-
     /**
      * Get a list of previously created Users.
      *
@@ -490,5 +645,74 @@ public class SyncanoDashboard extends Syncano {
     public <T extends AbstractUser> RequestGetList<T> getUsers(Class<T> type) {
         String url = String.format(Constants.USERS_LIST_URL, getNotEmptyInstanceName());
         return new RequestGetList<>(type, url, this);
+    }
+
+    /**
+     * Get a list of existing templates
+     *
+     * @return List of existing templates.
+     */
+    public RequestGetList<Template> getTemplates() {
+        String url = String.format(Constants.TEMPLATES_LIST_URL, getNotEmptyInstanceName());
+        return new RequestGetList<>(Template.class, url, this);
+    }
+
+    /**
+     * Get details about a template
+     *
+     * @param templateName Name of template to be downloaded
+     * @return Template details
+     */
+    public RequestGetOne<Template> getTemplate(String templateName) {
+        String url = String.format(Constants.TEMPLATE_DETAIL_URL, getNotEmptyInstanceName(), templateName);
+        return new RequestGetOne<>(Template.class, url, this);
+    }
+
+    /**
+     * Creates template
+     *
+     * @param template Template to create
+     * @return Created template
+     */
+    public RequestPost<Template> createTemplate(Template template) {
+        String url = String.format(Constants.TEMPLATES_LIST_URL, getNotEmptyInstanceName());
+        return new RequestPost<>(Template.class, url, this, template);
+    }
+
+    /**
+     * Deletes a Template
+     *
+     * @param templateName Name of template to be deleted
+     * @return Request returns only success information
+     */
+    public RequestDelete<Void> deleteTemplate(String templateName) {
+        String url = String.format(Constants.TEMPLATE_DETAIL_URL, getNotEmptyInstanceName(), templateName);
+        return new RequestDelete<>(Void.class, url, this);
+    }
+
+    /**
+     * Update a Template.
+     *
+     * @param template Template to update. It need to have name.
+     * @return Updated Template.
+     */
+    public RequestPatch<Template> updateTemplate(Template template) {
+        Validate.checkNotNullAndNotEmpty(template.getName(), "Trying to update Template without a name!");
+        String url = String.format(Constants.TEMPLATE_DETAIL_URL, getNotEmptyInstanceName(), template.getName());
+        return new RequestPatch<>(Template.class, url, this, template);
+    }
+
+    /**
+     * Renames a Template.
+     *
+     * @param oldName Old name
+     * @param newName New name
+     * @return Updated Template.
+     */
+    public RequestPost<Template> renameTemplate(String oldName, String newName) {
+        String url = String.format(Constants.TEMPLATE_RENAME_URL, getNotEmptyInstanceName(), oldName);
+        JsonObject jsonParams = new JsonObject();
+        jsonParams.addProperty(Constants.POST_PARAM_TEMPLATE_NEW_NAME, newName);
+        return new RequestPost<>(Template.class, url, this, jsonParams);
     }
 }
