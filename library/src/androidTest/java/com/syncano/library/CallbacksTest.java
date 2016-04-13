@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-public class CallbacksTest extends SyncanoApplicationTestCase {
+public class CallbacksTest extends SyncanoAndroidTestCase {
     public void setUp() throws Exception {
         super.setUp();
         createClass(Something.class);

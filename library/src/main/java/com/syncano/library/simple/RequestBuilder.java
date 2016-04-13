@@ -5,6 +5,7 @@ import com.syncano.library.api.FieldsFilter;
 import com.syncano.library.api.RequestAll;
 import com.syncano.library.api.RequestCount;
 import com.syncano.library.api.RequestGetList;
+import com.syncano.library.api.RequestTemplate;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.api.Where;
@@ -67,11 +68,35 @@ public class RequestBuilder<T extends SyncanoObject> {
         prepareGetRequest().sendAsync(callback);
     }
 
-    private RequestGetList<T> prepareGetRequest() {
+    /**
+     * Does a requests for a list of objects. Processes them with given template.
+     *
+     * @param templateName name of a template
+     * @return Processed result
+     */
+    public Response<String> getWithTemplate(String templateName) {
+        return prepareTemplateRequest(templateName).send();
+    }
+
+    /**
+     * Does a requests for a list of objects. Processes them with given template.
+     *
+     * @param templateName name of a template
+     * @param callback     Callback that will be called after finished request
+     */
+    public void getWithTemplate(String templateName, SyncanoCallback<String> callback) {
+        prepareTemplateRequest(templateName).sendAsync(callback);
+    }
+
+    public RequestGetList<T> prepareGetRequest() {
         RequestGetList<T> request;
         request = getRequestGetList();
         decorateRequest(request);
         return request;
+    }
+
+    public RequestTemplate prepareTemplateRequest(String templateName) {
+        return new RequestTemplate(prepareGetRequest(), templateName);
     }
 
     private RequestGetList<T> getRequestGetList() {
@@ -81,7 +106,7 @@ public class RequestBuilder<T extends SyncanoObject> {
         } else if (dataEndpoint == null) {
             request = syncano.getObjects(clazz);
         } else {
-            request = syncano.getViewObjects(clazz, dataEndpoint);
+            request = syncano.getObjectsDataEndpoint(clazz, dataEndpoint);
         }
         return request;
     }

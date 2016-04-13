@@ -11,6 +11,7 @@ import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.RequestGetOne;
 import com.syncano.library.api.RequestPatch;
 import com.syncano.library.api.RequestPost;
+import com.syncano.library.api.RequestTemplate;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.SocialAuthBackend;
 import com.syncano.library.data.AbstractUser;
@@ -1312,7 +1313,7 @@ public class Syncano {
     }
 
     /**
-     * Renders a templete with only context data as input data
+     * Renders a template with only context data as input data
      *
      * @param templateName name of a template that will be rendered
      * @return rendered result
@@ -1320,5 +1321,16 @@ public class Syncano {
     public RequestPost<String> renderTemplate(String templateName) {
         String url = String.format(Constants.TEMPLATE_RENDER_URL, getNotEmptyInstanceName(), templateName);
         return new RequestPost<>(String.class, url, this, null);
+    }
+
+    /**
+     * Renders a template with objects got from given request
+     *
+     * @param requestGet   request that will be used to get objects
+     * @param templateName name of a template that will be used to render result
+     * @return rendered result
+     */
+    public RequestTemplate getObjectsWithTemplate(RequestGet requestGet, String templateName) {
+        return new RequestTemplate(requestGet, templateName);
     }
 }

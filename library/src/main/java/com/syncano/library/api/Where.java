@@ -95,6 +95,32 @@ public class Where<T extends SyncanoObject> {
     }
 
     /**
+     * Does a requests for a list of objects. Processes them with given template.
+     *
+     * @param templateName name of a template
+     * @return Processed result
+     */
+    public Response<String> getWithTemplate(String templateName) {
+        if (please == null) {
+            throw new RuntimeException("Can be called only from SyncanoObject.please(class).where().get()");
+        }
+        return please.getWithTemplate(templateName);
+    }
+
+    /**
+     * Does a requests for a list of objects. Processes them with given template.
+     *
+     * @param templateName name of a template
+     * @param callback     Callback that will be called after finished request
+     */
+    public void getWithTemplate(String templateName, SyncanoCallback<String> callback) {
+        if (please == null) {
+            throw new RuntimeException("Can be called only from SyncanoObject.please(class).where().get()");
+        }
+        please.getWithTemplate(templateName, callback);
+    }
+
+    /**
      * Greater than.
      * Checking if value is greater than provided.
      * For string comparing length of the string.

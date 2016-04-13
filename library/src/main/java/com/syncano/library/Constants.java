@@ -23,12 +23,16 @@ public class Constants {
     public final static String URL_PARAM_EXPAND = "expand";
     public final static String URL_PARAM_LAST_ID = "last_id";
     public final static String URL_PARAM_INCLUDE_COUNT = "include_count";
+    public final static String URL_PARAM_TEMPLATE = "template_response";
 
     public final static String POST_PARAM_USER = "user";
     public final static String POST_PARAM_SOCIAL_TOKEN = "access_token";
     public final static String POST_PARAM_ROOM = "room";
     public final static String POST_PARAM_PAYLOAD = "payload";
     public final static String POST_PARAM_TEMPLATE_NEW_NAME = "new_name";
+
+    public final static String HTTP_HEADER_API_KEY = "X-API-KEY";
+    public final static String HTTP_HEADER_USER_KEY = "X-USER-KEY";
 
     public static final String SOCIAL_AUTH_FACEBOOK = "facebook";
     public static final String SOCIAL_AUTH_GOOGLE_OAUTH2 = "google-oauth2";

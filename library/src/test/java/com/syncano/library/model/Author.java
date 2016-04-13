@@ -23,4 +23,11 @@ public class Author extends SyncanoObject {
     public Boolean isMale;
     @SyncanoField(name = FIELD_BIRTH_DATE, filterIndex = true)
     public Date birthDate;
+
+    public Author() {
+    }
+
+    public Author(String name) {
+        this.name = name;
+    }
 }

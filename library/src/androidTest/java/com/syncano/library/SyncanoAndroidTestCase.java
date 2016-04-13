@@ -15,11 +15,11 @@ import com.syncano.library.utils.SyncanoLog;
 
 import java.util.List;
 
-public class SyncanoApplicationTestCase extends ApplicationTestCase<Application> {
+public class SyncanoAndroidTestCase extends ApplicationTestCase<Application> {
 
     protected SyncanoDashboard syncano;
 
-    public SyncanoApplicationTestCase() {
+    public SyncanoAndroidTestCase() {
         super(Application.class);
     }
 
@@ -54,7 +54,7 @@ public class SyncanoApplicationTestCase extends ApplicationTestCase<Application>
         SyncanoClass downloadedClass = null;
         while (System.currentTimeMillis() - start < 180000 && (downloadedClass == null || downloadedClass.getStatus() != ClassStatus.READY)) {
             Thread.sleep(100);
-            SyncanoLog.d(SyncanoApplicationTestCase.class.getSimpleName(), "Waiting for class to create: " + (System.currentTimeMillis() - start));
+            SyncanoLog.d(SyncanoAndroidTestCase.class.getSimpleName(), "Waiting for class to create: " + (System.currentTimeMillis() - start));
             Response<SyncanoClass> respClass = syncano.getSyncanoClass(clazz).send();
             assertEquals(Response.HTTP_CODE_SUCCESS, respClass.getHttpResultCode());
             downloadedClass = respClass.getData();
