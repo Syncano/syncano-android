@@ -13,6 +13,7 @@ import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.choice.FilterType;
 import com.syncano.library.choice.SortOrder;
 import com.syncano.library.data.SyncanoObject;
+import com.syncano.library.offline.GetMode;
 
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class RequestBuilder<T extends SyncanoObject> {
     private String pageUrl;
     private String dataEndpoint;
     private boolean estimateCount = false;
+    private GetMode getMode = GetMode.ONLINE;
 
     public RequestBuilder(Class<T> clazz) {
         this.clazz = clazz;
@@ -292,6 +294,11 @@ public class RequestBuilder<T extends SyncanoObject> {
      */
     public RequestBuilder<T> dataEndpoint(String name) {
         this.dataEndpoint = name;
+        return this;
+    }
+
+    public RequestBuilder<T> offlineMode(GetMode mode) {
+        this.getMode = mode;
         return this;
     }
 }

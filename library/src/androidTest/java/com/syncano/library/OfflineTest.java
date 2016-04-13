@@ -9,6 +9,7 @@ import com.syncano.library.Model.SomeV3;
 import com.syncano.library.Model.SomeV3StepMigration;
 import com.syncano.library.Model.SomeV4;
 import com.syncano.library.api.Response;
+import com.syncano.library.offline.GetMode;
 import com.syncano.library.offline.OfflineHelper;
 
 import org.junit.After;
@@ -34,6 +35,13 @@ public class OfflineTest extends SyncanoAndroidTestCase {
     @After
     public void tearDown() throws Exception {
         super.tearDown();
+    }
+
+    @Test
+    public void testGetRequest() throws InterruptedException {
+        createClass(SomeV1.class);
+        OfflineHelper.clearTable(getContext(), SomeV1.class);
+        Syncano.please(SomeV1.class).offlineMode(GetMode.LOCAL_ONLINE_IN_BACKGROUND).get();
     }
 
     @Test
