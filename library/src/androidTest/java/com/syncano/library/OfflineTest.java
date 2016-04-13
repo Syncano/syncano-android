@@ -1,5 +1,7 @@
 package com.syncano.library;
 
+import android.support.test.runner.AndroidJUnit4;
+
 import com.syncano.library.Model.AllTypesObject;
 import com.syncano.library.Model.SomeV1;
 import com.syncano.library.Model.SomeV2;
@@ -9,19 +11,32 @@ import com.syncano.library.Model.SomeV4;
 import com.syncano.library.api.Response;
 import com.syncano.library.offline.OfflineHelper;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class OfflineTest extends SyncanoApplicationTestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+@RunWith(AndroidJUnit4.class)
+public class OfflineTest extends SyncanoAndroidTestCase {
+    @Before
     public void setUp() throws Exception {
         super.setUp();
         OfflineHelper.reinitHelper();
     }
 
+    @After
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
+    @Test
     public void testReadWrite() throws InterruptedException {
         createClass(SomeV1.class);
         createClass(AllTypesObject.class);
@@ -64,6 +79,7 @@ public class OfflineTest extends SyncanoApplicationTestCase {
         removeClass(SomeV1.class);
     }
 
+    @Test
     public void testMigration1To3() throws InterruptedException {
         OfflineHelper.deleteDatabase(getContext(), SomeV1.class);
         OfflineHelper.deleteDatabase(getContext(), SomeV2.class);
@@ -90,6 +106,7 @@ public class OfflineTest extends SyncanoApplicationTestCase {
         }
     }
 
+    @Test
     public void testStepMigration1To3() throws InterruptedException {
         OfflineHelper.deleteDatabase(getContext(), SomeV1.class);
         OfflineHelper.deleteDatabase(getContext(), SomeV2.class);
@@ -116,6 +133,7 @@ public class OfflineTest extends SyncanoApplicationTestCase {
         }
     }
 
+    @Test
     public void testMigration2To3() throws InterruptedException {
         OfflineHelper.deleteDatabase(getContext(), SomeV1.class);
         OfflineHelper.deleteDatabase(getContext(), SomeV2.class);
@@ -142,6 +160,7 @@ public class OfflineTest extends SyncanoApplicationTestCase {
         }
     }
 
+    @Test
     public void testMigration3To4() throws InterruptedException {
         OfflineHelper.deleteDatabase(getContext(), SomeV2.class);
         OfflineHelper.deleteDatabase(getContext(), SomeV3.class);
