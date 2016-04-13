@@ -267,6 +267,13 @@ public class Syncano {
         return user.getUserKey();
     }
 
+    /**
+     * @return Returns true when there is user set on this instance and he has not empty user api key
+     */
+    public boolean isUserLoggedIn() {
+        return !(getUserKey() == null || getUserKey().isEmpty());
+    }
+
     public Syncano setUserKey(String userKey) {
         User user = new User();
         user.setUserKey(userKey);
