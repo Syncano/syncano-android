@@ -329,12 +329,12 @@ public class SyncanoDashboard extends Syncano {
     /**
      * Create a data endpoint
      *
-     * @param clazz Data endpoint to create.
+     * @param dataEndpoint Data endpoint to create.
      * @return Created endpoint.
      */
-    public RequestPost<DataEndpoint> createDataEndpoint(DataEndpoint clazz) {
+    public RequestPost<DataEndpoint> createDataEndpoint(DataEndpoint dataEndpoint) {
         String url = String.format(Constants.DATA_ENDPOINT_CREATE, getNotEmptyInstanceName());
-        return new RequestPost<>(DataEndpoint.class, url, this, clazz);
+        return new RequestPost<>(DataEndpoint.class, url, this, dataEndpoint);
     }
 
     /**

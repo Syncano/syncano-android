@@ -1,6 +1,7 @@
 package com.syncano.library.api;
 
 import com.google.gson.JsonElement;
+import com.syncano.library.Constants;
 import com.syncano.library.Syncano;
 import com.syncano.library.utils.SyncanoHttpClient;
 
@@ -31,10 +32,10 @@ public abstract class HttpRequest<T> extends Request<T> {
         this.url = syncano.getUrl();
         this.strictCheckCertificate = syncano.isStrictCheckedCertificate();
         if (syncano.getApiKey() != null && !syncano.getApiKey().isEmpty()) {
-            setHttpHeader("X-API-KEY", syncano.getApiKey());
+            setHttpHeader(Constants.HTTP_HEADER_API_KEY, syncano.getApiKey());
         }
         if (syncano.getUserKey() != null && !syncano.getUserKey().isEmpty()) {
-            setHttpHeader("X-USER-KEY", syncano.getUserKey());
+            setHttpHeader(Constants.HTTP_HEADER_USER_KEY, syncano.getUserKey());
         }
     }
 
@@ -125,7 +126,22 @@ public abstract class HttpRequest<T> extends Request<T> {
      * @param value Header value.
      */
     public void setHttpHeader(String name, String value) {
+        removeHttpHeader(name);
         httpHeaders.add(new BasicNameValuePair(name, value));
+    }
+
+    /**
+     * Removes given header
+     *
+     * @param name name of header to remove
+     */
+    public void removeHttpHeader(String name) {
+        for (NameValuePair pair : httpHeaders) {
+            if (name.equals(pair.getName())) {
+                httpHeaders.remove(pair);
+                return;
+            }
+        }
     }
 
     /**

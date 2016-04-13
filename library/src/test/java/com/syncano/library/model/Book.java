@@ -31,6 +31,11 @@ public class Book extends SyncanoObject {
         this.subtitle = subtitle;
     }
 
+    public Book(String title, Author author) {
+        this.title = title;
+        this.author = author;
+    }
+
     public Book() {
     }
 }

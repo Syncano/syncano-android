@@ -6,8 +6,11 @@ import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
+import com.syncano.library.data.DataEndpoint;
+import com.syncano.library.data.Entity;
 import com.syncano.library.data.Template;
 import com.syncano.library.model.Author;
+import com.syncano.library.model.Book;
 
 import org.junit.After;
 import org.junit.Before;
@@ -22,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 
 public class TemplatesTest extends SyncanoApplicationTestCase {
 
+    private final static String ENDPOINT = "books_and_authors";
     private final static String NAME1 = "temp1";
     private final static String NAME2 = "temp2";
     private final static String KEY = "ordinary_key";
@@ -50,17 +54,31 @@ public class TemplatesTest extends SyncanoApplicationTestCase {
     public void testGetObjectsWithTemplate() throws InterruptedException {
         // make objects
         createClass(Author.class);
+        createClass(Book.class);
         String name1 = "John Smith";
         String name2 = "Adam Adam";
-        assertTrue(new Author(name1).save().isSuccess());
-        assertTrue(new Author(name2).save().isSuccess());
+        Author author1 = new Author(name1);
+        Author author2 = new Author(name2);
+        assertTrue(author1.save().isSuccess());
+        assertTrue(author2.save().isSuccess());
+        Book book1 = new Book("Johns biography", author1);
+        Book book2 = new Book("Be successful as Adam", author2);
+        assertTrue(book1.save().isSuccess());
+        assertTrue(book2.save().isSuccess());
+
+        // make data endpoint
+        assertTrue(syncano.deleteDataEndpoint(ENDPOINT).send().isSuccess());
+        DataEndpoint dataEndpoint = new DataEndpoint(ENDPOINT, Book.class);
+        dataEndpoint.addExpandField(Book.FIELD_AUTHOR);
+        dataEndpoint.setOrderBy(Entity.FIELD_ID);
+        assertTrue(syncano.createDataEndpoint(dataEndpoint).send().isSuccess());
 
         // make template
         Template t1 = makeTemplate(NAME1);
         t1.setContent("{% set objects = response.objects %}" +
                 "{% if objects %}" +
                 "{% for object in objects %}" +
-                "{{ object['name'] }}," +
+                "{{ object['" + Author.FIELD_NAME + "'] }}," +
                 "{% endfor %}" +
                 "{% endif %}");
         Response<Template> respCreate = syncano.createTemplate(t1).send();
@@ -68,13 +86,13 @@ public class TemplatesTest extends SyncanoApplicationTestCase {
 
         String expectedResult = name1 + "," + name2 + ",";
         // request objects with syncano plain call
-        RequestGetList<Author> getReq = Syncano.please(Author.class).prepareGetRequest();
+        RequestGetList<Author> getReq = Syncano.please(Author.class).orderBy(Entity.FIELD_ID).prepareGetRequest();
         Response<String> resp = syncano.getObjectsWithTemplate(getReq, NAME1).send();
         assertTrue(resp.isSuccess());
         assertEquals(expectedResult, resp.getData());
 
         // request objects with please helper
-        resp = Syncano.please(Author.class).getWithTemplate(NAME1);
+        resp = Syncano.please(Author.class).orderBy(Entity.FIELD_ID).getWithTemplate(NAME1);
         assertTrue(resp.isSuccess());
         assertEquals(expectedResult, resp.getData());
 
@@ -83,7 +101,21 @@ public class TemplatesTest extends SyncanoApplicationTestCase {
         assertTrue(resp.isSuccess());
         assertEquals(name1 + ",", resp.getData());
 
-        // TODO add test with data endpoint
+        // make template with authors
+        Template t2 = makeTemplate(NAME2);
+        t2.setContent("{% set objects = response.objects %}" +
+                "{% if objects %}" +
+                "{% for object in objects %}" +
+                "{{ object['" + Book.FIELD_TITLE + "'] }}-{{ object['" + Book.FIELD_AUTHOR + "']['" + Author.FIELD_NAME + "'] }}," +
+                "{% endfor %}" +
+                "{% endif %}");
+        respCreate = syncano.createTemplate(t2).send();
+        assertTrue(respCreate.isSuccess());
+
+        // request objects with data endpoint
+        resp = Syncano.please(Book.class).dataEndpoint(ENDPOINT).getWithTemplate(NAME2);
+        assertTrue(resp.isSuccess());
+        assertEquals(book1.title + "-" + book1.author.name + "," + book2.title + "-" + book2.author.name + ",", resp.getData());
     }
 
     @Test
