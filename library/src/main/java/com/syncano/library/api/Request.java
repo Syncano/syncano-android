@@ -35,6 +35,10 @@ public abstract class Request<T> {
 
     public abstract Response<T> send();
 
+    public Syncano getSyncano() {
+        return syncano;
+    }
+
     /**
      * Send asynchronous request. There asynchronous requests may
      * be executed same time (three Threads). If there are more requests, they

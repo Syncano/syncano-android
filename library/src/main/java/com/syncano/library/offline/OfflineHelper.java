@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.syncano.library.annotation.SyncanoClass;
+import com.syncano.library.api.Where;
 import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.Entity;
 import com.syncano.library.data.SyncanoObject;
@@ -32,10 +33,15 @@ public class OfflineHelper {
     private static HashSet<String> checkedMigrations = new HashSet<>();
 
     public static <T extends SyncanoObject> List<T> readObjects(Context ctx, final Class<T> type) {
+        return readObjects(ctx, type, null, null);
+    }
+
+    public static <T extends SyncanoObject> List<T> readObjects(Context ctx, final Class<T> type, Where<T> where, String orderBy) {
         SQLiteOpenHelper sqlHelper = initDb(ctx, type);
         SQLiteDatabase db = sqlHelper.getReadableDatabase();
         ArrayList<T> list = new ArrayList<>();
-        Cursor c = db.query(TABLE_NAME, null, null, null, null, null, null);
+        OfflineQueryBuilder query = new OfflineQueryBuilder(where, orderBy);
+        Cursor c = db.query(TABLE_NAME, null, query.getSelection(), query.getSelArgs(), null, null, query.getOrderBy());
         GsonParser.GsonParseConfig config = new GsonParser.GsonParseConfig();
         config.useOfflineFieldNames = true;
         Gson gson = GsonParser.createGson(type, config);
@@ -54,7 +60,7 @@ public class OfflineHelper {
         return list;
     }
 
-    public static <T extends SyncanoObject> void writeObjects(Context ctx, List<T> objects, Class<T> type) {
+    public static void writeObjects(Context ctx, List<? extends SyncanoObject> objects, Class<? extends SyncanoObject> type) {
         SQLiteOpenHelper sqlHelper = initDb(ctx, type);
         SQLiteDatabase db = sqlHelper.getWritableDatabase();
         GsonParser.GsonParseConfig config = new GsonParser.GsonParseConfig();
@@ -62,7 +68,7 @@ public class OfflineHelper {
         config.serializeUrlFileFields = true;
         config.useOfflineFieldNames = true;
         Gson gson = GsonParser.createGson(type, config);
-        for (T object : objects) {
+        for (SyncanoObject object : objects) {
             JsonObject jsonized = gson.toJsonTree(object).getAsJsonObject();
             ContentValues values = new ContentValues();
             for (Map.Entry<String, JsonElement> entry : jsonized.entrySet()) {

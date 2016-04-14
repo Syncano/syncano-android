@@ -18,22 +18,22 @@ import java.util.Map;
 
 public class Where<T extends SyncanoObject> {
 
-    private static final String FILTER_GT = "_gt";
-    private static final String FILTER_GTE = "_gte";
-    private static final String FILTER_LT = "_lt";
-    private static final String FILTER_LTE = "_lte";
-    private static final String FILTER_EQ = "_eq";
-    private static final String FILTER_INS_EQ = "_ieq";
-    private static final String FILTER_NEQ = "_neq";
-    private static final String FILTER_EXISTS = "_exists";
-    private static final String FILTER_IN = "_in";
-    private static final String FILTER_IS = "_is";
-    private static final String FILTER_START_WITH = "_startswith";
-    private static final String FILTER_INS_START_WITH = "_istartswith";
-    private static final String FILTER_ENDS_WITH = "_endswith";
-    private static final String FILTER_INS_ENDS_WITH = "_iendswith";
-    private static final String FILTER_CONTAINS = "_contains";
-    private static final String FILTER_INS_CONTAINS = "_icontains";
+    public static final String FILTER_GT = "_gt";
+    public static final String FILTER_GTE = "_gte";
+    public static final String FILTER_LT = "_lt";
+    public static final String FILTER_LTE = "_lte";
+    public static final String FILTER_EQ = "_eq";
+    public static final String FILTER_INS_EQ = "_ieq";
+    public static final String FILTER_NEQ = "_neq";
+    public static final String FILTER_EXISTS = "_exists";
+    public static final String FILTER_IN = "_in";
+    public static final String FILTER_IS = "_is";
+    public static final String FILTER_START_WITH = "_startswith";
+    public static final String FILTER_INS_START_WITH = "_istartswith";
+    public static final String FILTER_ENDS_WITH = "_endswith";
+    public static final String FILTER_INS_ENDS_WITH = "_iendswith";
+    public static final String FILTER_CONTAINS = "_contains";
+    public static final String FILTER_INS_CONTAINS = "_icontains";
 
     private Map<String, JsonObject> query;
     private RequestBuilder<T> please;
@@ -63,6 +63,7 @@ public class Where<T extends SyncanoObject> {
      * You can get limited amount of objects in one request. This method gets objects until all are
      * downloaded. Use carefully. Will work very bad for more than a few hundreds of objects .
      */
+    @Deprecated
     public ResponseGetList<T> getAll() {
         if (please == null) {
             throw new RuntimeException("Can be called only from SyncanoObject.please(class).where().get()");
@@ -75,6 +76,7 @@ public class Where<T extends SyncanoObject> {
      *
      * @param callback callback
      */
+    @Deprecated
     public void getAll(SyncanoCallback<List<T>> callback) {
         if (please == null) {
             throw new RuntimeException("Can be called only from SyncanoObject.please(class).where().get()");

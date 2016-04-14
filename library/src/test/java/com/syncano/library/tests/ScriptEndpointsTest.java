@@ -5,7 +5,7 @@ import com.syncano.library.BuildConfig;
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.api.RequestDelete;
-import com.syncano.library.api.RequestGetOne;
+import com.syncano.library.api.RequestGet;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.choice.RuntimeName;
@@ -80,7 +80,7 @@ public class ScriptEndpointsTest extends SyncanoApplicationTestCase {
     @Test
     public void testEndpoints() throws InterruptedException {
         // ----------------- Get One -----------------
-        RequestGetOne<ScriptEndpoint> requestGetScriptEndpoint = syncano.getScriptEndpoint(ENDPOINT_NAME);
+        RequestGet<ScriptEndpoint> requestGetScriptEndpoint = syncano.getScriptEndpoint(ENDPOINT_NAME);
         Response<ScriptEndpoint> responseGetScriptEndpoint = requestGetScriptEndpoint.send();
 
         assertTrue(responseGetScriptEndpoint.isSuccess());
@@ -127,7 +127,7 @@ public class ScriptEndpointsTest extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteScriptEndpoint.getHttpResultCode());
 
         // ----------------- Get One -----------------
-        RequestGetOne<ScriptEndpoint> requestGetOne = syncano.getScriptEndpoint(ENDPOINT_NAME);
+        RequestGet<ScriptEndpoint> requestGetOne = syncano.getScriptEndpoint(ENDPOINT_NAME);
         Response<ScriptEndpoint> responseGetOneScriptEndpoint = requestGetOne.send();
 
         // After delete, ScriptEndpoint should not be found.

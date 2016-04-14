@@ -19,7 +19,7 @@ public class SomeV1 extends SyncanoObject {
 
     @SyncanoField(name = "some_text")
     public String someText;
-    @SyncanoField(name = "some_int")
+    @SyncanoField(name = "some_int", filterIndex = true)
     public int someInt;
     @SyncanoField(name = "some_byte")
     public byte someByte;

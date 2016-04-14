@@ -8,7 +8,6 @@ import com.syncano.library.api.IncrementBuilder;
 import com.syncano.library.api.RequestDelete;
 import com.syncano.library.api.RequestGet;
 import com.syncano.library.api.RequestGetList;
-import com.syncano.library.api.RequestGetOne;
 import com.syncano.library.api.RequestPatch;
 import com.syncano.library.api.RequestPost;
 import com.syncano.library.api.RequestTemplate;
@@ -338,10 +337,10 @@ public class Syncano {
      * @param type Type of the object.
      * @param id   Object id.
      */
-    public <T extends SyncanoObject> RequestGetOne<T> getObject(Class<T> type, int id) {
+    public <T extends SyncanoObject> RequestGet<T> getObject(Class<T> type, int id) {
         String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getNotEmptyInstanceName(), className, id);
-        return new RequestGetOne<>(type, url, this);
+        return new RequestGet<>(type, url, this);
     }
 
     /**
@@ -349,11 +348,11 @@ public class Syncano {
      *
      * @param object Object to get. Has to have id. Other fields will be updated.
      */
-    public <T extends SyncanoObject> RequestGetOne<T> getObject(T object) {
+    public <T extends SyncanoObject> RequestGet<T> getObject(T object) {
         Validate.checkNotNullAndZero(object.getId(), "Can't fetch object without id");
         String className = SyncanoClassHelper.getSyncanoClassName(object.getClass());
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getNotEmptyInstanceName(), className, object.getId());
-        return new RequestGetOne<>(object, url, this);
+        return new RequestGet<>(object, url, this);
     }
 
 
@@ -374,8 +373,8 @@ public class Syncano {
      * @param type Type for result List item.
      * @param <T>  Result type.
      */
-    public <T extends SyncanoObject> RequestGetList<T> getObjectsDataEndpoint(Class<T> type, String tableView) {
-        String url = String.format(Constants.DATA_ENDPOINT, getNotEmptyInstanceName(), tableView);
+    public <T extends SyncanoObject> RequestGetList<T> getObjectsDataEndpoint(Class<T> type, String dataEndpoint) {
+        String url = String.format(Constants.DATA_ENDPOINT, getNotEmptyInstanceName(), dataEndpoint);
         return new RequestGetList<>(type, url, this);
     }
 
@@ -616,7 +615,7 @@ public class Syncano {
      */
     public RequestGet<Trace> getTrace(int scriptId, int traceId) {
         String url = String.format(Constants.TRACE_DETAIL_URL, getNotEmptyInstanceName(), scriptId, traceId);
-        RequestGet<Trace> req = new RequestGetOne<>(Trace.class, url, this);
+        RequestGet<Trace> req = new RequestGet<>(Trace.class, url, this);
         addScriptIdAfterCall(req, scriptId);
         return req;
     }
@@ -630,7 +629,7 @@ public class Syncano {
     public RequestGet<Trace> getTrace(Trace trace) {
         Validate.checkNotNullAndZero(trace.getScriptId(), "Fetching trace result without script id. If run from ScriptEndpoint, result is already known.");
         String url = String.format(Constants.TRACE_DETAIL_URL, getNotEmptyInstanceName(), trace.getScriptId(), trace.getId());
-        return new RequestGetOne<>(trace, url, this);
+        return new RequestGet<>(trace, url, this);
     }
 
     private void addScriptIdAfterCall(HttpRequest<Trace> req, final int scriptId) {
@@ -1079,7 +1078,7 @@ public class Syncano {
      * @param id Id of existing User.
      * @return requested user
      */
-    public RequestGetOne<User> getUser(int id) {
+    public RequestGet<User> getUser(int id) {
         return getUser(User.class, id);
     }
 
@@ -1089,9 +1088,9 @@ public class Syncano {
      * @param id Id of existing User.
      * @return requested user
      */
-    public <T extends AbstractUser> RequestGetOne<T> getUser(Class<T> type, int id) {
+    public <T extends AbstractUser> RequestGet<T> getUser(Class<T> type, int id) {
         String url = String.format(Constants.USERS_DETAIL_URL, getNotEmptyInstanceName(), id);
-        return new RequestGetOne<>(type, url, this);
+        return new RequestGet<>(type, url, this);
     }
 
     /**
@@ -1100,10 +1099,10 @@ public class Syncano {
      * @param user user instance
      * @return requested user
      */
-    public <T extends AbstractUser> RequestGetOne<T> fetchCurrentUser(T user) {
+    public <T extends AbstractUser> RequestGet<T> fetchCurrentUser(T user) {
         Validate.checkNotNullAndNotEmpty(getUserKey(), "Can't fetch user without login him first.");
         String url = String.format(Constants.USER_DETAILS, getNotEmptyInstanceName());
-        return new RequestGetOne<>(user, url, this);
+        return new RequestGet<>(user, url, this);
     }
 
     /**
@@ -1111,10 +1110,10 @@ public class Syncano {
      *
      * @return requested user
      */
-    public <T extends AbstractUser> RequestGetOne<T> fetchCurrentUser(Class<T> type) {
+    public <T extends AbstractUser> RequestGet<T> fetchCurrentUser(Class<T> type) {
         Validate.checkNotNullAndNotEmpty(getUserKey(), "Can't fetch user without login him first.");
         String url = String.format(Constants.USER_DETAILS, getNotEmptyInstanceName());
-        return new RequestGetOne<>(type, url, this);
+        return new RequestGet<>(type, url, this);
     }
 
     /**
@@ -1271,10 +1270,9 @@ public class Syncano {
      * @param lastId      Last notification id.
      * @return Notification.
      */
-    /* package */ RequestGetOne<Notification> pollChannel(String channelName, String room, int lastId) {
-
+    /* package */ RequestGet<Notification> pollChannel(String channelName, String room, int lastId) {
         String url = String.format(Constants.CHANNELS_POLL_URL, getNotEmptyInstanceName(), channelName);
-        RequestGetOne<Notification> req = new RequestGetOne<>(Notification.class, url, this);
+        RequestGet<Notification> req = new RequestGet<>(Notification.class, url, this);
         req.setLongConnectionTimeout();
 
         if (room != null) {

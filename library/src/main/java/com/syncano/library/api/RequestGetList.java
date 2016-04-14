@@ -20,6 +20,7 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
     private Integer pageSize;
     private boolean estimateCount;
     private Gson gson;
+    private boolean getAll = false;
 
     public RequestGetList(Class<T> resultType, String url, Syncano syncano) {
         super(url, syncano);
@@ -67,6 +68,11 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
         return resultList;
     }
 
+    @Override
+    public Class getResultType() {
+        return resultType;
+    }
+
     /**
      * Filter your objects using query parameter.
      *
@@ -75,6 +81,20 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
     public RequestGetList<T> setWhereFilter(Where where) {
         this.where = where;
         return this;
+    }
+
+    /**
+     * @return Filtering query
+     */
+    public Where getWhereFilter() {
+        return where;
+    }
+
+    /**
+     * @return Order by param value
+     */
+    public String getOrderByParam() {
+        return orderBy;
     }
 
     /**
@@ -118,7 +138,42 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
 
     @Override
     public ResponseGetList<T> send() {
-        return (ResponseGetList<T>) super.send();
+        ResponseGetList<T> r = (ResponseGetList<T>) super.send();
+        if (!getAll || !r.isSuccess()) {
+            return r;
+        }
 
+        ArrayList<T> data = new ArrayList<>(r.getData());
+        while (r.hasNextPage()) {
+            r = r.getNextPage();
+            if (!r.isSuccess()) {
+                return r;
+            } else {
+                data.addAll(r.getData());
+            }
+        }
+
+        ResponseGetList<T> response = new ResponseGetList<>(syncano, resultType);
+        response.setData(data);
+        response.setResultCode(Response.CODE_SUCCESS);
+        response.setHttpResultCode(Response.HTTP_CODE_SUCCESS);
+        return response;
+    }
+
+    /**
+     * @return true if is set to download all objects instead one page
+     */
+    public boolean isGetAll() {
+        return getAll;
+    }
+
+    /**
+     * Allows to download all objects in a loop. Use very carefully.
+     *
+     * @param getAll download all objects, not only single page
+     */
+    public RequestGetList<T> setGetAll(boolean getAll) {
+        this.getAll = getAll;
+        return this;
     }
 }
