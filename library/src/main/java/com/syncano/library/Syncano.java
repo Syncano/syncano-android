@@ -16,6 +16,7 @@ import com.syncano.library.api.Response;
 import com.syncano.library.choice.SocialAuthBackend;
 import com.syncano.library.data.AbstractUser;
 import com.syncano.library.data.CodeBox;
+import com.syncano.library.data.GCMDeviceConfig;
 import com.syncano.library.data.Notification;
 import com.syncano.library.data.Script;
 import com.syncano.library.data.ScriptEndpoint;
@@ -1339,5 +1340,46 @@ public class Syncano {
      */
     public RequestTemplate getObjectsWithTemplate(RequestGet requestGet, String templateName) {
         return new RequestTemplate(requestGet, templateName);
+    }
+
+    /**
+     * Registers the device to receive GCM notifications
+     *
+     * @param gcmDeviceConfig GCM config, has to have registration id received from Google
+     * @return created config
+     */
+    public RequestPost<GCMDeviceConfig> addGCMDevice(GCMDeviceConfig gcmDeviceConfig) {
+        String url = String.format(Constants.GCM_DEVICES_LIST_URL, getNotEmptyInstanceName());
+        return new RequestPost<>(GCMDeviceConfig.class, url, this, gcmDeviceConfig);
+    }
+
+    /**
+     * Gets details about registered GCM device config
+     *
+     * @return config details
+     */
+    public RequestGet<GCMDeviceConfig> getGCMDevice(String registrationId) {
+        String url = String.format(Constants.GCM_DEVICES_DETAILS_URL, getNotEmptyInstanceName(), registrationId);
+        return new RequestGetOne<>(GCMDeviceConfig.class, url, this);
+    }
+
+    /**
+     * Updates GCM device config
+     *
+     * @return updated config
+     */
+    public RequestPatch<GCMDeviceConfig> updateGCMDevice(GCMDeviceConfig gcmDeviceConfig) {
+        String url = String.format(Constants.GCM_DEVICES_DETAILS_URL, getNotEmptyInstanceName(), gcmDeviceConfig.getRegistrationId());
+        return new RequestPatch<>(GCMDeviceConfig.class, url, this, gcmDeviceConfig);
+    }
+
+    /**
+     * Deletes gcm device from Syncano
+     *
+     * @return deleted config
+     */
+    public RequestDelete<GCMDeviceConfig> deleteGCMDevice(String registrationId) {
+        String url = String.format(Constants.GCM_DEVICES_DETAILS_URL, getNotEmptyInstanceName(), registrationId);
+        return new RequestDelete<>(GCMDeviceConfig.class, url, this);
     }
 }

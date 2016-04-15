@@ -103,4 +103,8 @@ public class Constants {
     public static final String TEMPLATE_DETAIL_URL = "/v1.1/instances/%s/snippets/templates/%s/";
     public static final String TEMPLATE_RENAME_URL = "/v1.1/instances/%s/snippets/templates/%s/rename/";
     public static final String TEMPLATE_RENDER_URL = "/v1.1/instances/%s/snippets/templates/%s/render/";
+
+    // ==================== GCM ==================== //
+    public static final String GCM_DEVICES_LIST_URL = "/v1.1/instances/%s/push_notifications/gcm/devices/";
+    public static final String GCM_DEVICES_DETAILS_URL = "/v1.1/instances/%s/push_notifications/gcm/devices/%s/";
 }
