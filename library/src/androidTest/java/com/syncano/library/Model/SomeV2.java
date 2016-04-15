@@ -15,6 +15,10 @@ import java.util.Random;
 
 @SyncanoClass(name = "something", version = 2, previousVersion = SomeV1.class)
 public class SomeV2 extends SyncanoObject {
+    public final static String FIELD_TEXT = "some_text";
+    public final static String FIELD_INT = "some_int";
+    public final static String FIELD_DATE = "some_date";
+
     public SomeV2() {
     }
 
@@ -24,11 +28,11 @@ public class SomeV2 extends SyncanoObject {
         someDate = date;
     }
 
-    @SyncanoField(name = "some_text")
+    @SyncanoField(name = FIELD_TEXT)
     public String someText;
-    @SyncanoField(name = "some_int")
+    @SyncanoField(name = FIELD_INT)
     public int someInt;
-    @SyncanoField(name = "some_date")
+    @SyncanoField(name = FIELD_DATE)
     public Date someDate;
 
     public static SomeV2 generateObject() {

@@ -83,7 +83,7 @@ public class OfflineGetRequest<T extends SyncanoObject> extends OfflineRequest<L
     }
 
     private ResponseGetList<T> doLocalRequest() {
-        List<T> data = OfflineHelper.readObjects(getSyncano().getAndroidContext(), getRequest.getResultType(),
+        List data = OfflineHelper.readObjects(getSyncano().getAndroidContext(), getRequest.getResultType(),
                 getRequest.getWhereFilter(), getRequest.getOrderByParam());
         ResponseGetList<T> response = new ResponseGetList<>(getSyncano(), getRequest.getResultType());
         response.setData(data).setDataFromLocalStorage(true).setResultCode(Response.CODE_SUCCESS);
