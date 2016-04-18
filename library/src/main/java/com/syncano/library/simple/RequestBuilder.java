@@ -45,7 +45,7 @@ public class RequestBuilder<T extends SyncanoObject> {
      * @return response with a requested list
      */
     public ResponseGetList<T> get() {
-        return prepareOfflineRequest().send();
+        return (ResponseGetList<T>) prepareOfflineRequest().send();
     }
 
     /**
@@ -55,7 +55,7 @@ public class RequestBuilder<T extends SyncanoObject> {
     @Deprecated
     public ResponseGetList<T> getAll() {
         getAll(true);
-        return prepareOfflineRequest().send();
+        return (ResponseGetList<T>) prepareOfflineRequest().send();
     }
 
     /**

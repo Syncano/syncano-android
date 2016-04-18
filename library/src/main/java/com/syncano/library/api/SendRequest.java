@@ -37,6 +37,7 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
     private Object data;
     private boolean updateGivenData = false;
     private Gson gson;
+    public final static String UTF8 = "UTF-8";
 
     protected SendRequest(Class<T> resultType, String url, Syncano syncano, Object data) {
         super(resultType, url, syncano);
@@ -115,23 +116,22 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
             } else {
                 streamsList.add(new FileInputStream(file));
             }
-            streamsList.add(new ByteArrayInputStream((lineEnd).getBytes("UTF-8")));
+            streamsList.add(new ByteArrayInputStream((lineEnd).getBytes(UTF8)));
         }
         return streamsList;
     }
 
     private InputStream getStringFieldsInputStream() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream os = new DataOutputStream(baos);
         JsonObject json = gson.toJsonTree(data).getAsJsonObject();
         ((SyncanoObject) data).getIncrementBuilder().build(json);
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
-            os.writeBytes(twoHyphens + boundary + lineEnd);
-            os.writeBytes("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"" + lineEnd);
-            os.writeBytes("Content-Type: text/plain" + lineEnd);
-            os.writeBytes(lineEnd);
-            os.writeBytes(GsonParser.getJsonElementAsString(entry.getValue()));
-            os.writeBytes(lineEnd);
+            baos.write((twoHyphens + boundary + lineEnd).getBytes(UTF8));
+            baos.write(("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"" + lineEnd).getBytes(UTF8));
+            baos.write(("Content-Type: text/plain" + lineEnd).getBytes(UTF8));
+            baos.write(lineEnd.getBytes(UTF8));
+            baos.write((GsonParser.getJsonElementAsString(entry.getValue())).getBytes(UTF8));
+            baos.write(lineEnd.getBytes(UTF8));
         }
 
         return new ByteArrayInputStream(baos.toByteArray());
@@ -151,13 +151,13 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
     }
 
     private InputStream getEndInputStream() throws UnsupportedEncodingException {
-        return new ByteArrayInputStream((twoHyphens + boundary + twoHyphens + lineEnd).getBytes("UTF-8"));
+        return new ByteArrayInputStream((twoHyphens + boundary + twoHyphens + lineEnd).getBytes(UTF8));
     }
 
     protected StringEntity prepareStringEntity() {
         String text = gson.toJson(data);
         try {
-            return new StringEntity(text, "UTF-8");
+            return new StringEntity(text, UTF8);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return null;
