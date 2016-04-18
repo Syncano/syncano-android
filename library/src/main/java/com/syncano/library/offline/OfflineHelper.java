@@ -36,7 +36,7 @@ public class OfflineHelper {
         return readObjects(ctx, type, null, null);
     }
 
-    public static <T extends SyncanoObject> List<T> readObjects(Context ctx, final Class<T> type, Where<T> where, String orderBy) {
+    public static <T extends SyncanoObject> List<T> readObjects(Context ctx, Class<T> type, Where<T> where, String orderBy) {
         SQLiteOpenHelper sqlHelper = initDb(ctx, type);
         SQLiteDatabase db = sqlHelper.getReadableDatabase();
         ArrayList<T> list = new ArrayList<>();
@@ -58,6 +58,42 @@ public class OfflineHelper {
         c.close();
         db.close();
         return list;
+    }
+
+    public static <T extends SyncanoObject> T readObject(Context ctx, Class<T> type, int id) {
+        GsonParser.GsonParseConfig config = new GsonParser.GsonParseConfig();
+        config.useOfflineFieldNames = true;
+        Gson gson = GsonParser.createGson(type, config);
+        return readObject(ctx, gson, type, id);
+    }
+
+    public static <T extends SyncanoObject> T readObject(Context ctx, T obj) {
+        GsonParser.GsonParseConfig config = new GsonParser.GsonParseConfig();
+        config.useOfflineFieldNames = true;
+        Gson gson = GsonParser.createGson(obj, config);
+        return (T) readObject(ctx, gson, obj.getClass(), obj.getId());
+    }
+
+
+    public static <T extends SyncanoObject> T readObject(Context ctx, Gson gson, Class<T> type, int id) {
+        SQLiteOpenHelper sqlHelper = initDb(ctx, type);
+        SQLiteDatabase db = sqlHelper.getReadableDatabase();
+        OfflineQueryBuilder query = new OfflineQueryBuilder(new Where<>().eq(Entity.FIELD_ID, id), null);
+        Cursor c = db.query(TABLE_NAME, null, query.getSelection(), query.getSelArgs(), null, null, query.getOrderBy());
+
+        String[] columns = c.getColumnNames();
+        c.moveToFirst();
+        T object = null;
+        if (c.getCount() != 0) {
+            JsonObject json = new JsonObject();
+            for (String column : columns) {
+                json.addProperty(column, c.getString(c.getColumnIndex(column)));
+            }
+            object = gson.fromJson(json, type);
+        }
+        c.close();
+        db.close();
+        return object;
     }
 
     public static void writeObjects(Context ctx, List<? extends SyncanoObject> objects, Class<? extends SyncanoObject> type) {

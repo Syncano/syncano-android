@@ -1,6 +1,6 @@
 package com.syncano.library.offline;
 
-public enum GetMode {
+public enum OfflineMode {
     ONLINE,
     LOCAL,
     LOCAL_WHEN_ONLINE_FAILED,

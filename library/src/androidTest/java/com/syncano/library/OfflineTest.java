@@ -7,7 +7,7 @@ import com.syncano.library.Model.SomeV2;
 import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.choice.Case;
 import com.syncano.library.choice.SortOrder;
-import com.syncano.library.offline.GetMode;
+import com.syncano.library.offline.OfflineMode;
 import com.syncano.library.offline.OfflineHelper;
 
 import org.junit.After;
@@ -67,81 +67,81 @@ public class OfflineTest extends SyncanoAndroidTestCase {
         }
 
         // get all from server and write to db
-        ResponseGetList<SomeV2> resp = Syncano.please(SomeV2.class).mode(GetMode.ONLINE).saveDownloadedDataToStorage(true).
+        ResponseGetList<SomeV2> resp = Syncano.please(SomeV2.class).mode(OfflineMode.ONLINE).saveDownloadedDataToStorage(true).
                 cleanStorageOnSuccessDownload(true).getAll(true).get();
         assertTrue(resp.isSuccess());
         assertEquals(itemsNum, resp.getData().size());
         assertFalse(resp.isDataFromLocalStorage());
 
         // get all from db
-        resp = Syncano.please(SomeV2.class).mode(GetMode.LOCAL).get();
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
         assertTrue(resp.isSuccess());
         assertEquals(itemsNum, resp.getData().size());
         assertTrue(resp.isDataFromLocalStorage());
 
         // test where queries when getting from db
-        resp = Syncano.please(SomeV2.class).mode(GetMode.LOCAL).orderBy(SomeV2.FIELD_INT, SortOrder.DESCENDING)
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).orderBy(SomeV2.FIELD_INT, SortOrder.DESCENDING)
                 .where().gt(SomeV2.FIELD_INT, 4).lt(SomeV2.FIELD_DATE, date).get();
         assertTrue(resp.isSuccess());
         assertEquals(3, resp.getData().size());
         assertEquals(7, resp.getData().get(0).someInt);
 
-        resp = Syncano.please(SomeV2.class).mode(GetMode.LOCAL).where()
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).where()
                 .gte(SomeV2.FIELD_INT, 4).lte(SomeV2.FIELD_INT, 6).isNotNull(SomeV2.FIELD_TEXT).get();
         assertTrue(resp.isSuccess());
         assertEquals(2, resp.getData().size());
 
-        resp = Syncano.please(SomeV2.class).mode(GetMode.LOCAL).where().
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).where().
                 isNull(SomeV2.FIELD_TEXT).neq(SomeV2.FIELD_INT, 2).get();
         assertTrue(resp.isSuccess());
         assertEquals(1, resp.getData().size());
 
-        resp = Syncano.please(SomeV2.class).mode(GetMode.LOCAL).where()
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).where()
                 .eq(SomeV2.FIELD_DATE, list.get(3).someDate).get();
         assertTrue(resp.isSuccess());
         assertEquals(5, resp.getData().size());
 
-        resp = Syncano.please(SomeV2.class).mode(GetMode.LOCAL).where()
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).where()
                 .eq(SomeV2.FIELD_TEXT, "lorem IPSUM", Case.INSENSITIVE).get();
         assertTrue(resp.isSuccess());
         assertEquals(1, resp.getData().size());
 
-        resp = Syncano.please(SomeV2.class).mode(GetMode.LOCAL).where()
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).where()
                 .eq(SomeV2.FIELD_TEXT, "lorem IPSUM").get();
         assertTrue(resp.isSuccess());
         assertEquals(0, resp.getData().size());
 
-        resp = Syncano.please(SomeV2.class).mode(GetMode.LOCAL).where()
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).where()
                 .in(SomeV2.FIELD_TEXT, new String[]{"Lorem ipsum", "dolor sit amet"}).get();
         assertTrue(resp.isSuccess());
         assertEquals(2, resp.getData().size());
 
-        resp = Syncano.please(SomeV2.class).mode(GetMode.LOCAL).where()
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).where()
                 .startsWith(SomeV2.FIELD_TEXT, "proin", Case.INSENSITIVE).get();
         assertTrue(resp.isSuccess());
         assertEquals(3, resp.getData().size());
 
-        resp = Syncano.please(SomeV2.class).mode(GetMode.LOCAL).where()
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).where()
                 .startsWith(SomeV2.FIELD_TEXT, "proin").get();
         assertTrue(resp.isSuccess());
         assertEquals(2, resp.getData().size());
 
-        resp = Syncano.please(SomeV2.class).mode(GetMode.LOCAL).where()
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).where()
                 .endsWith(SomeV2.FIELD_TEXT, "amet").get();
         assertTrue(resp.isSuccess());
         assertEquals(1, resp.getData().size());
 
-        resp = Syncano.please(SomeV2.class).mode(GetMode.LOCAL).where()
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).where()
                 .endsWith(SomeV2.FIELD_TEXT, "amet", Case.INSENSITIVE).get();
         assertTrue(resp.isSuccess());
         assertEquals(2, resp.getData().size());
 
-        resp = Syncano.please(SomeV2.class).mode(GetMode.LOCAL).where()
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).where()
                 .contains(SomeV2.FIELD_TEXT, "sit").get();
         assertTrue(resp.isSuccess());
         assertEquals(1, resp.getData().size());
 
-        resp = Syncano.please(SomeV2.class).mode(GetMode.LOCAL).where()
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).where()
                 .contains(SomeV2.FIELD_TEXT, "sit", Case.INSENSITIVE).get();
         assertTrue(resp.isSuccess());
         assertEquals(2, resp.getData().size());

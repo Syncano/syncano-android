@@ -1,28 +1,23 @@
 package com.syncano.library.offline;
 
-import android.content.Context;
-
-import com.syncano.library.api.RequestGetList;
+import com.syncano.library.api.RequestGet;
 import com.syncano.library.api.Response;
-import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.data.SyncanoObject;
-
-import java.util.List;
 
 
 /**
- * Wrapper for a RequestGetList, that adds offline storage function
+ * Wrapper for a RequestGet, that adds offline storage function
  *
  * @param <T> Type of objects to get
  */
-public class OfflineGetRequest<T extends SyncanoObject> extends OfflineRequest<List<T>> {
+public abstract class OfflineGetRequest<T> extends OfflineRequest<T> {
 
-    private RequestGetList<T> getRequest;
-    private GetMode mode = GetMode.ONLINE;
+    private RequestGet<T> getRequest;
+    private OfflineMode mode = OfflineMode.ONLINE;
     private boolean cleanStorageOnSuccessDownload = false;
     private boolean saveDownloadedDataToStorage = false;
 
-    public OfflineGetRequest(RequestGetList<T> getRequest) {
+    public OfflineGetRequest(RequestGet<T> getRequest) {
         super(getRequest.getSyncano());
         if (!SyncanoObject.class.isAssignableFrom(getRequest.getResultType())) {
             throw new RuntimeException("Using offline storage is only possible for SyncanoObject objects");
@@ -30,7 +25,7 @@ public class OfflineGetRequest<T extends SyncanoObject> extends OfflineRequest<L
         this.getRequest = getRequest;
     }
 
-    public OfflineGetRequest<T> mode(GetMode mode) {
+    public OfflineGetRequest<T> mode(OfflineMode mode) {
         this.mode = mode;
         return this;
     }
@@ -46,47 +41,28 @@ public class OfflineGetRequest<T extends SyncanoObject> extends OfflineRequest<L
     }
 
     @Override
-    public ResponseGetList<T> send() {
+    public Response<T> send() {
         switch (mode) {
             case ONLINE:
-                return doOnlineRequest();
+                return doOnlineRequest(getRequest, cleanStorageOnSuccessDownload, saveDownloadedDataToStorage);
             case LOCAL_WHEN_ONLINE_FAILED:
-                ResponseGetList<T> onlineResponse = doOnlineRequest();
+                Response<T> onlineResponse = doOnlineRequest(getRequest, cleanStorageOnSuccessDownload, saveDownloadedDataToStorage);
                 if (onlineResponse.isSuccess()) {
                     return onlineResponse;
                 } else {
-                    return doLocalRequest();
+                    return doLocalRequest(getRequest);
                 }
             case LOCAL_ONLINE_IN_BACKGROUND:
                 doInBackground(getRequest);
-                return doLocalRequest();
+                return doLocalRequest(getRequest);
             case LOCAL:
-                return doLocalRequest();
+                return doLocalRequest(getRequest);
         }
 
         return null;
     }
 
-    private ResponseGetList<T> doOnlineRequest() {
-        ResponseGetList<T> onlineResponse = getRequest.send();
-        if (onlineResponse.isSuccess()) {
-            Context ctx = getSyncano().getAndroidContext();
-            Class<? extends SyncanoObject> type = getRequest.getResultType();
-            if (cleanStorageOnSuccessDownload) {
-                OfflineHelper.clearTable(ctx, type);
-            }
-            if (saveDownloadedDataToStorage) {
-                OfflineHelper.writeObjects(ctx, onlineResponse.getData(), type);
-            }
-        }
-        return onlineResponse;
-    }
+    public abstract Response<T> doOnlineRequest(RequestGet<T> getRequest, boolean cleanStorageOnSuccessDownload, boolean saveDownloadedDataToStorage);
 
-    private ResponseGetList<T> doLocalRequest() {
-        List data = OfflineHelper.readObjects(getSyncano().getAndroidContext(), getRequest.getResultType(),
-                getRequest.getWhereFilter(), getRequest.getOrderByParam());
-        ResponseGetList<T> response = new ResponseGetList<>(getSyncano(), getRequest.getResultType());
-        response.setData(data).setDataFromLocalStorage(true).setResultCode(Response.CODE_SUCCESS);
-        return response;
-    }
+    public abstract Response<T> doLocalRequest(RequestGet<T> getRequest);
 }

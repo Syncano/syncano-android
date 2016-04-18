@@ -9,6 +9,13 @@ import java.util.List;
 public class RequestGet<T> extends ResultRequest<T> {
 
     private FieldsFilter fieldsFilter;
+    private Integer requestedId;
+
+    public RequestGet(Class<T> resultType, String url, Syncano syncano, int id) {
+        this(resultType, url, syncano);
+        requestedId = id;
+        addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+    }
 
     public RequestGet(Class<T> resultType, String url, Syncano syncano) {
         super(resultType, url, syncano);
@@ -36,6 +43,10 @@ public class RequestGet<T> extends ResultRequest<T> {
         if (isFieldsFilter()) {
             addUrlParam(fieldsFilter.getFilterTypeString(), createFilterFieldParam());
         }
+    }
+
+    public Integer getRequestedId() {
+        return requestedId;
     }
 
     private String createFilterFieldParam() {

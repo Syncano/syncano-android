@@ -8,6 +8,7 @@ public abstract class ResultRequest<T> extends HttpRequest<T> {
 
     protected Class<T> resultType = null;
     private Gson gson = null;
+    private T resultObject;
 
     protected ResultRequest(Class<T> resultType, String url, Syncano syncano) {
         super(url, syncano);
@@ -18,11 +19,16 @@ public abstract class ResultRequest<T> extends HttpRequest<T> {
     protected ResultRequest(T dataObject, String url, Syncano syncano) {
         super(url, syncano);
         gson = GsonParser.createGson(dataObject);
+        resultObject = dataObject;
         this.resultType = (Class<T>) dataObject.getClass();
     }
 
     protected ResultRequest(String url, Syncano syncano) {
         super(url, syncano);
+    }
+
+    public T getResultObject() {
+        return resultObject;
     }
 
     @Override

@@ -12,8 +12,8 @@ import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.choice.FilterType;
 import com.syncano.library.choice.SortOrder;
 import com.syncano.library.data.SyncanoObject;
-import com.syncano.library.offline.GetMode;
-import com.syncano.library.offline.OfflineGetRequest;
+import com.syncano.library.offline.OfflineMode;
+import com.syncano.library.offline.OfflineGetListRequest;
 
 import java.util.List;
 
@@ -29,9 +29,10 @@ public class RequestBuilder<T extends SyncanoObject> {
     private String dataEndpoint;
     private boolean estimateCount = false;
     private boolean getAll = false;
-    private GetMode getMode = GetMode.ONLINE;
+    private OfflineMode mode = OfflineMode.ONLINE;
     private boolean cleanStorageOnSuccessDownload = false;
     private boolean saveDownloadedDataToStorage = false;
+    private SyncanoCallback<List<T>> backgroundCallback;
 
     public RequestBuilder(Class<T> clazz) {
         this.clazz = clazz;
@@ -118,11 +119,12 @@ public class RequestBuilder<T extends SyncanoObject> {
         return request;
     }
 
-    public OfflineGetRequest<T> prepareOfflineRequest() {
-        OfflineGetRequest<T> request = new OfflineGetRequest<>(prepareGetRequest());
-        request.mode(getMode);
+    public OfflineGetListRequest<T> prepareOfflineRequest() {
+        OfflineGetListRequest<T> request = new OfflineGetListRequest<>(prepareGetRequest());
+        request.mode(mode);
         request.cleanStorageOnSuccessDownload(cleanStorageOnSuccessDownload);
         request.saveDownloadedDataToStorage(saveDownloadedDataToStorage);
+        request.setBackgroundCallback(backgroundCallback);
         return request;
     }
 
@@ -313,8 +315,8 @@ public class RequestBuilder<T extends SyncanoObject> {
         return this;
     }
 
-    public RequestBuilder<T> mode(GetMode mode) {
-        this.getMode = mode;
+    public RequestBuilder<T> mode(OfflineMode mode) {
+        this.mode = mode;
         return this;
     }
 
@@ -325,6 +327,11 @@ public class RequestBuilder<T extends SyncanoObject> {
 
     public RequestBuilder<T> saveDownloadedDataToStorage(boolean save) {
         this.saveDownloadedDataToStorage = save;
+        return this;
+    }
+
+    public RequestBuilder<T> backgroundCallback(SyncanoCallback<List<T>> callback) {
+        this.backgroundCallback = callback;
         return this;
     }
 }
