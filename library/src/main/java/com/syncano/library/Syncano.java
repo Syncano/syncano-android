@@ -16,10 +16,10 @@ import com.syncano.library.api.Response;
 import com.syncano.library.choice.SocialAuthBackend;
 import com.syncano.library.data.AbstractUser;
 import com.syncano.library.data.CodeBox;
-import com.syncano.library.data.GCMDeviceConfig;
 import com.syncano.library.data.Notification;
 import com.syncano.library.data.Script;
 import com.syncano.library.data.ScriptEndpoint;
+import com.syncano.library.data.PushDevice;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.Trace;
 import com.syncano.library.data.User;
@@ -1342,44 +1342,39 @@ public class Syncano {
         return new RequestTemplate(requestGet, templateName);
     }
 
-    /**
-     * Registers the device to receive GCM notifications
-     *
-     * @param gcmDeviceConfig GCM config, has to have registration id received from Google
-     * @return created config
-     */
-    public RequestPost<GCMDeviceConfig> addGCMDevice(GCMDeviceConfig gcmDeviceConfig) {
-        String url = String.format(Constants.GCM_DEVICES_LIST_URL, getNotEmptyInstanceName());
-        return new RequestPost<>(GCMDeviceConfig.class, url, this, gcmDeviceConfig);
+    public RequestPost<PushDevice> registerPushDevice(PushDevice pushDevice) {
+        String url = String.format(Constants.PUSH_GCM_DEVICES_URL, getNotEmptyInstanceName());
+        RequestPost<PushDevice> req = new RequestPost<>(PushDevice.class, url, this, pushDevice);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
+        return req;
     }
 
-    /**
-     * Gets details about registered GCM device config
-     *
-     * @return config details
-     */
-    public RequestGet<GCMDeviceConfig> getGCMDevice(String registrationId) {
-        String url = String.format(Constants.GCM_DEVICES_DETAILS_URL, getNotEmptyInstanceName(), registrationId);
-        return new RequestGetOne<>(GCMDeviceConfig.class, url, this);
+    public RequestGetList<PushDevice> getPushDevices() {
+        String url = String.format(Constants.PUSH_GCM_DEVICES_URL, getNotEmptyInstanceName());
+        RequestGetList<PushDevice> req = new RequestGetList<>(PushDevice.class, url, this);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
     }
 
-    /**
-     * Updates GCM device config
-     *
-     * @return updated config
-     */
-    public RequestPatch<GCMDeviceConfig> updateGCMDevice(GCMDeviceConfig gcmDeviceConfig) {
-        String url = String.format(Constants.GCM_DEVICES_DETAILS_URL, getNotEmptyInstanceName(), gcmDeviceConfig.getRegistrationId());
-        return new RequestPatch<>(GCMDeviceConfig.class, url, this, gcmDeviceConfig);
+    public RequestGetOne<PushDevice> getPushDevice(String registrationId) {
+        String url = String.format(Constants.PUSH_GCM_DEVICE_URL, getNotEmptyInstanceName(), registrationId);
+        RequestGetOne<PushDevice> req = new RequestGetOne<>(PushDevice.class, url, this);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
     }
 
-    /**
-     * Deletes gcm device from Syncano
-     *
-     * @return deleted config
-     */
-    public RequestDelete<GCMDeviceConfig> deleteGCMDevice(String registrationId) {
-        String url = String.format(Constants.GCM_DEVICES_DETAILS_URL, getNotEmptyInstanceName(), registrationId);
-        return new RequestDelete<>(GCMDeviceConfig.class, url, this);
+    public RequestPatch<PushDevice> updatePushDevice(PushDevice pushDevice) {
+        String url = String.format(Constants.PUSH_GCM_DEVICE_URL, getNotEmptyInstanceName(), pushDevice.registrationId);
+        RequestPatch<PushDevice> req = new RequestPatch<>(PushDevice.class, url, this, pushDevice);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+        return req;
+    }
+
+    public RequestDelete<PushDevice> deletePushDevice(PushDevice pushDevice) {
+        String url = String.format(Constants.PUSH_GCM_DEVICE_URL, getNotEmptyInstanceName(), pushDevice.registrationId);
+        RequestDelete<PushDevice> req = new RequestDelete<>(PushDevice.class, url, this);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
+        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NOT_FOUND);
+        return req;
     }
 }

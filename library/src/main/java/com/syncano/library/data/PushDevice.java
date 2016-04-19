@@ -3,8 +3,7 @@ package com.syncano.library.data;
 import com.google.gson.JsonObject;
 import com.syncano.library.annotation.SyncanoField;
 
-public abstract class GCMDeviceConfig {
-
+public class PushDevice {
     public static final String FIELD_LABEL = "label";
     public static final String FIELD_USER_ID = "user_id";
     public static final String FIELD_REGISTRATION_ID = "registration_id";
@@ -25,7 +24,7 @@ public abstract class GCMDeviceConfig {
     @SyncanoField(name = FIELD_IS_ACTIVE)
     private Boolean isActive;
 
-    public GCMDeviceConfig() {
+    public PushDevice() {
     }
 
     public String getLabel() {
