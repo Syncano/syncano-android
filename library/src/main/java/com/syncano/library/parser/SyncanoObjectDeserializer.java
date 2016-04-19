@@ -68,7 +68,12 @@ public class SyncanoObjectDeserializer implements JsonDeserializer<SyncanoObject
         Collection<Field> fields = SyncanoClassHelper.findAllSyncanoFields((Class) type);
         for (Field field : fields) {
             field.setAccessible(true);
-            String syncanoKey = SyncanoClassHelper.getFieldName(field);
+            String syncanoKey;
+            if (config.useOfflineFieldNames) {
+                syncanoKey = SyncanoClassHelper.getOfflineFieldName(field);
+            } else {
+                syncanoKey = SyncanoClassHelper.getFieldName(field);
+            }
             JsonElement syncanoElement = jo.get(syncanoKey);
             setFieldFromJsonElement(syncanoObject, field, jdc, syncanoElement);
         }
