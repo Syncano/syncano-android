@@ -12,8 +12,6 @@ import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.choice.FilterType;
 import com.syncano.library.choice.SortOrder;
 import com.syncano.library.data.SyncanoObject;
-import com.syncano.library.offline.OfflineMode;
-import com.syncano.library.offline.OfflineGetListRequest;
 
 import java.util.List;
 
@@ -29,10 +27,6 @@ public class RequestBuilder<T extends SyncanoObject> {
     private String dataEndpoint;
     private boolean estimateCount = false;
     private boolean getAll = false;
-    private OfflineMode mode = OfflineMode.ONLINE;
-    private boolean cleanStorageOnSuccessDownload = false;
-    private boolean saveDownloadedDataToStorage = false;
-    private SyncanoCallback<List<T>> backgroundCallback;
 
     public RequestBuilder(Class<T> clazz) {
         this.clazz = clazz;
@@ -45,7 +39,7 @@ public class RequestBuilder<T extends SyncanoObject> {
      * @return response with a requested list
      */
     public ResponseGetList<T> get() {
-        return (ResponseGetList<T>) prepareOfflineRequest().send();
+        return prepareGetRequest().send();
     }
 
     /**
@@ -55,7 +49,7 @@ public class RequestBuilder<T extends SyncanoObject> {
     @Deprecated
     public ResponseGetList<T> getAll() {
         getAll(true);
-        return (ResponseGetList<T>) prepareOfflineRequest().send();
+        return prepareGetRequest().send();
     }
 
     /**
@@ -66,7 +60,7 @@ public class RequestBuilder<T extends SyncanoObject> {
     @Deprecated
     public void getAll(SyncanoCallback<List<T>> callback) {
         getAll(true);
-        prepareOfflineRequest().sendAsync(callback);
+        prepareGetRequest().sendAsync(callback);
     }
 
     /**
@@ -75,7 +69,7 @@ public class RequestBuilder<T extends SyncanoObject> {
      * @param callback callback
      */
     public void get(SyncanoCallback<List<T>> callback) {
-        prepareOfflineRequest().sendAsync(callback);
+        prepareGetRequest().sendAsync(callback);
     }
 
     /**
@@ -116,15 +110,6 @@ public class RequestBuilder<T extends SyncanoObject> {
             request.estimateCount();
         }
         request.setGetAll(getAll);
-        return request;
-    }
-
-    public OfflineGetListRequest<T> prepareOfflineRequest() {
-        OfflineGetListRequest<T> request = new OfflineGetListRequest<>(prepareGetRequest());
-        request.mode(mode);
-        request.cleanStorageOnSuccessDownload(cleanStorageOnSuccessDownload);
-        request.saveDownloadedDataToStorage(saveDownloadedDataToStorage);
-        request.setBackgroundCallback(backgroundCallback);
         return request;
     }
 
@@ -312,26 +297,6 @@ public class RequestBuilder<T extends SyncanoObject> {
      */
     public RequestBuilder<T> dataEndpoint(String name) {
         this.dataEndpoint = name;
-        return this;
-    }
-
-    public RequestBuilder<T> mode(OfflineMode mode) {
-        this.mode = mode;
-        return this;
-    }
-
-    public RequestBuilder<T> cleanStorageOnSuccessDownload(boolean clean) {
-        this.cleanStorageOnSuccessDownload = clean;
-        return this;
-    }
-
-    public RequestBuilder<T> saveDownloadedDataToStorage(boolean save) {
-        this.saveDownloadedDataToStorage = save;
-        return this;
-    }
-
-    public RequestBuilder<T> backgroundCallback(SyncanoCallback<List<T>> callback) {
-        this.backgroundCallback = callback;
         return this;
     }
 }

@@ -23,7 +23,7 @@ public abstract class SyncanoObject extends ObjectRequestBuilder {
     @SyncanoField(name = FIELD_OWNER_PERMISSIONS)
     private DataObjectPermissions ownerPermissions;
 
-    @SyncanoField(name = FIELD_GROUP, offlineName = "_group")
+    @SyncanoField(name = FIELD_GROUP)
     private Integer group;
 
     @SyncanoField(name = FIELD_GROUP_PERMISSIONS)

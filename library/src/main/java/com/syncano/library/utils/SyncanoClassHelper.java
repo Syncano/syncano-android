@@ -89,15 +89,6 @@ public class SyncanoClassHelper {
         return schemaArray;
     }
 
-    public static String getOfflineFieldName(Field f) {
-        SyncanoField syncanoField = f.getAnnotation(SyncanoField.class);
-        String offlineName = syncanoField.offlineName();
-        if (!offlineName.isEmpty()) {
-            return offlineName;
-        }
-        return getFieldName(f);
-    }
-
     public static String getFieldName(Field f) {
         return getFieldName(f, false);
     }

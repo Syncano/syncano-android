@@ -7,7 +7,6 @@ import com.syncano.library.api.Response;
 import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.data.Entity;
 import com.syncano.library.data.SyncanoObject;
-import com.syncano.library.offline.OfflineMode;
 
 import java.util.HashSet;
 
@@ -20,8 +19,6 @@ public abstract class ObjectRequestBuilder extends Entity {
     private Syncano syncano;
     private IncrementBuilder incrementBuilder = new IncrementBuilder();
     private HashSet<String> fieldsToClear = new HashSet<>();
-
-    private OfflineMode mode = OfflineMode.ONLINE;
 
     public void clearField(String fieldName) {
         fieldsToClear.add(fieldName);
@@ -84,7 +81,6 @@ public abstract class ObjectRequestBuilder extends Entity {
         getSyncano().deleteObject((T) this).sendAsync(callback);
     }
 
-    //TODO add offline here
     public <T extends SyncanoObject> Response<T> fetch() {
         HttpRequest<T> req = getSyncano().getObject((T) this);
         return req.send();

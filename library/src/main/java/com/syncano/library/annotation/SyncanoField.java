@@ -23,7 +23,5 @@ public @interface SyncanoField {
     boolean orderIndex() default false;
 
     boolean filterIndex() default false;
-
-    String offlineName() default "";
 }
 

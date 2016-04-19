@@ -30,12 +30,7 @@ class SyncanoObjectSerializer implements JsonSerializer<SyncanoObject> {
         for (Field field : fields) {
             field.setAccessible(true);
             try {
-                String keyName;
-                if (config.useOfflineFieldNames) {
-                    keyName = SyncanoClassHelper.getOfflineFieldName(field);
-                } else {
-                    keyName = SyncanoClassHelper.getFieldName(field);
-                }
+                String keyName = SyncanoClassHelper.getFieldName(field);
                 if (localObject.isOnClearList(keyName)) {
                     jsonObject.add(keyName, jsc.serialize(null));
                     continue;
