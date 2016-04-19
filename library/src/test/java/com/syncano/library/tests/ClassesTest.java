@@ -5,11 +5,13 @@ import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.TestSyncanoObject;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
+import com.syncano.library.choice.ClassStatus;
 import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.utils.NanosDate;
 import com.syncano.library.utils.SyncanoClassHelper;
+import com.syncano.library.utils.SyncanoLog;
 
 import org.junit.After;
 import org.junit.Before;
@@ -51,6 +53,19 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         assertTrue(responseCreateClass.isSuccess());
         assertNotNull(responseCreateClass.getData());
         syncanoClass = responseCreateClass.getData();
+
+        // wait until class will finish to create on server
+        long start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < (10 * 60 * 1000) && (syncanoClass.getStatus() != ClassStatus.READY)) {
+            Thread.sleep(100);
+            SyncanoLog.d(SyncanoApplicationTestCase.class.getSimpleName(), "Waiting for class to create: " + (System.currentTimeMillis() - start));
+            Response<SyncanoClass> respClass = syncano.getSyncanoClass(syncanoClass.getName()).send();
+            assertEquals(Response.HTTP_CODE_SUCCESS, respClass.getHttpResultCode());
+            syncanoClass = respClass.getData();
+            if (syncanoClass != null && syncanoClass.getStatus() == ClassStatus.READY) {
+                break;
+            }
+        }
 
         // ----------------- Get One -----------------
         Response<SyncanoClass> responseGetClass = syncano.getSyncanoClass(syncanoClass.getName()).send();
