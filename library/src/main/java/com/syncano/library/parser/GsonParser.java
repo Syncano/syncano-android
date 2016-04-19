@@ -3,6 +3,7 @@ package com.syncano.library.parser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.InstanceCreator;
+import com.google.gson.JsonElement;
 import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.utils.NanosDate;
@@ -46,8 +47,8 @@ public class GsonParser {
 
     private static <T> GsonBuilder createSyncanoObjectGsonBuilder(T object, GsonParseConfig config) {
         GsonBuilder gsonBuilder = getDefaultGsonBuilder(config);
-        gsonBuilder.registerTypeHierarchyAdapter(SyncanoObject.class, new SyncanoObjectDeserializer(object));
-        gsonBuilder.registerTypeHierarchyAdapter(SyncanoObject.class, new SyncanoObjectSerializer(config.serializeReadOnlyFields));
+        gsonBuilder.registerTypeHierarchyAdapter(SyncanoObject.class, new SyncanoObjectDeserializer(object, config));
+        gsonBuilder.registerTypeHierarchyAdapter(SyncanoObject.class, new SyncanoObjectSerializer(config));
         gsonBuilder.serializeNulls();
         return gsonBuilder;
     }
@@ -69,6 +70,15 @@ public class GsonParser {
 
     public static class GsonParseConfig {
         public boolean serializeReadOnlyFields = false;
+        public boolean useOfflineFieldNames = false;
+        public boolean serializeUrlFileFields = false;
     }
 
+    public static String getJsonElementAsString(JsonElement jsonElement) {
+        if (jsonElement.isJsonNull())
+            return "";
+        if (jsonElement.isJsonPrimitive())
+            return jsonElement.getAsString();
+        return jsonElement.toString();
+    }
 }

@@ -1,28 +1,16 @@
 package com.syncano.library.api;
 
-import com.google.gson.Gson;
 import com.syncano.library.Syncano;
-import com.syncano.library.parser.GsonParser;
 
+@Deprecated
 public class RequestGetOne<T> extends RequestGet<T> {
-
-    protected Class<T> resultType;
-    private Gson gson;
-
+    @Deprecated
     public RequestGetOne(Class<T> resultType, String url, Syncano syncano) {
-        super(url, syncano);
-        this.resultType = resultType;
-        gson = GsonParser.createGson(resultType);
+        super(resultType, url, syncano);
     }
 
+    @Deprecated
     public RequestGetOne(T dataObject, String url, Syncano syncano) {
-        super(url, syncano);
-        gson = GsonParser.createGson(dataObject);
-        this.resultType = (Class<T>) dataObject.getClass();
-    }
-
-    @Override
-    public T parseResult(Response<T> response, String json) {
-        return gson.fromJson(json, resultType);
+        super(dataObject, url, syncano);
     }
 }

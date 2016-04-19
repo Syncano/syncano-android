@@ -121,6 +121,8 @@ public class Response<T> {
      */
     private T data;
 
+    private boolean dataFromLocalStorage = false;
+
     /**
      * Returns true if result is success.
      *
@@ -134,40 +136,46 @@ public class Response<T> {
         return resultCode;
     }
 
-    public void setResultCode(Integer resultCode) {
+    public Response<T> setResultCode(Integer resultCode) {
         this.resultCode = resultCode;
+        return this;
     }
 
     public int getHttpResultCode() {
         return httpResultCode;
     }
 
-    public void setHttpResultCode(Integer httpResultCode) {
+    public Response<T> setHttpResultCode(Integer httpResultCode) {
         this.httpResultCode = httpResultCode;
+        return this;
     }
 
     public String getError() {
         return error;
     }
 
-    public void setError(String error) {
+    public Response<T> setError(String error) {
         this.error = error;
+        return this;
     }
 
     public String getHttpReasonPhrase() {
         return httpReasonPhrase;
     }
 
-    public void setHttpReasonPhrase(String httpReasonPhrase) {
+    public Response<T> setHttpReasonPhrase(String httpReasonPhrase) {
         this.httpReasonPhrase = httpReasonPhrase;
+        return this;
     }
+
 
     public T getData() {
         return data;
     }
 
-    public void setData(T parsedData) {
+    public Response<T> setData(T parsedData) {
         this.data = parsedData;
+        return this;
     }
 
     @Override
@@ -179,5 +187,14 @@ public class Response<T> {
                 ", httpReasonPhrase='" + httpReasonPhrase + '\'' +
                 ", data=" + data +
                 '}';
+    }
+
+    public boolean isDataFromLocalStorage() {
+        return dataFromLocalStorage;
+    }
+
+    public Response<T> setDataFromLocalStorage(boolean dataFromLocalStorage) {
+        this.dataFromLocalStorage = dataFromLocalStorage;
+        return this;
     }
 }

@@ -1,28 +1,38 @@
 package com.syncano.library;
 
 import android.os.Looper;
+import android.support.test.runner.AndroidJUnit4;
 
-import com.syncano.library.annotation.SyncanoField;
+import com.syncano.library.Model.SomeV1;
 import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.callbacks.SyncanoListCallback;
-import com.syncano.library.data.SyncanoObject;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import static org.junit.Assert.fail;
+
+@RunWith(AndroidJUnit4.class)
 public class CallbacksTest extends SyncanoAndroidTestCase {
+    @Before
     public void setUp() throws Exception {
         super.setUp();
-        createClass(Something.class);
+        createClass(SomeV1.class);
     }
 
-
+    @After
     public void tearDown() throws Exception {
-        removeClass(Something.class);
+        removeClass(SomeV1.class);
         super.tearDown();
     }
 
+    @Test
     public void testCallbackUiThread() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -34,9 +44,9 @@ public class CallbacksTest extends SyncanoAndroidTestCase {
                     fail(); // not ui thread
                 }
 
-                Syncano.please(Something.class).get(new SyncanoListCallback<Something>() {
+                Syncano.please(SomeV1.class).get(new SyncanoListCallback<SomeV1>() {
                     @Override
-                    public void success(ResponseGetList<Something> response, List<Something> result) {
+                    public void success(ResponseGetList<SomeV1> response, List<SomeV1> result) {
                         if (!isUIThread()) {
                             fail(); // not ui thread
                         }
@@ -44,7 +54,7 @@ public class CallbacksTest extends SyncanoAndroidTestCase {
                     }
 
                     @Override
-                    public void failure(ResponseGetList<Something> response) {
+                    public void failure(ResponseGetList<SomeV1> response) {
                         fail();
                     }
                 });
@@ -56,11 +66,5 @@ public class CallbacksTest extends SyncanoAndroidTestCase {
 
     private boolean isUIThread() {
         return (Looper.getMainLooper().getThread() == Thread.currentThread());
-    }
-
-    @com.syncano.library.annotation.SyncanoClass(name = "just_something")
-    private static class Something extends SyncanoObject {
-        @SyncanoField(name = "some_text")
-        public String someText;
     }
 }

@@ -56,10 +56,14 @@ public class SyncanoClassHelper {
                 continue;
             }
 
-            if (type.equals(FieldType.REFERENCE)) {
+            if (type.equals(FieldType.REFERENCE) && SyncanoObject.class.isAssignableFrom(field.getType())) {
                 String target = fieldAnnotation.target();
                 if (target == null || target.isEmpty()) {
-                    target = fieldAnnotation.name();
+                    if (field.getType().equals(field.getDeclaringClass())) {
+                        target = "self";
+                    } else {
+                        target = SyncanoClassHelper.getSyncanoClassName((Class<? extends SyncanoObject>) field.getType());
+                    }
                 }
                 fieldDescription.addProperty(Constants.FIELD_TARGET, target);
             }
@@ -83,6 +87,15 @@ public class SyncanoClassHelper {
         }
 
         return schemaArray;
+    }
+
+    public static String getOfflineFieldName(Field f) {
+        SyncanoField syncanoField = f.getAnnotation(SyncanoField.class);
+        String offlineName = syncanoField.offlineName();
+        if (!offlineName.isEmpty()) {
+            return offlineName;
+        }
+        return getFieldName(f);
     }
 
     public static String getFieldName(Field f) {
@@ -116,7 +129,7 @@ public class SyncanoClassHelper {
                 || clazz.equals(byte.class) || clazz.equals(Byte.class)
                 || clazz.equals(short.class) || clazz.equals(Short.class)) {
             return FieldType.INTEGER;
-        } else if (clazz.equals(String.class)) {
+        } else if (clazz.equals(String.class) || clazz.isEnum()) {
             return FieldType.STRING;
         } else if (clazz.equals(Date.class) || clazz.equals(NanosDate.class)) {
             return FieldType.DATETIME;

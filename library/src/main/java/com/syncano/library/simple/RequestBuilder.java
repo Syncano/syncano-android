@@ -2,7 +2,6 @@ package com.syncano.library.simple;
 
 import com.syncano.library.Syncano;
 import com.syncano.library.api.FieldsFilter;
-import com.syncano.library.api.RequestAll;
 import com.syncano.library.api.RequestCount;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.RequestTemplate;
@@ -13,6 +12,8 @@ import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.choice.FilterType;
 import com.syncano.library.choice.SortOrder;
 import com.syncano.library.data.SyncanoObject;
+import com.syncano.library.offline.OfflineMode;
+import com.syncano.library.offline.OfflineGetListRequest;
 
 import java.util.List;
 
@@ -27,6 +28,11 @@ public class RequestBuilder<T extends SyncanoObject> {
     private String pageUrl;
     private String dataEndpoint;
     private boolean estimateCount = false;
+    private boolean getAll = false;
+    private OfflineMode mode = OfflineMode.ONLINE;
+    private boolean cleanStorageOnSuccessDownload = false;
+    private boolean saveDownloadedDataToStorage = false;
+    private SyncanoCallback<List<T>> backgroundCallback;
 
     public RequestBuilder(Class<T> clazz) {
         this.clazz = clazz;
@@ -39,15 +45,17 @@ public class RequestBuilder<T extends SyncanoObject> {
      * @return response with a requested list
      */
     public ResponseGetList<T> get() {
-        return prepareGetRequest().send();
+        return (ResponseGetList<T>) prepareOfflineRequest().send();
     }
 
     /**
      * You can get limited amount of objects in one request. This method gets objects until all are
      * downloaded. Use carefully. Will work very bad for more than a few hundreds of objects .
      */
+    @Deprecated
     public ResponseGetList<T> getAll() {
-        return (new RequestAll<>(prepareGetRequest())).send();
+        getAll(true);
+        return (ResponseGetList<T>) prepareOfflineRequest().send();
     }
 
     /**
@@ -55,8 +63,10 @@ public class RequestBuilder<T extends SyncanoObject> {
      *
      * @param callback callback
      */
+    @Deprecated
     public void getAll(SyncanoCallback<List<T>> callback) {
-        (new RequestAll<>(prepareGetRequest())).sendAsync(callback);
+        getAll(true);
+        prepareOfflineRequest().sendAsync(callback);
     }
 
     /**
@@ -65,7 +75,7 @@ public class RequestBuilder<T extends SyncanoObject> {
      * @param callback callback
      */
     public void get(SyncanoCallback<List<T>> callback) {
-        prepareGetRequest().sendAsync(callback);
+        prepareOfflineRequest().sendAsync(callback);
     }
 
     /**
@@ -89,9 +99,32 @@ public class RequestBuilder<T extends SyncanoObject> {
     }
 
     public RequestGetList<T> prepareGetRequest() {
-        RequestGetList<T> request;
-        request = getRequestGetList();
-        decorateRequest(request);
+        RequestGetList<T> request = instantiateRequestGetList();
+        if (sortByField != null) {
+            request.setOrderBy(sortByField, sortOrder);
+        }
+        if (limit != null) {
+            request.setLimit(limit);
+        }
+        if (where != null) {
+            request.setWhereFilter(where);
+        }
+        if (fieldsFilter != null) {
+            request.setFieldsFilter(fieldsFilter);
+        }
+        if (estimateCount) {
+            request.estimateCount();
+        }
+        request.setGetAll(getAll);
+        return request;
+    }
+
+    public OfflineGetListRequest<T> prepareOfflineRequest() {
+        OfflineGetListRequest<T> request = new OfflineGetListRequest<>(prepareGetRequest());
+        request.mode(mode);
+        request.cleanStorageOnSuccessDownload(cleanStorageOnSuccessDownload);
+        request.saveDownloadedDataToStorage(saveDownloadedDataToStorage);
+        request.setBackgroundCallback(backgroundCallback);
         return request;
     }
 
@@ -99,7 +132,7 @@ public class RequestBuilder<T extends SyncanoObject> {
         return new RequestTemplate(prepareGetRequest(), templateName);
     }
 
-    private RequestGetList<T> getRequestGetList() {
+    private RequestGetList<T> instantiateRequestGetList() {
         RequestGetList<T> request;
         if (pageUrl != null) {
             request = syncano.getObjects(clazz, pageUrl);
@@ -130,24 +163,6 @@ public class RequestBuilder<T extends SyncanoObject> {
         syncano.getObject(clazz, id).sendAsync(callback);
     }
 
-    private void decorateRequest(RequestGetList<T> request) {
-        if (sortByField != null) {
-            request.setOrderBy(sortByField, sortOrder);
-        }
-        if (limit != null) {
-            request.setLimit(limit);
-        }
-        if (where != null) {
-            request.setWhereFilter(where);
-        }
-        if (fieldsFilter != null) {
-            request.setFieldsFilter(fieldsFilter);
-        }
-        if (estimateCount) {
-            request.estimateCount();
-        }
-    }
-
     /**
      * Perform requests on this syncano instance. If not called, shared static instance will be used.
      *
@@ -176,6 +191,11 @@ public class RequestBuilder<T extends SyncanoObject> {
     public RequestBuilder<T> orderBy(String fieldName, SortOrder sortOrder) {
         this.sortByField = fieldName;
         this.sortOrder = sortOrder;
+        return this;
+    }
+
+    public RequestBuilder<T> getAll(boolean getAll) {
+        this.getAll = getAll;
         return this;
     }
 
@@ -292,6 +312,26 @@ public class RequestBuilder<T extends SyncanoObject> {
      */
     public RequestBuilder<T> dataEndpoint(String name) {
         this.dataEndpoint = name;
+        return this;
+    }
+
+    public RequestBuilder<T> mode(OfflineMode mode) {
+        this.mode = mode;
+        return this;
+    }
+
+    public RequestBuilder<T> cleanStorageOnSuccessDownload(boolean clean) {
+        this.cleanStorageOnSuccessDownload = clean;
+        return this;
+    }
+
+    public RequestBuilder<T> saveDownloadedDataToStorage(boolean save) {
+        this.saveDownloadedDataToStorage = save;
+        return this;
+    }
+
+    public RequestBuilder<T> backgroundCallback(SyncanoCallback<List<T>> callback) {
+        this.backgroundCallback = callback;
         return this;
     }
 }

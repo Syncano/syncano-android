@@ -6,6 +6,10 @@ import java.util.Date;
 public class NanosDate extends Date implements Serializable {
     private int nanos = 0;
 
+    public NanosDate() {
+        super();
+    }
+
     public NanosDate(long millis, int nanos) {
         super(millis);
         this.nanos = nanos;
@@ -21,6 +25,17 @@ public class NanosDate extends Date implements Serializable {
 
     public void setNanos(int nanos) {
         this.nanos = nanos;
+    }
+
+    public long getFullNanos() {
+        return 1000l * getTime() + nanos;
+    }
+
+    public void setFullNanos(long nanos) {
+        long millis = nanos / 1000;
+        int nanosDiff = (int) (nanos - (millis * 1000l));
+        setTime(millis);
+        setNanos(nanosDiff);
     }
 
     @Override

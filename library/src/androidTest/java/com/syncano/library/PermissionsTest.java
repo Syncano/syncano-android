@@ -1,19 +1,32 @@
 package com.syncano.library;
 
-import com.syncano.library.annotation.SyncanoField;
+import android.support.test.runner.AndroidJUnit4;
+
+import com.syncano.library.Model.SomeV1;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.DataObjectPermissions;
 import com.syncano.library.data.SyncanoClass;
-import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.User;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+@RunWith(AndroidJUnit4.class)
 public class PermissionsTest extends SyncanoAndroidTestCase {
     private static final String USER_NAME = "testuser";
     private static final String PASSWORD = "password";
     private Syncano userSyncano;
 
+    @Before
     public void setUp() throws Exception {
         super.setUp();
 
@@ -21,16 +34,17 @@ public class PermissionsTest extends SyncanoAndroidTestCase {
         deleteTestUser(syncano, USER_NAME);
 
         //delete class
-        removeClass(Something.class);
+        removeClass(SomeV1.class);
 
         userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME, getContext());
     }
 
-
+    @After
     public void tearDown() throws Exception {
         super.tearDown();
     }
 
+    @Test
     public void testUserPermissionOnObject() {
         // register user
         User newUser = new User(USER_NAME, PASSWORD);
@@ -43,42 +57,42 @@ public class PermissionsTest extends SyncanoAndroidTestCase {
         assertTrue(responseLogin.isSuccess());
 
         // create new class
-        SyncanoClass newClazz = new SyncanoClass(Something.class);
+        SyncanoClass newClazz = new SyncanoClass(SomeV1.class);
         Response<SyncanoClass> classResp = syncano.createSyncanoClass(newClazz).send();
         assertTrue(classResp.isSuccess());
 
         // create object
-        Something newSom = new Something();
+        SomeV1 newSom = new SomeV1();
         newSom.someText = "some text";
         newSom.setOwnerPermissions(DataObjectPermissions.WRITE);
         newSom.setOtherPermissions(DataObjectPermissions.NONE);
-        Response<Something> respCreateObj = syncano.createObject(newSom).send();
+        Response<SomeV1> respCreateObj = syncano.createObject(newSom).send();
         assertTrue(respCreateObj.isSuccess());
-        Something som = respCreateObj.getData();
+        SomeV1 som = respCreateObj.getData();
         assertNotNull(som);
 
         // get object without permission
-        Response<List<Something>> respGetObj = userSyncano.getObjects(Something.class).send();
+        Response<List<SomeV1>> respGetObj = userSyncano.getObjects(SomeV1.class).send();
         assertTrue(respGetObj.isSuccess());
-        List<Something> soms = respGetObj.getData();
+        List<SomeV1> soms = respGetObj.getData();
         assertNotNull(soms);
         assertTrue(soms.size() == 0);
 
         // give permission
         som.setOwner(user.getId());
-        Response<Something> respUpdateObj = syncano.updateObject(som).send();
+        Response<SomeV1> respUpdateObj = syncano.updateObject(som).send();
         assertTrue(respUpdateObj.isSuccess());
 
         // get objects
-        Response<List<Something>> respGetObjWithPerm = userSyncano.getObjects(Something.class).send();
+        Response<List<SomeV1>> respGetObjWithPerm = userSyncano.getObjects(SomeV1.class).send();
         assertTrue(respGetObjWithPerm.isSuccess());
-        List<Something> soms2 = respGetObjWithPerm.getData();
+        List<SomeV1> soms2 = respGetObjWithPerm.getData();
         assertNotNull(soms2);
         assertTrue(soms2.size() > 0);
 
         // check if user configuration will survive creating new syncano object
         userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME, getContext());
-        Response<List<Something>> respNewSyn = userSyncano.getObjects(Something.class).send();
+        Response<List<SomeV1>> respNewSyn = userSyncano.getObjects(SomeV1.class).send();
         assertTrue(respNewSyn.isSuccess());
         soms2 = respNewSyn.getData();
         assertNotNull(respNewSyn);
@@ -86,7 +100,7 @@ public class PermissionsTest extends SyncanoAndroidTestCase {
 
         // user configuration not available without context
         userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME);
-        Response<List<Something>> respNoCtx = userSyncano.getObjects(Something.class).send();
+        Response<List<SomeV1>> respNoCtx = userSyncano.getObjects(SomeV1.class).send();
         assertEquals(Response.HTTP_CODE_FORBIDDEN, respNoCtx.getHttpResultCode());
 
         // check if possible to logout user
@@ -96,11 +110,5 @@ public class PermissionsTest extends SyncanoAndroidTestCase {
         userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME, getContext());
         assertNull(userSyncano.getUser());
         assertNull(userSyncano.getUserKey());
-    }
-
-    @com.syncano.library.annotation.SyncanoClass(name = "just_something")
-    private static class Something extends SyncanoObject {
-        @SyncanoField(name = "some_text")
-        public String someText;
     }
 }

@@ -1,15 +1,34 @@
 package com.syncano.library.api;
 
+import com.google.gson.Gson;
 import com.syncano.library.Syncano;
 import com.syncano.library.parser.GsonParser;
 
 public abstract class ResultRequest<T> extends HttpRequest<T> {
 
-    protected Class<T> resultType;
+    protected Class<T> resultType = null;
+    private Gson gson = null;
+    private T resultObject;
 
     protected ResultRequest(Class<T> resultType, String url, Syncano syncano) {
         super(url, syncano);
+        gson = GsonParser.createGson(resultType);
         this.resultType = resultType;
+    }
+
+    protected ResultRequest(T dataObject, String url, Syncano syncano) {
+        super(url, syncano);
+        gson = GsonParser.createGson(dataObject);
+        resultObject = dataObject;
+        this.resultType = (Class<T>) dataObject.getClass();
+    }
+
+    protected ResultRequest(String url, Syncano syncano) {
+        super(url, syncano);
+    }
+
+    public T getResultObject() {
+        return resultObject;
     }
 
     @Override
@@ -17,6 +36,10 @@ public abstract class ResultRequest<T> extends HttpRequest<T> {
         if (resultType.equals(String.class)) {
             return (T) json;
         }
-        return GsonParser.createGson(resultType, null).fromJson(json, resultType);
+        return gson.fromJson(json, resultType);
+    }
+
+    public Class getResultType() {
+        return resultType;
     }
 }

@@ -5,7 +5,7 @@ import com.syncano.library.BuildConfig;
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.api.RequestDelete;
-import com.syncano.library.api.RequestGetOne;
+import com.syncano.library.api.RequestGet;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.choice.RuntimeName;
@@ -81,7 +81,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
     @Test
     public void testWebhooks() throws InterruptedException {
         // ----------------- Get One -----------------
-        RequestGetOne<Webhook> requestGetWebHook = syncano.getWebhook(WEBHOOK_NAME);
+        RequestGet<Webhook> requestGetWebHook = syncano.getWebhook(WEBHOOK_NAME);
         Response<Webhook> responseGetWebhook = requestGetWebHook.send();
 
         assertTrue(responseGetWebhook.isSuccess());
@@ -128,7 +128,7 @@ public class WebhooksTest extends SyncanoApplicationTestCase {
         assertEquals(Response.HTTP_CODE_NO_CONTENT, responseDeleteWebhook.getHttpResultCode());
 
         // ----------------- Get One -----------------
-        RequestGetOne<Webhook> requestGetOne = syncano.getWebhook(WEBHOOK_NAME);
+        RequestGet<Webhook> requestGetOne = syncano.getWebhook(WEBHOOK_NAME);
         Response<Webhook> responseGetOneWebhook = requestGetOne.send();
 
         // After delete, Webhook should not be found.

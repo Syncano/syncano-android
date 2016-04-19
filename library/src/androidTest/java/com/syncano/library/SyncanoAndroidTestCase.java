@@ -1,7 +1,7 @@
 package com.syncano.library;
 
-import android.app.Application;
-import android.test.ApplicationTestCase;
+import android.content.Context;
+import android.support.test.InstrumentationRegistry;
 import android.util.Log;
 
 import com.syncano.library.api.Response;
@@ -9,18 +9,22 @@ import com.syncano.library.choice.ClassStatus;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.User;
-import com.syncano.library.utils.SyncanoLogger;
 import com.syncano.library.utils.SyncanoClassHelper;
 import com.syncano.library.utils.SyncanoLog;
+import com.syncano.library.utils.SyncanoLogger;
 
 import java.util.List;
 
-public class SyncanoAndroidTestCase extends ApplicationTestCase<Application> {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+public class SyncanoAndroidTestCase {
 
     protected SyncanoDashboard syncano;
 
-    public SyncanoAndroidTestCase() {
-        super(Application.class);
+    public Context getContext() {
+        return InstrumentationRegistry.getContext();
     }
 
     public void setUp() throws Exception {

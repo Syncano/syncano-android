@@ -6,9 +6,26 @@ import com.syncano.library.utils.SyncanoHttpClient;
 
 import java.util.List;
 
-public abstract class RequestGet<T> extends HttpRequest<T> {
+public class RequestGet<T> extends ResultRequest<T> {
 
     private FieldsFilter fieldsFilter;
+    private Integer requestedId;
+
+    public RequestGet(Class<T> resultType, String url, Syncano syncano, int id) {
+        this(resultType, url, syncano);
+        requestedId = id;
+        addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+    }
+
+    public RequestGet(Class<T> resultType, String url, Syncano syncano) {
+        super(resultType, url, syncano);
+        addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+    }
+
+    public RequestGet(T dataObject, String url, Syncano syncano) {
+        super(dataObject, url, syncano);
+        addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
+    }
 
     public RequestGet(String url, Syncano syncano) {
         super(url, syncano);
@@ -26,6 +43,10 @@ public abstract class RequestGet<T> extends HttpRequest<T> {
         if (isFieldsFilter()) {
             addUrlParam(fieldsFilter.getFilterTypeString(), createFilterFieldParam());
         }
+    }
+
+    public Integer getRequestedId() {
+        return requestedId;
     }
 
     private String createFilterFieldParam() {

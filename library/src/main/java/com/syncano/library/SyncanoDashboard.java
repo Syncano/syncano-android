@@ -5,8 +5,8 @@ import android.content.Context;
 import com.google.gson.JsonObject;
 import com.syncano.library.api.Request;
 import com.syncano.library.api.RequestDelete;
+import com.syncano.library.api.RequestGet;
 import com.syncano.library.api.RequestGetList;
-import com.syncano.library.api.RequestGetOne;
 import com.syncano.library.api.RequestPatch;
 import com.syncano.library.api.RequestPost;
 import com.syncano.library.api.Response;
@@ -87,9 +87,9 @@ public class SyncanoDashboard extends Syncano {
      * @return Existing CodeBox.
      */
     @Deprecated
-    public RequestGetOne<CodeBox> getCodeBox(int id) {
+    public RequestGet<CodeBox> getCodeBox(int id) {
         String url = String.format(Constants.SCRIPTS_DETAIL_URL, getNotEmptyInstanceName(), id);
-        return new RequestGetOne<>(CodeBox.class, url, this);
+        return new RequestGet<>(CodeBox.class, url, this);
     }
 
     /**
@@ -98,9 +98,9 @@ public class SyncanoDashboard extends Syncano {
      * @param id Script id.
      * @return Existing Script.
      */
-    public RequestGetOne<Script> getScript(int id) {
+    public RequestGet<Script> getScript(int id) {
         String url = String.format(Constants.SCRIPTS_DETAIL_URL, getNotEmptyInstanceName(), id);
-        return new RequestGetOne<>(Script.class, url, this);
+        return new RequestGet<>(Script.class, url, this);
     }
 
     /**
@@ -219,9 +219,9 @@ public class SyncanoDashboard extends Syncano {
      * @return Existing Webhook.
      */
     @Deprecated
-    public RequestGetOne<Webhook> getWebhook(String name) {
+    public RequestGet<Webhook> getWebhook(String name) {
         String url = String.format(Constants.SCRIPT_ENDPOINTS_DETAIL_URL, getNotEmptyInstanceName(), name);
-        return new RequestGetOne<>(Webhook.class, url, this);
+        return new RequestGet<>(Webhook.class, url, this);
     }
 
     /**
@@ -230,9 +230,9 @@ public class SyncanoDashboard extends Syncano {
      * @param name ScriptEndpoint id.
      * @return Existing ScriptEndpoint.
      */
-    public RequestGetOne<ScriptEndpoint> getScriptEndpoint(String name) {
+    public RequestGet<ScriptEndpoint> getScriptEndpoint(String name) {
         String url = String.format(Constants.SCRIPT_ENDPOINTS_DETAIL_URL, getNotEmptyInstanceName(), name);
-        return new RequestGetOne<>(ScriptEndpoint.class, url, this);
+        return new RequestGet<>(ScriptEndpoint.class, url, this);
     }
 
     /**
@@ -377,9 +377,9 @@ public class SyncanoDashboard extends Syncano {
      * @param name Class name.
      * @return Existing class.
      */
-    public RequestGetOne<SyncanoClass> getSyncanoClass(String name) {
+    public RequestGet<SyncanoClass> getSyncanoClass(String name) {
         String url = String.format(Constants.CLASSES_DETAIL_URL, getNotEmptyInstanceName(), name);
-        return new RequestGetOne<>(SyncanoClass.class, url, this);
+        return new RequestGet<>(SyncanoClass.class, url, this);
     }
 
     /**
@@ -388,7 +388,7 @@ public class SyncanoDashboard extends Syncano {
      * @param clazz Class.
      * @return Existing class.
      */
-    public RequestGetOne<SyncanoClass> getSyncanoClass(Class<? extends SyncanoObject> clazz) {
+    public RequestGet<SyncanoClass> getSyncanoClass(Class<? extends SyncanoObject> clazz) {
         return getSyncanoClass(SyncanoClassHelper.getSyncanoClassName(clazz));
     }
 
@@ -486,9 +486,9 @@ public class SyncanoDashboard extends Syncano {
      * @param id Id of existing Group.
      * @return Requested group
      */
-    public RequestGetOne<Group> getGroup(int id) {
+    public RequestGet<Group> getGroup(int id) {
         String url = String.format(Constants.GROUPS_DETAIL_URL, getNotEmptyInstanceName(), id);
-        return new RequestGetOne<>(Group.class, url, this);
+        return new RequestGet<>(Group.class, url, this);
     }
 
     /**
@@ -531,9 +531,9 @@ public class SyncanoDashboard extends Syncano {
      * @param userId  Membership id.
      * @return User wrapped id a membership object
      */
-    public RequestGetOne<GroupMembership> getGroupMembership(int groupId, int userId) {
+    public RequestGet<GroupMembership> getGroupMembership(int groupId, int userId) {
         String url = String.format(Constants.GROUPS_USERS_DETAIL_URL, getNotEmptyInstanceName(), groupId, userId);
-        return new RequestGetOne<>(GroupMembership.class, url, this);
+        return new RequestGet<>(GroupMembership.class, url, this);
     }
 
     /**
@@ -591,9 +591,9 @@ public class SyncanoDashboard extends Syncano {
      * @param channelName Channel id.
      * @return Existing Channel.
      */
-    public RequestGetOne<Channel> getChannel(String channelName) {
+    public RequestGet<Channel> getChannel(String channelName) {
         String url = String.format(Constants.CHANNELS_DETAIL_URL, getNotEmptyInstanceName(), channelName);
-        return new RequestGetOne<>(Channel.class, url, this);
+        return new RequestGet<>(Channel.class, url, this);
     }
 
     /**
@@ -664,9 +664,9 @@ public class SyncanoDashboard extends Syncano {
      * @param templateName Name of template to be downloaded
      * @return Template details
      */
-    public RequestGetOne<Template> getTemplate(String templateName) {
+    public RequestGet<Template> getTemplate(String templateName) {
         String url = String.format(Constants.TEMPLATE_DETAIL_URL, getNotEmptyInstanceName(), templateName);
-        return new RequestGetOne<>(Template.class, url, this);
+        return new RequestGet<>(Template.class, url, this);
     }
 
     /**

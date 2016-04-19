@@ -189,4 +189,15 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
         assertNotNull(response.getData());
         assertEquals(limitItems, response.getData().size());
     }
+
+    @Test
+    public void testPolishEncoding() {
+        String s1 = "ą, ć, ę, ł, ń, ó, ś, ź, ż.";
+        String s2 = "";
+        TestSyncanoObject o = new TestSyncanoObject(s1, s2);
+        Response<TestSyncanoObject> resp = o.save();
+        assertTrue(resp.isSuccess());
+        assertEquals(o.valueOne, s1);
+        assertEquals(o.valueTwo, s2);
+    }
 }
