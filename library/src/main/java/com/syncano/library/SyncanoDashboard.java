@@ -16,7 +16,6 @@ import com.syncano.library.data.CodeBox;
 import com.syncano.library.data.DataEndpoint;
 import com.syncano.library.data.Group;
 import com.syncano.library.data.GroupMembership;
-import com.syncano.library.data.PushMessage;
 import com.syncano.library.data.Script;
 import com.syncano.library.data.ScriptEndpoint;
 import com.syncano.library.data.SyncanoClass;
@@ -715,20 +714,5 @@ public class SyncanoDashboard extends Syncano {
         JsonObject jsonParams = new JsonObject();
         jsonParams.addProperty(Constants.POST_PARAM_TEMPLATE_NEW_NAME, newName);
         return new RequestPost<>(Template.class, url, this, jsonParams);
-    }
-
-    public RequestGetList<PushMessage> getPushMessages() {
-        String url = String.format(Constants.PUSH_GCM_MESSAGES_URL, getNotEmptyInstanceName());
-        return new RequestGetList<>(PushMessage.class, url, this);
-    }
-
-    public RequestGet<Object> getPushMessage(String messageId) {
-        String url = String.format(Constants.PUSH_GCM_MESSAGE_URL, getNotEmptyInstanceName(), messageId);
-        return new RequestGet<>(Object.class, url, this);
-    }
-
-    public RequestPost<PushMessage> sendPushMessage(PushMessage pushMessage) {
-        String url = String.format(Constants.PUSH_GCM_MESSAGES_URL, getNotEmptyInstanceName());
-        return new RequestPost<>(PushMessage.class, url, this, pushMessage);
     }
 }

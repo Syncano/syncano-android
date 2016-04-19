@@ -30,7 +30,7 @@ public class UserManagement extends SyncanoApplicationTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        deleteTestUser(syncano, userName);
+        deleteTestUser(userName);
         User newUser = new User(userName, password);
         Response<User> response = syncano.registerUser(newUser).send();
 
@@ -39,14 +39,14 @@ public class UserManagement extends SyncanoApplicationTestCase {
 
     @After
     public void tearDown() throws Exception {
-        deleteTestUser(syncano, userName);
+        deleteTestUser(userName);
         super.tearDown();
     }
 
 
     @Test
     public void testCreateUser() {
-        deleteTestUser(syncano, userName);
+        deleteTestUser(userName);
 
         // ---------- For adding new user in code
         User newUser = new User(userName, password);
@@ -67,7 +67,7 @@ public class UserManagement extends SyncanoApplicationTestCase {
 
         assertTrue(response.isSuccess());
 
-        deleteTestUser(syncano, userName);
+        deleteTestUser(userName);
         MyUser newUser = new MyUser(userName, password);
         Response<MyUser> responseRegister = newUser.register();
         assertEquals(Response.HTTP_CODE_CREATED, responseRegister.getHttpResultCode());
