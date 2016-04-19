@@ -719,22 +719,16 @@ public class SyncanoDashboard extends Syncano {
 
     public RequestGetList<PushMessage> getPushMessages() {
         String url = String.format(Constants.PUSH_GCM_MESSAGES_URL, getNotEmptyInstanceName());
-        RequestGetList<PushMessage> req = new RequestGetList<>(PushMessage.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetList<>(PushMessage.class, url, this);
     }
 
-    public RequestGetOne<Object> getPushMessage(String messageId) {
+    public RequestGet<Object> getPushMessage(String messageId) {
         String url = String.format(Constants.PUSH_GCM_MESSAGE_URL, getNotEmptyInstanceName(), messageId);
-        RequestGetOne<Object> req = new RequestGetOne<>(Object.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGet<>(Object.class, url, this);
     }
 
     public RequestPost<PushMessage> sendPushMessage(PushMessage pushMessage) {
         String url = String.format(Constants.PUSH_GCM_MESSAGES_URL, getNotEmptyInstanceName());
-        RequestPost<PushMessage> req = new RequestPost<>(PushMessage.class, url, this, pushMessage);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
-        return req;
+        return new RequestPost<>(PushMessage.class, url, this, pushMessage);
     }
 }

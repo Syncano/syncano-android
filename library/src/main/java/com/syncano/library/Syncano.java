@@ -1342,37 +1342,26 @@ public class Syncano {
 
     public RequestPost<PushDevice> registerPushDevice(PushDevice pushDevice) {
         String url = String.format(Constants.PUSH_GCM_DEVICES_URL, getNotEmptyInstanceName());
-        RequestPost<PushDevice> req = new RequestPost<>(PushDevice.class, url, this, pushDevice);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_CREATED);
-        return req;
+        return new RequestPost<>(PushDevice.class, url, this, pushDevice);
     }
 
     public RequestGetList<PushDevice> getPushDevices() {
         String url = String.format(Constants.PUSH_GCM_DEVICES_URL, getNotEmptyInstanceName());
-        RequestGetList<PushDevice> req = new RequestGetList<>(PushDevice.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGetList<>(PushDevice.class, url, this);
     }
 
-    public RequestGetOne<PushDevice> getPushDevice(String registrationId) {
+    public RequestGet<PushDevice> getPushDevice(String registrationId) {
         String url = String.format(Constants.PUSH_GCM_DEVICE_URL, getNotEmptyInstanceName(), registrationId);
-        RequestGetOne<PushDevice> req = new RequestGetOne<>(PushDevice.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        return new RequestGet<>(PushDevice.class, url, this);
     }
 
     public RequestPatch<PushDevice> updatePushDevice(PushDevice pushDevice) {
-        String url = String.format(Constants.PUSH_GCM_DEVICE_URL, getNotEmptyInstanceName(), pushDevice.registrationId);
-        RequestPatch<PushDevice> req = new RequestPatch<>(PushDevice.class, url, this, pushDevice);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_SUCCESS);
-        return req;
+        String url = String.format(Constants.PUSH_GCM_DEVICE_URL, getNotEmptyInstanceName(), pushDevice.getRegistrationId());
+        return new RequestPatch<>(PushDevice.class, url, this, pushDevice);
     }
 
     public RequestDelete<PushDevice> deletePushDevice(PushDevice pushDevice) {
-        String url = String.format(Constants.PUSH_GCM_DEVICE_URL, getNotEmptyInstanceName(), pushDevice.registrationId);
-        RequestDelete<PushDevice> req = new RequestDelete<>(PushDevice.class, url, this);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NO_CONTENT);
-        req.addCorrectHttpResponseCode(Response.HTTP_CODE_NOT_FOUND);
-        return req;
+        String url = String.format(Constants.PUSH_GCM_DEVICE_URL, getNotEmptyInstanceName(), pushDevice.getRegistrationId());
+        return new RequestDelete<>(PushDevice.class, url, this);
     }
 }
