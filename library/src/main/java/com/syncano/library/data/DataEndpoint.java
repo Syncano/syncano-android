@@ -11,7 +11,7 @@ import com.syncano.library.utils.SyncanoHashSet;
 import java.util.Map;
 
 public class DataEndpoint {
-
+//TODO add excluded fields
     public static final String FIELD_NAME = Constants.FIELD_NAME;
     public static final String FIELD_DESCRIPTION = Constants.FIELD_DESCRIPTION;
     public static final String FIELD_ORDER_BY = Constants.URL_PARAM_ORDER_BY;
@@ -93,7 +93,7 @@ public class DataEndpoint {
         this.syncano = syncano;
         return this;
     }
-
+// TODO check what it does and remove deprecated call
     public RequestGetList<? extends SyncanoObject> please() {
         return getSyncano().getViewObjects(clazz, syncanoClassName);
     }

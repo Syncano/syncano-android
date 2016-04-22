@@ -52,8 +52,7 @@ public class InnerQueryTest extends SyncanoApplicationTestCase {
 
     private Author createPlainAuthor() {
         Author author = new Author();
-        author.name = "Adam";
-        author.surname = "Mickiewicz";
+        author.name = "Adam Mickiewicz";
         author.isMale = true;
         Calendar cal = Calendar.getInstance();
         cal.set(1985, 4, 24);
@@ -63,15 +62,14 @@ public class InnerQueryTest extends SyncanoApplicationTestCase {
 
     private Author createPlainAuthorWithoutDate() {
         Author author = new Author();
-        author.name = "Gal";
-        author.surname = "Anonim";
+        author.name = "Gal Anonim";
         author.isMale = true;
         return author;
     }
 
     @Test
     public void testEqualToString() {
-        ResponseGetList<Book> pleaseResponse = Syncano.please(Book.class).where().eq(Book.FIELD_AUTHOR, Author.FIELD_NAME, "Adam").eq(Book.FIELD_AUTHOR, Author.FIELD_SURNAME, "Mickiewicz").get();
+        ResponseGetList<Book> pleaseResponse = Syncano.please(Book.class).where().eq(Book.FIELD_AUTHOR, Author.FIELD_NAME, "Adam Mickiewicz").get();
         assertTrue(pleaseResponse.isSuccess());
         assertFalse(pleaseResponse.getData().isEmpty());
     }
@@ -125,8 +123,8 @@ public class InnerQueryTest extends SyncanoApplicationTestCase {
 
     @Test
     public void testInnerInArray() {
-        String greatPoetsSurnames[] = new String[]{"Mickiewicz", "Slowacki", "Tuwim"};
-        ResponseGetList<Book> pleaseResponse = Syncano.please(Book.class).where().in(Book.FIELD_AUTHOR, Author.FIELD_SURNAME, greatPoetsSurnames).get();
+        String greatPoetsNames[] = new String[]{"Adam Mickiewicz", "Juliusz Slowacki"};
+        ResponseGetList<Book> pleaseResponse = Syncano.please(Book.class).where().in(Book.FIELD_AUTHOR, Author.FIELD_NAME, greatPoetsNames).get();
         assertTrue(pleaseResponse.isSuccess());
         assertFalse(pleaseResponse.getData().isEmpty());
     }

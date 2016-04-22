@@ -20,12 +20,14 @@ public abstract class ObjectRequestBuilder extends Entity {
     private IncrementBuilder incrementBuilder = new IncrementBuilder();
     private HashSet<String> fieldsToClear = new HashSet<>();
 
-    public void clearField(String fieldName) {
+    public <T extends SyncanoObject> T clearField(String fieldName) {
         fieldsToClear.add(fieldName);
+        return (T) this;
     }
 
-    public void removeFromClearList(String fieldName) {
+    public <T extends SyncanoObject> T removeFromClearList(String fieldName) {
         fieldsToClear.remove(fieldName);
+        return (T) this;
     }
 
     public boolean isOnClearList(String fieldName) {
