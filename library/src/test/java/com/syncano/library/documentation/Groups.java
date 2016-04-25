@@ -89,7 +89,7 @@ public class Groups extends SyncanoApplicationTestCase {
         book.setGroup(group.getId());
         book.setGroupPermisions(DataObjectPermissions.FULL);
 
-        Response<Book> response = syncano.createObject(book).send();
+        Response<Book> response = book.save();
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());

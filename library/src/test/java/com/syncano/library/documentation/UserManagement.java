@@ -11,7 +11,6 @@ import com.syncano.library.data.Profile;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.User;
-import com.syncano.library.utils.SyncanoLog;
 
 import org.junit.After;
 import org.junit.Before;
@@ -85,92 +84,39 @@ public class UserManagement extends SyncanoApplicationTestCase {
     @Test
     public void testUserAuthentication() {
         //syncano instance with acl enabled
-        Syncano userSyncano = new Syncano(BuildConfig.STAGING_SERVER_URL, BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME);
+        Syncano syncano = new Syncano(BuildConfig.STAGING_SERVER_URL, BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME);
         // ---------- User authentication
         User plainUser = new User(userName, password);
 
-        Response<User> response = plainUser.on(userSyncano).login();
+        Response<User> response = plainUser.on(syncano).login();
         // All next requests will be used using apiKey and userKey.
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_SUCCESS, response.getHttpResultCode());
         User user = response.getData();
         assertNotNull(user);
+        String userKey = syncano.getUserKey();
         // ---------- Acting as a user
-
-        // Don't have to do it if used login method on this Syncano object
-        userSyncano.setUser(user);
-        Response<User> fetchUserResponse = user.on(userSyncano).fetch();
-        assertTrue(fetchUserResponse.isSuccess());
-        Response<Profile> fetchUserProfile = user.on(userSyncano).fetchProfile();
-        assertTrue(fetchUserProfile.isSuccess());
-
+        syncano.setUserKey(userKey);
 
         // -----------------------------
 
 
         // ---------- How to reset the User Key
-        userSyncano.setUser(null);
+        syncano.setUser(null);
 
         // -----------------------------
     }
 
     @Test
-    public void testFacebookSocialUserAuthentication() {
-        String socialNetworkAuthToken = BuildConfig.FACEBOOK_TOKEN;
-        if (tokenIsInvalid(socialNetworkAuthToken)) {
-            SyncanoLog.d(getClass().getSimpleName(), "Facebook token missed, test will be skipped");
-            return;
-        }
-        Response<User> userResponse = new User(SocialAuthBackend.FACEBOOK, socialNetworkAuthToken).loginSocialUser();
-        assertTrue(userResponse.isSuccess());
-        Response<User> syncanoResponse = syncano.loginSocialUser(SocialAuthBackend.FACEBOOK, socialNetworkAuthToken).send();
-        assertTrue(syncanoResponse.isSuccess());
+    public void social() {
+        String socialNetworkAuthToken = "some_token";
+        //
+        User user = new User(SocialAuthBackend.FACEBOOK, socialNetworkAuthToken);
+        Response<User> response = user.loginSocialUser();
+        //
     }
 
-    @Test
-    public void testGoogleSocialUserAuthentication() {
-        String socialNetworkAuthToken = BuildConfig.GOOGLE_TOKEN;
-        if (tokenIsInvalid(socialNetworkAuthToken)) {
-            SyncanoLog.d(getClass().getSimpleName(), "Google token missed, test will be skipped");
-            return;
-        }
-        Response<User> userResponse = new User(SocialAuthBackend.GOOGLE_OAUTH2, socialNetworkAuthToken).loginSocialUser();
-        assertTrue(userResponse.isSuccess());
-        Response<User> syncanoResponse = syncano.loginSocialUser(SocialAuthBackend.GOOGLE_OAUTH2, socialNetworkAuthToken).send();
-        assertTrue(syncanoResponse.isSuccess());
-    }
-
-    @Test
-    public void testLinkedInSocialUserAuthentication() {
-        String socialNetworkAuthToken = BuildConfig.LINKEDIN_TOKEN;
-        if (tokenIsInvalid(socialNetworkAuthToken)) {
-            SyncanoLog.d(getClass().getSimpleName(), "Linkedin token missed, test will be skipped");
-            return;
-        }
-        Response<User> userResponse = new User(SocialAuthBackend.LINKEDIN, socialNetworkAuthToken).loginSocialUser();
-        assertTrue(userResponse.isSuccess());
-        Response<User> syncanoResponse = syncano.loginSocialUser(SocialAuthBackend.LINKEDIN, socialNetworkAuthToken).send();
-        assertTrue(syncanoResponse.isSuccess());
-    }
-
-    @Test
-    public void testTwitterSocialUserAuthentication() {
-        String socialNetworkAuthToken = BuildConfig.TWITTER_TOKEN;
-        if (tokenIsInvalid(socialNetworkAuthToken)) {
-            SyncanoLog.d(getClass().getSimpleName(), "Twitter token missed, test will be skipped");
-            return;
-        }
-        Response<User> userResponse = new User(SocialAuthBackend.TWITTER, socialNetworkAuthToken).loginSocialUser();
-        assertTrue(userResponse.isSuccess());
-        Response<User> syncanoResponse = syncano.loginSocialUser(SocialAuthBackend.TWITTER, socialNetworkAuthToken).send();
-        assertTrue(syncanoResponse.isSuccess());
-    }
-
-
-    private boolean tokenIsInvalid(String token) {
-        return token == null || token.length() == 0;
-    }
 
     private static class MyUserProfile extends Profile {
         @SyncanoField(name = "avatar")

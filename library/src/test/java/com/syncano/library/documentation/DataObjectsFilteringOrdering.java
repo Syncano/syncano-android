@@ -7,12 +7,15 @@ import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.choice.FilterType;
 import com.syncano.library.choice.SortOrder;
+import com.syncano.library.data.Entity;
 import com.syncano.library.data.SyncanoFile;
 import com.syncano.library.data.SyncanoObject;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Date;
 
 import static org.junit.Assert.assertTrue;
 
@@ -32,10 +35,11 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
     @Test
     public void testFilteringOrdering() {
 
+        Date date = new Date();
         // ---------- Filtering Data Objects
 
         ResponseGetList<Book> responseList = Syncano.please(Book.class)
-                .where().gt("release_year", 1990).get();
+                .where().gt(Entity.FIELD_CREATED_AT, date).get();
 
         // -----------------------------
 
@@ -51,9 +55,7 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
         assertTrue(responseSkip.isSuccess());
 
         // ---------- Complex Filtering Data Objects
-
-        ResponseGetList<Book> responseSimple = Syncano.please(Book.class)
-                .where().gt("release_year", 1990).get();
+        ResponseGetList<Book> responseSimple = Syncano.please(Book.class).where().gt("release_year", 1900).get();
 
         // -----------------------------
 
@@ -80,7 +82,6 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
         assertTrue(responseMultiple.isSuccess());
 
         // ---------- Ordering Data Objects
-
         ResponseGetList<Book> responseOrdered = Syncano.please(Book.class)
                 .orderBy("release_year").get();
 
@@ -89,7 +90,6 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
         assertTrue(responseOrdered.isSuccess());
 
         // ---------- Reversed Ordering Data Objects
-
         ResponseGetList<Book> responseOrderedReversed = Syncano.please(Book.class)
                 .orderBy("release_year", SortOrder.DESCENDING).get();
 
@@ -98,7 +98,6 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
         assertTrue(responseOrderedReversed.isSuccess());
 
         // ---------- Ordering with Filtering Data Objects
-
         ResponseGetList<Book> responseOrderedFiltered = Syncano.please(Book.class)
                 .selectFields(FilterType.INCLUDE_FIELDS, "release_year", "id", "pages")
                 .orderBy("release_year").where().gt("release_year", 1990).get();
@@ -106,16 +105,6 @@ public class DataObjectsFilteringOrdering extends SyncanoApplicationTestCase {
         // -----------------------------
 
         assertTrue(responseOrderedFiltered.isSuccess());
-
-        // ---------- Using paging with filtering and ordering
-
-        ResponseGetList<Book> responsePage = Syncano.please(Book.class).limit(1)
-                .selectFields(FilterType.INCLUDE_FIELDS, "release_year", "id", "pages")
-                .where().gt("release_year", 1900).lte("release_year", 2000).gt("pages", 199).get();
-
-        // -----------------------------
-
-        assertTrue(responsePage.isSuccess());
     }
 
     @SyncanoClass(name = "Book")

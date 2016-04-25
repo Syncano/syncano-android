@@ -383,6 +383,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
             Response<MyUserProfile> responseSaveAvatar = profile.save();
         }
         //
+        // TODO check why throws nullpointer here
     }
 
 
@@ -396,6 +397,9 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
     }
 
     public class MyUserProfile extends Profile {
+        public MyUserProfile() {
+        }
+
         @SyncanoField(name = "avatar")
         public SyncanoFile avatar;
     }

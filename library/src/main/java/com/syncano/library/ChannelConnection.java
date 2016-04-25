@@ -17,6 +17,7 @@ public class ChannelConnection {
     private PollRequestLoop pollRequestLoop;
     private String channel;
     private String room;
+    // TODO check how last id works
     private int lastId;
 
     private boolean hasError;

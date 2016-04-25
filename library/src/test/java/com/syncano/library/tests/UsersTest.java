@@ -12,6 +12,7 @@ import com.syncano.library.data.Profile;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.User;
 import com.syncano.library.utils.SyncanoClassHelper;
+import com.syncano.library.utils.SyncanoLog;
 
 import org.junit.After;
 import org.junit.Before;
@@ -202,15 +203,59 @@ public class UsersTest extends SyncanoApplicationTestCase {
     }
 
     @Test
-    public void testSocial() {
-        if (BuildConfig.FACEBOOK_TOKEN != null && !BuildConfig.FACEBOOK_TOKEN.isEmpty()) {
-            Response<User> responseFb = syncano.loginSocialUser(SocialAuthBackend.FACEBOOK, BuildConfig.FACEBOOK_TOKEN).send();
-            assertTrue(responseFb.isSuccess());
+    public void testFacebookSocialUserAuthentication() {
+        String socialNetworkAuthToken = BuildConfig.FACEBOOK_TOKEN;
+        if (tokenIsInvalid(socialNetworkAuthToken)) {
+            SyncanoLog.d(getClass().getSimpleName(), "Facebook token missed, test will be skipped");
+            return;
         }
-
-        if (BuildConfig.GOOGLE_TOKEN != null && !BuildConfig.GOOGLE_TOKEN.isEmpty()) {
-            Response<User> responseGoo = syncano.loginSocialUser(SocialAuthBackend.GOOGLE_OAUTH2, BuildConfig.GOOGLE_TOKEN).send();
-            assertTrue(responseGoo.isSuccess());
-        }
+        Response<User> userResponse = new User(SocialAuthBackend.FACEBOOK, socialNetworkAuthToken).loginSocialUser();
+        assertTrue(userResponse.isSuccess());
+        Response<User> syncanoResponse = syncano.loginSocialUser(SocialAuthBackend.FACEBOOK, socialNetworkAuthToken).send();
+        assertTrue(syncanoResponse.isSuccess());
     }
+
+    @Test
+    public void testGoogleSocialUserAuthentication() {
+        String socialNetworkAuthToken = BuildConfig.GOOGLE_TOKEN;
+        if (tokenIsInvalid(socialNetworkAuthToken)) {
+            SyncanoLog.d(getClass().getSimpleName(), "Google token missed, test will be skipped");
+            return;
+        }
+        Response<User> userResponse = new User(SocialAuthBackend.GOOGLE_OAUTH2, socialNetworkAuthToken).loginSocialUser();
+        assertTrue(userResponse.isSuccess());
+        Response<User> syncanoResponse = syncano.loginSocialUser(SocialAuthBackend.GOOGLE_OAUTH2, socialNetworkAuthToken).send();
+        assertTrue(syncanoResponse.isSuccess());
+    }
+
+    @Test
+    public void testLinkedInSocialUserAuthentication() {
+        String socialNetworkAuthToken = BuildConfig.LINKEDIN_TOKEN;
+        if (tokenIsInvalid(socialNetworkAuthToken)) {
+            SyncanoLog.d(getClass().getSimpleName(), "Linkedin token missed, test will be skipped");
+            return;
+        }
+        Response<User> userResponse = new User(SocialAuthBackend.LINKEDIN, socialNetworkAuthToken).loginSocialUser();
+        assertTrue(userResponse.isSuccess());
+        Response<User> syncanoResponse = syncano.loginSocialUser(SocialAuthBackend.LINKEDIN, socialNetworkAuthToken).send();
+        assertTrue(syncanoResponse.isSuccess());
+    }
+
+    @Test
+    public void testTwitterSocialUserAuthentication() {
+        String socialNetworkAuthToken = BuildConfig.TWITTER_TOKEN;
+        if (tokenIsInvalid(socialNetworkAuthToken)) {
+            SyncanoLog.d(getClass().getSimpleName(), "Twitter token missed, test will be skipped");
+            return;
+        }
+        Response<User> userResponse = new User(SocialAuthBackend.TWITTER, socialNetworkAuthToken).loginSocialUser();
+        assertTrue(userResponse.isSuccess());
+        Response<User> syncanoResponse = syncano.loginSocialUser(SocialAuthBackend.TWITTER, socialNetworkAuthToken).send();
+        assertTrue(syncanoResponse.isSuccess());
+    }
+
+    private boolean tokenIsInvalid(String token) {
+        return token == null || token.length() == 0;
+    }
+
 }
