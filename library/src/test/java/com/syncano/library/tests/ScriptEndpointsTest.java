@@ -31,8 +31,6 @@ public class ScriptEndpointsTest extends SyncanoApplicationTestCase {
     private static final String ARGUMENT_VALUE = "GRrr";
     private Script script;
 
-    // TODO add test with custom response
-
     @Before
     public void setUp() throws Exception {
         super.setUp();
