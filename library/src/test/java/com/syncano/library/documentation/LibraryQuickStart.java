@@ -379,15 +379,13 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         Response<MyUser> responseLogin = user.login();
         if (responseLogin.isSuccess()) {
             MyUserProfile profile = user.getProfile();
-            profile.avatar = new SyncanoFile(new File("/path/to/file"));
+            profile.avatar = new SyncanoFile(new File(getAssetsDir(), "blue.png"));
             Response<MyUserProfile> responseSaveAvatar = profile.save();
         }
         //
-        // TODO check why throws nullpointer here
     }
 
-
-    public class MyUser extends AbstractUser<MyUserProfile> {
+    public static class MyUser extends AbstractUser<MyUserProfile> {
         public MyUser(String login, String pass) {
             super(login, pass);
         }
@@ -396,7 +394,7 @@ public class LibraryQuickStart extends SyncanoApplicationTestCase {
         }
     }
 
-    public class MyUserProfile extends Profile {
+    public static class MyUserProfile extends Profile {
         public MyUserProfile() {
         }
 
