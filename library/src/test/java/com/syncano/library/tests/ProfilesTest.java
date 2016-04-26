@@ -4,6 +4,7 @@ import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.api.Response;
 import com.syncano.library.data.AbstractUser;
 import com.syncano.library.model.AllTypesProfile;
+import com.syncano.library.model.Author;
 
 import org.junit.After;
 import org.junit.Before;
@@ -28,7 +29,8 @@ public class ProfilesTest extends SyncanoApplicationTestCase {
     }
 
     @Test
-    public void testValuesinProfile() {
+    public void testValuesinProfile() throws InterruptedException {
+        createClass(Author.class);
         // update profile schema
         assertTrue(syncano.updateSyncanoClass(AllTypesProfile.class).send().isSuccess());
 
