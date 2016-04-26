@@ -2,122 +2,109 @@ package com.syncano.library.tests;
 
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
-import com.syncano.library.annotation.SyncanoClass;
-import com.syncano.library.annotation.SyncanoField;
-import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.api.Where;
 import com.syncano.library.choice.Case;
 import com.syncano.library.data.DataEndpoint;
-import com.syncano.library.data.SyncanoObject;
+import com.syncano.library.model.Author;
+import com.syncano.library.model.Book;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
+import java.util.Date;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class DataEndpoints extends SyncanoApplicationTestCase {
-    private static final String endpointName = "great_warriors_endpoint";
-    private static final String endpointDescription = "Sample data ebdpoint for get warriors";
+    private static final String endpointName = "book_endpoints";
+    private static final String endpointDescription = "Sample data endpoint";
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        createClass(Inventory.class);
-        createClass(Warrior.class);
-        createSampleWarriors();
-        //Remove endpoint if exist and create new instance
-        Response<DataEndpoint> deleteResponse = syncano.deleteDataEndpoint(endpointName).send();
-        System.out.println("Delete response status: " + deleteResponse.isSuccess());
-        DataEndpoint dataEndpoint = new DataEndpoint(endpointName, Warrior.class);
-        dataEndpoint.setDescription(endpointDescription);
-        dataEndpoint.setOrderBy(Warrior.FIELD_NUMBER);
-        Where query = new Where().startsWith(Warrior.FIELD_NAME, "W", Case.INSENSITIVE);
-        dataEndpoint.setQuery(query);
-        dataEndpoint.addExpandField(Warrior.FIELD_INVENTORY);
-        Response<DataEndpoint> responseCreate = syncano.createDataEndpoint(dataEndpoint).send();
-        assertTrue(responseCreate.isSuccess());
-    }
-
-    private void createSampleWarriors() {
-        Warrior warriorSoccer = new Warrior();
-        warriorSoccer.name = "Warrior man";
-        warriorSoccer.number = 10;
-        Inventory inventory = new Inventory();
-        inventory.armor = "Leather armor";
-        Response responseCreateInventory = inventory.save();
-        assertTrue(responseCreateInventory.isSuccess());
-        warriorSoccer.inventory = inventory;
-        Response<Inventory> responseCreateWarrior = warriorSoccer.save();
-        assertTrue(responseCreateWarrior.isSuccess());
-        warriorSoccer.fetch();
+        createClass(Author.class);
+        createClass(Book.class);
     }
 
     @After
     public void tearDown() throws Exception {
         super.tearDown();
-        Response deleteResponse = syncano.deleteDataEndpoint(endpointName).send();
-        assertTrue(deleteResponse.isSuccess());
-        removeClass(Warrior.class);
-        removeClass(Inventory.class);
     }
 
     @Test
-    public void testSyncanoGetFromDataEndpoint() {
-        // get from window
-        ResponseGetList<Warrior> warriorsFromEndpoint = syncano.getObjectsDataEndpoint(Warrior.class, endpointName).send();
-        assertTrue(warriorsFromEndpoint.isSuccess());
+    public void testGetFromEndpoint() {
+        createSampleData();
 
-        // get standard way
-        ResponseGetList<Warrior> warriors = syncano.getObjects(Warrior.class).send();
-        assertTrue(warriors.isSuccess());
+        //Remove endpoint if exist and create new instance
+        assertTrue(syncano.deleteDataEndpoint(endpointName).send().isSuccess());
 
-        assertFalse(warriorsFromEndpoint.getData().isEmpty());
-        Warrior warrior = warriorsFromEndpoint.getData().get(0);
+        // create endpoint
+        DataEndpoint de = new DataEndpoint(endpointName, Book.class);
+        de.addExpandField(Book.FIELD_AUTHOR);
+        de.setDescription(endpointDescription);
+        de.setOrderBy(Book.FIELD_PAGES);
+        Where query = new Where().startsWith(Book.FIELD_SUBTITLE, "a", Case.INSENSITIVE);
+        de.setQuery(query);
+        de.addExcludedField(Book.FIELD_TITLE);
+        assertTrue(syncano.createDataEndpoint(de).send().isSuccess());
 
-        assertNotNull(warrior.inventory);
-        assertNotNull(warrior.inventory.getId());
-        warrior.fetch();
-        assertNotNull(warrior.inventory.getId());
-        warrior.inventory.fetch();
-        assertNotNull(warrior.inventory.armor);
+        // get on syncano object
+        ResponseGetList<Book> resp = syncano.getObjectsDataEndpoint(Book.class, endpointName).send();
+        assertTrue(resp.isSuccess());
+        checkResponse(resp.getData());
+        // get with please
+        resp = Syncano.please(Book.class).dataEndpoint(endpointName).get();
+        assertTrue(resp.isSuccess());
+        checkResponse(resp.getData());
     }
 
-    @Test
-    public void testPleaseGetFromDataEndpoint() {
-        ResponseGetList<Warrior> warriorListResponse =
-                Syncano.please(Warrior.class).dataEndpoint(endpointName).orderBy(Warrior.FIELD_NUMBER).getAll();
-        assertTrue(warriorListResponse.isSuccess());
-        assertFalse(warriorListResponse.getData().isEmpty());
+    private void checkResponse(List<Book> books) {
+        assertNotNull(books);
+        assertEquals(2, books.size());
+        assertTrue(books.get(0).subtitle.toLowerCase().startsWith("a"));
+        assertTrue(books.get(1).subtitle.toLowerCase().startsWith("a"));
+        assertTrue(books.get(0).pages < books.get(1).pages);
+        assertEquals("Paul", books.get(0).author.name);
+        assertEquals("John", books.get(1).author.name);
+        assertNull(books.get(0).title);
+        assertNull(books.get(1).title);
     }
 
-    @SyncanoClass(name = Warrior.WARRIORS_CLASS_NAME)
-    private static class Warrior
-            extends SyncanoObject {
-        public static final String WARRIORS_CLASS_NAME = "warriors";
-        public static final String FIELD_NAME = "name";
-        public static final String FIELD_NUMBER = "number";
-        public static final String FIELD_INVENTORY = Inventory.INVENTORY_CLASS_NAME;
+    private void createSampleData() {
+        Author a1 = new Author();
+        a1.name = "Paul";
+        a1.birthDate = new Date();
+        assertTrue(a1.save().isSuccess());
 
-        @SyncanoField(name = FIELD_NAME, filterIndex = true)
-        public String name;
-        @SyncanoField(name = FIELD_NUMBER, orderIndex = true)
-        public int number;
-        @SyncanoField(name = FIELD_INVENTORY)
-        public Inventory inventory;
-    }
+        Author a2 = new Author();
+        a2.name = "John";
+        a2.birthDate = new Date();
+        assertTrue(a2.save().isSuccess());
 
-    @SyncanoClass(name = Inventory.INVENTORY_CLASS_NAME)
-    private static class Inventory extends SyncanoObject {
-        public static final String INVENTORY_CLASS_NAME = "inventory";
-        public static final String FIELD_ARMOR = "armor";
-        public static final String FIELD_WEAPON = "weapon";
-        @SyncanoField(name = FIELD_ARMOR)
-        public String armor;
-        @SyncanoField(name = FIELD_WEAPON)
-        public String weapon;
+        Book b1 = new Book();
+        b1.title = "Paul's book";
+        b1.author = a1;
+        b1.pages = 4;
+        b1.subtitle = "aaa";
+        assertTrue(b1.save().isSuccess());
+
+        Book b2 = new Book();
+        b2.title = "John's book";
+        b2.pages = 10;
+        b2.subtitle = "Aaa";
+        b2.author = a2;
+        assertTrue(b2.save().isSuccess());
+
+        Book b3 = new Book();
+        b3.title = "p letter book";
+        b3.pages = 1;
+        b3.subtitle = "baa";
+        assertTrue(b3.save().isSuccess());
     }
 }

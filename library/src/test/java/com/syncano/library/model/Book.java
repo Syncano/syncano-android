@@ -17,7 +17,7 @@ public class Book extends SyncanoObject {
     public String title;
     @SyncanoField(name = FIELD_SUBTITLE, filterIndex = true, orderIndex = true)
     public String subtitle;
-    @SyncanoField(name = FIELD_PAGES)
+    @SyncanoField(name = FIELD_PAGES, orderIndex = true)
     public Integer pages;
     @SyncanoField(name = FIELD_AUTHOR, filterIndex = true)
     public Author author;
