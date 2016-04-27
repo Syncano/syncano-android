@@ -11,7 +11,7 @@ import com.syncano.library.api.Response;
 import com.syncano.library.choice.FieldType;
 import com.syncano.library.choice.FilterType;
 import com.syncano.library.choice.RuntimeName;
-import com.syncano.library.data.CodeBox;
+import com.syncano.library.data.Script;
 import com.syncano.library.data.SyncanoObject;
 
 import org.junit.After;
@@ -27,20 +27,20 @@ import static org.junit.Assert.assertTrue;
 
 public class FieldsFilterTest extends SyncanoApplicationTestCase {
 
-    private CodeBox codeBox;
+    private Script script;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
         createClass(ExampleSyncanoObject.class);
-        createCodeBox();
+        createScript();
         createTestsObject();
     }
 
     @After
     public void tearDown() throws Exception {
         removeClass(ExampleSyncanoObject.class);
-        deleteCodeBox();
+        deleteScript();
         super.tearDown();
     }
 
@@ -54,15 +54,14 @@ public class FieldsFilterTest extends SyncanoApplicationTestCase {
         assertTrue(responseCreateSyncanoObject.isSuccess());
     }
 
-    private void createCodeBox() {
-        String codeBoxName = "CodeBox Test";
+    private void createScript() {
         RuntimeName runtime = RuntimeName.NODEJS;
-        String source = "var msg = 'this is message from our Codebox'; console.log(msg);";
-        final CodeBox newCodeBox = new CodeBox(codeBoxName, source, runtime);
-        Response<CodeBox> responseCodeBoxCreate = syncano.createCodeBox(newCodeBox).send();
-        assertTrue(responseCodeBoxCreate.isSuccess());
-        assertNotNull(responseCodeBoxCreate.getData());
-        codeBox = responseCodeBoxCreate.getData();
+        String source = "var msg = 'this is message from our Script'; console.log(msg);";
+        Script newScript = new Script("Test name", source, runtime);
+        Response<Script> responseCreate = syncano.createScript(newScript).send();
+        assertTrue(responseCreate.isSuccess());
+        assertNotNull(responseCreate.getData());
+        script = responseCreate.getData();
     }
 
     @Test
@@ -106,17 +105,17 @@ public class FieldsFilterTest extends SyncanoApplicationTestCase {
     }
 
 
-    private void deleteCodeBox() {
-        Response<CodeBox> responseCodeBoxDelete = syncano.deleteCodeBox(codeBox.getId()).send();
+    private void deleteScript() {
+        Response<Script> responseCodeBoxDelete = syncano.deleteScript(script.getId()).send();
         assertTrue(responseCodeBoxDelete.isSuccess());
     }
 
     @Test
     public void testGetOneFilter() {
-        RequestGet<CodeBox> requestGet = syncano.getCodeBox(codeBox.getId());
-        FieldsFilter filter = new FieldsFilter(FilterType.INCLUDE_FIELDS, Arrays.asList(CodeBox.FIELD_ID, CodeBox.FIELD_LABEL));
+        RequestGet<Script> requestGet = syncano.getScript(script.getId());
+        FieldsFilter filter = new FieldsFilter(FilterType.INCLUDE_FIELDS, Arrays.asList(Script.FIELD_ID, Script.FIELD_LABEL));
         requestGet.setFieldsFilter(filter);
-        Response<CodeBox> responseGetCodeBox = requestGet.send();
+        Response<Script> responseGetCodeBox = requestGet.send();
 
         assertTrue(responseGetCodeBox.isSuccess());
         assertNotNull(responseGetCodeBox.getData());
@@ -126,10 +125,10 @@ public class FieldsFilterTest extends SyncanoApplicationTestCase {
 
     @Test
     public void testGetManyFilter() {
-        RequestGetList<CodeBox> requestGetList = syncano.getCodeBoxes();
-        FieldsFilter filter = new FieldsFilter(FilterType.INCLUDE_FIELDS, Arrays.asList(CodeBox.FIELD_ID, CodeBox.FIELD_LABEL));
+        RequestGetList<Script> requestGetList = syncano.getScripts();
+        FieldsFilter filter = new FieldsFilter(FilterType.INCLUDE_FIELDS, Arrays.asList(Script.FIELD_ID, Script.FIELD_LABEL));
         requestGetList.setFieldsFilter(filter);
-        Response<List<CodeBox>> responseGetCodeBoxes = requestGetList.send();
+        Response<List<Script>> responseGetCodeBoxes = requestGetList.send();
 
         assertTrue(responseGetCodeBoxes.isSuccess());
         assertNotNull(responseGetCodeBoxes.getData());

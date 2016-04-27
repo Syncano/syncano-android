@@ -23,5 +23,7 @@ public @interface SyncanoField {
     boolean orderIndex() default false;
 
     boolean filterIndex() default false;
+
+    boolean inSchema() default true;
 }
 

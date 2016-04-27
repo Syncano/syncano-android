@@ -1,5 +1,7 @@
 package com.syncano.library.model;
 
+import android.text.TextUtils;
+
 import com.google.gson.annotations.SerializedName;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.choice.FieldType;
@@ -24,7 +26,7 @@ public class AllTypesProfile extends Profile {
     public byte byteVal;
     @SyncanoField(name = "byteobj")
     public Byte byteObjVal;
-    @SyncanoField(name = "short")
+    @SyncanoField(name = "shortprimitive")
     public short shortVal;
     @SyncanoField(name = "shortobj")
     public Short shortObjVal;
@@ -103,12 +105,16 @@ public class AllTypesProfile extends Profile {
         }
     }
 
-    private boolean sameDouble(double a, double b) {
+    private boolean sameDouble(Double a, Double b) {
+        if (a == b) return true;
+        if (a.equals(b)) return true;
         double diff = a - b;
         return diff / a < 0.001d;
     }
 
-    private boolean sameFloat(float a, float b) {
+    private boolean sameFloat(Float a, Float b) {
+        if (a == b) return true;
+        if (a.equals(b)) return true;
         float diff = a - b;
         return diff / a < 0.001f;
     }
@@ -139,16 +145,19 @@ public class AllTypesProfile extends Profile {
 
     private boolean same(Object o1, Object o2) {
         if (o1 == o2) return true;
+        // TODO When cleared string it is not null, but "". Maybe update it?
+        if ((o1 instanceof String && o2 == null && ((String) o1).isEmpty())
+                || (o2 instanceof String && o1 == null && ((String) o2).isEmpty())) {
+            return true;
+        }
         if (o1 == null) return false;
         return o1.equals(o2);
     }
 
-    public static AllTypesProfile generateObject(Integer id, boolean withReference) {
+    public static AllTypesProfile generateObject(AllTypesProfile o) {
         Random rnd = new Random();
-        AllTypesProfile o = new AllTypesProfile();
-        o.setId(id);
         o.intVal = rnd.nextInt();
-        o.intOtherVal = 0;
+        o.intOtherVal = rnd.nextInt();
         o.integerVal = rnd.nextInt();
         o.byteVal = (byte) rnd.nextInt();
         o.byteObjVal = (byte) rnd.nextInt();
@@ -160,11 +169,7 @@ public class AllTypesProfile extends Profile {
         o.nanosDate = new NanosDate(o.date.getTime(), rnd.nextInt(999));
         o.stringVal = StringGenerator.generate(rnd.nextInt(128));
         o.text = StringGenerator.generate(rnd.nextInt(32000));
-        if (withReference) {
-            o.reference = generateObject(null, false);
-        } else {
-            o.reference = null;
-        }
+        o.reference = null;
         o.someReference = new Author();
         o.someReference.birthDate = new Date();
         o.someReference.isMale = rnd.nextBoolean();
@@ -180,11 +185,29 @@ public class AllTypesProfile extends Profile {
         return o;
     }
 
-    public static AllTypesProfile generateObject(Integer id) {
-        return generateObject(id, true);
-    }
-
-    public static AllTypesProfile generateObject() {
-        return generateObject(null);
+    public void clearAll() {
+        clearField("int");
+        clearField("intother");
+        clearField("integerval");
+        clearField("byte");
+        clearField("byteobj");
+        clearField("shortprimitive");
+        clearField("shortobj");
+        clearField("enum");
+        clearField("enumgivenvalues");
+        clearField("date");
+        clearField("nanosdate");
+        clearField("string");
+        clearField("text");
+        clearField("reference");
+        clearField("other_reference");
+        clearField("yesorno");
+        clearField("yesornobject");
+        clearField("float");
+        clearField("floatobj");
+        clearField("double");
+        clearField("doubleobj");
+        clearField("file");
+        clearField("otherfile");
     }
 }

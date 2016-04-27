@@ -17,31 +17,31 @@ public abstract class SyncanoObject extends ObjectRequestBuilder {
     public static final String FIELD_CHANNEL = "channel";
     public static final String FIELD_CHANNEL_ROOM = "channel_room";
 
-    @SyncanoField(name = FIELD_OWNER)
+    @SyncanoField(name = FIELD_OWNER, inSchema = false)
     private Integer owner;
 
-    @SyncanoField(name = FIELD_OWNER_PERMISSIONS)
+    @SyncanoField(name = FIELD_OWNER_PERMISSIONS, inSchema = false)
     private DataObjectPermissions ownerPermissions;
 
-    @SyncanoField(name = FIELD_GROUP)
+    @SyncanoField(name = FIELD_GROUP, inSchema = false)
     private Integer group;
 
-    @SyncanoField(name = FIELD_GROUP_PERMISSIONS)
+    @SyncanoField(name = FIELD_GROUP_PERMISSIONS, inSchema = false)
     private DataObjectPermissions groupPermissions;
 
-    @SyncanoField(name = FIELD_OTHER_PERMISSIONS)
+    @SyncanoField(name = FIELD_OTHER_PERMISSIONS, inSchema = false)
     private DataObjectPermissions otherPermissions;
 
-    @SyncanoField(name = FIELD_CHANNEL)
+    @SyncanoField(name = FIELD_CHANNEL, inSchema = false)
     private String channel;
 
-    @SyncanoField(name = FIELD_CHANNEL_ROOM)
+    @SyncanoField(name = FIELD_CHANNEL_ROOM, inSchema = false)
     private String channelRoom;
 
-    @SyncanoField(name = FIELD_REVISION)
+    @SyncanoField(name = FIELD_REVISION, inSchema = false)
     private Integer revision;
 
-    @SyncanoField(name = FIELD_EXPECTED_REVISION)
+    @SyncanoField(name = FIELD_EXPECTED_REVISION, inSchema = false)
     private Integer expectedRevision;
 
     public String getChannelRoom() {

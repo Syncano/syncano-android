@@ -44,7 +44,7 @@ public class ProfilesTest extends SyncanoApplicationTestCase {
         assertNotNull(profile);
 
         // generate values for profile
-        profile = AllTypesProfile.generateObject(profile.getId(), false);
+        AllTypesProfile.generateObject(profile);
         profile.reference = profile;
 
         // send new profile to syncano

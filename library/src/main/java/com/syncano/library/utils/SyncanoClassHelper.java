@@ -44,9 +44,10 @@ public class SyncanoClassHelper {
      */
     public static JsonArray getSyncanoClassSchema(Class<? extends SyncanoObject> clazz) {
         JsonArray schemaArray = new JsonArray();
-        for (Field field : clazz.getDeclaredFields()) {
+        Collection<Field> fields = findAllSyncanoFields(clazz);
+        for (Field field : fields) {
             SyncanoField fieldAnnotation = field.getAnnotation(SyncanoField.class);
-            if (fieldAnnotation == null) {
+            if (fieldAnnotation == null || !fieldAnnotation.inSchema()) {
                 continue;
             }
 

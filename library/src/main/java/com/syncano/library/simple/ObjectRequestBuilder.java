@@ -92,4 +92,9 @@ public abstract class ObjectRequestBuilder extends Entity {
         HttpRequest<T> req = getSyncano().getObject((T) this);
         req.sendAsync(callback);
     }
+
+    public void resetRequestBuildingFields() {
+        incrementBuilder = new IncrementBuilder();
+        fieldsToClear = new HashSet<>();
+    }
 }
