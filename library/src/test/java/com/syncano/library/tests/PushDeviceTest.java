@@ -22,12 +22,14 @@ public class PushDeviceTest extends SyncanoApplicationTestCase {
     private Syncano userSyncano;
     private final static String USER_NAME = "user";
     private final static String USER_PASSWORD = "some_pass";
+    private final String REGISTRATION_ID = "123456789";
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
         deleteTestUser(USER_NAME);
-        userSyncano = new SyncanoBuilder().apiKey(BuildConfig.API_KEY_USERS).instanceName(BuildConfig.INSTANCE_NAME).build();
+        userSyncano = new SyncanoBuilder().apiKey(BuildConfig.API_KEY_USERS).instanceName(BuildConfig.INSTANCE_NAME)
+                .customServerUrl(BuildConfig.STAGING_SERVER_URL).build();
         assertTrue(new User(USER_NAME, USER_PASSWORD).on(userSyncano).register().isSuccess());
         registerGCMPushDevice();
     }
@@ -43,6 +45,7 @@ public class PushDeviceTest extends SyncanoApplicationTestCase {
         pushDevice.setDeviceId("321321");
         pushDevice.setLabel("label");
         pushDevice.setRegistrationId("12345");
+        assertTrue(syncano.deletePushDevice(pushDevice).send().isSuccess());
         assertTrue(userSyncano.registerPushDevice(pushDevice).send().isSuccess());
     }
 

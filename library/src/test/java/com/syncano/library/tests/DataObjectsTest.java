@@ -9,7 +9,6 @@ import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.api.Where;
 import com.syncano.library.callbacks.SyncanoListCallback;
 import com.syncano.library.choice.SortOrder;
-import com.syncano.library.model.StringGenerator;
 
 import org.junit.After;
 import org.junit.Before;

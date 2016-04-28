@@ -2,21 +2,21 @@ package com.syncano.library.tests;
 
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.api.RequestGetList;
-import com.syncano.library.api.Response;
-import com.syncano.library.callbacks.SyncanoCallback;
-import com.syncano.library.data.CodeBox;
+import com.syncano.library.api.ResponseGetList;
+import com.syncano.library.callbacks.SyncanoListCallback;
+import com.syncano.library.data.Script;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class AsyncQueueTest extends SyncanoApplicationTestCase {
 
@@ -39,22 +39,22 @@ public class AsyncQueueTest extends SyncanoApplicationTestCase {
     public void testAsyncTest() throws InterruptedException {
         lock = new CountDownLatch(TEST_REQUESTS);
 
-        SyncanoCallback<List<CodeBox>> callback = new SyncanoCallback<List<CodeBox>>() {
+        SyncanoListCallback<Script> callback = new SyncanoListCallback<Script>() {
             @Override
-            public void success(Response<List<CodeBox>> response, List<CodeBox> result) {
+            public void success(ResponseGetList<Script> response, List<Script> result) {
                 assertTrue(response.isSuccess());
                 lock.countDown();
             }
 
             @Override
-            public void failure(Response<List<CodeBox>> response) {
+            public void failure(ResponseGetList<Script> response) {
                 fail(response.getError() + " " + response.getHttpReasonPhrase());
                 lock.countDown();
             }
         };
 
         for (int i = 0; i < TEST_REQUESTS; i++) {
-            RequestGetList<CodeBox> requestGetList = syncano.getCodeBoxes();
+            RequestGetList<Script> requestGetList = syncano.getScripts();
             requestGetList.setLimit(1);
             requestGetList.sendAsync(callback);
         }

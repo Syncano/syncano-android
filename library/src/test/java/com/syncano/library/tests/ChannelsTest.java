@@ -134,7 +134,7 @@ public class ChannelsTest extends SyncanoApplicationTestCase {
         JsonObject payload = new JsonObject();
         payload.addProperty(KEY, VALUE);
 
-        final Notification newNotification = new Notification(ROOM, payload);
+        Notification newNotification = new Notification(ROOM, payload);
         Response<Notification> responsePublish = syncano.publishOnChannel(CHANNEL_NAME, newNotification).send();
 
         assertTrue(responsePublish.isSuccess());
