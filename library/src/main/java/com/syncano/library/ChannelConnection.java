@@ -10,7 +10,6 @@ import com.syncano.library.utils.SyncanoLog;
 public class ChannelConnection {
 
     private static final String TAG = ChannelConnection.class.getSimpleName();
-    private static final int ERROR_DELAY = 1000;
 
     private Syncano syncano;
     private ChannelConnectionListener channelConnectionListener;
@@ -19,7 +18,7 @@ public class ChannelConnection {
     private String room;
     private int lastId;
 
-    private boolean hasError;
+    private boolean hasError = false;
 
     public ChannelConnection(Syncano syncano) {
         this(syncano, null);
@@ -60,6 +59,7 @@ public class ChannelConnection {
         this.channel = channel;
         this.room = room;
         this.lastId = lastId;
+        this.hasError = false;
 
         if (BuildConfig.DEBUG)
             SyncanoLog.d(TAG, "start channel: " + channel + " room: " + room + " lastId: " + lastId);
@@ -105,7 +105,6 @@ public class ChannelConnection {
     }
 
     private void handleSuccess(final Response<Notification> response) {
-
         if (response.getData() != null) {
             lastId = response.getData().getId();
 
@@ -121,12 +120,6 @@ public class ChannelConnection {
     }
 
     private void handleError(final Response<Notification> response) {
-
-        if (response.getHttpResultCode() == Response.HTTP_CODE_GATEWAY_TIMEOUT) {
-            // If timeout, start new poll in pollRequestLoop.
-            return;
-        }
-
         if (channelConnectionListener != null) {
             PlatformType.get().runOnCallbackThread(new Runnable() {
                 @Override
@@ -138,7 +131,6 @@ public class ChannelConnection {
     }
 
     private class PollRequestLoop implements Runnable {
-
         private boolean isRunning;
 
         public void setIsRunning(boolean isRunning) {
@@ -147,35 +139,24 @@ public class ChannelConnection {
 
         @Override
         public void run() {
-
-            while (isRunning) {
+            while (isRunning && !hasError) {
                 if (BuildConfig.DEBUG)
                     SyncanoLog.d(TAG, "poll request channel: " + channel + " room: " + room + " lastId: " + lastId);
                 Response<Notification> responsePollFromChannel = syncano.pollChannel(channel, room, lastId).send();
                 if (BuildConfig.DEBUG) SyncanoLog.d(TAG, "response: " + responsePollFromChannel);
 
                 // If still running, handle response.
-                if (isRunning) {
-                    if (responsePollFromChannel.getHttpResultCode() == Response.HTTP_CODE_NO_CONTENT) {
-                        // No content - long polling timeout
-                        hasError = false;
-                    }
-                    if (responsePollFromChannel.getHttpResultCode() == Response.HTTP_CODE_SUCCESS) {
-                        handleSuccess(responsePollFromChannel);
-                        hasError = false;
-                    } else {
-                        // Handle error only once
-                        if (!hasError) {
-                            handleError(responsePollFromChannel);
-                            hasError = true;
-                        }
-
-                        try {
-                            Thread.sleep(ERROR_DELAY);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                if (!isRunning) {
+                    break;
+                }
+                int respCode = responsePollFromChannel.getHttpResultCode();
+                if (respCode == Response.HTTP_CODE_SUCCESS) {
+                    handleSuccess(responsePollFromChannel);
+                } else if (respCode == Response.HTTP_CODE_NO_CONTENT || respCode == Response.HTTP_CODE_GATEWAY_TIMEOUT) {
+                    //long polling timeout, just continue the loop
+                } else {
+                    handleError(responsePollFromChannel);
+                    hasError = true;
                 }
             }
         }
