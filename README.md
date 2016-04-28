@@ -11,7 +11,7 @@ Syncano library is now available on jCenter. To install it, add one line inside 
 
 ```gradle
 dependencies {
-  compile 'io.syncano:library:4.1.0'
+  compile 'io.syncano:library:4.1.1'
 }
 ```
 
@@ -32,7 +32,7 @@ The only difference is that you have to provide two additional libraries: `Apach
 
 ```gradle
 dependencies {
-  compile 'io.syncano:library:4.1.0'
+  compile 'io.syncano:library:4.1.1'
   compile 'org.apache.httpcomponents:httpclient:4.0.1'
   compile 'org.apache.httpcomponents:httpcore:4.0.1'
   compile 'org.bouncycastle:bcprov-jdk15on:1.53'
