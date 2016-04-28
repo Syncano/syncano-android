@@ -18,8 +18,6 @@ public class ChannelConnection {
     private String room;
     private int lastId;
 
-    private boolean hasError = false;
-
     public ChannelConnection(Syncano syncano) {
         this(syncano, null);
     }
@@ -59,16 +57,15 @@ public class ChannelConnection {
         this.channel = channel;
         this.room = room;
         this.lastId = lastId;
-        this.hasError = false;
 
         if (BuildConfig.DEBUG)
             SyncanoLog.d(TAG, "start channel: " + channel + " room: " + room + " lastId: " + lastId);
 
-        if (pollRequestLoop == null) {
-            pollRequestLoop = new PollRequestLoop();
-            pollRequestLoop.setIsRunning(true);
-            new Thread(pollRequestLoop).start();
+        if (pollRequestLoop != null) {
+            pollRequestLoop.stop();
         }
+        pollRequestLoop = new PollRequestLoop();
+        new Thread(pollRequestLoop).start();
     }
 
     /**
@@ -80,7 +77,7 @@ public class ChannelConnection {
         if (BuildConfig.DEBUG) SyncanoLog.d(TAG, "stop");
 
         if (pollRequestLoop != null) {
-            pollRequestLoop.setIsRunning(false);
+            pollRequestLoop.stop();
             pollRequestLoop = null;
         }
     }
@@ -131,15 +128,19 @@ public class ChannelConnection {
     }
 
     private class PollRequestLoop implements Runnable {
-        private boolean isRunning;
+        private boolean isRunning = true;
 
-        public void setIsRunning(boolean isRunning) {
-            this.isRunning = isRunning;
+        public void stop() {
+            isRunning = false;
+        }
+
+        public boolean isRunning() {
+            return isRunning;
         }
 
         @Override
         public void run() {
-            while (isRunning && !hasError) {
+            while (isRunning) {
                 if (BuildConfig.DEBUG)
                     SyncanoLog.d(TAG, "poll request channel: " + channel + " room: " + room + " lastId: " + lastId);
                 Response<Notification> responsePollFromChannel = syncano.pollChannel(channel, room, lastId).send();
@@ -156,7 +157,8 @@ public class ChannelConnection {
                     //long polling timeout, just continue the loop
                 } else {
                     handleError(responsePollFromChannel);
-                    hasError = true;
+                    isRunning = false;
+                    break;
                 }
             }
         }
