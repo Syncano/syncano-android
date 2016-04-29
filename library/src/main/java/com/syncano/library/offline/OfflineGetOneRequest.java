@@ -8,7 +8,6 @@ import com.syncano.library.data.SyncanoObject;
 
 import java.util.Collections;
 
-
 /**
  * Wrapper for a RequestGet, that adds offline storage function
  *
