@@ -55,9 +55,9 @@ public class CustomScriptEndpointsTest extends SyncanoApplicationTestCase {
         assertNotNull(cbTrace);
         long start = System.currentTimeMillis();
         // wait until script finishes execution
-        while (System.currentTimeMillis() - start < 10000 && cbTrace.getStatus() != TraceStatus.SUCCESS) {
+        while (System.currentTimeMillis() - start < 60000 && cbTrace.getStatus() != TraceStatus.SUCCESS) {
             assertTrue(cbTrace.fetch().isSuccess());
-            Thread.sleep(100);
+            Thread.sleep(1000);
         }
         Trace.TraceResponse cbCustomResult = cbTrace.getResponse();
         assertNotNull(cbCustomResult);

@@ -1,9 +1,7 @@
 package com.syncano.library.data;
 
 import com.syncano.library.Constants;
-import com.syncano.library.Syncano;
 import com.syncano.library.annotation.SyncanoField;
-import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Where;
 import com.syncano.library.utils.SyncanoClassHelper;
 import com.syncano.library.utils.SyncanoHashSet;
@@ -11,15 +9,15 @@ import com.syncano.library.utils.SyncanoHashSet;
 import java.util.Map;
 
 public class DataEndpoint {
-
     public static final String FIELD_NAME = Constants.FIELD_NAME;
     public static final String FIELD_DESCRIPTION = Constants.FIELD_DESCRIPTION;
     public static final String FIELD_ORDER_BY = Constants.URL_PARAM_ORDER_BY;
     public static final String FIELD_PAGE_SIZE = Constants.URL_PARAM_PAGE_SIZE;
     public static final String FIELD_EXPAND = Constants.URL_PARAM_EXPAND;
     public static final String FIELD_QUERY = Constants.URL_PARAM_QUERY;
+    public static final String FIELD_EXCLUDED_FIELDS = Constants.URL_PARAM_EXCLUDED_FIELDS;
     public static final String FIELD_CLASS_NAME = Constants.DATA_ENDPOINT_PARAM_CLASS;
-    private final Class<? extends SyncanoObject> clazz;
+
     @SyncanoField(name = FIELD_NAME)
     private final String name;
     @SyncanoField(name = FIELD_CLASS_NAME)
@@ -34,11 +32,11 @@ public class DataEndpoint {
     private SyncanoHashSet expandSet = new SyncanoHashSet();
     @SyncanoField(name = FIELD_QUERY)
     private Map query;
-    private Syncano syncano;
+    @SyncanoField(name = FIELD_EXCLUDED_FIELDS)
+    private SyncanoHashSet excludedFields = new SyncanoHashSet();
 
     public DataEndpoint(String name, Class<? extends SyncanoObject> clazz) {
         this.name = name;
-        this.clazz = clazz;
         this.syncanoClassName = SyncanoClassHelper.getSyncanoClassName(clazz);
     }
 
@@ -82,20 +80,11 @@ public class DataEndpoint {
         this.query = query.getQueryMap();
     }
 
-    private Syncano getSyncano() {
-        if (syncano == null) {
-            return Syncano.getInstance();
-        }
-        return syncano;
+    public void addExcludedField(String fieldName) {
+        excludedFields.add(fieldName);
     }
 
-    public DataEndpoint on(Syncano syncano) {
-        this.syncano = syncano;
-        return this;
+    public void removeExcludedField(String fieldName) {
+        excludedFields.remove(fieldName);
     }
-
-    public RequestGetList<? extends SyncanoObject> please() {
-        return getSyncano().getViewObjects(clazz, syncanoClassName);
-    }
-
 }

@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.syncano.library.BuildConfig;
 import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
+import com.syncano.library.SyncanoBuilder;
 import com.syncano.library.api.RequestDelete;
 import com.syncano.library.api.RequestGet;
 import com.syncano.library.api.Response;
@@ -109,7 +110,8 @@ public class ScriptEndpointsTest extends SyncanoApplicationTestCase {
         assertTrue("List should contain at least one item.", responseGetScriptEndpoints.getData().size() > 0);
 
         // ----------------- Run without key-----------------
-        Syncano noKeySyncano = new Syncano(BuildConfig.INSTANCE_NAME);
+        Syncano noKeySyncano = new SyncanoBuilder().instanceName(BuildConfig.INSTANCE_NAME)
+                .customServerUrl(BuildConfig.STAGING_SERVER_URL).build();
         Response<Trace> responseRunNoKey = noKeySyncano.runScriptEndpoint(ENDPOINT_NAME).send();
 
         assertEquals(responseRunNoKey.getHttpReasonPhrase(), Response.HTTP_CODE_FORBIDDEN, responseRunNoKey.getHttpResultCode());

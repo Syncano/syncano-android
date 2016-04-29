@@ -145,7 +145,7 @@ public class Paging extends SyncanoApplicationTestCase {
 
     @Test
     public void testGetAll() {
-        ResponseGetList<MyObject> resp = Syncano.please(MyObject.class).limit(PAGE).getAll();
+        ResponseGetList<MyObject> resp = Syncano.please(MyObject.class).limit(PAGE).getAll(true).get();
         assertTrue(resp.isSuccess());
         assertNotNull(resp.getData());
         assertEquals(NUMBER, resp.getData().size());
@@ -154,7 +154,7 @@ public class Paging extends SyncanoApplicationTestCase {
     @Test
     public void testAsyncGetAll() throws InterruptedException {
         final AtomicBoolean requestFinished = new AtomicBoolean(false);
-        Syncano.please(MyObject.class).limit(PAGE).getAll(new SyncanoListCallback<MyObject>() {
+        Syncano.please(MyObject.class).limit(PAGE).getAll(true).get(new SyncanoListCallback<MyObject>() {
             @Override
             public void success(ResponseGetList<MyObject> resp, List<MyObject> result) {
                 assertTrue(resp.isSuccess());

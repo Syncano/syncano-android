@@ -20,15 +20,16 @@ public abstract class ObjectRequestBuilder extends Entity {
     private Syncano syncano;
     private IncrementBuilder incrementBuilder = new IncrementBuilder();
     private HashSet<String> fieldsToClear = new HashSet<>();
-
     private OfflineMode mode = OfflineMode.ONLINE;
 
-    public void clearField(String fieldName) {
+    public <T extends SyncanoObject> T clearField(String fieldName) {
         fieldsToClear.add(fieldName);
+        return (T) this;
     }
 
-    public void removeFromClearList(String fieldName) {
+    public <T extends SyncanoObject> T removeFromClearList(String fieldName) {
         fieldsToClear.remove(fieldName);
+        return (T) this;
     }
 
     public boolean isOnClearList(String fieldName) {
@@ -93,5 +94,10 @@ public abstract class ObjectRequestBuilder extends Entity {
     public <T extends SyncanoObject> void fetch(SyncanoCallback<T> callback) {
         HttpRequest<T> req = getSyncano().getObject((T) this);
         req.sendAsync(callback);
+    }
+
+    public void resetRequestBuildingFields() {
+        incrementBuilder = new IncrementBuilder();
+        fieldsToClear = new HashSet<>();
     }
 }

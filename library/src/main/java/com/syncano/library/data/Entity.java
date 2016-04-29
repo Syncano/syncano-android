@@ -10,13 +10,13 @@ public abstract class Entity {
     public static final String FIELD_CREATED_AT = "created_at";
     public static final String FIELD_UPDATED_AT = "updated_at";
 
-    @SyncanoField(name = FIELD_ID, readOnly = true)
+    @SyncanoField(name = FIELD_ID, readOnly = true, inSchema = false)
     private Integer id;
 
-    @SyncanoField(name = FIELD_CREATED_AT, readOnly = true)
+    @SyncanoField(name = FIELD_CREATED_AT, readOnly = true, inSchema = false)
     private Date createdAt;
 
-    @SyncanoField(name = FIELD_UPDATED_AT, readOnly = true)
+    @SyncanoField(name = FIELD_UPDATED_AT, readOnly = true, inSchema = false)
     private Date updatedAt;
 
     public Entity() {

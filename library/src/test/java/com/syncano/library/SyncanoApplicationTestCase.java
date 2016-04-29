@@ -26,13 +26,13 @@ public class SyncanoApplicationTestCase {
     public SyncanoApplicationTestCase() {
     }
 
-    public static void deleteTestUser(SyncanoDashboard adminDashboard, String userName) {
-        Response<List<User>> response = adminDashboard.getUsers().send();
+    public void deleteTestUser(String userName) {
+        Response<List<User>> response = syncano.getUsers().send();
 
         if (response.getData() != null && response.getData().size() > 0) {
             for (User u : response.getData()) {
                 if (userName.equals(u.getUserName())) {
-                    adminDashboard.deleteUser(u.getId()).send();
+                    syncano.deleteUser(u.getId()).send();
                 }
             }
         }

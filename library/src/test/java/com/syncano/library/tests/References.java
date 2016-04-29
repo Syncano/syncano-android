@@ -1,4 +1,4 @@
-package com.syncano.library.documentation;
+package com.syncano.library.tests;
 
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.api.Response;
@@ -14,7 +14,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 
-public class Classes extends SyncanoApplicationTestCase {
+public class References extends SyncanoApplicationTestCase {
 
     @Before
     public void setUp() throws Exception {
@@ -39,8 +39,7 @@ public class Classes extends SyncanoApplicationTestCase {
 
     private Author createPlainAuthor() {
         Author author = new Author();
-        author.name = "Adam";
-        author.surname = "Mickiewicz";
+        author.name = "Adam Mickiewicz";
         author.isMale = true;
         return author;
     }
@@ -90,12 +89,11 @@ public class Classes extends SyncanoApplicationTestCase {
         assertNotNull(book.author);
         assertTrue(book.author.isDirty());
         assertNull(book.author.name);
-        assertNull(book.author.surname);
     }
 
     private void changeAuthorToGhost(Integer bookId) {
         Author ghostAuthor = createPlainAuthor();
-        ghostAuthor.surname = "Ghost";
+        ghostAuthor.name = "Ghost";
         Response ghostAuthorSave = ghostAuthor.save();
         assertTrue(ghostAuthorSave.isSuccess());
         Response<Book> requestGetOneBook = syncano.getObject(Book.class, bookId).send();
@@ -128,8 +126,7 @@ public class Classes extends SyncanoApplicationTestCase {
         assertTrue(bookSaveResponse.isSuccess());
         assertNotNull(book.author);
         Author otherAuthor = new Author();
-        otherAuthor.name = "Juliusz";
-        otherAuthor.surname = "Slowacki";
+        otherAuthor.name = "Juliusz Slowacki";
         otherAuthor.save();
         book.author = otherAuthor;
         book.fetch();
@@ -146,8 +143,7 @@ public class Classes extends SyncanoApplicationTestCase {
         assertTrue(bookSaveResponse.isSuccess());
         assertNotNull(book.author);
         Author otherAuthor = new Author();
-        otherAuthor.name = "Juliusz";
-        otherAuthor.surname = "Slowacki";
+        otherAuthor.name = "Juliusz Slowacki";
         //change book author without save
         book.author = otherAuthor;
         Response<Book> fetchResponse = book.fetch();

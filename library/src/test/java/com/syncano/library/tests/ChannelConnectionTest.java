@@ -132,6 +132,7 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
         final AtomicBoolean createReceived = new AtomicBoolean(false);
         final AtomicBoolean updateReceived = new AtomicBoolean(false);
         final AtomicBoolean removeReceived = new AtomicBoolean(false);
+        final AtomicInteger firstId = new AtomicInteger(0);
 
         ChannelConnection channelConnection = new ChannelConnection(syncano);
         channelConnection.setChannelConnectionListener(new ChannelConnectionListener() {
@@ -146,6 +147,9 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
                     removeReceived.set(true);
                 }
                 lock.countDown();
+                if (lock.getCount() == 2) {
+                    firstId.set(notification.getId());
+                }
             }
 
             @Override
@@ -194,6 +198,27 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
         assertTrue(createReceived.get());
         assertTrue(updateReceived.get());
         assertTrue(removeReceived.get());
+
+        // ----------------- Listen to notifications with last id-----------------
+
+        channelConnection = new ChannelConnection(syncano);
+        channelConnection.setChannelConnectionListener(new ChannelConnectionListener() {
+            @Override
+            public void onNotification(Notification notification) {
+                lock.countDown();
+            }
+
+            @Override
+            public void onError(Response<Notification> response) {
+                SyncanoLog.d(TAG, "onError: " + response.toString());
+                fail("Error response: " + response.toString());
+            }
+        });
+
+        lock = new CountDownLatch(notificationsToSend - 1);
+        channelConnection.start(channel.getName(), room, firstId.get());
+        lock.await(60, TimeUnit.SECONDS);
+        channelConnection.stop();
     }
 
     @Test

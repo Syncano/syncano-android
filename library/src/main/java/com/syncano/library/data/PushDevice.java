@@ -27,6 +27,10 @@ public class PushDevice {
     public PushDevice() {
     }
 
+    public PushDevice(String registrationId) {
+        setRegistrationId(registrationId);
+    }
+
     public String getLabel() {
         return label;
     }

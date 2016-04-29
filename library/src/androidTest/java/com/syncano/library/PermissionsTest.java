@@ -36,7 +36,8 @@ public class PermissionsTest extends SyncanoAndroidTestCase {
         //delete class
         removeClass(SomeV1.class);
 
-        userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME, getContext());
+        userSyncano = new SyncanoBuilder().androidContext(getContext()).apiKey(BuildConfig.API_KEY_USERS)
+                .instanceName(BuildConfig.INSTANCE_NAME).customServerUrl(BuildConfig.STAGING_SERVER_URL).build();
     }
 
     @After
@@ -91,7 +92,8 @@ public class PermissionsTest extends SyncanoAndroidTestCase {
         assertTrue(soms2.size() > 0);
 
         // check if user configuration will survive creating new syncano object
-        userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME, getContext());
+        userSyncano = new SyncanoBuilder().androidContext(getContext()).apiKey(BuildConfig.API_KEY_USERS)
+                .instanceName(BuildConfig.INSTANCE_NAME).customServerUrl(BuildConfig.STAGING_SERVER_URL).build();
         Response<List<SomeV1>> respNewSyn = userSyncano.getObjects(SomeV1.class).send();
         assertTrue(respNewSyn.isSuccess());
         soms2 = respNewSyn.getData();
@@ -99,15 +101,18 @@ public class PermissionsTest extends SyncanoAndroidTestCase {
         assertTrue(soms2.size() > 0);
 
         // user configuration not available without context
-        userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME);
+        userSyncano = new SyncanoBuilder().apiKey(BuildConfig.API_KEY_USERS).instanceName(BuildConfig.INSTANCE_NAME)
+                .customServerUrl(BuildConfig.STAGING_SERVER_URL).build();
         Response<List<SomeV1>> respNoCtx = userSyncano.getObjects(SomeV1.class).send();
         assertEquals(Response.HTTP_CODE_FORBIDDEN, respNoCtx.getHttpResultCode());
 
         // check if possible to logout user
-        userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME, getContext());
+        userSyncano = new SyncanoBuilder().androidContext(getContext()).apiKey(BuildConfig.API_KEY_USERS)
+                .instanceName(BuildConfig.INSTANCE_NAME).customServerUrl(BuildConfig.STAGING_SERVER_URL).build();
         userSyncano.setUser(null);
 
-        userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME, getContext());
+        userSyncano = new SyncanoBuilder().androidContext(getContext()).apiKey(BuildConfig.API_KEY_USERS)
+                .instanceName(BuildConfig.INSTANCE_NAME).customServerUrl(BuildConfig.STAGING_SERVER_URL).build();
         assertNull(userSyncano.getUser());
         assertNull(userSyncano.getUserKey());
     }

@@ -11,14 +11,11 @@ public class Author extends SyncanoObject {
     public static final String AUTHOR_CLASS = "Author";
 
     public static final String FIELD_NAME = "name";
-    public static final String FIELD_SURNAME = "surname";
     public static final String FIELD_IS_MALE = "is_male";
     public static final String FIELD_BIRTH_DATE = "birth_date";
 
     @SyncanoField(name = FIELD_NAME, filterIndex = true)
     public String name;
-    @SyncanoField(name = FIELD_SURNAME, filterIndex = true)
-    public String surname;
     @SyncanoField(name = FIELD_IS_MALE, filterIndex = true)
     public Boolean isMale;
     @SyncanoField(name = FIELD_BIRTH_DATE, filterIndex = true)

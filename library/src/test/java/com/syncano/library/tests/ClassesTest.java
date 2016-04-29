@@ -1,23 +1,20 @@
 package com.syncano.library.tests;
 
-import com.syncano.library.Constants;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.TestSyncanoObject;
-import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
-import com.syncano.library.choice.FieldType;
+import com.syncano.library.choice.ClassStatus;
 import com.syncano.library.data.SyncanoClass;
-import com.syncano.library.data.SyncanoObject;
-import com.syncano.library.utils.NanosDate;
+import com.syncano.library.model.AllTypesObject;
+import com.syncano.library.model.Author;
 import com.syncano.library.utils.SyncanoClassHelper;
+import com.syncano.library.utils.SyncanoLog;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -37,7 +34,6 @@ public class ClassesTest extends SyncanoApplicationTestCase {
 
     @Test
     public void testClasses() throws InterruptedException {
-
         String className = SyncanoClassHelper.getSyncanoClassName(TestSyncanoObject.class);
         Response<SyncanoClass> respDelete = syncano.deleteSyncanoClass(className).send();
         assertTrue(respDelete.isSuccess());
@@ -51,6 +47,19 @@ public class ClassesTest extends SyncanoApplicationTestCase {
         assertTrue(responseCreateClass.isSuccess());
         assertNotNull(responseCreateClass.getData());
         syncanoClass = responseCreateClass.getData();
+
+        // wait until class will finish to create on server
+        long start = System.currentTimeMillis();
+        while (System.currentTimeMillis() - start < (10 * 60 * 1000) && (syncanoClass.getStatus() != ClassStatus.READY)) {
+            Thread.sleep(100);
+            SyncanoLog.d(SyncanoApplicationTestCase.class.getSimpleName(), "Waiting for class to create: " + (System.currentTimeMillis() - start));
+            Response<SyncanoClass> respClass = syncano.getSyncanoClass(syncanoClass.getName()).send();
+            assertEquals(Response.HTTP_CODE_SUCCESS, respClass.getHttpResultCode());
+            syncanoClass = respClass.getData();
+            if (syncanoClass != null && syncanoClass.getStatus() == ClassStatus.READY) {
+                break;
+            }
+        }
 
         // ----------------- Get One -----------------
         Response<SyncanoClass> responseGetClass = syncano.getSyncanoClass(syncanoClass.getName()).send();
@@ -81,70 +90,26 @@ public class ClassesTest extends SyncanoApplicationTestCase {
     }
 
     @Test
-    public void testDataTypes() {
-        syncano.deleteSyncanoClass(MultiTypesObject.class).send();
-        Response<SyncanoClass> respClass = syncano.createSyncanoClass(MultiTypesObject.class).send();
-        assertTrue(respClass.isSuccess());
+    public void testDataTypes() throws InterruptedException {
+        createClass(Author.class);
+        createClass(AllTypesObject.class);
 
-        MultiTypesObject obj1 = generateMultiTypesObject();
-        MultiTypesObject obj2 = generateMultiTypesObject();
+        // full object with references etc
+        AllTypesObject obj1 = AllTypesObject.generateObject(new AllTypesObject());
+        AllTypesObject obj2 = AllTypesObject.generateObject(new AllTypesObject());
         assertTrue(obj2.save().isSuccess());
+        assertTrue(obj1.someReference.save().isSuccess());
         obj1.reference = obj2;
-        Response<MultiTypesObject> resp1 = syncano.createObject(obj1).send();
-        assertTrue(resp1.isSuccess());
-        assertTrue(obj1.reference.save().isSuccess());
+        Response<AllTypesObject> resp = syncano.createObject(obj1, false).send();
+        assertTrue(resp.isSuccess());
+        obj1.checkEquals(resp.getData(), false);
 
-        MultiTypesObject serverObj1 = resp1.getData();
-        assertNotNull(serverObj1);
-
-        assertEquals(obj1.intVal, serverObj1.intVal);
-        assertEquals(obj1.byteVal, serverObj1.byteVal);
-        assertEquals(obj1.shortVal, serverObj1.shortVal);
-        assertEquals(obj1.date, serverObj1.date);
-        assertEquals(obj1.nanosDate, serverObj1.nanosDate);
-        assertEquals(obj1.stringVal.length(), serverObj1.stringVal.length());
-        assertEquals(obj1.stringVal, serverObj1.stringVal);
-        assertEquals(obj1.text.length(), serverObj1.text.length());
-        assertEquals(obj1.text, serverObj1.text);
-        assertNotNull(obj1.reference.getId());
-        assertEquals(obj1.reference.getId(), serverObj1.reference.getId());
-        assertEquals(obj1.yesOrNo, serverObj1.yesOrNo);
+        // empty fields object
+        AllTypesObject objEmpty = new AllTypesObject();
+        resp = syncano.createObject(objEmpty, false).send();
+        assertTrue(resp.isSuccess());
+        objEmpty.checkEquals(objEmpty, false);
     }
 
-    private MultiTypesObject generateMultiTypesObject() {
-        Random rnd = new Random();
-        MultiTypesObject o = new MultiTypesObject();
-        o.intVal = rnd.nextInt();
-        o.byteVal = (byte) rnd.nextInt();
-        o.shortVal = (short) rnd.nextInt();
-        o.date = new Date();
-        o.nanosDate = new NanosDate(o.date.getTime(), rnd.nextInt(999));
-        o.stringVal = generateString(rnd.nextInt(128));
-        o.text = generateString(rnd.nextInt(32000));
-        o.yesOrNo = rnd.nextBoolean();
-        o.reference = new MultiTypesObject();
-        return o;
-    }
 
-    @com.syncano.library.annotation.SyncanoClass(name = "multi_typed_object")
-    public static class MultiTypesObject extends SyncanoObject {
-        @SyncanoField(name = "int")
-        public int intVal;
-        @SyncanoField(name = "byte")
-        public byte byteVal;
-        @SyncanoField(name = "short")
-        public short shortVal;
-        @SyncanoField(name = "date")
-        public Date date;
-        @SyncanoField(name = "nanosdate")
-        public NanosDate nanosDate;
-        @SyncanoField(name = "string")
-        public String stringVal;
-        @SyncanoField(name = "text", type = FieldType.TEXT)
-        public String text;
-        @SyncanoField(name = "reference", target = Constants.FIELD_TARGET_SELF)
-        public MultiTypesObject reference;
-        @SyncanoField(name = "yesorno")
-        public boolean yesOrNo;
-    }
 }

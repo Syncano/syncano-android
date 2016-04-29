@@ -44,7 +44,8 @@ public class BuilderTest extends SyncanoAndroidTestCase {
     @Test
     public void testBuilder() {
         Syncano userSyncano = new SyncanoBuilder().useLoggedUserStorage(false).androidContext(getContext()).
-                apiKey(BuildConfig.API_KEY_USERS).instanceName(BuildConfig.INSTANCE_NAME).build();
+                apiKey(BuildConfig.API_KEY_USERS).instanceName(BuildConfig.INSTANCE_NAME)
+                .customServerUrl(BuildConfig.STAGING_SERVER_URL).build();
 
         // register user
         User newUser = new User(USER_NAME, PASSWORD);
@@ -92,14 +93,16 @@ public class BuilderTest extends SyncanoAndroidTestCase {
 
         // check if user configuration will survive creating new syncano object
         userSyncano = new SyncanoBuilder().useLoggedUserStorage(true).androidContext(getContext()).
-                apiKey(BuildConfig.API_KEY_USERS).instanceName(BuildConfig.INSTANCE_NAME).build();
+                apiKey(BuildConfig.API_KEY_USERS).instanceName(BuildConfig.INSTANCE_NAME)
+                .customServerUrl(BuildConfig.STAGING_SERVER_URL).build();
         ResponseGetList<SomeV1> respNewSyn = userSyncano.getObjects(SomeV1.class).send();
         assertFalse(respNewSyn.isSuccess());
         userSyncano.setUser(newUser);
 
         // again check if user configuration will survive creating new syncano object
         new SyncanoBuilder().useLoggedUserStorage(true).androidContext(getContext()).
-                apiKey(BuildConfig.API_KEY_USERS).instanceName(BuildConfig.INSTANCE_NAME).setAsGlobalInstance(true).build();
+                apiKey(BuildConfig.API_KEY_USERS).instanceName(BuildConfig.INSTANCE_NAME)
+                .customServerUrl(BuildConfig.STAGING_SERVER_URL).setAsGlobalInstance(true).build();
 
         respNewSyn = Syncano.getInstance().getObjects(SomeV1.class).send();
         assertTrue(respNewSyn.isSuccess());

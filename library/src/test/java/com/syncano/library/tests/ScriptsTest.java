@@ -98,9 +98,9 @@ public class ScriptsTest extends SyncanoApplicationTestCase {
         // ----------------- Result -----------------
         long start = System.currentTimeMillis();
         // wait until script finishes execution
-        while (System.currentTimeMillis() - start < 5000 && trace.getStatus() != TraceStatus.SUCCESS) {
+        while (System.currentTimeMillis() - start < 60000 && trace.getStatus() != TraceStatus.SUCCESS) {
             assertTrue(trace.fetch().isSuccess());
-            Thread.sleep(100);
+            Thread.sleep(1000);
         }
         // first method
         assertNotNull(trace.getOutput());
@@ -133,9 +133,9 @@ public class ScriptsTest extends SyncanoApplicationTestCase {
 
         long start = System.currentTimeMillis();
         // wait until Script finishes execution
-        while (System.currentTimeMillis() - start < 5000 && trace.getStatus() != TraceStatus.SUCCESS) {
+        while (System.currentTimeMillis() - start < 60000 && trace.getStatus() != TraceStatus.SUCCESS) {
             assertTrue(trace.fetch().isSuccess());
-            Thread.sleep(100);
+            Thread.sleep(1000);
         }
         assertTrue(trace.getOutput().contains(EXPECTED_RESULT));
 
@@ -147,9 +147,9 @@ public class ScriptsTest extends SyncanoApplicationTestCase {
         trace = cbx.getTrace();
         start = System.currentTimeMillis();
         // wait until Script finishes execution
-        while (System.currentTimeMillis() - start < 5000 && trace.getStatus() != TraceStatus.SUCCESS) {
+        while (System.currentTimeMillis() - start < 60000 && trace.getStatus() != TraceStatus.SUCCESS) {
             assertTrue(trace.fetch().isSuccess());
-            Thread.sleep(100);
+            Thread.sleep(1000);
         }
         assertTrue(trace.getOutput().contains(EXPECTED_RESULT));
         assertTrue(trace.getOutput().contains(ARGUMENT_VALUE));

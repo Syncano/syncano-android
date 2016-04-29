@@ -125,6 +125,7 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JsonObject json = gson.toJsonTree(data).getAsJsonObject();
         ((SyncanoObject) data).getIncrementBuilder().build(json);
+
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
             baos.write((twoHyphens + boundary + lineEnd).getBytes(UTF8));
             baos.write(("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"" + lineEnd).getBytes(UTF8));
@@ -133,7 +134,7 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
             baos.write((GsonParser.getJsonElementAsString(entry.getValue())).getBytes(UTF8));
             baos.write(lineEnd.getBytes(UTF8));
         }
-
+        ((SyncanoObject) data).resetRequestBuildingFields();
         return new ByteArrayInputStream(baos.toByteArray());
     }
 

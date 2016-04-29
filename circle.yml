@@ -4,7 +4,7 @@ machine:
 
 test:
   override:
-    - ./gradlew testDebug --continue --info -Pinstance_name="\"${YOUR_INSTANCE_NAME}\"" -Papi_key="\"${YOUR_API_KEY}\"" -Papi_key_users="\"${YOUR_API_KEY_USERS}\""
+    - ./gradlew testDebug --continue --info -Pstaging_server_url="\"${YOUR_SERVER_URL}\"" -Pinstance_name="\"${YOUR_INSTANCE_NAME}\"" -Papi_key="\"${YOUR_API_KEY}\"" -Papi_key_users="\"${YOUR_API_KEY_USERS}\""
     # copy the build outputs to artifacts
     - cp -r library/build/reports $CIRCLE_ARTIFACTS
     # copy the test results to the test results directory.

@@ -35,16 +35,44 @@ public class SyncanoObjectDeserializer implements JsonDeserializer<SyncanoObject
 
     private void setFieldFromJsonElement(SyncanoObject o, Field f, JsonDeserializationContext jdc, JsonElement je) {
         try {
+            // clear value when received null, or value not received
             if (je == null || je.isJsonNull()) {
-                f.set(o, null);
+                Class<?> type = f.getType();
+                if (type.isPrimitive()) {
+                    // set default value for primitive types
+                    if (type.equals(int.class)) {
+                        f.set(o, 0);
+                    } else if (type.equals(boolean.class)) {
+                        f.set(o, false);
+                    } else if (type.equals(byte.class)) {
+                        f.set(o, (byte) 0);
+                    } else if (type.equals(short.class)) {
+                        f.set(o, (short) 0);
+                    } else if (type.equals(long.class)) {
+                        f.set(o, 0L);
+                    } else if (type.equals(float.class)) {
+                        f.set(o, 0f);
+                    } else if (type.equals(double.class)) {
+                        f.set(o, 0d);
+                    } else if (type.equals(char.class)) {
+                        f.set(o, '\u0000');
+                    }
+                } else {
+                    // set null for objects
+                    f.set(o, null);
+                }
+                // when received not null value for this field
             } else {
+                // when it's a reference parse as SyncanoObject
                 if (SyncanoClassHelper.findType(f) == FieldType.REFERENCE) {
                     f.set(o, parseSyncanoObject((SyncanoObject) f.get(o), f.getType(), je, jdc));
+                    // when it's not reference parse using default gson methods
                 } else {
                     f.set(o, jdc.deserialize(je, f.getType()));
                 }
             }
         } catch (IllegalAccessException e) {
+            // shouldn't happen because field is set to be accessible
             e.printStackTrace();
         }
     }

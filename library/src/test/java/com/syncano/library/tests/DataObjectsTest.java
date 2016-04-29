@@ -200,4 +200,21 @@ public class DataObjectsTest extends SyncanoApplicationTestCase {
         assertEquals(o.valueOne, s1);
         assertEquals(o.valueTwo, s2);
     }
+
+    @Test
+    public void testUpdate() {
+        TestSyncanoObject o = new TestSyncanoObject("a", "b");
+        assertTrue(o.save().isSuccess());
+
+        o.valueOne = "c";
+        Response<TestSyncanoObject> resp = syncano.updateObject(o, false).send();
+        assertTrue(resp.isSuccess());
+        assertTrue(o != resp.getData());
+        assertTrue(o.getUpdatedAt().before(resp.getData().getUpdatedAt()));
+
+        resp = syncano.updateObject(o, true).send();
+        assertTrue(resp.isSuccess());
+        assertTrue(o == resp.getData());
+        assertTrue(o.getUpdatedAt().equals(resp.getData().getUpdatedAt()));
+    }
 }

@@ -1,11 +1,13 @@
 package com.syncano.library.tests;
 
-import com.google.gson.JsonObject;
+import com.syncano.library.BuildConfig;
+import com.syncano.library.Syncano;
 import com.syncano.library.SyncanoApplicationTestCase;
+import com.syncano.library.SyncanoBuilder;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.data.PushDevice;
-import com.syncano.library.data.PushMessage;
+import com.syncano.library.data.User;
 
 import org.junit.After;
 import org.junit.Before;
@@ -17,11 +19,25 @@ import static org.junit.Assert.assertTrue;
 
 public class PushDeviceTest extends SyncanoApplicationTestCase {
     private PushDevice pushDevice;
+    private Syncano userSyncano;
+    private final static String USER_NAME = "user";
+    private final static String USER_PASSWORD = "some_pass";
+    private final String REGISTRATION_ID = "123456789";
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        deleteTestUser(USER_NAME);
+        userSyncano = new SyncanoBuilder().apiKey(BuildConfig.API_KEY_USERS).instanceName(BuildConfig.INSTANCE_NAME)
+                .customServerUrl(BuildConfig.STAGING_SERVER_URL).build();
+        assertTrue(new User(USER_NAME, USER_PASSWORD).on(userSyncano).register().isSuccess());
         registerGCMPushDevice();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        super.tearDown();
+        removeGCMPushDevice();
     }
 
     public void registerGCMPushDevice() {
@@ -29,59 +45,33 @@ public class PushDeviceTest extends SyncanoApplicationTestCase {
         pushDevice.setDeviceId("321321");
         pushDevice.setLabel("label");
         pushDevice.setRegistrationId("12345");
-        syncano.registerPushDevice(pushDevice).send();
+        assertTrue(syncano.deletePushDevice(pushDevice).send().isSuccess());
+        assertTrue(userSyncano.registerPushDevice(pushDevice).send().isSuccess());
     }
 
     @Test
     public void testGetListGCMDevices() {
-        ResponseGetList<PushDevice> response = syncano.getPushDevices().send();
+        ResponseGetList<PushDevice> response = userSyncano.getPushDevices().send();
         assertTrue(response.isSuccess());
         assertFalse(response.getData().isEmpty());
     }
 
     @Test
     public void testGetGCMDevice() {
-        Response<PushDevice> response = syncano.getPushDevice(pushDevice.getRegistrationId()).send();
+        Response<PushDevice> response = userSyncano.getPushDevice(pushDevice.getRegistrationId()).send();
         assertTrue(response.isSuccess());
         assertNotNull(response.getData());
     }
 
     public void removeGCMPushDevice() {
-        Response<PushDevice> response = syncano.deletePushDevice(pushDevice).send();
+        Response<PushDevice> response = userSyncano.deletePushDevice(pushDevice).send();
         assertTrue(response.isSuccess());
     }
 
     @Test
     public void testUpdateGCMDevice() {
-        Response<PushDevice> response = syncano.updatePushDevice(pushDevice).send();
+        Response<PushDevice> response = userSyncano.updatePushDevice(pushDevice).send();
         assertTrue(response.isSuccess());
         assertNotNull(response.getData());
     }
-
-    @Test
-    public void testGetGCMMessages() {
-        ResponseGetList<PushMessage> response = syncano.getPushMessages().send();
-        assertTrue(response.isSuccess());
-        assertFalse(response.getData().isEmpty());
-    }
-
-    @Test
-    public void testAddGCMMessage() {
-        PushMessage pushMessage = new PushMessage();
-        JsonObject jo = new JsonObject();
-        jo.addProperty("message", "Sample message");
-        pushMessage.setContent(jo);
-        Response<PushMessage> response = syncano.sendPushMessage(pushMessage).send();
-        //TODO Backed return Invalid JSON schema
-        //  assertTrue(response.isSuccess());
-    }
-
-
-    @Override
-    @After
-    public void tearDown() throws Exception {
-        super.tearDown();
-        removeGCMPushDevice();
-    }
-
 }

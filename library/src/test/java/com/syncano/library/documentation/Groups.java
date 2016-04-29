@@ -69,7 +69,7 @@ public class Groups extends SyncanoApplicationTestCase {
 
     @Test
     public void testAddUserToGroup() {
-        deleteTestUser(syncano, USER_NAME);
+        deleteTestUser(USER_NAME);
         Response<User> createResponse = syncano.registerUser(new User(USER_NAME, USER_PASS)).send();
         assertEquals(Response.HTTP_CODE_CREATED, createResponse.getHttpResultCode());
         User user = createResponse.getData();
@@ -89,7 +89,7 @@ public class Groups extends SyncanoApplicationTestCase {
         book.setGroup(group.getId());
         book.setGroupPermisions(DataObjectPermissions.FULL);
 
-        Response<Book> response = syncano.createObject(book).send();
+        Response<Book> response = book.save();
         // -----------------------------
 
         assertEquals(Response.HTTP_CODE_CREATED, response.getHttpResultCode());

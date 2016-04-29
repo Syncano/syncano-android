@@ -10,7 +10,6 @@ import com.syncano.library.choice.DataObjectPermissions;
 import com.syncano.library.choice.SyncanoClassPermissions;
 import com.syncano.library.data.Group;
 import com.syncano.library.data.GroupMembership;
-import com.syncano.library.data.Profile;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.data.User;
@@ -61,7 +60,7 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
         //delete class
         removeClass(Something.class);
 
-        userSyncano = new Syncano(BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME);
+        userSyncano = new Syncano(BuildConfig.STAGING_SERVER_URL, BuildConfig.API_KEY_USERS, BuildConfig.INSTANCE_NAME);
     }
 
     @After
@@ -196,7 +195,7 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
     public void testManualUserKey() {
         // create user syncano
         Syncano s = new SyncanoBuilder().apiKey(BuildConfig.API_KEY_USERS).instanceName(BuildConfig.INSTANCE_NAME)
-                .useLoggedUserStorage(false).build();
+                .useLoggedUserStorage(false).customServerUrl(BuildConfig.STAGING_SERVER_URL).build();
         // register user
         User newUser = new User(USER_NAME, PASSWORD);
         Response<User> responseCreateUser = s.registerUser(newUser).send();
@@ -223,12 +222,12 @@ public class PermissionsTest extends SyncanoApplicationTestCase {
 
         // get object on new clean syncano should fail
         Response<Something> respGet = new SyncanoBuilder().apiKey(BuildConfig.API_KEY_USERS).instanceName(BuildConfig.INSTANCE_NAME)
-                .useLoggedUserStorage(false).build().getObject(Something.class, som.getId()).send();
+                .useLoggedUserStorage(false).customServerUrl(BuildConfig.STAGING_SERVER_URL).build().getObject(Something.class, som.getId()).send();
         assertFalse(respGet.isSuccess());
 
         // get profile on syncano with user key set, should return success
         s = new SyncanoBuilder().apiKey(BuildConfig.API_KEY_USERS).instanceName(BuildConfig.INSTANCE_NAME)
-                .useLoggedUserStorage(false).build().setUserKey(userKey);
+                .useLoggedUserStorage(false).customServerUrl(BuildConfig.STAGING_SERVER_URL).build().setUserKey(userKey);
         respGet = s.getObject(Something.class, som.getId()).send();
         assertTrue(respGet.isSuccess());
         assertNotNull(respGet.getData());
