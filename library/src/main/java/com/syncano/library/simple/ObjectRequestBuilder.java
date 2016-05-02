@@ -4,6 +4,8 @@ import com.syncano.library.Syncano;
 import com.syncano.library.api.IncrementBuilder;
 import com.syncano.library.api.RequestGet;
 import com.syncano.library.api.Response;
+import com.syncano.library.api.ResultRequest;
+import com.syncano.library.api.SendRequest;
 import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.data.Entity;
 import com.syncano.library.data.SyncanoObject;
@@ -19,7 +21,9 @@ import java.util.HashSet;
  */
 public abstract class ObjectRequestBuilder extends Entity {
     private Syncano syncano;
+    // TODO check how increment works in offline
     private IncrementBuilder incrementBuilder = new IncrementBuilder();
+    // TODO check how clearing works in offline
     private HashSet<String> fieldsToClear = new HashSet<>();
     private OfflineMode mode = OfflineMode.ONLINE;
     private boolean cleanStorageOnSuccessDownload = false;
@@ -67,50 +71,54 @@ public abstract class ObjectRequestBuilder extends Entity {
     }
 
     public <T extends SyncanoObject> Response<T> save() {
-        if (getId() == null) {
-            return getSyncano().createObject((T) this, true).send();
-        }
-        return getSyncano().updateObject((T) this, true).send();
+        return (Response<T>) prepareOfflineRequest(prepareSaveRequest(true)).send();
     }
 
     public <T extends SyncanoObject> void save(SyncanoCallback<T> callback) {
-        if (getId() == null) {
-            getSyncano().createObject((T) this, false).sendAsync(callback);
-        } else {
-            getSyncano().updateObject((T) this, false).sendAsync(callback);
-        }
+        prepareOfflineRequest(prepareSaveRequest(false)).sendAsync((SyncanoCallback<SyncanoObject>) callback);
     }
 
     public <T extends SyncanoObject> Response<T> delete() {
-        return getSyncano().deleteObject((T) this).send();
+        OfflineGetOneRequest<T> req = prepareOfflineRequest(getSyncano().deleteObject((T) this));
+        return req.send();
     }
 
     public <T extends SyncanoObject> void delete(SyncanoCallback<T> callback) {
-        getSyncano().deleteObject((T) this).sendAsync(callback);
+        prepareOfflineRequest(getSyncano().deleteObject((T) this)).sendAsync(callback);
     }
 
     public <T extends SyncanoObject> Response<T> fetch() {
-        OfflineGetOneRequest<T> req = prepareOfflineRequest();
+        OfflineGetOneRequest<T> req = (OfflineGetOneRequest<T>) prepareOfflineRequest(prepareGetRequest());
         return req.send();
     }
 
     public <T extends SyncanoObject> void fetch(SyncanoCallback<T> callback) {
-        OfflineGetOneRequest<T> req = prepareOfflineRequest();
+        OfflineGetOneRequest<T> req = (OfflineGetOneRequest<T>) prepareOfflineRequest(prepareGetRequest());
         req.sendAsync(callback);
     }
 
     public void resetRequestBuildingFields() {
         incrementBuilder = new IncrementBuilder();
         fieldsToClear = new HashSet<>();
+        mode = OfflineMode.ONLINE;
+        cleanStorageOnSuccessDownload = false;
+        saveDownloadedDataToStorage = false;
     }
 
-    public <T extends SyncanoObject> OfflineGetOneRequest<T> prepareOfflineRequest() {
-        OfflineGetOneRequest<T> request = (OfflineGetOneRequest<T>) new OfflineGetOneRequest<>(prepareGetRequest());
-        request.mode(mode);
-        request.cleanStorageOnSuccessDownload(cleanStorageOnSuccessDownload);
-        request.saveDownloadedDataToStorage(saveDownloadedDataToStorage);
-        request.setBackgroundCallback((SyncanoCallback<T>) backgroundCallback);
-        return request;
+    public <T extends SyncanoObject> OfflineGetOneRequest<T> prepareOfflineRequest(ResultRequest<T> request) {
+        OfflineGetOneRequest<T> offlineRequest = new OfflineGetOneRequest<>(request);
+        offlineRequest.mode(mode);
+        offlineRequest.cleanStorageOnSuccessDownload(cleanStorageOnSuccessDownload);
+        offlineRequest.saveDownloadedDataToStorage(saveDownloadedDataToStorage);
+        offlineRequest.setBackgroundCallback((SyncanoCallback<T>) backgroundCallback);
+        return offlineRequest;
+    }
+
+    private <T extends SyncanoObject> SendRequest<T> prepareSaveRequest(boolean updateGivenObject) {
+        if (getId() == null) {
+            return getSyncano().createObject((T) this, updateGivenObject);
+        }
+        return getSyncano().updateObject((T) this, updateGivenObject);
     }
 
     private <T extends SyncanoObject> RequestGet<T> prepareGetRequest() {

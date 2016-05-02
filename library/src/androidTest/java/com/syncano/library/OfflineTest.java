@@ -146,4 +146,31 @@ public class OfflineTest extends SyncanoAndroidTestCase {
         assertTrue(resp.isSuccess());
         assertEquals(2, resp.getData().size());
     }
+
+    @Test
+    public void testSaveFetchDelete() throws InterruptedException {
+        OfflineHelper.deleteDatabase(syncano.getAndroidContext(), SomeV2.class);
+        createClass(SomeV2.class);
+
+        SomeV2 obj = new SomeV2();
+        obj.someInt = 4;
+        obj.someText = "lalala";
+        obj.someDate = new Date();
+
+        assertTrue(obj.mode(OfflineMode.ONLINE).saveDownloadedDataToStorage(true).save().isSuccess());
+
+        SomeV2 newObj = new SomeV2();
+        newObj.setId(obj.getId());
+        newObj.mode(OfflineMode.LOCAL).fetch();
+
+        assertEquals(obj.someDate, newObj.someDate);
+        assertEquals(obj.someInt, newObj.someInt);
+        assertEquals(obj.someText, newObj.someText);
+
+        assertTrue(newObj.mode(OfflineMode.LOCAL).delete().isSuccess());
+
+        ResponseGetList<SomeV2> resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertTrue(resp.isSuccess());
+        assertEquals(0, resp.getData().size());
+    }
 }

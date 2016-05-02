@@ -26,6 +26,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Class not meant to be used by library users. It has implementation of read, write, delete, migrate
+ * from local storage methods, but they are used internally by library.
+ */
 public class OfflineHelper {
     private final static int VERSION = 1;
     private final static String TABLE_NAME = "syncano";
@@ -94,6 +98,14 @@ public class OfflineHelper {
         c.close();
         db.close();
         return object;
+    }
+
+    public static <T extends SyncanoObject> boolean deleteObject(Context ctx, Class<T> type, int id) {
+        SQLiteOpenHelper sqlHelper = initDb(ctx, type);
+        SQLiteDatabase db = sqlHelper.getWritableDatabase();
+        OfflineQueryBuilder query = new OfflineQueryBuilder(new Where<>().eq(Entity.FIELD_ID, id), null);
+        int delNum = db.delete(TABLE_NAME, query.getSelection(), query.getSelArgs());
+        return delNum == 1;
     }
 
     public static void writeObjects(Context ctx, List<? extends SyncanoObject> objects, Class<? extends SyncanoObject> type) {

@@ -481,7 +481,7 @@ public class Syncano {
     public <T extends SyncanoObject> RequestDelete<T> deleteObject(Class<T> type, int id) {
         String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getNotEmptyInstanceName(), className, id);
-        return new RequestDelete<>(type, url, this);
+        return new RequestDelete<>(type, url, this, id);
     }
 
     /**

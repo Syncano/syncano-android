@@ -97,6 +97,12 @@ public class Response<T> {
     public final static int CODE_PARSING_RESPONSE_EXCEPTION = 5;
 
     /**
+     * Unknown
+     */
+    public final static int CODE_UNKNOWN_ERROR = 6;
+
+
+    /**
      * Internal results code.
      */
     private int resultCode;

@@ -75,6 +75,12 @@ public class OfflineHelperTest extends SyncanoAndroidTestCase {
         List<SomeV1> gotSome = OfflineHelper.readObjects(getContext(), SomeV1.class);
         assertEquals(someList.size(), gotSome.size());
 
+        // test delete
+        boolean success = OfflineHelper.deleteObject(getContext(), SomeV1.class, gotSome.get(0).getId());
+        assertTrue(success);
+        gotSome = OfflineHelper.readObjects(getContext(), SomeV1.class);
+        assertEquals(someList.size(), gotSome.size() + 1);
+
         removeClass(AllTypesObject.class);
         removeClass(SomeV1.class);
     }

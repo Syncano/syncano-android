@@ -35,12 +35,12 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
     private final static String twoHyphens = "--";
     private final static String lineEnd = "\r\n";
     private Object data;
-    private boolean updateGivenData = false;
     private Gson gson;
     public final static String UTF8 = "UTF-8";
 
     protected SendRequest(Class<T> resultType, String url, Syncano syncano, Object data) {
         super(resultType, url, syncano);
+        updateGivenObject(false);
         this.data = data;
         if (data != null) {
             gson = GsonParser.createGson(data);
@@ -182,7 +182,7 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
 
     @Override
     public T parseResult(Response<T> response, String json) {
-        if (updateGivenData) {
+        if (isSetUpdateGivenObject()) {
             if (data.getClass().isAssignableFrom(resultType)) {
                 return GsonParser.createGson(data).fromJson(json, resultType);
             } else {
@@ -193,11 +193,4 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
         return super.parseResult(response, json);
     }
 
-    public boolean isSetUpdateGivenObject() {
-        return updateGivenData;
-    }
-
-    public void updateGivenObject(boolean updateGivenData) {
-        this.updateGivenData = updateGivenData;
-    }
 }

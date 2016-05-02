@@ -1,23 +1,22 @@
 package com.syncano.library.offline;
 
-import com.syncano.library.api.RequestGet;
 import com.syncano.library.api.Response;
+import com.syncano.library.api.ResultRequest;
 import com.syncano.library.data.SyncanoObject;
 
-
 /**
- * Wrapper for a RequestGet, that adds offline storage function
+ * Wrapper for a request, that adds offline storage function
  *
  * @param <T> Type of objects to get
  */
 public abstract class OfflineGetRequest<T> extends OfflineRequest<T> {
 
-    private RequestGet<T> getRequest;
+    private ResultRequest<T> getRequest;
     private OfflineMode mode = OfflineMode.ONLINE;
     private boolean cleanStorageOnSuccessDownload = false;
     private boolean saveDownloadedDataToStorage = false;
 
-    public OfflineGetRequest(RequestGet<T> getRequest) {
+    public OfflineGetRequest(ResultRequest<T> getRequest) {
         super(getRequest.getSyncano());
         if (!SyncanoObject.class.isAssignableFrom(getRequest.getResultType())) {
             throw new RuntimeException("Using offline storage is only possible for SyncanoObject objects");
@@ -62,7 +61,7 @@ public abstract class OfflineGetRequest<T> extends OfflineRequest<T> {
         return null;
     }
 
-    public abstract Response<T> doOnlineRequest(RequestGet<T> getRequest, boolean cleanStorageOnSuccessDownload, boolean saveDownloadedDataToStorage);
+    public abstract Response<T> doOnlineRequest(ResultRequest<T> getRequest, boolean cleanStorageOnSuccessDownload, boolean saveDownloadedDataToStorage);
 
-    public abstract Response<T> doLocalRequest(RequestGet<T> getRequest);
+    public abstract Response<T> doLocalRequest(ResultRequest<T> getRequest);
 }

@@ -2,10 +2,10 @@ package com.syncano.library.offline;
 
 import android.content.Context;
 
-import com.syncano.library.api.RequestGet;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
+import com.syncano.library.api.ResultRequest;
 import com.syncano.library.data.SyncanoObject;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class OfflineGetListRequest<T> extends OfflineGetRequest<List<T>> {
     }
 
     @Override
-    public ResponseGetList<T> doOnlineRequest(RequestGet<List<T>> getRequest, boolean cleanStorageOnSuccessDownload, boolean saveDownloadedDataToStorage) {
+    public ResponseGetList<T> doOnlineRequest(ResultRequest<List<T>> getRequest, boolean cleanStorageOnSuccessDownload, boolean saveDownloadedDataToStorage) {
         ResponseGetList<T> onlineResponse = (ResponseGetList<T>) getRequest.send();
         if (onlineResponse.isSuccess()) {
             Context ctx = getSyncano().getAndroidContext();
@@ -39,7 +39,7 @@ public class OfflineGetListRequest<T> extends OfflineGetRequest<List<T>> {
     }
 
     @Override
-    public ResponseGetList<T> doLocalRequest(RequestGet<List<T>> getRequest) {
+    public ResponseGetList<T> doLocalRequest(ResultRequest<List<T>> getRequest) {
         RequestGetList getListRequest = (RequestGetList) getRequest;
         List data = OfflineHelper.readObjects(getSyncano().getAndroidContext(), getListRequest.getResultType(),
                 getListRequest.getWhereFilter(), getListRequest.getOrderByParam());
