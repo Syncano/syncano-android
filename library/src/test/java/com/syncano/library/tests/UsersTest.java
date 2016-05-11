@@ -1,13 +1,14 @@
 package com.syncano.library.tests;
 
-import com.google.gson.JsonArray;
 import com.syncano.library.BuildConfig;
 import com.syncano.library.Constants;
 import com.syncano.library.SyncanoApplicationTestCase;
 import com.syncano.library.TestUser;
 import com.syncano.library.TestUserProfileObject;
+import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
 import com.syncano.library.choice.SocialAuthBackend;
+import com.syncano.library.data.AbstractUser;
 import com.syncano.library.data.Profile;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.User;
@@ -57,8 +58,7 @@ public class UsersTest extends SyncanoApplicationTestCase {
 
     @Test
     public void testUsers() throws InterruptedException {
-
-        final User newUser = new User(USER_NAME, PASSWORD);
+        User newUser = new User(USER_NAME, PASSWORD);
         User user;
 
         // ----------------- Create -----------------
@@ -117,17 +117,14 @@ public class UsersTest extends SyncanoApplicationTestCase {
 
         assertTrue(responseGetProfileClass.isSuccess());
         assertNotNull(responseGetProfileClass.getData());
-        SyncanoClass profileClass = responseGetProfileClass.getData();
 
         // ----------------- Update Profile Class -----------------
-        JsonArray schema = SyncanoClassHelper.getSyncanoClassSchema(TestUserProfileObject.class);
-        profileClass.setSchema(schema);
-        Response<SyncanoClass> responseUpdateProfileClass = syncano.updateSyncanoClass(profileClass).send();
+        Response<SyncanoClass> responseUpdateProfileClass = syncano.updateSyncanoClass(TestUserProfileObject.class).send();
 
         assertTrue(responseUpdateProfileClass.isSuccess());
         SyncanoClass returnedClass = responseUpdateProfileClass.getData();
         assertNotNull(returnedClass);
-        assertEquals(schema, returnedClass.getSchema());
+        assertEquals(SyncanoClassHelper.getSyncanoClassSchema(TestUserProfileObject.class), returnedClass.getSchema());
 
         TestUser newUser = new TestUser(USER_NAME, PASSWORD);
         TestUser user;
@@ -256,6 +253,30 @@ public class UsersTest extends SyncanoApplicationTestCase {
 
     private boolean tokenIsInvalid(String token) {
         return token == null || token.length() == 0;
+    }
+
+    @Test
+    public void testInnerClassNoEmptyConstructorProfileAndUser() {
+        assertTrue(syncano.updateSyncanoClass(InnerProfile.class).send().isSuccess());
+
+        InnerUser newUser = new InnerUser(USER_NAME, PASSWORD);
+        assertTrue(newUser.register().isSuccess());
+
+        String newVal = "lalalala";
+        newUser.getProfile().valueOne = newVal;
+        assertTrue(newUser.getProfile().save().isSuccess());
+        assertEquals(newVal, newUser.getProfile().valueOne);
+    }
+
+    public class InnerUser extends AbstractUser<InnerProfile> {
+        public InnerUser(String userName, String password) {
+            super(userName, password);
+        }
+    }
+
+    public class InnerProfile extends Profile {
+        @SyncanoField(name = "value_one")
+        public String valueOne;
     }
 
 }

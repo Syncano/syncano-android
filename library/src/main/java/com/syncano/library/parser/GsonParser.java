@@ -47,14 +47,17 @@ public class GsonParser {
 
     private static <T> GsonBuilder createSyncanoObjectGsonBuilder(T object, GsonParseConfig config) {
         GsonBuilder gsonBuilder = getDefaultGsonBuilder(config);
-        gsonBuilder.registerTypeHierarchyAdapter(SyncanoObject.class, new SyncanoObjectDeserializer(object, config));
         gsonBuilder.registerTypeHierarchyAdapter(SyncanoObject.class, new SyncanoObjectSerializer(config));
+        if (object != null) {
+            gsonBuilder.registerTypeHierarchyAdapter(SyncanoObject.class, new SyncanoObjectDeserializer(object, config));
+        }
         gsonBuilder.serializeNulls();
         return gsonBuilder;
     }
 
     private static <T> GsonBuilder getDefaultGsonBuilder(GsonParseConfig config) {
         GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeHierarchyAdapter(SyncanoObject.class, new SyncanoObjectDeserializer(null, config));
         gsonBuilder.registerTypeAdapter(NanosDate.class, new DateSerializer());
         gsonBuilder.registerTypeAdapter(NanosDate.class, new DateDeserializer());
         gsonBuilder.registerTypeAdapter(Date.class, new DateSerializer());

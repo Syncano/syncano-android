@@ -92,6 +92,8 @@ public class SyncanoObjectDeserializer implements JsonDeserializer<SyncanoObject
         // when received full syncano object parse it
         if (syncanoObject == null) {
             syncanoObject = createSyncanoObject((Class<? extends SyncanoObject>) type);
+            // important to call it because sometimes fields that are always instantiated, here are nulls
+            syncanoObject.resetRequestBuildingFields();
         }
         Collection<Field> fields = SyncanoClassHelper.findAllSyncanoFields((Class) type);
         for (Field field : fields) {
