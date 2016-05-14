@@ -2,6 +2,7 @@ package com.syncano.library.offline;
 
 import android.content.Context;
 
+import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.api.RequestDelete;
 import com.syncano.library.api.RequestGet;
 import com.syncano.library.api.Response;
@@ -13,21 +14,31 @@ import java.util.Collections;
 
 /**
  * Wrapper for a RequestGet, that adds offline storage function
+ * <p/>
+ * Supports save(), fetch() and delete()
  *
  * @param <T> Type of object to get
  */
 public class OfflineGetOneRequest<T extends SyncanoObject> extends OfflineGetRequest<T> {
 
-    public OfflineGetOneRequest(ResultRequest<T> getRequest) {
-        super(getRequest);
+    public OfflineGetOneRequest(ResultRequest<T> request) {
+        super(request);
+        SyncanoClass clazzAnnotation = (SyncanoClass) request.getResultType().getAnnotation(SyncanoClass.class);
+        if (request instanceof RequestGet) {
+            mode(clazzAnnotation.getMode()); // used for fetch
+        } else if (request instanceof RequestDelete || request instanceof SendRequest) {
+            mode(clazzAnnotation.saveMode()); // used for save and delete
+        } else {
+            mode(OfflineMode.ONLINE); //default for unsupported requests
+        }
     }
 
     @Override
-    public Response<T> doOnlineRequest(ResultRequest<T> getRequest, boolean cleanStorageOnSuccessDownload, boolean saveDownloadedDataToStorage) {
-        Response<T> onlineResponse = getRequest.send();
+    public Response<T> doOnlineRequest(ResultRequest<T> request, boolean cleanStorageOnSuccessDownload, boolean saveDownloadedDataToStorage) {
+        Response<T> onlineResponse = request.send();
         if (onlineResponse.isSuccess()) {
             Context ctx = getSyncano().getAndroidContext();
-            Class<? extends SyncanoObject> type = getRequest.getResultType();
+            Class<? extends SyncanoObject> type = request.getResultType();
             if (cleanStorageOnSuccessDownload) {
                 OfflineHelper.clearTable(ctx, type);
             }

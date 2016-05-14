@@ -29,9 +29,9 @@ public class RequestBuilder<T extends SyncanoObject> {
     private String dataEndpoint;
     private boolean estimateCount = false;
     private boolean getAll = false;
-    private OfflineMode mode = OfflineMode.ONLINE;
-    private boolean cleanStorageOnSuccessDownload = false;
-    private boolean saveDownloadedDataToStorage = false;
+    private OfflineMode mode = null;
+    private Boolean cleanStorageOnSuccessDownload = null;
+    private Boolean saveDownloadedDataToStorage = null;
     private SyncanoCallback<List<T>> backgroundCallback;
 
     public RequestBuilder(Class<T> clazz) {
@@ -121,9 +121,15 @@ public class RequestBuilder<T extends SyncanoObject> {
 
     public OfflineGetListRequest<T> prepareOfflineRequest() {
         OfflineGetListRequest<T> request = new OfflineGetListRequest<>(prepareGetRequest());
-        request.mode(mode);
-        request.cleanStorageOnSuccessDownload(cleanStorageOnSuccessDownload);
-        request.saveDownloadedDataToStorage(saveDownloadedDataToStorage);
+        if (mode != null) {
+            request.mode(mode);
+        }
+        if (cleanStorageOnSuccessDownload != null) {
+            request.cleanStorageOnSuccessDownload(cleanStorageOnSuccessDownload);
+        }
+        if (saveDownloadedDataToStorage != null) {
+            request.saveDownloadedDataToStorage(saveDownloadedDataToStorage);
+        }
         request.setBackgroundCallback(backgroundCallback);
         return request;
     }

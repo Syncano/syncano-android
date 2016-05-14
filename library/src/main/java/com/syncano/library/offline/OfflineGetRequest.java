@@ -1,5 +1,6 @@
 package com.syncano.library.offline;
 
+import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.ResultRequest;
 import com.syncano.library.data.SyncanoObject;
@@ -12,9 +13,9 @@ import com.syncano.library.data.SyncanoObject;
 public abstract class OfflineGetRequest<T> extends OfflineRequest<T> {
 
     private ResultRequest<T> getRequest;
-    private OfflineMode mode = OfflineMode.ONLINE;
-    private boolean cleanStorageOnSuccessDownload = false;
-    private boolean saveDownloadedDataToStorage = false;
+    private OfflineMode mode;
+    private Boolean cleanStorageOnSuccessDownload;
+    private Boolean saveDownloadedDataToStorage;
 
     public OfflineGetRequest(ResultRequest<T> getRequest) {
         super(getRequest.getSyncano());
@@ -22,6 +23,10 @@ public abstract class OfflineGetRequest<T> extends OfflineRequest<T> {
             throw new RuntimeException("Using offline storage is only possible for SyncanoObject objects");
         }
         this.getRequest = getRequest;
+        SyncanoClass classAnnotation = ((SyncanoClass) getRequest.getResultType().getAnnotation(SyncanoClass.class));
+        this.mode = classAnnotation.getMode();
+        this.cleanStorageOnSuccessDownload = classAnnotation.cleanStorageOnSuccessDownload();
+        this.saveDownloadedDataToStorage = classAnnotation.saveDownloadedDataToStorage();
     }
 
     public OfflineGetRequest<T> mode(OfflineMode mode) {

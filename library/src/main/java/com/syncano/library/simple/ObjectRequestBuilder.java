@@ -25,9 +25,9 @@ public abstract class ObjectRequestBuilder extends Entity {
     private IncrementBuilder incrementBuilder = new IncrementBuilder();
     // TODO check how clearing works in offline
     private HashSet<String> fieldsToClear = new HashSet<>();
-    private OfflineMode mode = OfflineMode.ONLINE;
-    private boolean cleanStorageOnSuccessDownload = false;
-    private boolean saveDownloadedDataToStorage = false;
+    private OfflineMode mode = null;
+    private Boolean cleanStorageOnSuccessDownload = null;
+    private Boolean saveDownloadedDataToStorage = null;
     private SyncanoCallback<? extends SyncanoObject> backgroundCallback;
 
     public <T extends SyncanoObject> T clearField(String fieldName) {
@@ -100,16 +100,22 @@ public abstract class ObjectRequestBuilder extends Entity {
     public void resetRequestBuildingFields() {
         incrementBuilder = new IncrementBuilder();
         fieldsToClear = new HashSet<>();
-        mode = OfflineMode.ONLINE;
-        cleanStorageOnSuccessDownload = false;
-        saveDownloadedDataToStorage = false;
+        mode = null;
+        cleanStorageOnSuccessDownload = null;
+        saveDownloadedDataToStorage = null;
     }
 
     public <T extends SyncanoObject> OfflineGetOneRequest<T> prepareOfflineRequest(ResultRequest<T> request) {
         OfflineGetOneRequest<T> offlineRequest = new OfflineGetOneRequest<>(request);
-        offlineRequest.mode(mode);
-        offlineRequest.cleanStorageOnSuccessDownload(cleanStorageOnSuccessDownload);
-        offlineRequest.saveDownloadedDataToStorage(saveDownloadedDataToStorage);
+        if (mode != null) {
+            offlineRequest.mode(mode);
+        }
+        if (cleanStorageOnSuccessDownload != null) {
+            offlineRequest.cleanStorageOnSuccessDownload(cleanStorageOnSuccessDownload);
+        }
+        if (saveDownloadedDataToStorage != null) {
+            offlineRequest.saveDownloadedDataToStorage(saveDownloadedDataToStorage);
+        }
         offlineRequest.setBackgroundCallback((SyncanoCallback<T>) backgroundCallback);
         return offlineRequest;
     }
