@@ -47,7 +47,7 @@ public class SyncanoClassHelper {
         Collection<Field> fields = findAllSyncanoFields(clazz);
         for (Field field : fields) {
             SyncanoField fieldAnnotation = field.getAnnotation(SyncanoField.class);
-            if (fieldAnnotation == null || !fieldAnnotation.inSchema()) {
+            if (fieldAnnotation == null || !fieldAnnotation.inSchema() || fieldAnnotation.onlyLocal()) {
                 continue;
             }
 

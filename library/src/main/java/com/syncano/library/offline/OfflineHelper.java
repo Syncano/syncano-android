@@ -47,7 +47,7 @@ public class OfflineHelper {
         OfflineQueryBuilder query = new OfflineQueryBuilder(where, orderBy);
         Cursor c = db.query(TABLE_NAME, null, query.getSelection(), query.getSelArgs(), null, null, query.getOrderBy());
         GsonParser.GsonParseConfig config = new GsonParser.GsonParseConfig();
-        config.useOfflineFieldNames = true;
+        config.forLocalStorage = true;
         Gson gson = GsonParser.createGson(type, config);
         String[] columns = c.getColumnNames();
         c.moveToFirst();
@@ -66,14 +66,14 @@ public class OfflineHelper {
 
     public static <T extends SyncanoObject> T readObject(Context ctx, Class<T> type, int id) {
         GsonParser.GsonParseConfig config = new GsonParser.GsonParseConfig();
-        config.useOfflineFieldNames = true;
+        config.forLocalStorage = true;
         Gson gson = GsonParser.createGson(type, config);
         return readObject(ctx, gson, type, id);
     }
 
     public static <T extends SyncanoObject> T readObject(Context ctx, T obj) {
         GsonParser.GsonParseConfig config = new GsonParser.GsonParseConfig();
-        config.useOfflineFieldNames = true;
+        config.forLocalStorage = true;
         Gson gson = GsonParser.createGson(obj, config);
         return (T) readObject(ctx, gson, obj.getClass(), obj.getId());
     }
@@ -114,7 +114,7 @@ public class OfflineHelper {
         GsonParser.GsonParseConfig config = new GsonParser.GsonParseConfig();
         config.serializeReadOnlyFields = true;
         config.serializeUrlFileFields = true;
-        config.useOfflineFieldNames = true;
+        config.forLocalStorage = true;
         Gson gson = GsonParser.createGson(type, config);
         for (SyncanoObject object : objects) {
             JsonObject jsonized = gson.toJsonTree(object).getAsJsonObject();

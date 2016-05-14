@@ -28,5 +28,6 @@ public @interface SyncanoField {
 
     boolean inSchema() default true;
 
+    boolean onlyLocal() default false;
 }
 

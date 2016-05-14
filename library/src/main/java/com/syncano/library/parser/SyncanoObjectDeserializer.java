@@ -97,7 +97,7 @@ public class SyncanoObjectDeserializer implements JsonDeserializer<SyncanoObject
         for (Field field : fields) {
             field.setAccessible(true);
             String syncanoKey;
-            if (config.useOfflineFieldNames) {
+            if (config.forLocalStorage) {
                 syncanoKey = SyncanoClassHelper.getOfflineFieldName(field);
             } else {
                 syncanoKey = SyncanoClassHelper.getFieldName(field);

@@ -15,6 +15,7 @@ public abstract class SyncanoObject extends ObjectRequestBuilder {
     public static final String FIELD_OTHER_PERMISSIONS = "other_permissions";
     public static final String FIELD_CHANNEL = "channel";
     public static final String FIELD_CHANNEL_ROOM = "channel_room";
+    public static final String FIELD_LOCAL_ID = "id_local";
 
     @SyncanoField(name = FIELD_OWNER, inSchema = false)
     private Integer owner;
@@ -42,6 +43,9 @@ public abstract class SyncanoObject extends ObjectRequestBuilder {
 
     @SyncanoField(name = FIELD_EXPECTED_REVISION, inSchema = false)
     private Integer expectedRevision;
+
+    @SyncanoField(name = FIELD_LOCAL_ID, onlyLocal = true)
+    private Integer localId;
 
     public String getChannelRoom() {
         return channelRoom;
@@ -113,5 +117,13 @@ public abstract class SyncanoObject extends ObjectRequestBuilder {
 
     public void setExpectedRevision(int expectedRevision) {
         this.expectedRevision = expectedRevision;
+    }
+
+    public Integer getLocalId() {
+        return localId;
+    }
+
+    public void setLocalId(Integer localId) {
+        this.localId = localId;
     }
 }
