@@ -47,6 +47,10 @@ public class PlatformType {
         }
     }
 
+    public static boolean isAndroid() {
+        return PlatformType.get() instanceof PlatformType.AndroidPlatform;
+    }
+
     public Executor getDefaultCallbackExecutor() {
         return null;
     }

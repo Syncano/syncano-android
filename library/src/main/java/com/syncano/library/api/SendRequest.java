@@ -193,4 +193,8 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
         return super.parseResult(response, json);
     }
 
+    @Override
+    public T getResultObject() {
+        return (T) data;
+    }
 }

@@ -16,6 +16,8 @@ public class OfflineSaveRequest<T extends SyncanoObject> extends OfflineRequest<
         super(request);
         SyncanoClass clazzAnnotation = (SyncanoClass) request.getResultType().getAnnotation(SyncanoClass.class);
         mode(clazzAnnotation.saveMode());
+        // not clear db afters saving object, even if set on class annotation
+        cleanStorageOnSuccessDownload(false);
     }
 
     @Override
@@ -24,6 +26,9 @@ public class OfflineSaveRequest<T extends SyncanoObject> extends OfflineRequest<
         if (onlineResponse.isSuccess()) {
             Context ctx = getSyncano().getAndroidContext();
             Class<? extends SyncanoObject> type = request.getResultType();
+            if (cleanStorageOnSuccessDownload) {
+                OfflineHelper.clearTable(ctx, type);
+            }
             if (saveDownloadedDataToStorage) {
                 OfflineHelper.writeObjects(ctx, Collections.singletonList(onlineResponse.getData()), type);
             }

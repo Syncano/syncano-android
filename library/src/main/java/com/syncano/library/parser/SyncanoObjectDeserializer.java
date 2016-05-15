@@ -97,7 +97,7 @@ public class SyncanoObjectDeserializer implements JsonDeserializer<SyncanoObject
         Collection<Field> fields = SyncanoClassHelper.findAllSyncanoFields((Class) type);
         for (Field field : fields) {
             SyncanoField annotation = field.getAnnotation(SyncanoField.class);
-            if (annotation.onlyLocal()) {
+            if (annotation.onlyLocal() && !config.forLocalStorage) {
                 continue;
             }
             field.setAccessible(true);

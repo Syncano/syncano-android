@@ -23,6 +23,9 @@ public class OfflineFetchRequest<T extends SyncanoObject> extends OfflineRequest
         Response<T> onlineResponse = request.send();
         if (onlineResponse.isSuccess()) {
             Context ctx = getSyncano().getAndroidContext();
+            if (onlineResponse.getData() != null) {
+                LocalFieldsHelper.fillWithLocalData(ctx, onlineResponse.getData());
+            }
             Class<? extends SyncanoObject> type = request.getResultType();
             if (cleanStorageOnSuccessDownload) {
                 OfflineHelper.clearTable(ctx, type);

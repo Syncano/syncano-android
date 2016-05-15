@@ -12,7 +12,7 @@ import com.syncano.library.parser.GsonParser;
 public class UserMemory {
 
     public static void saveUserToStorage(Syncano syncano, AbstractUser user) {
-        if (syncano.getAndroidContext() == null || !(PlatformType.get() instanceof PlatformType.AndroidPlatform)) {
+        if (syncano.getAndroidContext() == null || !PlatformType.isAndroid()) {
             return;
         }
 
@@ -32,7 +32,7 @@ public class UserMemory {
     }
 
     public static AbstractUser getUserFromStorage(Syncano syncano) {
-        if (syncano.getAndroidContext() == null || !(PlatformType.get() instanceof PlatformType.AndroidPlatform)) {
+        if (syncano.getAndroidContext() == null || !PlatformType.isAndroid()) {
             return null;
         }
         SharedPreferences prefs = syncano.getAndroidContext().getSharedPreferences(Syncano.class.getSimpleName(), Context.MODE_PRIVATE);

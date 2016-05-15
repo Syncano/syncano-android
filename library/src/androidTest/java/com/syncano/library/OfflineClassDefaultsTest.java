@@ -84,9 +84,11 @@ public class OfflineClassDefaultsTest extends SyncanoAndroidTestCase {
         OfflineHelper.deleteDatabase(syncano.getAndroidContext(), SaveClearLocal.class);
         createClass(SaveClearLocal.class);
 
-        assertTrue(new SaveClearLocal().save().isSuccess());
-        assertEquals(1, Syncano.please(SaveClearLocal.class).mode(OfflineMode.LOCAL).get().getData().size());
-        assertTrue(new SaveClearLocal().save().isSuccess());
-        assertEquals(1, Syncano.please(SaveClearLocal.class).mode(OfflineMode.LOCAL).get().getData().size());
+        assertTrue(new SaveClearLocal().mode(OfflineMode.LOCAL).save().isSuccess());
+        assertTrue(new SaveClearLocal().mode(OfflineMode.ONLINE).save().isSuccess());
+        assertTrue(new SaveClearLocal().mode(OfflineMode.ONLINE).save().isSuccess());
+        assertEquals(3, Syncano.please(SaveClearLocal.class).mode(OfflineMode.LOCAL).get().getData().size());
+        assertEquals(2, Syncano.please(SaveClearLocal.class).mode(OfflineMode.ONLINE).get().getData().size());
+        assertEquals(2, Syncano.please(SaveClearLocal.class).mode(OfflineMode.LOCAL).get().getData().size());
     }
 }

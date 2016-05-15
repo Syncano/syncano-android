@@ -5,9 +5,11 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Response;
+import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.data.SyncanoClass;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.offline.OfflineHelper;
+import com.syncano.library.offline.OfflineMode;
 
 import org.junit.After;
 import org.junit.Before;
@@ -46,6 +48,21 @@ public class OfflineOnlyLocalFields extends SyncanoAndroidTestCase {
         assertTrue(item.save().isSuccess());
 
         assertEquals("bbb", item.localField);
+
+        Response<WithLocalFields> onlineResp = Syncano.please(WithLocalFields.class).get(item.getId());
+        assertTrue(onlineResp.isSuccess());
+        assertEquals("bbb", onlineResp.getData().localField);
+
+        ResponseGetList<WithLocalFields> respGetList = Syncano.please(WithLocalFields.class).get();
+        assertTrue(respGetList.isSuccess());
+        assertEquals(1, respGetList.getData().size());
+        item = respGetList.getData().get(0);
+        assertEquals("bbb", item.localField);
+
+        item.localField = "ooo";
+        assertTrue(item.mode(OfflineMode.LOCAL).save().isSuccess());
+        assertEquals("ooo", item.localField);
+        assertEquals("ooo", Syncano.please(WithLocalFields.class).get(item.getId()).getData().localField);
     }
 
     @com.syncano.library.annotation.SyncanoClass(name = "with_local", saveDownloadedDataToStorage = true)

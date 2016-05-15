@@ -2,6 +2,7 @@ package com.syncano.library.offline;
 
 import android.content.Context;
 
+import com.syncano.library.Syncano;
 import com.syncano.library.api.RequestGetList;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
@@ -16,7 +17,7 @@ import java.util.List;
  *
  * @param <T> Type of objects to get
  */
-public class OfflineGetListRequest<T> extends OfflineRequest<List<T>> {
+public class OfflineGetListRequest<T extends SyncanoObject> extends OfflineRequest<List<T>> {
 
     public OfflineGetListRequest(RequestGetList<T> getRequest) {
         super(getRequest);
@@ -28,11 +29,14 @@ public class OfflineGetListRequest<T> extends OfflineRequest<List<T>> {
         if (onlineResponse.isSuccess()) {
             Context ctx = getSyncano().getAndroidContext();
             Class<? extends SyncanoObject> type = getRequest.getResultType();
+            if (onlineResponse.getData() != null) {
+                LocalFieldsHelper.fillWithLocalData(ctx, onlineResponse.getData());
+            }
             if (cleanStorageOnSuccessDownload) {
                 OfflineHelper.clearTable(ctx, type);
             }
             if (saveDownloadedDataToStorage) {
-                OfflineHelper.writeObjects(ctx, (List<? extends SyncanoObject>) onlineResponse.getData(), type);
+                OfflineHelper.writeObjects(ctx, onlineResponse.getData(), type);
             }
         }
         return onlineResponse;

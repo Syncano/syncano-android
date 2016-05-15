@@ -123,7 +123,7 @@ public class OfflineHelper {
                 values.put(entry.getKey(), GsonParser.getJsonElementAsString(entry.getValue()));
             }
             // insert requires one column that is nullable, weird but has to live with it
-            db.insert(TABLE_NAME, SyncanoObject.FIELD_CHANNEL, values);
+            db.insertWithOnConflict(TABLE_NAME, SyncanoObject.FIELD_CHANNEL, values, SQLiteDatabase.CONFLICT_REPLACE);
         }
         db.close();
     }
