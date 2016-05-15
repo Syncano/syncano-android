@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @param <T> Type of objects to get
  */
-public class OfflineGetListRequest<T> extends OfflineGetRequest<List<T>> {
+public class OfflineGetListRequest<T> extends OfflineRequest<List<T>> {
 
     public OfflineGetListRequest(RequestGetList<T> getRequest) {
         super(getRequest);
