@@ -348,7 +348,7 @@ public class Syncano {
     public <T extends SyncanoObject> RequestGet<T> getObject(Class<T> type, int id) {
         String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getNotEmptyInstanceName(), className, id);
-        return new RequestGet<>(type, url, this);
+        return new RequestGet<>(type, url, this, id);
     }
 
     /**

@@ -4,6 +4,7 @@ import android.support.test.runner.AndroidJUnit4;
 
 import com.syncano.library.Model.SomeV1;
 import com.syncano.library.Model.SomeV2;
+import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.choice.Case;
 import com.syncano.library.choice.SortOrder;
@@ -145,6 +146,17 @@ public class OfflineTest extends SyncanoAndroidTestCase {
                 .contains(SomeV2.FIELD_TEXT, "sit", Case.INSENSITIVE).get();
         assertTrue(resp.isSuccess());
         assertEquals(2, resp.getData().size());
+
+        // test get one
+        SomeV2 item = resp.getData().get(0);
+        int id = item.getId();
+
+        Response<SomeV2> respOne = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get(id);
+        assertTrue(respOne.isSuccess());
+        SomeV2 newItem = respOne.getData();
+        assertEquals(item.someDate, newItem.someDate);
+        assertEquals(item.someText, newItem.someText);
+        assertEquals(item.someInt, newItem.someInt);
     }
 
     @Test
