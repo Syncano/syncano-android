@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -122,8 +123,9 @@ public class OfflineHelper {
             for (Map.Entry<String, JsonElement> entry : jsonized.entrySet()) {
                 values.put(entry.getKey(), GsonParser.getJsonElementAsString(entry.getValue()));
             }
-            // insert requires one column that is nullable, weird but has to live with it
-            db.insertWithOnConflict(TABLE_NAME, SyncanoObject.FIELD_CHANNEL, values, SQLiteDatabase.CONFLICT_REPLACE);
+            // insert requires one column that is nullable, weird but has to live with it, chosen channel
+            long id = db.insertWithOnConflict(TABLE_NAME, SyncanoObject.FIELD_CHANNEL, values, SQLiteDatabase.CONFLICT_REPLACE);
+            object.setLocalId(id);
         }
         db.close();
     }
@@ -221,12 +223,15 @@ public class OfflineHelper {
         for (Field f : fields) {
             String fieldName = SyncanoClassHelper.getOfflineFieldName(f);
             if (fieldName.equals(Entity.FIELD_ID)) continue;
+            if (fieldName.equals(SyncanoObject.FIELD_LOCAL_ID)) continue;
             sb.append(fieldName);
             sb.append(' ');
             sb.append(getFieldSqlTypeName(f));
             sb.append(", ");
         }
         sb.append(Entity.FIELD_ID);
+        sb.append(" INTEGER UNIQUE, ");
+        sb.append(SyncanoObject.FIELD_LOCAL_ID);
         sb.append(" INTEGER PRIMARY KEY )");
         return sb.toString();
     }

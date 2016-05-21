@@ -43,14 +43,7 @@ public class OfflineSaveRequest<T extends SyncanoObject> extends OfflineRequest<
             throw new RuntimeException("Trying to save null");
         }
         if (data.getId() == null || data.getId() == 0) {
-            throw new RuntimeException("Saving objects without id not yet supported");
-            //TODO implement local saving objects without id
-            /*
-            Example. Object without id is saved in db. Then background online call returns data with ids.
-            Then it should find related objects and update their params in db instead of creating new ones.
-            Maybe add some additional temporary id? It will be saved in db and kept in objects that
-            are being processed by online call. Then OfflineHelper may be able to connect them.
-            */
+            data.setId(null);
         }
         Context ctx = getSyncano().getAndroidContext();
         OfflineHelper.writeObjects(ctx, Collections.singletonList(data), request.getResultType());
@@ -58,6 +51,4 @@ public class OfflineSaveRequest<T extends SyncanoObject> extends OfflineRequest<
         response.setData((T) data).setDataFromLocalStorage(true).setResultCode(Response.CODE_SUCCESS);
         return response;
     }
-
-
 }

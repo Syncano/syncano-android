@@ -47,10 +47,14 @@ public abstract class Request<T> {
      * @param callback Callback to notify when request receives response.
      */
     public void sendAsync(final SyncanoCallback<T> callback) {
+        runAsync(this, callback);
+    }
+
+    public static <T> void runAsync(final Request<T> request, final SyncanoCallback<T> callback) {
         requestExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                final Response<T> response = send();
+                final Response<T> response = request.send();
                 PlatformType.get().runOnCallbackThread(new Runnable() {
                     @Override
                     public void run() {

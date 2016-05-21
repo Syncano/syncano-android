@@ -45,7 +45,7 @@ public abstract class SyncanoObject extends ObjectRequestBuilder {
     private Integer expectedRevision;
 
     @SyncanoField(name = FIELD_LOCAL_ID, onlyLocal = true)
-    private Integer localId;
+    private Long localId;
 
     public String getChannelRoom() {
         return channelRoom;
@@ -119,11 +119,11 @@ public abstract class SyncanoObject extends ObjectRequestBuilder {
         this.expectedRevision = expectedRevision;
     }
 
-    public Integer getLocalId() {
+    public Long getLocalId() {
         return localId;
     }
 
-    public void setLocalId(Integer localId) {
+    public void setLocalId(Long localId) {
         this.localId = localId;
     }
 }

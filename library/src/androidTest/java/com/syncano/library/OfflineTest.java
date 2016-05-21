@@ -6,8 +6,10 @@ import com.syncano.library.Model.SomeV1;
 import com.syncano.library.Model.SomeV2;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
+import com.syncano.library.callbacks.SyncanoCallback;
 import com.syncano.library.choice.Case;
 import com.syncano.library.choice.SortOrder;
+import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.offline.OfflineMode;
 import com.syncano.library.offline.OfflineHelper;
 
@@ -18,10 +20,15 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @RunWith(AndroidJUnit4.class)
 public class OfflineTest extends SyncanoAndroidTestCase {
@@ -37,7 +44,7 @@ public class OfflineTest extends SyncanoAndroidTestCase {
     }
 
     @Test
-    public void testGetObjects() throws InterruptedException {
+    public void testGetObjectsWhereQueries() throws InterruptedException {
         OfflineHelper.deleteDatabase(syncano.getAndroidContext(), SomeV1.class);
         createClass(SomeV2.class);
 
@@ -160,7 +167,7 @@ public class OfflineTest extends SyncanoAndroidTestCase {
     }
 
     @Test
-    public void testSaveFetchDelete() throws InterruptedException {
+    public void testSimpleSaveFetchDelete() throws InterruptedException {
         OfflineHelper.deleteDatabase(syncano.getAndroidContext(), SomeV2.class);
         createClass(SomeV2.class);
 
@@ -183,6 +190,129 @@ public class OfflineTest extends SyncanoAndroidTestCase {
 
         ResponseGetList<SomeV2> resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
         assertTrue(resp.isSuccess());
+        assertEquals(0, resp.getData().size());
+    }
+
+    @Test
+    public void testSaveModes() throws InterruptedException {
+        OfflineHelper.deleteDatabase(syncano.getAndroidContext(), SomeV2.class);
+        createClass(SomeV2.class);
+
+        // local
+        SomeV2 obj = SomeV2.generateObject();
+        SomeV2 copy = SomeV2.makeCopy(obj);
+        obj.mode(OfflineMode.LOCAL).save();
+
+        ResponseGetList<SomeV2> resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(1, resp.getData().size());
+        assertNull(resp.getData().get(0).getId());
+        assertNotNull(resp.getData().get(0).getLocalId());
+        assertTrue(copy.fieldsEqual(resp.getData().get(0)));
+
+        // online, no save local
+        obj = SomeV2.generateObject();
+        copy = SomeV2.makeCopy(obj);
+        obj.mode(OfflineMode.ONLINE).saveDownloadedDataToStorage(false).cleanStorageOnSuccessDownload(false).save();
+
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.ONLINE).get();
+        assertEquals(1, resp.getData().size());
+        assertNull(resp.getData().get(0).getLocalId());
+        assertNotNull(resp.getData().get(0).getId());
+        assertTrue(copy.fieldsEqual(resp.getData().get(0)));
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(1, resp.getData().size());
+        assertNull(resp.getData().get(0).getId());
+        assertNotNull(resp.getData().get(0).getLocalId());
+
+        // online, save local, not clear local
+        obj = SomeV2.generateObject();
+        copy = SomeV2.makeCopy(obj);
+        obj.mode(OfflineMode.ONLINE).saveDownloadedDataToStorage(true).cleanStorageOnSuccessDownload(false).save();
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(2, resp.getData().size()); // includes item from local test
+        for (SomeV2 item : resp.getData()) {
+            if (item.getId() != null) {
+                assertTrue(copy.fieldsEqual(item));
+            }
+        }
+
+        // online, save local, clear local
+        obj = SomeV2.generateObject();
+        copy = SomeV2.makeCopy(obj);
+        obj.mode(OfflineMode.ONLINE).saveDownloadedDataToStorage(true).cleanStorageOnSuccessDownload(true).save();
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(1, resp.getData().size());
+        assertNotNull(resp.getData().get(0).getLocalId());
+        assertNotNull(resp.getData().get(0).getId());
+        assertTrue(copy.fieldsEqual(resp.getData().get(0)));
+
+        // local bg online, save local, clear local
+        obj = SomeV2.generateObject();
+        final CountDownLatch latch1 = new CountDownLatch(1);
+        final SomeV2 copy1 = SomeV2.makeCopy(obj);
+        obj.mode(OfflineMode.LOCAL_ONLINE_IN_BACKGROUND).saveDownloadedDataToStorage(true).cleanStorageOnSuccessDownload(true)
+                .backgroundCallback(new SyncanoCallback<SomeV2>() {
+                    @Override
+                    public void success(Response<SomeV2> response, SomeV2 result) {
+                        assertNotNull(result.getLocalId());
+                        assertNotNull(result.getId());
+                        assertTrue(copy1.fieldsEqual(result));
+                        latch1.countDown();
+                    }
+
+                    @Override
+                    public void failure(Response<SomeV2> response) {
+                        fail();
+                    }
+                }).save();
+        latch1.await(10, TimeUnit.SECONDS);
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(1, resp.getData().size());
+
+        // local bg online, save local, not clear local
+        obj = SomeV2.generateObject();
+        final CountDownLatch latch2 = new CountDownLatch(1);
+        final SomeV2 copy2 = SomeV2.makeCopy(obj);
+        obj.mode(OfflineMode.LOCAL_ONLINE_IN_BACKGROUND).saveDownloadedDataToStorage(true).cleanStorageOnSuccessDownload(false)
+                .backgroundCallback(new SyncanoCallback<SomeV2>() {
+                    @Override
+                    public void success(Response<SomeV2> response, SomeV2 result) {
+                        assertNotNull(result.getLocalId());
+                        assertNotNull(result.getId());
+                        assertTrue(copy2.fieldsEqual(result));
+                        latch2.countDown();
+                    }
+
+                    @Override
+                    public void failure(Response<SomeV2> response) {
+                        fail();
+                    }
+                }).save();
+        latch2.await(10, TimeUnit.SECONDS);
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(2, resp.getData().size());
+
+        // local bg online, not save local, clear local
+        obj = SomeV2.generateObject();
+        final CountDownLatch latch3 = new CountDownLatch(1);
+        final SomeV2 copy3 = SomeV2.makeCopy(obj);
+        obj.mode(OfflineMode.LOCAL_ONLINE_IN_BACKGROUND).saveDownloadedDataToStorage(false).cleanStorageOnSuccessDownload(true)
+                .backgroundCallback(new SyncanoCallback<SomeV2>() {
+                    @Override
+                    public void success(Response<SomeV2> response, SomeV2 result) {
+                        assertNotNull(result.getLocalId());
+                        assertNotNull(result.getId());
+                        assertTrue(copy3.fieldsEqual(result));
+                        latch3.countDown();
+                    }
+
+                    @Override
+                    public void failure(Response<SomeV2> response) {
+                        fail();
+                    }
+                }).save();
+        latch3.await(10, TimeUnit.SECONDS);
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
         assertEquals(0, resp.getData().size());
     }
 }

@@ -57,4 +57,16 @@ public class SomeV2 extends SyncanoObject {
             OfflineHelper.writeObjects(ctx, v2List, SomeV2.class);
         }
     }
+
+    public boolean fieldsEqual(SomeV2 other) {
+        if (someText != null && someText.equals(other.someText)
+                && someInt == other.someInt && someDate != null && someDate.equals(other.someDate)) {
+            return true;
+        }
+        return false;
+    }
+
+    public static SomeV2 makeCopy(SomeV2 other) {
+        return new SomeV2(other.someText, other.someInt, other.someDate);
+    }
 }

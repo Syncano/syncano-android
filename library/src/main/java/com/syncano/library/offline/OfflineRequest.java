@@ -41,13 +41,6 @@ public abstract class OfflineRequest<T> extends Request<T> {
         return backgroundCallback;
     }
 
-    public void doInBackground(Request<T> request) {
-        if (backgroundCallback == null) {
-            return;
-        }
-        request.sendAsync(backgroundCallback);
-    }
-
     public OfflineRequest<T> mode(OfflineMode mode) {
         this.mode = mode;
         return this;
@@ -76,8 +69,14 @@ public abstract class OfflineRequest<T> extends Request<T> {
                     return doLocalRequest(onlineRequest);
                 }
             case LOCAL_ONLINE_IN_BACKGROUND:
-                doInBackground(onlineRequest);
-                return doLocalRequest(onlineRequest);
+                Response<T> result = doLocalRequest(onlineRequest);
+                Request.runAsync(new Request<T>(null) {
+                    @Override
+                    public Response<T> send() {
+                        return doOnlineRequest(onlineRequest, cleanStorageOnSuccessDownload, saveDownloadedDataToStorage);
+                    }
+                }, backgroundCallback);
+                return result;
             case LOCAL:
                 return doLocalRequest(onlineRequest);
         }
