@@ -12,6 +12,8 @@ import com.syncano.library.choice.SortOrder;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.offline.OfflineMode;
 import com.syncano.library.offline.OfflineHelper;
+import com.syncano.library.test.*;
+import com.syncano.library.test.BuildConfig;
 
 import org.junit.After;
 import org.junit.Before;
@@ -314,5 +316,101 @@ public class OfflineTest extends SyncanoAndroidTestCase {
         latch3.await(10, TimeUnit.SECONDS);
         resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
         assertEquals(0, resp.getData().size());
+
+        // local when online failed, but it will not fail
+        obj = SomeV2.generateObject();
+        copy = SomeV2.makeCopy(obj);
+        obj.mode(OfflineMode.LOCAL_WHEN_ONLINE_FAILED).saveDownloadedDataToStorage(true).cleanStorageOnSuccessDownload(true).save();
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(1, resp.getData().size());
+        assertTrue(copy.fieldsEqual(obj));
+        assertNotNull(obj.getId());
+
+        // local when online really failed
+        new SyncanoBuilder().instanceName("bad_instance").apiKey("bad_key").androidContext(getContext())
+                .setAsGlobalInstance(true).build();
+        obj = SomeV2.generateObject();
+        copy = SomeV2.makeCopy(obj);
+        obj.mode(OfflineMode.LOCAL_WHEN_ONLINE_FAILED).saveDownloadedDataToStorage(true).save();
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(2, resp.getData().size());
+        assertTrue(copy.fieldsEqual(obj));
+        assertNull(obj.getId());
+        assertNotNull(obj.getLocalId());
+    }
+
+    @Test
+    public void testFetchModes() throws InterruptedException {
+        OfflineHelper.deleteDatabase(syncano.getAndroidContext(), SomeV2.class);
+        createClass(SomeV2.class);
+        final SomeV2 obj = SomeV2.generateObject();
+        obj.mode(OfflineMode.ONLINE).saveDownloadedDataToStorage(true).save();
+
+        // local
+        SomeV2 newObj = new SomeV2();
+        newObj.setId(obj.getId());
+        newObj.mode(OfflineMode.LOCAL).fetch();
+        assertTrue(obj.fieldsEqual(newObj));
+
+        // online, no save local, clear storage
+        newObj = new SomeV2();
+        newObj.setId(obj.getId());
+        newObj.mode(OfflineMode.ONLINE).saveDownloadedDataToStorage(false).cleanStorageOnSuccessDownload(true).fetch();
+        assertTrue(obj.fieldsEqual(newObj));
+        ResponseGetList<SomeV2> resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(0, resp.getData().size());
+
+        // online, save local
+        newObj = new SomeV2();
+        newObj.setId(obj.getId());
+        newObj.mode(OfflineMode.ONLINE).saveDownloadedDataToStorage(true).fetch();
+        assertTrue(obj.fieldsEqual(newObj));
+        assertNotNull(obj.getLocalId());
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(1, resp.getData().size());
+
+        // local bg online, save local
+        newObj = new SomeV2();
+        newObj.setId(obj.getId());
+        final CountDownLatch latch = new CountDownLatch(1);
+        newObj.mode(OfflineMode.LOCAL_ONLINE_IN_BACKGROUND).saveDownloadedDataToStorage(true)
+                .backgroundCallback(new SyncanoCallback<SomeV2>() {
+                    @Override
+                    public void success(Response<SomeV2> response, SomeV2 result) {
+                        assertNotNull(result.getLocalId());
+                        assertNotNull(result.getId());
+                        assertTrue(obj.fieldsEqual(result));
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void failure(Response<SomeV2> response) {
+                        fail();
+                    }
+                }).fetch();
+        assertNotNull(newObj.getLocalId());
+        assertNotNull(newObj.getId());
+        assertTrue(obj.fieldsEqual(newObj));
+        latch.await(10, TimeUnit.SECONDS);
+
+        // local when online failed, but it will not fail
+        newObj = new SomeV2();
+        newObj.setId(obj.getId());
+        Response<SomeV2> respItem = newObj.mode(OfflineMode.LOCAL_WHEN_ONLINE_FAILED).saveDownloadedDataToStorage(true).fetch();
+        assertNotNull(newObj.getLocalId());
+        assertNotNull(newObj.getId());
+        assertTrue(obj.fieldsEqual(newObj));
+        assertFalse(respItem.isDataFromLocalStorage());
+
+        // local when online really failed
+        new SyncanoBuilder().instanceName("bad_instance").apiKey("bad_key").androidContext(getContext())
+                .setAsGlobalInstance(true).build();
+        newObj = new SomeV2();
+        newObj.setId(obj.getId());
+        respItem = newObj.mode(OfflineMode.LOCAL_WHEN_ONLINE_FAILED).fetch();
+        assertNotNull(newObj.getLocalId());
+        assertNotNull(newObj.getId());
+        assertTrue(obj.fieldsEqual(newObj));
+        assertTrue(respItem.isDataFromLocalStorage());
     }
 }

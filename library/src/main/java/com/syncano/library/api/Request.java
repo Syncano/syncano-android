@@ -55,6 +55,9 @@ public abstract class Request<T> {
             @Override
             public void run() {
                 final Response<T> response = request.send();
+                if (callback == null) {
+                    return;
+                }
                 PlatformType.get().runOnCallbackThread(new Runnable() {
                     @Override
                     public void run() {
