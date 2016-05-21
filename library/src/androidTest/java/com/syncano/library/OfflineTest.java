@@ -7,13 +7,12 @@ import com.syncano.library.Model.SomeV2;
 import com.syncano.library.api.Response;
 import com.syncano.library.api.ResponseGetList;
 import com.syncano.library.callbacks.SyncanoCallback;
+import com.syncano.library.callbacks.SyncanoListCallback;
 import com.syncano.library.choice.Case;
 import com.syncano.library.choice.SortOrder;
 import com.syncano.library.data.SyncanoObject;
 import com.syncano.library.offline.OfflineMode;
 import com.syncano.library.offline.OfflineHelper;
-import com.syncano.library.test.*;
-import com.syncano.library.test.BuildConfig;
 
 import org.junit.After;
 import org.junit.Before;
@@ -22,6 +21,7 @@ import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -473,5 +473,71 @@ public class OfflineTest extends SyncanoAndroidTestCase {
         latch.await(10, TimeUnit.SECONDS);
         resp = Syncano.please(SomeV2.class).mode(OfflineMode.ONLINE).get();
         assertEquals(0, resp.getData().size());
+    }
+
+    @Test
+    public void testGetListModes() throws InterruptedException {
+        OfflineHelper.deleteDatabase(syncano.getAndroidContext(), SomeV2.class);
+        createClass(SomeV2.class);
+        final int number = 5;
+        for (int i = 0; i < number; i++) {
+            assertTrue(SomeV2.generateObject().save().isSuccess());
+        }
+
+        // local empty
+        ResponseGetList<SomeV2> resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(0, resp.getData().size());
+
+        // online save
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.ONLINE)
+                .saveDownloadedDataToStorage(true).get();
+        assertEquals(number, resp.getData().size());
+
+        // local not empty
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(number, resp.getData().size());
+
+        // online not save clear
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.ONLINE)
+                .saveDownloadedDataToStorage(false).cleanStorageOnSuccessDownload(true).get();
+        assertEquals(number, resp.getData().size());
+
+        // local empty again
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(0, resp.getData().size());
+
+        // background online
+        final CountDownLatch latch = new CountDownLatch(1);
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL_ONLINE_IN_BACKGROUND)
+                .saveDownloadedDataToStorage(true).cleanStorageOnSuccessDownload(true)
+                .backgroundCallback(new SyncanoListCallback<SomeV2>() {
+                    @Override
+                    public void success(ResponseGetList<SomeV2> response, List<SomeV2> result) {
+                        assertEquals(number, result.size());
+                    }
+
+                    @Override
+                    public void failure(ResponseGetList<SomeV2> response) {
+                        fail();
+                    }
+                }).get();
+        assertEquals(0, resp.getData().size());
+        latch.await(10, TimeUnit.SECONDS);
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(number, resp.getData().size());
+
+        // local when online failed, but it will not fail
+        OfflineHelper.clearTable(syncano.getAndroidContext(), SomeV2.class);
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL_WHEN_ONLINE_FAILED)
+                .saveDownloadedDataToStorage(true).get();
+        assertEquals(number, resp.getData().size());
+        assertFalse(resp.isDataFromLocalStorage());
+
+        // local when online really failed
+        new SyncanoBuilder().instanceName("bad_instance").apiKey("bad_key").androidContext(getContext())
+                .setAsGlobalInstance(true).build();
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL_WHEN_ONLINE_FAILED).get();
+        assertEquals(number, resp.getData().size());
+        assertTrue(resp.isDataFromLocalStorage());
     }
 }
