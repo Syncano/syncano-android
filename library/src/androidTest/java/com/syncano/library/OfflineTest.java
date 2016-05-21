@@ -413,4 +413,65 @@ public class OfflineTest extends SyncanoAndroidTestCase {
         assertTrue(obj.fieldsEqual(newObj));
         assertTrue(respItem.isDataFromLocalStorage());
     }
+
+    @Test
+    public void testDeleteModes() throws InterruptedException {
+        OfflineHelper.deleteDatabase(syncano.getAndroidContext(), SomeV2.class);
+        createClass(SomeV2.class);
+        SomeV2 obj = SomeV2.generateObject();
+        obj.mode(OfflineMode.ONLINE).saveDownloadedDataToStorage(true).save();
+        ResponseGetList<SomeV2> resp = Syncano.please(SomeV2.class).mode(OfflineMode.ONLINE).get();
+        assertEquals(1, resp.getData().size());
+
+        // local
+        obj.mode(OfflineMode.LOCAL).delete();
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(0, resp.getData().size());
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.ONLINE).saveDownloadedDataToStorage(true).get();
+        assertEquals(1, resp.getData().size());
+
+        // online, no save
+        obj.mode(OfflineMode.ONLINE).delete();
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(1, resp.getData().size());
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.ONLINE).saveDownloadedDataToStorage(false).get();
+        assertEquals(0, resp.getData().size());
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(1, resp.getData().size());
+
+        // online, save
+        OfflineHelper.clearTable(syncano.getAndroidContext(), SomeV2.class);
+        obj = SomeV2.generateObject();
+        obj.mode(OfflineMode.ONLINE).saveDownloadedDataToStorage(true).save();
+        obj.mode(OfflineMode.ONLINE).saveDownloadedDataToStorage(true).delete();
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(0, resp.getData().size());
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.ONLINE).get();
+        assertEquals(0, resp.getData().size());
+
+        // local bg online
+        OfflineHelper.clearTable(syncano.getAndroidContext(), SomeV2.class);
+        obj = SomeV2.generateObject();
+        obj.mode(OfflineMode.ONLINE).saveDownloadedDataToStorage(true).save();
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(1, resp.getData().size());
+        final CountDownLatch latch = new CountDownLatch(1);
+        obj.mode(OfflineMode.LOCAL_ONLINE_IN_BACKGROUND).saveDownloadedDataToStorage(true)
+                .backgroundCallback(new SyncanoCallback<SyncanoObject>() {
+                    @Override
+                    public void success(Response<SyncanoObject> response, SyncanoObject result) {
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void failure(Response<SyncanoObject> response) {
+                        fail();
+                    }
+                }).delete();
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        assertEquals(0, resp.getData().size());
+        latch.await(10, TimeUnit.SECONDS);
+        resp = Syncano.please(SomeV2.class).mode(OfflineMode.ONLINE).get();
+        assertEquals(0, resp.getData().size());
+    }
 }
