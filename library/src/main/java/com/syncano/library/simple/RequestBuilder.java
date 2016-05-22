@@ -156,7 +156,6 @@ public class RequestBuilder<T extends SyncanoObject> {
         if (saveDownloadedDataToStorage != null) {
             request.saveDownloadedDataToStorage(saveDownloadedDataToStorage);
         }
-        // TODO check what happens when set callback<List> for get(id) or single item callback for get()
         request.setBackgroundCallback(backgroundCallback);
     }
 

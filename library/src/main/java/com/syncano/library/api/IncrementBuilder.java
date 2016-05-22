@@ -21,7 +21,7 @@ public final class IncrementBuilder {
     }
 
     public boolean hasAdditionFields() {
-        return additionField.isEmpty();
+        return !additionField.isEmpty();
     }
 
     public void build(JsonObject json) {

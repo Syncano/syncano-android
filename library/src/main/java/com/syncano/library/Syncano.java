@@ -462,7 +462,7 @@ public class Syncano {
      * @return Updated DataObject.
      */
     public <T extends SyncanoObject> RequestPatch<T> addition(Class<T> type, int id, IncrementBuilder incrementBuilder) {
-        if (incrementBuilder.hasAdditionFields()) {
+        if (!incrementBuilder.hasAdditionFields()) {
             throw new IllegalArgumentException("Cannot create increment query without specify fields to increment/decrement!");
         }
         String className = SyncanoClassHelper.getSyncanoClassName(type);

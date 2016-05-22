@@ -540,4 +540,56 @@ public class OfflineTest extends SyncanoAndroidTestCase {
         assertEquals(number, resp.getData().size());
         assertTrue(resp.isDataFromLocalStorage());
     }
+
+    @Test
+    public void checkNoContext() throws InterruptedException {
+        new SyncanoBuilder().customServerUrl(BuildConfig.STAGING_SERVER_URL).instanceName(BuildConfig.INSTANCE_NAME)
+                .apiKey(BuildConfig.API_KEY).setAsGlobalInstance(true).build();
+        boolean exception = false;
+        try {
+            createClass(SomeV2.class);
+            Syncano.please(SomeV2.class).mode(OfflineMode.LOCAL).get();
+        } catch (RuntimeException re) {
+            assertTrue(re.getMessage().toLowerCase().contains("context"));
+            exception = true;
+        }
+        assertTrue(exception);
+    }
+
+    @Test
+    public void checkIncrement() throws InterruptedException {
+        OfflineHelper.deleteDatabase(syncano.getAndroidContext(), SomeV2.class);
+        createClass(SomeV2.class);
+
+        // online
+        SomeV2 obj = SomeV2.generateObject();
+        assertTrue(obj.save().isSuccess());
+        int initVal = obj.someInt;
+        obj.increment(SomeV2.FIELD_INT, 1).save();
+        assertTrue(initVal + 1 == obj.someInt);
+
+        // it doesn't work offline, but it tells about it in logs
+        initVal = obj.someInt;
+        obj.increment(SomeV2.FIELD_INT, 1).mode(OfflineMode.LOCAL).save();
+        assertTrue(initVal == obj.someInt);
+    }
+
+    @Test
+    public void clearingFields() throws InterruptedException {
+        OfflineHelper.deleteDatabase(syncano.getAndroidContext(), SomeV2.class);
+        createClass(SomeV2.class);
+
+        // online
+        SomeV2 obj = SomeV2.generateObject();
+        assertTrue(obj.save().isSuccess());
+        obj.clearField(SomeV2.FIELD_DATE).save();
+        assertNull(obj.someDate);
+
+        // TODO Not passed. It can't be cleared just after local call because the same object is later used in online call, but it's cleared in db
+        // offline
+        obj = SomeV2.generateObject();
+        assertTrue(obj.saveDownloadedDataToStorage(true).save().isSuccess());
+        obj.clearField(SomeV2.FIELD_DATE).mode(OfflineMode.LOCAL).save();
+        assertNull(obj.someDate);
+    }
 }

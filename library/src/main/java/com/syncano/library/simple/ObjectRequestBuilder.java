@@ -22,9 +22,7 @@ import java.util.HashSet;
  */
 public abstract class ObjectRequestBuilder extends Entity {
     private Syncano syncano;
-    // TODO check how increment works in offline
     private IncrementBuilder incrementBuilder = new IncrementBuilder();
-    // TODO check how clearing works in offline
     private HashSet<String> fieldsToClear = new HashSet<>();
     private OfflineMode mode = null;
     private Boolean cleanStorageOnSuccessDownload = null;

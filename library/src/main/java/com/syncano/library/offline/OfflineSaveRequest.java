@@ -1,6 +1,7 @@
 package com.syncano.library.offline;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.api.Response;
@@ -41,6 +42,9 @@ public class OfflineSaveRequest<T extends SyncanoObject> extends OfflineRequest<
         SyncanoObject data = request.getResultObject();
         if (data == null) {
             throw new RuntimeException("Trying to save null");
+        }
+        if (data.getIncrementBuilder().hasAdditionFields()) {
+            Log.e(OfflineSaveRequest.class.getSimpleName(), "Incrementing fields doesn't work on local storage calls");
         }
         if (data.getId() == null || data.getId() == 0) {
             data.setId(null);
