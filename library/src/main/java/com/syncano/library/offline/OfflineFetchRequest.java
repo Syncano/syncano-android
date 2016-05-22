@@ -16,6 +16,8 @@ public class OfflineFetchRequest<T extends SyncanoObject> extends OfflineRequest
         super(request);
         SyncanoClass clazzAnnotation = (SyncanoClass) request.getResultType().getAnnotation(SyncanoClass.class);
         mode(clazzAnnotation.getMode());
+        // not clear db afters fetching one object, even if set on class annotation
+        cleanStorageOnSuccessDownload(false);
     }
 
     @Override

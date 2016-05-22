@@ -14,6 +14,8 @@ public class OfflineDeleteRequest<T extends SyncanoObject> extends OfflineReques
         super(request);
         SyncanoClass clazzAnnotation = (SyncanoClass) request.getResultType().getAnnotation(SyncanoClass.class);
         mode(clazzAnnotation.saveMode());
+        // not clear db afters deleting one object, even if set on class annotation
+        cleanStorageOnSuccessDownload(false);
     }
 
     @Override
