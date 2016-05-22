@@ -42,6 +42,7 @@ public class OfflineHelper {
     }
 
     public static <T extends SyncanoObject> List<T> readObjects(Context ctx, Class<T> type, Where<T> where, String orderBy) {
+        checkContext(ctx);
         SQLiteOpenHelper sqlHelper = initDb(ctx, type);
         SQLiteDatabase db = sqlHelper.getReadableDatabase();
         ArrayList<T> list = new ArrayList<>();
@@ -66,6 +67,7 @@ public class OfflineHelper {
     }
 
     public static <T extends SyncanoObject> T readObject(Context ctx, Class<T> type, int id) {
+        checkContext(ctx);
         GsonParser.GsonParseConfig config = new GsonParser.GsonParseConfig();
         config.forLocalStorage = true;
         Gson gson = GsonParser.createGson(type, config);
@@ -73,6 +75,7 @@ public class OfflineHelper {
     }
 
     public static <T extends SyncanoObject> T readObject(Context ctx, T obj) {
+        checkContext(ctx);
         GsonParser.GsonParseConfig config = new GsonParser.GsonParseConfig();
         config.forLocalStorage = true;
         Gson gson = GsonParser.createGson(obj, config);
@@ -81,6 +84,7 @@ public class OfflineHelper {
 
 
     public static <T extends SyncanoObject> T readObject(Context ctx, Gson gson, Class<T> type, int id) {
+        checkContext(ctx);
         SQLiteOpenHelper sqlHelper = initDb(ctx, type);
         SQLiteDatabase db = sqlHelper.getReadableDatabase();
         OfflineQueryBuilder query = new OfflineQueryBuilder(new Where<>().eq(Entity.FIELD_ID, id), null);
@@ -102,6 +106,7 @@ public class OfflineHelper {
     }
 
     public static <T extends SyncanoObject> boolean deleteObject(Context ctx, Class<T> type, int id) {
+        checkContext(ctx);
         SQLiteOpenHelper sqlHelper = initDb(ctx, type);
         SQLiteDatabase db = sqlHelper.getWritableDatabase();
         OfflineQueryBuilder query = new OfflineQueryBuilder(new Where<>().eq(Entity.FIELD_ID, id), null);
@@ -110,6 +115,7 @@ public class OfflineHelper {
     }
 
     public static void writeObjects(Context ctx, List<? extends SyncanoObject> objects, Class<? extends SyncanoObject> type) {
+        checkContext(ctx);
         SQLiteOpenHelper sqlHelper = initDb(ctx, type);
         SQLiteDatabase db = sqlHelper.getWritableDatabase();
         GsonParser.GsonParseConfig config = new GsonParser.GsonParseConfig();
@@ -263,12 +269,20 @@ public class OfflineHelper {
     }
 
     public static void clearTable(Context ctx, Class<? extends SyncanoObject> type) {
+        checkContext(ctx);
         SQLiteOpenHelper sqlHelper = initDb(ctx, type);
         SQLiteDatabase db = sqlHelper.getWritableDatabase();
         db.delete(TABLE_NAME, null, null);
     }
 
     public static void deleteDatabase(Context ctx, Class<? extends SyncanoObject> type) {
+        checkContext(ctx);
         ctx.deleteDatabase(getDbName(type));
+    }
+
+    private static void checkContext(Context ctx) {
+        if (ctx == null) {
+            throw new RuntimeException("Context null, when trying to use offline function. Pass Android Context when initiating Syncano");
+        }
     }
 }
