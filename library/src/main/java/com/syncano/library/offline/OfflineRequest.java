@@ -58,30 +58,42 @@ public abstract class OfflineRequest<T> extends Request<T> {
 
     @Override
     public Response<T> send() {
+        Response<T> response = null;
         switch (mode) {
             case ONLINE:
-                return doOnlineRequest(onlineRequest, cleanStorageOnSuccessDownload, saveDownloadedDataToStorage);
+                response = doOnlineRequest(onlineRequest, cleanStorageOnSuccessDownload, saveDownloadedDataToStorage);
+                afterRequests(onlineRequest);
+                break;
             case LOCAL_WHEN_ONLINE_FAILED:
                 Response<T> onlineResponse = doOnlineRequest(onlineRequest, cleanStorageOnSuccessDownload, saveDownloadedDataToStorage);
                 if (onlineResponse.isSuccess()) {
-                    return onlineResponse;
+                    response = onlineResponse;
                 } else {
-                    return doLocalRequest(onlineRequest);
+                    response = doLocalRequest(onlineRequest);
                 }
+                afterRequests(onlineRequest);
+                break;
             case LOCAL_ONLINE_IN_BACKGROUND:
-                Response<T> result = doLocalRequest(onlineRequest);
+                response = doLocalRequest(onlineRequest);
                 Request.runAsync(new Request<T>(null) {
                     @Override
                     public Response<T> send() {
-                        return doOnlineRequest(onlineRequest, cleanStorageOnSuccessDownload, saveDownloadedDataToStorage);
+                        Response<T> response = doOnlineRequest(onlineRequest, cleanStorageOnSuccessDownload, saveDownloadedDataToStorage);
+                        afterRequests(onlineRequest);
+                        return response;
                     }
                 }, backgroundCallback);
-                return result;
+                break;
             case LOCAL:
-                return doLocalRequest(onlineRequest);
+                response = doLocalRequest(onlineRequest);
+                afterRequests(onlineRequest);
+                break;
         }
 
-        return null;
+        return response;
+    }
+
+    public void afterRequests(ResultRequest<T> onlineRequest) {
     }
 
     public abstract Response<T> doOnlineRequest(ResultRequest<T> onlineRequest, boolean cleanStorageOnSuccessDownload, boolean saveDownloadedDataToStorage);

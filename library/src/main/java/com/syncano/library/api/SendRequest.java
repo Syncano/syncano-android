@@ -37,6 +37,19 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
     private Object data;
     private Gson gson;
     public final static String UTF8 = "UTF-8";
+    private RunAfter<T> runAfter;
+    // standard runAfter wrapped, to add specific things
+    private RunAfter<T> clearFieldsRunAfter = new RunAfter<T>() {
+        @Override
+        public void run(Response<T> response) {
+            if (response.isSuccess() && data != null && data instanceof SyncanoObject) {
+                ((SyncanoObject) data).resetRequestBuildingFields();
+            }
+            if (runAfter != null) {
+                runAfter.run(response);
+            }
+        }
+    };
 
     protected SendRequest(Class<T> resultType, String url, Syncano syncano, Object data) {
         super(resultType, url, syncano);
@@ -47,6 +60,7 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
         } else {
             gson = GsonParser.createGson(resultType);
         }
+        super.setRunAfter(clearFieldsRunAfter);
     }
 
     @Override
@@ -134,7 +148,6 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
             baos.write((GsonParser.getJsonElementAsString(entry.getValue())).getBytes(UTF8));
             baos.write(lineEnd.getBytes(UTF8));
         }
-        ((SyncanoObject) data).resetRequestBuildingFields();
         return new ByteArrayInputStream(baos.toByteArray());
     }
 
@@ -196,5 +209,13 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
     @Override
     public T getResultObject() {
         return (T) data;
+    }
+
+    public RunAfter<T> getRunAfter() {
+        return runAfter;
+    }
+
+    public void setRunAfter(RunAfter<T> runAfter) {
+        this.runAfter = runAfter;
     }
 }

@@ -11,7 +11,6 @@ public abstract class Request<T> {
 
     private static final ExecutorService requestExecutor = Executors.newFixedThreadPool(3);
     protected Syncano syncano;
-    private RunAfter<T> runAfter;
 
     public Request(Syncano syncano) {
         this.syncano = syncano;
@@ -19,14 +18,6 @@ public abstract class Request<T> {
 
     public interface RunAfter<T> {
         void run(Response<T> response);
-    }
-
-    public RunAfter<T> getRunAfter() {
-        return runAfter;
-    }
-
-    public void setRunAfter(RunAfter<T> runAfter) {
-        this.runAfter = runAfter;
     }
 
     public Response<T> instantiateResponse() {

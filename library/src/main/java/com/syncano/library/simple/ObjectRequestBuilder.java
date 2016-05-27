@@ -43,6 +43,10 @@ public abstract class ObjectRequestBuilder extends Entity {
         return fieldsToClear.contains(fieldName);
     }
 
+    public boolean hasAnyFieldsToClear() {
+        return !fieldsToClear.isEmpty();
+    }
+
     public IncrementBuilder getIncrementBuilder() {
         return incrementBuilder;
     }

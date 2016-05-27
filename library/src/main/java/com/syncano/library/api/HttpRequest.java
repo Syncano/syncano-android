@@ -25,6 +25,7 @@ public abstract class HttpRequest<T> extends Request<T> {
     private HashSet<Integer> correctHttpResponse = new HashSet<>();
     private boolean longConnectionTimeout = false;
     private boolean strictCheckCertificate = false;
+    private RunAfter<T> runAfter;
 
     protected HttpRequest(String path, Syncano syncano) {
         super(syncano);
@@ -74,6 +75,14 @@ public abstract class HttpRequest<T> extends Request<T> {
 
     public boolean isCorrectHttpResponseCode(int code) {
         return correctHttpResponse.contains(code);
+    }
+
+    public RunAfter<T> getRunAfter() {
+        return runAfter;
+    }
+
+    public void setRunAfter(RunAfter<T> runAfter) {
+        this.runAfter = runAfter;
     }
 
     /**

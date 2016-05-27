@@ -571,7 +571,7 @@ public class OfflineTest extends SyncanoAndroidTestCase {
         // it doesn't work offline, but it tells about it in logs
         initVal = obj.someInt;
         obj.increment(SomeV2.FIELD_INT, 1).mode(OfflineMode.LOCAL).save();
-        assertTrue(initVal == obj.someInt);
+        assertTrue(initVal == obj.someInt); // not incremented
     }
 
     @Test
@@ -584,12 +584,53 @@ public class OfflineTest extends SyncanoAndroidTestCase {
         assertTrue(obj.save().isSuccess());
         obj.clearField(SomeV2.FIELD_DATE).save();
         assertNull(obj.someDate);
+        assertFalse(obj.hasAnyFieldsToClear());
 
-        // TODO Not passed. It can't be cleared just after local call because the same object is later used in online call, but it's cleared in db
         // offline
         obj = SomeV2.generateObject();
         assertTrue(obj.saveDownloadedDataToStorage(true).save().isSuccess());
         obj.clearField(SomeV2.FIELD_DATE).mode(OfflineMode.LOCAL).save();
         assertNull(obj.someDate);
+        assertFalse(obj.hasAnyFieldsToClear());
+
+        // offline, background online
+        obj = SomeV2.generateObject();
+        assertTrue(obj.saveDownloadedDataToStorage(true).save().isSuccess());
+        final CountDownLatch latch = new CountDownLatch(1);
+        obj.clearField(SomeV2.FIELD_DATE).mode(OfflineMode.LOCAL_ONLINE_IN_BACKGROUND)
+                .backgroundCallback(new SyncanoCallback<SomeV2>() {
+                    @Override
+                    public void success(Response<SomeV2> response, SomeV2 result) {
+                        assertNull(result.someDate);
+                        assertFalse(result.hasAnyFieldsToClear());
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void failure(Response<SomeV2> response) {
+                        fail();
+                    }
+                }).save();
+        assertNull(obj.someDate);
+        latch.await(10, TimeUnit.SECONDS);
+        assertEquals(0, latch.getCount());
+
+        // local when online failed, but it will not fail
+        obj = SomeV2.generateObject();
+        assertTrue(obj.saveDownloadedDataToStorage(true).save().isSuccess());
+        Response<SomeV2> resp = obj.clearField(SomeV2.FIELD_DATE).mode(OfflineMode.LOCAL_WHEN_ONLINE_FAILED).save();
+        assertNull(obj.someDate);
+        assertFalse(obj.hasAnyFieldsToClear());
+        assertFalse(resp.isDataFromLocalStorage());
+
+        // local when online really failed
+        obj = SomeV2.generateObject();
+        assertTrue(obj.saveDownloadedDataToStorage(true).save().isSuccess());
+        new SyncanoBuilder().instanceName("bad_instance").apiKey("bad_key").androidContext(getContext())
+                .setAsGlobalInstance(true).build();
+        resp = obj.clearField(SomeV2.FIELD_DATE).mode(OfflineMode.LOCAL_WHEN_ONLINE_FAILED).save();
+        assertNull(obj.someDate);
+        assertFalse(obj.hasAnyFieldsToClear());
+        assertTrue(resp.isDataFromLocalStorage());
     }
 }
