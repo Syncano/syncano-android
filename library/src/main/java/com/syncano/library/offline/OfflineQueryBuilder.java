@@ -1,5 +1,7 @@
 package com.syncano.library.offline;
 
+import android.content.Context;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -9,7 +11,7 @@ import com.syncano.library.utils.SyncanoClassHelper;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public class OfflineQueryBuilder {
@@ -17,24 +19,34 @@ public class OfflineQueryBuilder {
     private String[] selArgs;
     private String orderBy;
 
-    public OfflineQueryBuilder(Class<? extends SyncanoObject> type, Where where, String orderBy) {
+    public OfflineQueryBuilder(Context ctx, Class<? extends SyncanoObject> type, Where where, String orderBy) {
         if (where == null) {
             return;
         }
-        Map<String, JsonObject> map = where.getQueryMap();
-        if (map.isEmpty()) {
-            return;
-        }
+        JsonObject map = where.getQueryMap();
         ArrayList<String> expressions = new ArrayList<>();
         ArrayList<String> values = new ArrayList<>();
-        for (Map.Entry<String, JsonObject> entry : map.entrySet()) {
+        for (Map.Entry<String, JsonElement> entry : map.entrySet()) {
             String column = findColumnName(type, entry.getKey());
-            for (Map.Entry<String, JsonElement> expr : entry.getValue().entrySet()) {
+            for (Map.Entry<String, JsonElement> expr : entry.getValue().getAsJsonObject().entrySet()) {
                 boolean addValue = true;
                 switch (expr.getKey()) {
                     case Where.FILTER_IS:
-                        // TODO add inner queries support
-                        throw new RuntimeException("Inner filters are not yet supported in offline feature");
+                        /*
+                         * Inner query. It is additional call to db, because different classes are in
+                         * different database files.
+                         */
+                        Field f = SyncanoClassHelper.findField(type, entry.getKey());
+                        Where w = new Where();
+                        w.setQueryMap(expr.getValue().getAsJsonObject());
+                        List<SyncanoObject> refs = OfflineHelper.readObjects(ctx, (Class<? extends SyncanoObject>) f.getType(), w, null);
+                        JsonArray ids = new JsonArray();
+                        for (SyncanoObject so : refs) {
+                            ids.add(so.getId());
+                        }
+                        addInFilter(column, expressions, values, ids);
+                        addValue = false;
+                        break;
                     case Where.FILTER_GT:
                         expressions.add("(" + column + ">?)");
                         break;
@@ -66,17 +78,7 @@ public class OfflineQueryBuilder {
                         addValue = false;
                         break;
                     case Where.FILTER_IN:
-                        StringBuilder sb = new StringBuilder("(");
-                        sb.append(column);
-                        sb.append(" IN (");
-                        JsonArray arr = expr.getValue().getAsJsonArray();
-                        for (int i = 0; i < arr.size(); i++) {
-                            values.add(arr.get(i).getAsString());
-                            sb.append('?');
-                            if (i < arr.size() - 1) sb.append(',');
-                        }
-                        sb.append("))");
-                        expressions.add(sb.toString());
+                        addInFilter(column, expressions, values, expr.getValue().getAsJsonArray());
                         addValue = false;
                         break;
                     case Where.FILTER_START_WITH:
@@ -131,14 +133,21 @@ public class OfflineQueryBuilder {
         }
     }
 
-    private String findColumnName(Class<? extends SyncanoObject> type, String key) {
-        Collection<Field> fields = SyncanoClassHelper.findAllSyncanoFields(type);
-        for (Field f : fields) {
-            if (SyncanoClassHelper.getFieldName(f).equals(key)) {
-                return SyncanoClassHelper.getOfflineFieldName(f);
-            }
+    private void addInFilter(String column, ArrayList<String> expressions, ArrayList<String> values, JsonArray arr) {
+        StringBuilder sb = new StringBuilder("(");
+        sb.append(column);
+        sb.append(" IN (");
+        for (int i = 0; i < arr.size(); i++) {
+            values.add(arr.get(i).getAsString());
+            sb.append('?');
+            if (i < arr.size() - 1) sb.append(',');
         }
-        return null;
+        sb.append("))");
+        expressions.add(sb.toString());
+    }
+
+    private String findColumnName(Class<? extends SyncanoObject> type, String key) {
+        return SyncanoClassHelper.getOfflineFieldName(SyncanoClassHelper.findField(type, key));
     }
 
     public String getSelection() {

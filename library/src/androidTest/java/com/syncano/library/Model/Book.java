@@ -1,4 +1,4 @@
-package com.syncano.library.model;
+package com.syncano.library.Model;
 
 import com.syncano.library.annotation.SyncanoClass;
 import com.syncano.library.annotation.SyncanoField;

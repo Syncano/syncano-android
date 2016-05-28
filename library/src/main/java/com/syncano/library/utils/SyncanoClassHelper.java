@@ -163,4 +163,17 @@ public class SyncanoClassHelper {
         }
         return syncanoFields;
     }
+
+    public static Field findField(Class type, String name) {
+        if (name == null) {
+            return null;
+        }
+        Collection<Field> fields = findAllSyncanoFields(type);
+        for (Field f : fields) {
+            if (name.equals(getFieldName(f))) {
+                return f;
+            }
+        }
+        return null;
+    }
 }

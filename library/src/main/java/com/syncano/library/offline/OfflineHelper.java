@@ -5,7 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -46,7 +45,7 @@ public class OfflineHelper {
         SQLiteOpenHelper sqlHelper = initDb(ctx, type);
         SQLiteDatabase db = sqlHelper.getReadableDatabase();
         ArrayList<T> list = new ArrayList<>();
-        OfflineQueryBuilder query = new OfflineQueryBuilder(type, where, orderBy);
+        OfflineQueryBuilder query = new OfflineQueryBuilder(ctx, type, where, orderBy);
         Cursor c = db.query(TABLE_NAME, null, query.getSelection(), query.getSelArgs(), null, null, query.getOrderBy());
         GsonParser.GsonParseConfig config = new GsonParser.GsonParseConfig();
         config.forLocalStorage = true;
@@ -87,7 +86,7 @@ public class OfflineHelper {
         checkContext(ctx);
         SQLiteOpenHelper sqlHelper = initDb(ctx, type);
         SQLiteDatabase db = sqlHelper.getReadableDatabase();
-        OfflineQueryBuilder query = new OfflineQueryBuilder(type, new Where<>().eq(Entity.FIELD_ID, id), null);
+        OfflineQueryBuilder query = new OfflineQueryBuilder(ctx, type, new Where<>().eq(Entity.FIELD_ID, id), null);
         Cursor c = db.query(TABLE_NAME, null, query.getSelection(), query.getSelArgs(), null, null, query.getOrderBy());
 
         String[] columns = c.getColumnNames();
@@ -109,7 +108,7 @@ public class OfflineHelper {
         checkContext(ctx);
         SQLiteOpenHelper sqlHelper = initDb(ctx, type);
         SQLiteDatabase db = sqlHelper.getWritableDatabase();
-        OfflineQueryBuilder query = new OfflineQueryBuilder(type, new Where<>().eq(Entity.FIELD_ID, id), null);
+        OfflineQueryBuilder query = new OfflineQueryBuilder(ctx, type, new Where<>().eq(Entity.FIELD_ID, id), null);
         int delNum = db.delete(TABLE_NAME, query.getSelection(), query.getSelArgs());
         return delNum == 1;
     }
