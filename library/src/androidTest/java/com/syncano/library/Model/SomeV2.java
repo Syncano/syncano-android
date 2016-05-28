@@ -30,7 +30,7 @@ public class SomeV2 extends SyncanoObject {
 
     @SyncanoField(name = FIELD_TEXT)
     public String someText;
-    @SyncanoField(name = FIELD_INT)
+    @SyncanoField(name = FIELD_INT, offlineName = "other_name_haha")
     public int someInt;
     @SyncanoField(name = FIELD_DATE)
     public Date someDate;

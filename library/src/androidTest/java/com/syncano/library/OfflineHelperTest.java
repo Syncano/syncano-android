@@ -38,11 +38,11 @@ public class OfflineHelperTest extends SyncanoAndroidTestCase {
 
     @Test
     public void testReadWrite() throws InterruptedException {
+        OfflineHelper.deleteDatabase(getContext(), AllTypesObject.class);
+        OfflineHelper.deleteDatabase(getContext(), SomeV1.class);
+
         createClass(SomeV1.class);
         createClass(AllTypesObject.class);
-
-        OfflineHelper.clearTable(getContext(), AllTypesObject.class);
-        OfflineHelper.clearTable(getContext(), SomeV1.class);
 
         ArrayList<AllTypesObject> list = new ArrayList<>();
         ArrayList<SomeV1> someList = new ArrayList<>();
