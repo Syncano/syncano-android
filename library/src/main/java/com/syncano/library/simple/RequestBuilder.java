@@ -241,7 +241,7 @@ public class RequestBuilder<T extends SyncanoObject> {
     }
 
     /**
-     * Sets specific page to request.
+     * Sets specific page to request. Remember to set the same Where query as for other pages.
      *
      * @param pageUrl page url
      * @return itself

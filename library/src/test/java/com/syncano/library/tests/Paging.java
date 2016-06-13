@@ -25,11 +25,13 @@ import static org.junit.Assert.fail;
 
 public class Paging extends SyncanoApplicationTestCase {
 
-    public static final int NUMBER = 10;
+    public static final int NUMBER = 30;
     public static final int PAGE = 4;
-    public static final int LOOPS = NUMBER / PAGE + ((NUMBER % PAGE > 0) ? 1 : 0);
+    public static final int LOOPS = getExpectedLoops(NUMBER, PAGE);
 
     private CountDownLatch countDownLatch;
+    private int specialItemsCount;
+    private final static int SPECIAL_NUMBER = 42;
 
     @Before
     public void setUp() throws Exception {
@@ -37,8 +39,19 @@ public class Paging extends SyncanoApplicationTestCase {
         createClass(MyObject.class);
 
         Random rnd = new Random();
+        specialItemsCount = 0;
+
         for (int i = 0; i < NUMBER; i++) {
-            assertTrue((new MyObject(rnd.nextInt())).save().isSuccess());
+            MyObject object;
+            if (rnd.nextBoolean()) {
+                object = new MyObject(SPECIAL_NUMBER);
+            } else {
+                object = new MyObject(rnd.nextInt());
+            }
+            assertTrue((object.save().isSuccess()));
+            if (object.number == SPECIAL_NUMBER) {
+                specialItemsCount++;
+            }
         }
     }
 
@@ -48,8 +61,26 @@ public class Paging extends SyncanoApplicationTestCase {
         super.tearDown();
     }
 
+    private static int getExpectedLoops(int number, int pageSize) {
+        return number / pageSize + ((number % pageSize > 0) ? 1 : 0);
+    }
+
     @Test
-    public void testPaging() {
+    public void testPaging() throws InterruptedException {
+        // done this way, because creating objects takes the most of the time
+        testResponsePaging();
+        testResponseQueryPaging();
+        testAsyncPaging();
+        testOrderPaging();
+        testGetAll();
+        testAsyncGetAll();
+        testGetAllQuery();
+        testPleaseQueryPaging();
+        testPleasePaging();
+    }
+
+
+    private void testResponsePaging() {
         ArrayList<MyObject> list = new ArrayList<>();
         int loops = 0;
 
@@ -65,17 +96,15 @@ public class Paging extends SyncanoApplicationTestCase {
             list.addAll(resp.getData());
         }
 
-        assertEquals(list.size(), NUMBER);
+        assertEquals(NUMBER, list.size());
         assertEquals(LOOPS, loops);
     }
 
-    @Test
-    public void testPleasePaging() {
+    private void testPleasePaging() {
         ArrayList<MyObject> list = new ArrayList<>();
-        int loops = 0;
 
         ResponseGetList<MyObject> resp = Syncano.please(MyObject.class).limit(PAGE).get();
-        loops++;
+        int loops = 1;
         assertTrue(resp.isSuccess());
         list.addAll(resp.getData());
 
@@ -86,8 +115,48 @@ public class Paging extends SyncanoApplicationTestCase {
             list.addAll(resp.getData());
         }
 
-        assertEquals(list.size(), NUMBER);
+        assertEquals(NUMBER, list.size());
         assertEquals(LOOPS, loops);
+    }
+
+    private void testResponseQueryPaging() {
+        ArrayList<MyObject> list = new ArrayList<>();
+
+        ResponseGetList<MyObject> resp = Syncano.please(MyObject.class).limit(PAGE)
+                .where().eq(MyObject.FIELD_NUMBER, SPECIAL_NUMBER).get();
+        int loops = 1;
+        assertTrue(resp.isSuccess());
+        list.addAll(resp.getData());
+
+        while (resp.hasNextPage()) {
+            resp = resp.getNextPage();
+            loops++;
+            assertTrue(resp.isSuccess());
+            list.addAll(resp.getData());
+        }
+
+        assertEquals(specialItemsCount, list.size());
+        assertEquals(getExpectedLoops(specialItemsCount, PAGE), loops);
+    }
+
+    private void testPleaseQueryPaging() {
+        ArrayList<MyObject> list = new ArrayList<>();
+        ResponseGetList<MyObject> resp = Syncano.please(MyObject.class).limit(PAGE)
+                .where().eq(MyObject.FIELD_NUMBER, SPECIAL_NUMBER).get();
+        int loops = 1;
+        assertTrue(resp.isSuccess());
+        list.addAll(resp.getData());
+
+        while (resp.hasNextPage()) {
+            resp = Syncano.please(MyObject.class).page(resp.getNextPageUrl())
+                    .where().eq(MyObject.FIELD_NUMBER, SPECIAL_NUMBER).get();
+            loops++;
+            assertTrue(resp.isSuccess());
+            list.addAll(resp.getData());
+        }
+
+        assertEquals(specialItemsCount, list.size());
+        assertEquals(getExpectedLoops(specialItemsCount, PAGE), loops);
     }
 
     private SyncanoListCallback<MyObject> callbackPlease = new SyncanoListCallback<MyObject>() {
@@ -102,7 +171,7 @@ public class Paging extends SyncanoApplicationTestCase {
             if (response.hasNextPage()) {
                 response.getNextPage(callbackPlease);
             } else {
-                assertEquals(list.size(), NUMBER);
+                assertEquals(NUMBER, list.size());
                 assertEquals(LOOPS, loops);
                 countDownLatch.countDown();
             }
@@ -114,15 +183,13 @@ public class Paging extends SyncanoApplicationTestCase {
         }
     };
 
-    @Test
-    public void testAsyncPaging() throws InterruptedException {
+    private void testAsyncPaging() throws InterruptedException {
         Syncano.please(MyObject.class).limit(PAGE).get(callbackPlease);
         countDownLatch = new CountDownLatch(1);
         countDownLatch.await();
     }
 
-    @Test
-    public void testOrderPaging() {
+    private void testOrderPaging() {
         ArrayList<MyObject> list = new ArrayList<>();
         int loops = 0;
 
@@ -139,20 +206,18 @@ public class Paging extends SyncanoApplicationTestCase {
             list.addAll(resp.getData());
         }
 
-        assertEquals(list.size(), NUMBER);
+        assertEquals(NUMBER, list.size());
         assertEquals(LOOPS, loops);
     }
 
-    @Test
-    public void testGetAll() {
+    private void testGetAll() {
         ResponseGetList<MyObject> resp = Syncano.please(MyObject.class).limit(PAGE).getAll(true).get();
         assertTrue(resp.isSuccess());
         assertNotNull(resp.getData());
         assertEquals(NUMBER, resp.getData().size());
     }
 
-    @Test
-    public void testAsyncGetAll() throws InterruptedException {
+    private void testAsyncGetAll() throws InterruptedException {
         final AtomicBoolean requestFinished = new AtomicBoolean(false);
         Syncano.please(MyObject.class).limit(PAGE).getAll(true).get(new SyncanoListCallback<MyObject>() {
             @Override
@@ -174,6 +239,14 @@ public class Paging extends SyncanoApplicationTestCase {
         assertTrue(requestFinished.get());
     }
 
+    private void testGetAllQuery() {
+        ResponseGetList<MyObject> resp = Syncano.please(MyObject.class).limit(PAGE).getAll(true)
+                .where().eq(MyObject.FIELD_NUMBER, SPECIAL_NUMBER).get();
+        assertTrue(resp.isSuccess());
+        assertNotNull(resp.getData());
+        assertEquals(specialItemsCount, resp.getData().size());
+    }
+
     @SyncanoClass(name = "myobject")
     private static class MyObject extends SyncanoObject {
         public static final String FIELD_NUMBER = "some_number";
@@ -182,7 +255,7 @@ public class Paging extends SyncanoApplicationTestCase {
             this.number = number;
         }
 
-        @SyncanoField(name = FIELD_NUMBER, orderIndex = true)
+        @SyncanoField(name = FIELD_NUMBER, orderIndex = true, filterIndex = true)
         int number;
     }
 }

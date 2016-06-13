@@ -8,7 +8,7 @@ import java.util.List;
 public class ResponseGetList<T> extends Response<List<T>> {
     /*
     This class was made to make easier calls for next pages of objects.
-    It would be able to make this calls setting three values lastPk, lastValue, direction,
+    It would be able to make this calls setting values lastPk, lastValue, direction, where,
     but it would be hard for the user to set all of them properly. Also hard to implement passing
     last value in a right format. That's why it was decided to use links returned from server.
      */
@@ -18,12 +18,16 @@ public class ResponseGetList<T> extends Response<List<T>> {
     private Integer estimatedCount;
     private Syncano syncano;
     private Class<T> resultType;
+    private Where usedQuery;
 
     public ResponseGetList(Syncano syncano, Class<T> resultType) {
         this.syncano = syncano;
         this.resultType = resultType;
     }
 
+    /**
+     * Use carefully. You also have to set Where query on a request to properly get page.
+     */
     public String getPreviousPageUrl() {
         return previousPageUrl;
     }
@@ -32,6 +36,9 @@ public class ResponseGetList<T> extends Response<List<T>> {
         this.previousPageUrl = previousPageUrl;
     }
 
+    /**
+     * Use carefully. You also have to set Where query on a request to properly get page.
+     */
     public String getNextPageUrl() {
         return nextPageUrl;
     }
@@ -49,11 +56,15 @@ public class ResponseGetList<T> extends Response<List<T>> {
     }
 
     public RequestGetList<T> getNextPageRequest() {
-        return new RequestGetList<>(resultType, nextPageUrl, syncano);
+        RequestGetList<T> request = new RequestGetList<>(resultType, nextPageUrl, syncano);
+        request.setWhereFilter(getUsedQuery());
+        return request;
     }
 
     public RequestGetList<T> getPreviousPageRequest() {
-        return new RequestGetList<>(resultType, previousPageUrl, syncano);
+        RequestGetList<T> request = new RequestGetList<>(resultType, previousPageUrl, syncano);
+        request.setWhereFilter(getUsedQuery());
+        return request;
     }
 
     public ResponseGetList<T> getNextPage() {
@@ -78,5 +89,13 @@ public class ResponseGetList<T> extends Response<List<T>> {
 
     public Integer getEstimatedCount() {
         return estimatedCount;
+    }
+
+    public Where getUsedQuery() {
+        return usedQuery;
+    }
+
+    public void setUsedQuery(Where usedQuery) {
+        this.usedQuery = usedQuery;
     }
 }

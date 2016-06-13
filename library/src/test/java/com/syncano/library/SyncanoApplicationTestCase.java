@@ -71,7 +71,7 @@ public class SyncanoApplicationTestCase {
 
         long start = System.currentTimeMillis();
         SyncanoClass downloadedClass = null;
-        while (System.currentTimeMillis() - start < (10 * 60 * 1000) && (downloadedClass == null || downloadedClass.getStatus() != ClassStatus.READY)) {
+        while (System.currentTimeMillis() - start < (60 * 60 * 1000) && (downloadedClass == null || downloadedClass.getStatus() != ClassStatus.READY)) {
             Thread.sleep(100);
             SyncanoLog.d(SyncanoApplicationTestCase.class.getSimpleName(), "Waiting for class to create: " + (System.currentTimeMillis() - start));
             Response<SyncanoClass> respClass = syncano.getSyncanoClass(clazz).send();

@@ -10,6 +10,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -17,6 +18,7 @@ import java.util.List;
 
 public abstract class HttpRequest<T> extends Request<T> {
 
+    private final static String UTF8 = "UTF-8";
     private List<NameValuePair> urlParams = new ArrayList<>();
     private List<NameValuePair> httpHeaders = new ArrayList<>();
     private String url;
@@ -28,7 +30,7 @@ public abstract class HttpRequest<T> extends Request<T> {
 
     protected HttpRequest(String path, Syncano syncano) {
         super(syncano);
-        this.path = path;
+        setUrlPath(path);
         this.url = syncano.getUrl();
         this.strictCheckCertificate = syncano.isStrictCheckedCertificate();
         if (syncano.getApiKey() != null && !syncano.getApiKey().isEmpty()) {
@@ -36,6 +38,18 @@ public abstract class HttpRequest<T> extends Request<T> {
         }
         if (syncano.getUserKey() != null && !syncano.getUserKey().isEmpty()) {
             setHttpHeader(Constants.HTTP_HEADER_USER_KEY, syncano.getUserKey());
+        }
+    }
+
+    private void addUrlParamsFromWebForm(String webForm) {
+        String[] pairs = webForm.split("&");
+        for (String pair : pairs) {
+            int idx = pair.indexOf("=");
+            try {
+                addUrlParam(URLDecoder.decode(pair.substring(0, idx), UTF8), URLDecoder.decode(pair.substring(idx + 1), UTF8));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -107,8 +121,8 @@ public abstract class HttpRequest<T> extends Request<T> {
             String value = null;
 
             try {
-                name = URLEncoder.encode(param.getName(), "UTF-8");
-                value = URLEncoder.encode(param.getValue(), "UTF-8");
+                name = URLEncoder.encode(param.getName(), UTF8);
+                value = URLEncoder.encode(param.getValue(), UTF8);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
@@ -155,6 +169,20 @@ public abstract class HttpRequest<T> extends Request<T> {
 
     public String getUrlPath() {
         return path;
+    }
+
+    public void setUrlPath(String path) {
+        if (path == null) {
+            this.path = null;
+            return;
+        }
+        int questionIndex = path.indexOf('?');
+        if (questionIndex != -1) {
+            this.path = path.substring(0, questionIndex);
+            addUrlParamsFromWebForm(path.substring(questionIndex + 1, path.length()));
+        } else {
+            this.path = path;
+        }
     }
 
     public String getUrl() {

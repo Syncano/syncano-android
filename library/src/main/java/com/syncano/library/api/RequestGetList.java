@@ -133,7 +133,9 @@ public class RequestGetList<T> extends RequestGet<List<T>> {
 
     @Override
     public Response<List<T>> instantiateResponse() {
-        return new ResponseGetList<>(syncano, resultType);
+        ResponseGetList<T> response = new ResponseGetList<>(syncano, resultType);
+        response.setUsedQuery(getWhereFilter()); // needed when requesting for next page
+        return response;
     }
 
     @Override
