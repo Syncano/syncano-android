@@ -35,11 +35,11 @@ public class Where<T extends SyncanoObject> {
     public static final String FILTER_CONTAINS = "_contains";
     public static final String FILTER_INS_CONTAINS = "_icontains";
 
-    private Map<String, JsonObject> query;
+    private JsonObject query;
     private RequestBuilder<T> please;
 
     public Where() {
-        query = new HashMap<>();
+        query = new JsonObject();
     }
 
     public Where(RequestBuilder<T> please) {
@@ -843,8 +843,12 @@ public class Where<T extends SyncanoObject> {
         return new Gson().toJson(query);
     }
 
-    public Map<String, JsonObject> getQueryMap() {
+    public JsonObject getQueryMap() {
         return query;
+    }
+
+    public void setQueryMap(JsonObject map) {
+        query = map;
     }
 
     /**

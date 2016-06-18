@@ -24,6 +24,10 @@ public @interface SyncanoField {
 
     boolean filterIndex() default false;
 
+    String offlineName() default "";
+
     boolean inSchema() default true;
+
+    boolean onlyLocal() default false;
 }
 

@@ -30,7 +30,12 @@ class SyncanoObjectSerializer implements JsonSerializer<SyncanoObject> {
         for (Field field : fields) {
             field.setAccessible(true);
             try {
-                String keyName = SyncanoClassHelper.getFieldName(field);
+                String keyName;
+                if (config.forLocalStorage) {
+                    keyName = SyncanoClassHelper.getOfflineFieldName(field);
+                } else {
+                    keyName = SyncanoClassHelper.getFieldName(field);
+                }
                 if (localObject.isOnClearList(keyName)) {
                     jsonObject.add(keyName, jsc.serialize(null));
                     continue;
@@ -54,7 +59,8 @@ class SyncanoObjectSerializer implements JsonSerializer<SyncanoObject> {
         if (syncanoField == null ||
                 (!config.serializeReadOnlyFields && syncanoField.readOnly() && !syncanoField.required()) ||
                 (f.getType().isAssignableFrom(SyncanoFile.class) && !config.serializeUrlFileFields) ||
-                f.get(localObject) == null) {
+                (f.get(localObject) == null) ||
+                (syncanoField.onlyLocal() && !config.forLocalStorage)) {
             return true;
         }
 

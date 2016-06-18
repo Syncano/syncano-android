@@ -7,6 +7,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.choice.FieldType;
 import com.syncano.library.data.Entity;
 import com.syncano.library.data.SyncanoObject;
@@ -97,8 +98,17 @@ public class SyncanoObjectDeserializer implements JsonDeserializer<SyncanoObject
         }
         Collection<Field> fields = SyncanoClassHelper.findAllSyncanoFields((Class) type);
         for (Field field : fields) {
+            SyncanoField annotation = field.getAnnotation(SyncanoField.class);
+            if (annotation.onlyLocal() && !config.forLocalStorage) {
+                continue;
+            }
             field.setAccessible(true);
-            String syncanoKey = SyncanoClassHelper.getFieldName(field);
+            String syncanoKey;
+            if (config.forLocalStorage) {
+                syncanoKey = SyncanoClassHelper.getOfflineFieldName(field);
+            } else {
+                syncanoKey = SyncanoClassHelper.getFieldName(field);
+            }
             JsonElement syncanoElement = jo.get(syncanoKey);
             setFieldFromJsonElement(syncanoObject, field, jdc, syncanoElement);
         }

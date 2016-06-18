@@ -4,7 +4,6 @@ import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.choice.DataObjectPermissions;
 import com.syncano.library.simple.ObjectRequestBuilder;
 
-
 public abstract class SyncanoObject extends ObjectRequestBuilder {
 
     public static final String FIELD_REVISION = "revision";
@@ -16,6 +15,7 @@ public abstract class SyncanoObject extends ObjectRequestBuilder {
     public static final String FIELD_OTHER_PERMISSIONS = "other_permissions";
     public static final String FIELD_CHANNEL = "channel";
     public static final String FIELD_CHANNEL_ROOM = "channel_room";
+    public static final String FIELD_LOCAL_ID = "id_local";
 
     @SyncanoField(name = FIELD_OWNER, inSchema = false)
     private Integer owner;
@@ -23,7 +23,7 @@ public abstract class SyncanoObject extends ObjectRequestBuilder {
     @SyncanoField(name = FIELD_OWNER_PERMISSIONS, inSchema = false)
     private DataObjectPermissions ownerPermissions;
 
-    @SyncanoField(name = FIELD_GROUP, inSchema = false)
+    @SyncanoField(name = FIELD_GROUP, offlineName = "_group", inSchema = false)
     private Integer group;
 
     @SyncanoField(name = FIELD_GROUP_PERMISSIONS, inSchema = false)
@@ -43,6 +43,9 @@ public abstract class SyncanoObject extends ObjectRequestBuilder {
 
     @SyncanoField(name = FIELD_EXPECTED_REVISION, inSchema = false)
     private Integer expectedRevision;
+
+    @SyncanoField(name = FIELD_LOCAL_ID, onlyLocal = true)
+    private Long localId;
 
     public String getChannelRoom() {
         return channelRoom;
@@ -114,5 +117,13 @@ public abstract class SyncanoObject extends ObjectRequestBuilder {
 
     public void setExpectedRevision(int expectedRevision) {
         this.expectedRevision = expectedRevision;
+    }
+
+    public Long getLocalId() {
+        return localId;
+    }
+
+    public void setLocalId(Long localId) {
+        this.localId = localId;
     }
 }

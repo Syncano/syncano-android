@@ -1,12 +1,11 @@
 package com.syncano.library.data;
 
+import com.google.gson.JsonObject;
 import com.syncano.library.Constants;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.api.Where;
 import com.syncano.library.utils.SyncanoClassHelper;
 import com.syncano.library.utils.SyncanoHashSet;
-
-import java.util.Map;
 
 public class DataEndpoint {
     public static final String FIELD_NAME = Constants.FIELD_NAME;
@@ -31,7 +30,7 @@ public class DataEndpoint {
     @SyncanoField(name = FIELD_EXPAND)
     private SyncanoHashSet expandSet = new SyncanoHashSet();
     @SyncanoField(name = FIELD_QUERY)
-    private Map query;
+    private JsonObject query;
     @SyncanoField(name = FIELD_EXCLUDED_FIELDS)
     private SyncanoHashSet excludedFields = new SyncanoHashSet();
 

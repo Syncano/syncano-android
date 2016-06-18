@@ -35,18 +35,32 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
     private final static String twoHyphens = "--";
     private final static String lineEnd = "\r\n";
     private Object data;
-    private boolean updateGivenData = false;
     private Gson gson;
     public final static String UTF8 = "UTF-8";
+    private RunAfter<T> runAfter;
+    // standard runAfter wrapped, to add specific things
+    private RunAfter<T> clearFieldsRunAfter = new RunAfter<T>() {
+        @Override
+        public void run(Response<T> response) {
+            if (response.isSuccess() && data != null && data instanceof SyncanoObject) {
+                ((SyncanoObject) data).resetRequestBuildingFields();
+            }
+            if (runAfter != null) {
+                runAfter.run(response);
+            }
+        }
+    };
 
     protected SendRequest(Class<T> resultType, String url, Syncano syncano, Object data) {
         super(resultType, url, syncano);
+        updateGivenObject(false);
         this.data = data;
         if (data != null) {
             gson = GsonParser.createGson(data);
         } else {
             gson = GsonParser.createGson(resultType);
         }
+        super.setRunAfter(clearFieldsRunAfter);
     }
 
     @Override
@@ -134,7 +148,6 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
             baos.write((GsonParser.getJsonElementAsString(entry.getValue())).getBytes(UTF8));
             baos.write(lineEnd.getBytes(UTF8));
         }
-        ((SyncanoObject) data).resetRequestBuildingFields();
         return new ByteArrayInputStream(baos.toByteArray());
     }
 
@@ -182,7 +195,7 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
 
     @Override
     public T parseResult(Response<T> response, String json) {
-        if (updateGivenData) {
+        if (isSetUpdateGivenObject()) {
             if (data.getClass().isAssignableFrom(resultType)) {
                 return GsonParser.createGson(data).fromJson(json, resultType);
             } else {
@@ -193,11 +206,16 @@ public abstract class SendRequest<T> extends ResultRequest<T> {
         return super.parseResult(response, json);
     }
 
-    public boolean isSetUpdateGivenObject() {
-        return updateGivenData;
+    @Override
+    public T getResultObject() {
+        return (T) data;
     }
 
-    public void updateGivenObject(boolean updateGivenData) {
-        this.updateGivenData = updateGivenData;
+    public RunAfter<T> getRunAfter() {
+        return runAfter;
+    }
+
+    public void setRunAfter(RunAfter<T> runAfter) {
+        this.runAfter = runAfter;
     }
 }

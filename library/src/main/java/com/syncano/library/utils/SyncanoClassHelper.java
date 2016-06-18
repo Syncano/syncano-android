@@ -47,7 +47,7 @@ public class SyncanoClassHelper {
         Collection<Field> fields = findAllSyncanoFields(clazz);
         for (Field field : fields) {
             SyncanoField fieldAnnotation = field.getAnnotation(SyncanoField.class);
-            if (fieldAnnotation == null || !fieldAnnotation.inSchema()) {
+            if (fieldAnnotation == null || !fieldAnnotation.inSchema() || fieldAnnotation.onlyLocal()) {
                 continue;
             }
 
@@ -88,6 +88,15 @@ public class SyncanoClassHelper {
         }
 
         return schemaArray;
+    }
+
+    public static String getOfflineFieldName(Field f) {
+        SyncanoField syncanoField = f.getAnnotation(SyncanoField.class);
+        String offlineName = syncanoField.offlineName();
+        if (!offlineName.isEmpty()) {
+            return offlineName;
+        }
+        return getFieldName(f);
     }
 
     public static String getFieldName(Field f) {
@@ -153,5 +162,18 @@ public class SyncanoClassHelper {
             syncanoFields.add(field);
         }
         return syncanoFields;
+    }
+
+    public static Field findField(Class type, String name) {
+        if (name == null) {
+            return null;
+        }
+        Collection<Field> fields = findAllSyncanoFields(type);
+        for (Field f : fields) {
+            if (name.equals(getFieldName(f))) {
+                return f;
+            }
+        }
+        return null;
     }
 }

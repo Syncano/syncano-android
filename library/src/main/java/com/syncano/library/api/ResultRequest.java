@@ -9,6 +9,7 @@ public abstract class ResultRequest<T> extends HttpRequest<T> {
     protected Class<T> resultType = null;
     private Gson gson = null;
     private T resultObject;
+    private boolean updateGivenData = true;
 
     protected ResultRequest(Class<T> resultType, String url, Syncano syncano) {
         super(url, syncano);
@@ -18,7 +19,11 @@ public abstract class ResultRequest<T> extends HttpRequest<T> {
 
     protected ResultRequest(T dataObject, String url, Syncano syncano) {
         super(url, syncano);
-        gson = GsonParser.createGson(dataObject);
+        if (updateGivenData) {
+            gson = GsonParser.createGson(dataObject);
+        } else {
+            gson = GsonParser.createGson(resultType);
+        }
         resultObject = dataObject;
         this.resultType = (Class<T>) dataObject.getClass();
     }
@@ -41,5 +46,14 @@ public abstract class ResultRequest<T> extends HttpRequest<T> {
 
     public Class getResultType() {
         return resultType;
+    }
+
+
+    public boolean isSetUpdateGivenObject() {
+        return updateGivenData;
+    }
+
+    public void updateGivenObject(boolean updateGivenData) {
+        this.updateGivenData = updateGivenData;
     }
 }

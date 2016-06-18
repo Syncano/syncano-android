@@ -348,7 +348,7 @@ public class Syncano {
     public <T extends SyncanoObject> RequestGet<T> getObject(Class<T> type, int id) {
         String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getNotEmptyInstanceName(), className, id);
-        return new RequestGet<>(type, url, this);
+        return new RequestGet<>(type, url, this, id);
     }
 
     /**
@@ -462,7 +462,7 @@ public class Syncano {
      * @return Updated DataObject.
      */
     public <T extends SyncanoObject> RequestPatch<T> addition(Class<T> type, int id, IncrementBuilder incrementBuilder) {
-        if (incrementBuilder.hasAdditionFields()) {
+        if (!incrementBuilder.hasAdditionFields()) {
             throw new IllegalArgumentException("Cannot create increment query without specify fields to increment/decrement!");
         }
         String className = SyncanoClassHelper.getSyncanoClassName(type);
@@ -481,7 +481,7 @@ public class Syncano {
     public <T extends SyncanoObject> RequestDelete<T> deleteObject(Class<T> type, int id) {
         String className = SyncanoClassHelper.getSyncanoClassName(type);
         String url = String.format(Constants.OBJECTS_DETAIL_URL, getNotEmptyInstanceName(), className, id);
-        return new RequestDelete<>(type, url, this);
+        return new RequestDelete<>(type, url, this, id);
     }
 
     /**
