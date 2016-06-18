@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -133,18 +134,37 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
         final AtomicBoolean updateReceived = new AtomicBoolean(false);
         final AtomicBoolean removeReceived = new AtomicBoolean(false);
         final AtomicInteger firstId = new AtomicInteger(0);
+        final String value = "example value";
+        final String valueAfterUpdate = "updated value";
 
         ChannelConnection channelConnection = new ChannelConnection(syncano);
         channelConnection.setChannelConnectionListener(new ChannelConnectionListener() {
             @Override
             public void onNotification(Notification notification) {
                 SyncanoLog.d(TAG, "onNotification: id= " + notification.getId() + " " + notification.getAction());
-                if (notification.getAction() == NotificationAction.CREATE) {
-                    createReceived.set(true);
-                } else if (notification.getAction() == NotificationAction.UPDATE) {
-                    updateReceived.set(true);
-                } else if (notification.getAction() == NotificationAction.DELETE) {
-                    removeReceived.set(true);
+                TestSyncanoObject obj;
+                switch (notification.getAction()) {
+                    case CREATE:
+                        obj = notification.getPayloadAs(TestSyncanoObject.class);
+                        assertNotNull(obj);
+                        assertNotNull(obj.getId());
+                        assertEquals(value, obj.valueOne);
+                        createReceived.set(true);
+                        break;
+                    case UPDATE:
+                        obj = notification.getPayloadAs(TestSyncanoObject.class);
+                        assertNotNull(obj);
+                        assertNotNull(obj.getId());
+                        assertEquals(valueAfterUpdate, obj.valueOne);
+                        updateReceived.set(true);
+                        break;
+                    case DELETE:
+                        obj = notification.getPayloadAs(TestSyncanoObject.class);
+                        assertNotNull(obj);
+                        assertNotNull(obj.getId());
+                        assertNull(obj.valueOne);
+                        removeReceived.set(true);
+                        break;
                 }
                 lock.countDown();
                 if (lock.getCount() == 2) {
@@ -168,7 +188,7 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
 
         // create
         TestSyncanoObject testObject = new TestSyncanoObject();
-        testObject.valueOne = "val1";
+        testObject.valueOne = value;
         testObject.setChannel(CHANNEL_NAME);
         testObject.setChannelRoom(room);
         Response<TestSyncanoObject> responseCreate = syncano.createObject(testObject).send();
@@ -179,7 +199,7 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
 
         // update
         testObject.setId(returnedObject.getId());
-        testObject.valueOne = "other val1";
+        testObject.valueOne = valueAfterUpdate;
         Response<TestSyncanoObject> responseUpdate = syncano.updateObject(testObject).send();
         assertTrue(responseUpdate.isSuccess());
         returnedObject = responseUpdate.getData();
@@ -189,7 +209,6 @@ public class ChannelConnectionTest extends SyncanoApplicationTestCase {
         // delete
         Response<TestSyncanoObject> responseDelete = syncano.deleteObject(TestSyncanoObject.class, returnedObject.getId()).send();
         assertTrue(responseDelete.isSuccess());
-
 
         // Wait for notifications
         lock.await(60, TimeUnit.SECONDS);

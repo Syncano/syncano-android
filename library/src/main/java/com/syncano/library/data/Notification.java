@@ -1,8 +1,11 @@
 package com.syncano.library.data;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 import com.syncano.library.annotation.SyncanoField;
 import com.syncano.library.choice.NotificationAction;
+import com.syncano.library.parser.GsonParser;
+import com.syncano.library.utils.SyncanoLog;
 
 import java.util.Date;
 
@@ -103,5 +106,17 @@ public class Notification {
 
     public void setMetadata(JsonObject metadata) {
         this.metadata = metadata;
+    }
+
+    public <T> T getPayloadAs(Class<T> type) {
+        if (payload == null) {
+            return null;
+        }
+        try {
+            return GsonParser.createGson(type).fromJson(payload, type);
+        } catch (JsonSyntaxException e) {
+            SyncanoLog.e(Notification.class.getSimpleName(), e.getClass().getSimpleName() + " Can't parse " + type.getSimpleName());
+        }
+        return null;
     }
 }
