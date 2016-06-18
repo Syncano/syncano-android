@@ -12,7 +12,7 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 21
-        versionCode 411
+        versionCode 412
         versionName version
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -28,10 +28,12 @@ android {
 
     buildTypes {
         debug {
+            buildConfigField "boolean", "IS_DEBUG", "true"
             testCoverageEnabled true
         }
 
         release {
+            buildConfigField "boolean", "IS_DEBUG", "false"
             minifyEnabled false
         }
     }

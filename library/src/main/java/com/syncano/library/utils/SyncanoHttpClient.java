@@ -69,7 +69,7 @@ public class SyncanoHttpClient {
         HttpEntity parameters = syncanoRequest.prepareParams();
         String url = syncanoRequest.getUrl();
 
-        if (BuildConfig.DEBUG) {
+        if (BuildConfig.IS_DEBUG) {
             SyncanoLog.d(LOG_TAG, "Request: " + syncanoRequest.getRequestMethod() + "  " + url);
             SyncanoLog.d(LOG_TAG, "Request params: " + parameters);
         }
@@ -116,7 +116,7 @@ public class SyncanoHttpClient {
             syncanoResponse.setHttpResultCode(response.getStatusLine().getStatusCode());
             syncanoResponse.setHttpReasonPhrase(response.getStatusLine().getReasonPhrase());
 
-            if (BuildConfig.DEBUG) {
+            if (BuildConfig.IS_DEBUG) {
                 SyncanoLog.d(LOG_TAG, "HTTP Response: " + response.getStatusLine().getStatusCode() + "  " + response.getStatusLine().getReasonPhrase());
             }
 
@@ -132,7 +132,7 @@ public class SyncanoHttpClient {
                 byte[] data = readToByteArray(is);
                 if (data != null) {
                     json = new String(data);
-                    if (BuildConfig.DEBUG) {
+                    if (BuildConfig.IS_DEBUG) {
                         SyncanoLog.d(LOG_TAG, "Received: " + json);
                     }
                 }

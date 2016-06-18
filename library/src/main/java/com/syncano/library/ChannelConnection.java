@@ -4,6 +4,10 @@ import com.syncano.library.api.Response;
 import com.syncano.library.data.Notification;
 import com.syncano.library.utils.SyncanoLog;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 /**
  * Class responsible for real time communication.
  */
@@ -17,6 +21,9 @@ public class ChannelConnection {
     private String channel;
     private String room;
     private int lastId;
+    private boolean autoReconnect = false;
+    private ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+    private int currentLoopId = 0;
 
     public ChannelConnection(Syncano syncano) {
         this(syncano, null);
@@ -58,14 +65,14 @@ public class ChannelConnection {
         this.room = room;
         this.lastId = lastId;
 
-        if (BuildConfig.DEBUG)
+        if (BuildConfig.IS_DEBUG)
             SyncanoLog.d(TAG, "start channel: " + channel + " room: " + room + " lastId: " + lastId);
 
         if (pollRequestLoop != null) {
             pollRequestLoop.stop();
         }
-        pollRequestLoop = new PollRequestLoop();
-        new Thread(pollRequestLoop).start();
+        pollRequestLoop = new PollRequestLoop(currentLoopId++);
+        executor.schedule(pollRequestLoop, 0, TimeUnit.SECONDS);
     }
 
     /**
@@ -74,8 +81,7 @@ public class ChannelConnection {
      * Good place to call it is onPause or onStop method from Activity/Fragment lifecycle.
      */
     public void stop() {
-        if (BuildConfig.DEBUG) SyncanoLog.d(TAG, "stop");
-
+        if (BuildConfig.IS_DEBUG) SyncanoLog.d(TAG, "stop");
         if (pollRequestLoop != null) {
             pollRequestLoop.stop();
             pollRequestLoop = null;
@@ -127,8 +133,44 @@ public class ChannelConnection {
         }
     }
 
+    public boolean isAutoReconnect() {
+        return autoReconnect;
+    }
+
+    /**
+     * In normal case, when channel connection returns an error it stops the connection.
+     * When set this to true, it will try to reconnect after 5 second. It may result in
+     * messaging about an error every 5 seconds when for example internet connection is lost.
+     *
+     * @param autoReconnect true if should auto reconnect
+     */
+    public void setAutoReconnect(boolean autoReconnect) {
+        this.autoReconnect = autoReconnect;
+    }
+
+    private class ConnectionStart implements Runnable {
+        // keeps loop id, because other loop may be started in the meantime
+        private int loopId;
+
+        public ConnectionStart(int loopId) {
+            this.loopId = loopId;
+        }
+
+        @Override
+        public void run() {
+            // not stopped
+            if (pollRequestLoop != null && pollRequestLoop.id == loopId)
+                start(channel, room, lastId);
+        }
+    }
+
     private class PollRequestLoop implements Runnable {
         private boolean isRunning = true;
+        private int id;
+
+        public PollRequestLoop(int id) {
+            this.id = id;
+        }
 
         public void stop() {
             isRunning = false;
@@ -141,10 +183,10 @@ public class ChannelConnection {
         @Override
         public void run() {
             while (isRunning) {
-                if (BuildConfig.DEBUG)
+                if (BuildConfig.IS_DEBUG)
                     SyncanoLog.d(TAG, "poll request channel: " + channel + " room: " + room + " lastId: " + lastId);
                 Response<Notification> responsePollFromChannel = syncano.pollChannel(channel, room, lastId).send();
-                if (BuildConfig.DEBUG) SyncanoLog.d(TAG, "response: " + responsePollFromChannel);
+                if (BuildConfig.IS_DEBUG) SyncanoLog.d(TAG, "response: " + responsePollFromChannel);
 
                 // If still running, handle response.
                 if (!isRunning) {
@@ -158,6 +200,10 @@ public class ChannelConnection {
                 } else {
                     handleError(responsePollFromChannel);
                     isRunning = false;
+                    if (autoReconnect) {
+                        if (BuildConfig.IS_DEBUG) SyncanoLog.d(TAG, "Reconnecting in 5 seconds");
+                        executor.schedule(new ConnectionStart(id), 5, TimeUnit.SECONDS);
+                    }
                     break;
                 }
             }
