@@ -10,6 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -70,8 +71,17 @@ public class InnerQueryTest extends SyncanoApplicationTestCase {
 
     @Test
     public void testInnerQueries() {
+        // get books by author ids
+        ResponseGetList<Author> authorsResp = Syncano.please(Author.class).get();
+        ArrayList<Integer> authorIds = new ArrayList<>();
+        for (Author a : authorsResp.getData()) {
+            authorIds.add(a.getId());
+        }
+        ResponseGetList<Book> pleaseResponse = Syncano.please(Book.class).where().in(Book.FIELD_AUTHOR, authorIds.toArray(new Integer[0])).get();
+        assertEquals(authorIds.size(), pleaseResponse.getData().size());
+
         // equal to string
-        ResponseGetList<Book> pleaseResponse = Syncano.please(Book.class).where().eq(Book.FIELD_AUTHOR, Author.FIELD_NAME, "Adam Mickiewicz").get();
+        pleaseResponse = Syncano.please(Book.class).where().eq(Book.FIELD_AUTHOR, Author.FIELD_NAME, "Adam Mickiewicz").get();
         assertTrue(pleaseResponse.isSuccess());
         assertEquals(1, pleaseResponse.getData().size());
 
